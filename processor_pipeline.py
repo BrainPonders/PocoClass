@@ -47,7 +47,7 @@ class ProcessorPipeline:
         }
         
     def print_debug_dict(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
-        """Print complete document dictionary for debug mode"""
+        """Print only new/changed data for debug mode"""
         if not self.args.debug:
             return
             
@@ -56,18 +56,107 @@ class ProcessorPipeline:
         print(f"Document ID: {doc_dict.get('id', 'Unknown')}")
         print(f"{'='*80}")
         
-        # Pretty print the entire dictionary with proper JSON formatting
-        try:
-            # Create a copy and handle non-serializable objects
-            debug_dict = self._prepare_dict_for_debug(doc_dict)
-            print(json.dumps(debug_dict, indent=2, ensure_ascii=False))
-        except Exception as e:
-            # Fallback to simple string representation
-            print(f"Error formatting debug output: {e}")
-            for key, value in doc_dict.items():
-                print(f"{key}: {str(value)[:200]}{'...' if len(str(value)) > 200 else ''}")
+        # Show only relevant data for each step
+        if "STEP 4" in step_name:
+            self._debug_step_4(doc_dict)
+        elif "STEP 5" in step_name:
+            self._debug_step_5(doc_dict)
+        elif "STEP 6" in step_name:
+            self._debug_step_6(doc_dict)
+        elif "STEP 7" in step_name:
+            self._debug_step_7(doc_dict)
+        elif "STEP 8" in step_name:
+            self._debug_step_8(doc_dict)
+        elif "STEP 9" in step_name:
+            self._debug_step_9(doc_dict)
         
         print(f"{'='*80}\n")
+    
+    def _debug_step_4(self, doc_dict: Dict[str, Any]) -> None:
+        """Show initial document structure"""
+        print("Basic Document Info:")
+        print(f"  ID: {doc_dict.get('id')}")
+        print(f"  Title: {doc_dict.get('title')}")
+        print(f"  Filename: {doc_dict.get('filename')}")
+        print(f"  Content Length: {len(doc_dict.get('content', ''))} characters")
+        
+        print("\nPaperless Metadata:")
+        pm = doc_dict.get('paperless_metadata', {})
+        print(f"  Date Created: {pm.get('date_created', {}).get('parsed')}")
+        print(f"  Correspondent: ID {pm.get('correspondent', {}).get('id')}")
+        print(f"  Document Type: ID {pm.get('document_type', {}).get('id')}")
+        print(f"  Tags: {[tag.get('id') for tag in pm.get('tags', [])]}")
+    
+    def _debug_step_5(self, doc_dict: Dict[str, Any]) -> None:
+        """Show rule evaluation results"""
+        print("Rule Evaluation Results:")
+        evaluations = doc_dict.get('rule_evaluations', [])
+        for eval_data in evaluations:
+            status = "PASS" if eval_data.get('pass') else "FAIL"
+            print(f"  {eval_data.get('rule_id')}: {eval_data.get('total_score')}/{eval_data.get('threshold')} ({status})")
+    
+    def _debug_step_6(self, doc_dict: Dict[str, Any]) -> None:
+        """Show selected winning rule"""
+        print("Selected Winning Rule:")
+        selected = doc_dict.get('selected_rule', {})
+        if selected.get('rule_id'):
+            print(f"  Rule: {selected.get('rule_name')} ({selected.get('rule_id')})")
+            print(f"  Score: {selected.get('total_score')}/{selected.get('threshold')}")
+            print(f"  Core Matches: {len(selected.get('core_matches', []))}")
+            print(f"  Bonus Matches: {len(selected.get('bonus_matches', []))}")
+        else:
+            print("  No rule selected")
+    
+    def _debug_step_7(self, doc_dict: Dict[str, Any]) -> None:
+        """Show extracted metadata"""
+        print("Extracted Metadata:")
+        content_meta = doc_dict.get('content_metadata', {})
+        filename_meta = doc_dict.get('filename_metadata', {})
+        
+        for field in ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']:
+            content_val = content_meta.get(field, {}).get('value')
+            filename_val = filename_meta.get(field, {}).get('value')
+            if content_val or filename_val:
+                print(f"  {field.title()}:")
+                if content_val:
+                    print(f"    Content: {content_val}")
+                if filename_val:
+                    print(f"    Filename: {filename_val}")
+    
+    def _debug_step_8(self, doc_dict: Dict[str, Any]) -> None:
+        """Show POCO scoring results"""
+        print("POCO Scoring Summary:")
+        poco_summary = doc_dict.get('poco_summary', {})
+        if poco_summary:
+            print(f"  Final POCO Score: {poco_summary.get('final_score', 'N/A')}")
+            print(f"  Processing Status: {poco_summary.get('status', 'Unknown')}")
+            
+            # Show field scores in a clean format
+            field_scores = poco_summary.get('field_scores', {})
+            if field_scores:
+                print("  Field Confidence Scores:")
+                for field, scores in field_scores.items():
+                    if isinstance(scores, dict):
+                        final = scores.get('final_score', 0)
+                        print(f"    {field.title()}: {final}")
+    
+    def _debug_step_9(self, doc_dict: Dict[str, Any]) -> None:
+        """Show final application results"""
+        print("Metadata Application:")
+        if self.args.dry_run:
+            print("  Mode: DRY RUN (simulated)")
+        else:
+            print("  Mode: LIVE (applied to Paperless)")
+        
+        print(f"  Document ID: {doc_dict.get('id')}")
+        print(f"  Processing Phase: {doc_dict.get('processing_info', {}).get('phase', 'Unknown')}")
+        
+        # Show flags
+        flags = doc_dict.get('flags', {})
+        print("  Processing Flags:")
+        for flag, value in flags.items():
+            status = "YES" if value else "NO"
+            print(f"    {flag}: {status}")
     
     def _prepare_dict_for_debug(self, obj: Any) -> Any:
         """Prepare dictionary for JSON serialization by handling non-serializable objects"""
