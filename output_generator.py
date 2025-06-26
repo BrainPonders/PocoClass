@@ -69,6 +69,7 @@ class OutputGenerator:
         rows = []
         
         for rule_eval in rule_evaluations:
+            status = "✅ PASS" if rule_eval.get('pass', False) else "❌ FAIL"
             rows.append([
                 rule_eval.get('rule_id', ''),
                 rule_eval.get('rule_name', '')[:30],  # Truncate long names
@@ -76,12 +77,10 @@ class OutputGenerator:
                 rule_eval.get('bonus_score', 0),
                 rule_eval.get('total_score', 0),
                 rule_eval.get('threshold', 0),
-                "PASS" if rule_eval.get('pass', False) else "FAIL"
+                status
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="grid")
-        for line in table.split('\n'):
-            print(f"    {line}")
+        print("    " + tabulate(rows, headers=headers, tablefmt="simple"))
     
     def print_metadata_comparison_table(self, doc_dict: Dict[str, Any]) -> None:
         """Print metadata comparison across sources"""
@@ -106,9 +105,7 @@ class OutputGenerator:
                 self.truncate_value(selected_val)
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="grid")
-        for line in table.split('\n'):
-            print(f"    {line}")
+        print("    " + tabulate(rows, headers=headers, tablefmt="simple"))
     
     def print_poco_scoring_table(self, doc_dict: Dict[str, Any]) -> None:
         """Print POCO scoring details"""
@@ -133,9 +130,7 @@ class OutputGenerator:
                 reason
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="grid")
-        for line in table.split('\n'):
-            print(f"    {line}")
+        print("    " + tabulate(rows, headers=headers, tablefmt="simple"))
     
     def print_rule_review_table(self, doc_dict: Dict[str, Any]) -> None:
         """Print rule review table showing confidence scoring breakdown"""
@@ -165,9 +160,7 @@ class OutputGenerator:
                 final_score_display
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="grid")
-        for line in table.split('\n'):
-            print(f"    {line}")
+        print("    " + tabulate(rows, headers=headers, tablefmt="simple"))
         
         # Add summary information
         final_poco_score = poco_summary.get('final_score', 0)
