@@ -271,7 +271,8 @@ class ProcessorPipeline:
         best_rule_eval = self.pattern_matcher.find_best_rule(rule_evaluations)
         
         if best_rule_eval:
-            doc_dict['selected_rule'] = best_rule_eval
+            # Update selected_rule with the evaluation data
+            doc_dict['selected_rule'].update(best_rule_eval)
             doc_dict['flags']['is_content_match'] = True
             
             # Get the full rule definition
@@ -297,35 +298,34 @@ class ProcessorPipeline:
         # Extract metadata from rule
         rule_metadata = self.metadata_processor.extract_metadata_from_rule(rule, content, filename)
         
-        # Store in document dictionary
-        doc_dict['content_metadata'] = self.convert_metadata_to_dict_format(rule_metadata['static'])
+        # Update content metadata with static values from rule
+        static_metadata = rule_metadata['static']
+        for field, value in static_metadata.items():
+            if field in doc_dict['content_metadata'] and value is not None:
+                doc_dict['content_metadata'][field]['value'] = value
+                doc_dict['content_metadata'][field]['score'] = 10  # Content weight
         
         # Add dynamic metadata
         dynamic_metadata = rule_metadata['dynamic']
         for field, value in dynamic_metadata.items():
-            if field in doc_dict['content_metadata']:
+            if field in doc_dict['content_metadata'] and value is not None:
                 doc_dict['content_metadata'][field]['value'] = value
                 doc_dict['content_metadata'][field]['score'] = 10  # Content weight
         
-        # Store filename metadata
-        doc_dict['filename_metadata'] = self.convert_metadata_to_dict_format(rule_metadata['filename'])
+        # Update filename metadata
+        filename_metadata = rule_metadata['filename']
+        for field, value in filename_metadata.items():
+            if field in doc_dict['filename_metadata'] and value is not None:
+                doc_dict['filename_metadata'][field]['value'] = value
+                doc_dict['filename_metadata'][field]['score'] = 5  # Filename weight
         
-        # Store weights
+        # Store weights from rule configuration
         poco_weights = rule.get('poco_weights', {})
-        doc_dict['filename_scores'] = {
-            'correspondent': poco_weights.get('filename', 5),
-            'document_type': poco_weights.get('filename', 5),
-            'tags': poco_weights.get('filename', 5),
-            'custom_fields': poco_weights.get('filename', 5),
-            'date_created': poco_weights.get('filename', 5),
-        }
-        doc_dict['paperless_scores'] = {
-            'correspondent': poco_weights.get('paperless', 3),
-            'document_type': poco_weights.get('paperless', 3),
-            'tags': poco_weights.get('paperless', 3),
-            'custom_fields': poco_weights.get('paperless', 3),
-            'date_created': poco_weights.get('paperless', 3),
-        }
+        for field in doc_dict['filename_scores']:
+            doc_dict['filename_scores'][field] = poco_weights.get('filename', 5)
+        
+        for field in doc_dict['paperless_scores']:
+            doc_dict['paperless_scores'][field] = poco_weights.get('paperless', 3)
         
         # Debug output after Step 7
         self.print_debug_dict("Step 7 - Metadata Extracted", doc_dict)

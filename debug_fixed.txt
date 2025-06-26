@@ -1,0 +1,1893 @@
+2025-06-26 22:55:43,094 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:43,095 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 22:55:43,095 - __main__ - INFO - Started at: 2025-06-26 22:55:43
+2025-06-26 22:55:43,095 - __main__ - INFO - Mode: DRY RUN
+2025-06-26 22:55:43,097 - __main__ - INFO - Verbose: True
+2025-06-26 22:55:43,099 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:43,100 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 22:55:43,115 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): paperless.erje.nl:443
+2025-06-26 22:55:43,694 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/ HTTP/1.1" 302 0
+2025-06-26 22:55:43,878 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/schema/view/ HTTP/1.1" 200 1681
+2025-06-26 22:55:43,879 - api_client - INFO - Successfully connected to Paperless API
+2025-06-26 22:55:43,880 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-26 22:55:43,881 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-26 22:55:43,888 - rule_loader - DEBUG - Loaded rule: template_001 from template.yaml
+2025-06-26 22:55:43,897 - rule_loader - DEBUG - Loaded rule: rabobank_check_592 from rabobank_check_account_592.yaml
+2025-06-26 22:55:43,897 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-26 22:55:43,898 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-26 22:55:44,114 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 22:55:44,116 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): paperless.erje.nl:80
+2025-06-26 22:55:44,334 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 22:55:44,542 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 22:55:44,746 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 22:55:44,747 - urllib3.connectionpool - DEBUG - Resetting dropped connection: paperless.erje.nl
+2025-06-26 22:55:45,158 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 22:55:45,364 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 22:55:45,598 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+2025-06-26 22:55:45,599 - api_client - DEBUG - Document 683 tags: [24, 1]
+2025-06-26 22:55:45,599 - api_client - DEBUG - Include tag ID: 1, Exclude tag ID: 40
+2025-06-26 22:55:45,599 - api_client - DEBUG - Has include: True, Has exclude: False, Should process: True
+2025-06-26 22:55:45,599 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-26 22:55:45,600 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-26 22:55:45,830 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+
+================================================================================
+DEBUG: STEP 4 - DOCUMENT DICTIONARY INITIALIZED
+Document ID: 683
+================================================================================
+{
+  "id": 683,
+  "title": "2025-05-19-NL89RABO0330689592",
+  "filename": "Unknown",
+  "raw_api_doc": {
+    "id": 683,
+    "correspondent": 1,
+    "document_type": 1,
+    "storage_path": 3,
+    "title": "2025-05-19-NL89RABO0330689592",
+    "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+    "tags": [
+      24,
+      1
+    ],
+    "created": "2025-05-19",
+    "created_date": "2025-05-19",
+    "modified": "2025-05-19T22:06:28.059439+02:00",
+    "added": "2025-05-19T22:06:19.772246+02:00",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "RA_A_NL89RABO0330689592_EUR_202504.pdf",
+    "archived_file_name": "2025-05-19 Rabobank 2025-05-19-NL89RABO0330689592.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 3,
+    "mime_type": "application/pdf"
+  },
+  "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+  "paperless_metadata": {
+    "date_created": {
+      "raw": "2025-05-19",
+      "parsed": "2025-05-19"
+    },
+    "correspondent": {
+      "id": 1,
+      "name": null
+    },
+    "document_type": {
+      "id": 1,
+      "name": null
+    },
+    "tags": [
+      {
+        "id": 24,
+        "name": "Tag_24"
+      },
+      {
+        "id": 1,
+        "name": "Tag_1"
+      }
+    ],
+    "custom_fields": []
+  },
+  "rule_evaluations": [],
+  "selected_rule": {
+    "rule_id": null,
+    "rule_name": null,
+    "core_score": null,
+    "bonus_score": null,
+    "total_score": null,
+    "threshold": null,
+    "pass": null,
+    "core_matches": [],
+    "bonus_matches": []
+  },
+  "content_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "paperless_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "poco_score_details": {
+    "correspondent": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "document_type": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "tags": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "custom_fields": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "date_created": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    }
+  },
+  "scores": {
+    "content": null,
+    "filename": null,
+    "paperless": null
+  },
+  "processing_info": {
+    "fetched_at": "2025-06-26T22:55:45.600451",
+    "phase": "data_fetching",
+    "notes": null
+  },
+  "flags": {
+    "is_content_match": null,
+    "is_filename_match": null,
+    "is_paperless_data_available": true
+  },
+  "poco_summary": {
+    "final_score": null,
+    "pass": null,
+    "winner_rule_id": null,
+    "winner_rule_name": null
+  }
+}
+================================================================================
+
+2025-06-26 22:55:45,835 - pattern_matcher - DEBUG - Evaluating rule template_001: Document Type Template
+2025-06-26 22:55:45,836 - pattern_matcher - DEBUG - Rule template_001 result: 0/70 (FAIL)
+2025-06-26 22:55:45,836 - pattern_matcher - DEBUG - Evaluating rule rabobank_check_592: Rabobank Check Account Statement
+2025-06-26 22:55:45,837 - pattern_matcher - DEBUG - Rule rabobank_check_592 result: 130/70 (PASS)
+
+================================================================================
+DEBUG: STEP 5 - RULES EVALUATED
+Document ID: 683
+================================================================================
+{
+  "id": 683,
+  "title": "2025-05-19-NL89RABO0330689592",
+  "filename": "Unknown",
+  "raw_api_doc": {
+    "id": 683,
+    "correspondent": 1,
+    "document_type": 1,
+    "storage_path": 3,
+    "title": "2025-05-19-NL89RABO0330689592",
+    "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+    "tags": [
+      24,
+      1
+    ],
+    "created": "2025-05-19",
+    "created_date": "2025-05-19",
+    "modified": "2025-05-19T22:06:28.059439+02:00",
+    "added": "2025-05-19T22:06:19.772246+02:00",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "RA_A_NL89RABO0330689592_EUR_202504.pdf",
+    "archived_file_name": "2025-05-19 Rabobank 2025-05-19-NL89RABO0330689592.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 3,
+    "mime_type": "application/pdf"
+  },
+  "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+  "paperless_metadata": {
+    "date_created": {
+      "raw": "2025-05-19",
+      "parsed": "2025-05-19"
+    },
+    "correspondent": {
+      "id": 1,
+      "name": null
+    },
+    "document_type": {
+      "id": 1,
+      "name": null
+    },
+    "tags": [
+      {
+        "id": 24,
+        "name": "Tag_24"
+      },
+      {
+        "id": 1,
+        "name": "Tag_1"
+      }
+    ],
+    "custom_fields": []
+  },
+  "rule_evaluations": [
+    {
+      "rule_id": "template_001",
+      "rule_name": "Document Type Template",
+      "core_score": 0,
+      "bonus_score": 0,
+      "total_score": 0,
+      "threshold": 70,
+      "pass": false,
+      "core_matches": [],
+      "bonus_matches": []
+    },
+    {
+      "rule_id": "rabobank_check_592",
+      "rule_name": "Rabobank Check Account Statement",
+      "core_score": 80,
+      "bonus_score": 50,
+      "total_score": 130,
+      "threshold": 70,
+      "pass": true,
+      "core_matches": [
+        {
+          "matched": true,
+          "pattern": "Rabobank",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rabobank",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Rekeningafschrift",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rekeningafschrift",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "TotaalRekening",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "TotaalRekening",
+          "match_groups": []
+        }
+      ],
+      "bonus_matches": [
+        {
+          "matched": true,
+          "pattern": "Datum tot en met",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Datum tot en met",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Afgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal afgeschreven",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Bijgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal bijgeschreven",
+          "match_groups": []
+        }
+      ]
+    }
+  ],
+  "selected_rule": {
+    "rule_id": null,
+    "rule_name": null,
+    "core_score": null,
+    "bonus_score": null,
+    "total_score": null,
+    "threshold": null,
+    "pass": null,
+    "core_matches": [],
+    "bonus_matches": []
+  },
+  "content_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "paperless_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "poco_score_details": {
+    "correspondent": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "document_type": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "tags": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "custom_fields": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "date_created": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    }
+  },
+  "scores": {
+    "content": null,
+    "filename": null,
+    "paperless": null
+  },
+  "processing_info": {
+    "fetched_at": "2025-06-26T22:55:45.600451",
+    "phase": "rule_evaluation",
+    "notes": null
+  },
+  "flags": {
+    "is_content_match": null,
+    "is_filename_match": null,
+    "is_paperless_data_available": true
+  },
+  "poco_summary": {
+    "final_score": null,
+    "pass": null,
+    "winner_rule_id": null,
+    "winner_rule_name": null
+  }
+}
+================================================================================
+
+
+================================================================================
+DEBUG: STEP 6 - WINNING RULE SELECTED
+Document ID: 683
+================================================================================
+{
+  "id": 683,
+  "title": "2025-05-19-NL89RABO0330689592",
+  "filename": "Unknown",
+  "raw_api_doc": {
+    "id": 683,
+    "correspondent": 1,
+    "document_type": 1,
+    "storage_path": 3,
+    "title": "2025-05-19-NL89RABO0330689592",
+    "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+    "tags": [
+      24,
+      1
+    ],
+    "created": "2025-05-19",
+    "created_date": "2025-05-19",
+    "modified": "2025-05-19T22:06:28.059439+02:00",
+    "added": "2025-05-19T22:06:19.772246+02:00",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "RA_A_NL89RABO0330689592_EUR_202504.pdf",
+    "archived_file_name": "2025-05-19 Rabobank 2025-05-19-NL89RABO0330689592.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 3,
+    "mime_type": "application/pdf"
+  },
+  "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+  "paperless_metadata": {
+    "date_created": {
+      "raw": "2025-05-19",
+      "parsed": "2025-05-19"
+    },
+    "correspondent": {
+      "id": 1,
+      "name": null
+    },
+    "document_type": {
+      "id": 1,
+      "name": null
+    },
+    "tags": [
+      {
+        "id": 24,
+        "name": "Tag_24"
+      },
+      {
+        "id": 1,
+        "name": "Tag_1"
+      }
+    ],
+    "custom_fields": []
+  },
+  "rule_evaluations": [
+    {
+      "rule_id": "template_001",
+      "rule_name": "Document Type Template",
+      "core_score": 0,
+      "bonus_score": 0,
+      "total_score": 0,
+      "threshold": 70,
+      "pass": false,
+      "core_matches": [],
+      "bonus_matches": []
+    },
+    {
+      "rule_id": "rabobank_check_592",
+      "rule_name": "Rabobank Check Account Statement",
+      "core_score": 80,
+      "bonus_score": 50,
+      "total_score": 130,
+      "threshold": 70,
+      "pass": true,
+      "core_matches": [
+        {
+          "matched": true,
+          "pattern": "Rabobank",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rabobank",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Rekeningafschrift",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rekeningafschrift",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "TotaalRekening",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "TotaalRekening",
+          "match_groups": []
+        }
+      ],
+      "bonus_matches": [
+        {
+          "matched": true,
+          "pattern": "Datum tot en met",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Datum tot en met",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Afgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal afgeschreven",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Bijgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal bijgeschreven",
+          "match_groups": []
+        }
+      ]
+    }
+  ],
+  "selected_rule": {
+    "rule_id": "rabobank_check_592",
+    "rule_name": "Rabobank Check Account Statement",
+    "core_score": 80,
+    "bonus_score": 50,
+    "total_score": 130,
+    "threshold": 70,
+    "pass": true,
+    "core_matches": [
+      {
+        "matched": true,
+        "pattern": "Rabobank",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rabobank",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Rekeningafschrift",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rekeningafschrift",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "TotaalRekening",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "TotaalRekening",
+        "match_groups": []
+      }
+    ],
+    "bonus_matches": [
+      {
+        "matched": true,
+        "pattern": "Datum tot en met",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Datum tot en met",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Afgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal afgeschreven",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Bijgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal bijgeschreven",
+        "match_groups": []
+      }
+    ]
+  },
+  "content_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_metadata": {
+    "correspondent": {
+      "value": null,
+      "score": null
+    },
+    "document_type": {
+      "value": null,
+      "score": null
+    },
+    "tags": {
+      "value": null,
+      "score": null
+    },
+    "custom_fields": {
+      "value": null,
+      "score": null
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "paperless_scores": {
+    "correspondent": null,
+    "document_type": null,
+    "tags": null,
+    "custom_fields": null,
+    "date_created": null
+  },
+  "poco_score_details": {
+    "correspondent": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "document_type": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "tags": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "custom_fields": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "date_created": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    }
+  },
+  "scores": {
+    "content": null,
+    "filename": null,
+    "paperless": null
+  },
+  "processing_info": {
+    "fetched_at": "2025-06-26T22:55:45.600451",
+    "phase": "rule_selection",
+    "notes": null
+  },
+  "flags": {
+    "is_content_match": true,
+    "is_filename_match": null,
+    "is_paperless_data_available": true
+  },
+  "poco_summary": {
+    "final_score": null,
+    "pass": null,
+    "winner_rule_id": null,
+    "winner_rule_name": null
+  }
+}
+================================================================================
+
+
+================================================================================
+DEBUG: STEP 7 - METADATA EXTRACTED
+Document ID: 683
+================================================================================
+{
+  "id": 683,
+  "title": "2025-05-19-NL89RABO0330689592",
+  "filename": "Unknown",
+  "raw_api_doc": {
+    "id": 683,
+    "correspondent": 1,
+    "document_type": 1,
+    "storage_path": 3,
+    "title": "2025-05-19-NL89RABO0330689592",
+    "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+    "tags": [
+      24,
+      1
+    ],
+    "created": "2025-05-19",
+    "created_date": "2025-05-19",
+    "modified": "2025-05-19T22:06:28.059439+02:00",
+    "added": "2025-05-19T22:06:19.772246+02:00",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "RA_A_NL89RABO0330689592_EUR_202504.pdf",
+    "archived_file_name": "2025-05-19 Rabobank 2025-05-19-NL89RABO0330689592.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 3,
+    "mime_type": "application/pdf"
+  },
+  "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+  "paperless_metadata": {
+    "date_created": {
+      "raw": "2025-05-19",
+      "parsed": "2025-05-19"
+    },
+    "correspondent": {
+      "id": 1,
+      "name": null
+    },
+    "document_type": {
+      "id": 1,
+      "name": null
+    },
+    "tags": [
+      {
+        "id": 24,
+        "name": "Tag_24"
+      },
+      {
+        "id": 1,
+        "name": "Tag_1"
+      }
+    ],
+    "custom_fields": []
+  },
+  "rule_evaluations": [
+    {
+      "rule_id": "template_001",
+      "rule_name": "Document Type Template",
+      "core_score": 0,
+      "bonus_score": 0,
+      "total_score": 0,
+      "threshold": 70,
+      "pass": false,
+      "core_matches": [],
+      "bonus_matches": []
+    },
+    {
+      "rule_id": "rabobank_check_592",
+      "rule_name": "Rabobank Check Account Statement",
+      "core_score": 80,
+      "bonus_score": 50,
+      "total_score": 130,
+      "threshold": 70,
+      "pass": true,
+      "core_matches": [
+        {
+          "matched": true,
+          "pattern": "Rabobank",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rabobank",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Rekeningafschrift",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rekeningafschrift",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "TotaalRekening",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "TotaalRekening",
+          "match_groups": []
+        }
+      ],
+      "bonus_matches": [
+        {
+          "matched": true,
+          "pattern": "Datum tot en met",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Datum tot en met",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Afgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal afgeschreven",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Bijgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal bijgeschreven",
+          "match_groups": []
+        }
+      ]
+    }
+  ],
+  "selected_rule": {
+    "rule_id": "rabobank_check_592",
+    "rule_name": "Rabobank Check Account Statement",
+    "core_score": 80,
+    "bonus_score": 50,
+    "total_score": 130,
+    "threshold": 70,
+    "pass": true,
+    "core_matches": [
+      {
+        "matched": true,
+        "pattern": "Rabobank",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rabobank",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Rekeningafschrift",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rekeningafschrift",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "TotaalRekening",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "TotaalRekening",
+        "match_groups": []
+      }
+    ],
+    "bonus_matches": [
+      {
+        "matched": true,
+        "pattern": "Datum tot en met",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Datum tot en met",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Afgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal afgeschreven",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Bijgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal bijgeschreven",
+        "match_groups": []
+      }
+    ]
+  },
+  "content_metadata": {
+    "correspondent": {
+      "value": "Rabobank",
+      "score": 10
+    },
+    "document_type": {
+      "value": "Bank Statement",
+      "score": 10
+    },
+    "tags": {
+      "value": [
+        "Check Account"
+      ],
+      "score": 10
+    },
+    "custom_fields": {
+      "value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "score": 10
+    },
+    "date_created": {
+      "value": "2025-04-30",
+      "score": 10
+    }
+  },
+  "filename_metadata": {
+    "correspondent": {
+      "value": "Rabobank",
+      "score": 5
+    },
+    "document_type": {
+      "value": "Bank Statement",
+      "score": 5
+    },
+    "tags": {
+      "value": [
+        "Check Account"
+      ],
+      "score": 5
+    },
+    "custom_fields": {
+      "value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "score": 5
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_scores": {
+    "correspondent": 5,
+    "document_type": 5,
+    "tags": 5,
+    "custom_fields": 5,
+    "date_created": 5
+  },
+  "paperless_scores": {
+    "correspondent": 3,
+    "document_type": 3,
+    "tags": 3,
+    "custom_fields": 3,
+    "date_created": 3
+  },
+  "poco_score_details": {
+    "correspondent": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "document_type": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "tags": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "custom_fields": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    },
+    "date_created": {
+      "content": {
+        "value": null,
+        "score": null
+      },
+      "filename": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "paperless": {
+        "value": null,
+        "score": null,
+        "match": null
+      },
+      "total": null,
+      "match_reason": null
+    }
+  },
+  "scores": {
+    "content": null,
+    "filename": null,
+    "paperless": null
+  },
+  "processing_info": {
+    "fetched_at": "2025-06-26T22:55:45.600451",
+    "phase": "metadata_extraction",
+    "notes": null
+  },
+  "flags": {
+    "is_content_match": true,
+    "is_filename_match": null,
+    "is_paperless_data_available": true
+  },
+  "poco_summary": {
+    "final_score": null,
+    "pass": null,
+    "winner_rule_id": null,
+    "winner_rule_name": null
+  }
+}
+================================================================================
+
+
+================================================================================
+DEBUG: STEP 8 - POCO SCORE CALCULATED
+Document ID: 683
+================================================================================
+{
+  "id": 683,
+  "title": "2025-05-19-NL89RABO0330689592",
+  "filename": "Unknown",
+  "raw_api_doc": {
+    "id": 683,
+    "correspondent": 1,
+    "document_type": 1,
+    "storage_path": 3,
+    "title": "2025-05-19-NL89RABO0330689592",
+    "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+    "tags": [
+      24,
+      1
+    ],
+    "created": "2025-05-19",
+    "created_date": "2025-05-19",
+    "modified": "2025-05-19T22:06:28.059439+02:00",
+    "added": "2025-05-19T22:06:19.772246+02:00",
+    "deleted_at": null,
+    "archive_serial_number": null,
+    "original_file_name": "RA_A_NL89RABO0330689592_EUR_202504.pdf",
+    "archived_file_name": "2025-05-19 Rabobank 2025-05-19-NL89RABO0330689592.pdf",
+    "owner": 3,
+    "user_can_change": true,
+    "is_shared_by_requester": false,
+    "notes": [],
+    "custom_fields": [],
+    "page_count": 3,
+    "mime_type": "application/pdf"
+  },
+  "content": "Bankcode\nRabobank Kop van Noord-Holland\n3031\n\nRekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van Datum aanmaak afschrift Blad\nR.J. van Gulik 19-05-2025 1 van 3\nBillitonstraat 47\n1782 CE DEN HELDER Datum vanaf Beginsaldo\n01-04-2025 2.563,45 CR\n\nDatum tot en met Eindsaldo\n30-04-2025 391,17 CR\n\nIBAN / Rekeningnummer BIC Totaal afgeschreven Totaal bijgeschreven\nNL89 RABO 0330 6895 92 EUR RABONL2U 2.657,39 485,11\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\n\n01-04 ei NL43 TRIO 0390 3757 64 Foodwatch Nederland 10,00\nHartelijk dank voor uw bijdrage.\nKenmerk machtiging / incassant ID:\n0330689592-06112016134608\nNL42ZZZ343703580000\nTransactiereferentie:\nP:A11875-I937264+\nVerwerkingsdatum: 01-04-2025\n\n01-04 db NL89 RABO 0330 6895 92 Rabobank 6,95\nKosten\nRabo TotaalPakket\nPeriode 01-04-2025 t/m 30-04-2025\nVerwerkingsdatum: 02-04-2025\n\n03-04 ei NL63 DEUT 0265 1880 40 AMERICAN EXPRESS EUROPE S.A. 970,68\n3753-014969-08004\nKenmerk machtiging / incassant ID:\nE2014017062358188\nNL78ZZZ332722460000\nTransactiereferentie:\n301-1040907-12930\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 148,00\nAgrisolar Societa Agricola Srl.\nElectricity April- June 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 207,20\nAgrisolar Societa Agricola Srl.\nElectricity Oct-Dec 2024\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 183,00\nAgrisolar Societa Agricola Srl.\nPlumber service\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg IT58 W010 1504 8000 0007 0225 392 786,50\nAgrisolar Societa Agricola Srl.\nRent April 2025\nVerwerkingsdatum: 03-04-2025\n\n04-04 bg NL96 RABO 0141 4964 95 De Leeuw Reizen 35,00\nOptoppen\nVerwerkingsdatum: 04-04-2025\n\n14-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij Koningsdagtrekking 27-4-2025\n. Jij maakt kans op de Kroonprijs\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\n\n\n\nCR = tegoed\nD = tekort\nBlad\nRabobank Kop van Noord-Holland\n2 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD8EC02CFDF90E4F30B125E57899F5F83D\nVerwerkingsdatum: 14-04-2025\n\n21-04 cb NL22 RABO 0330 6794 49 W. van Gulik 355,11\nKLM tickets\nVerwerkingsdatum: 21-04-2025\n\n23-04 ei NL11 BNPA 0227 7431 48 NRC 29,00\nABON 28-04-2025 t/m 27-05-2025 / NR\nC Digitaal Plus Relnr: 2201912 / IN\nCL BTW 9: EUR 2.40\nKenmerk machtiging / incassant ID:\n526341\nNL27ZZZ242806420000\nTransactiereferentie:\nNRC.I.2025.042101.1.1130298147\nVerwerkingsdatum: 23-04-2025\n\n25-04 ei NL31 ABNA 0484 8484 88 CONSUMENTENBOND 9,25\nFACT Basislidmaatschap 22.03.2025 2\n1.04.2025 Volledig en Vertrouwd 22.\n03.2025 21.04.2025 Consumentengids\npapier 22.03.2025 21.04.2025\nKenmerk machtiging / incassant ID:\n089626420001\nNL35ZZZ404094950000\nTransactiereferentie:\n20202368132025\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL89 ABNA 0243 0782 42 ARTSEN ZONDER GRENZEN 15,00\nBedankt voor uw bijdrage Periode: A\npril 2025\nKenmerk machtiging / incassant ID:\n3582729\nNL73ZZZ412159740000\nTransactiereferentie:\n9000083300039211\nVerwerkingsdatum: 25-04-2025\n\n25-04 ei NL96 DEUT 0265 2939 52 STAATSLOTERIJ BY BUCKAROO 35,00\nKenmerk STL-25289350. Inleg Staatsl\noterij trekking 10-5-2025. De 10e k\nan het gebeuren...\nKenmerk machtiging / incassant ID:\n1HAF070B9C2394F4CC391E3BFE5D98507A3\nNL39ZZZ302317620000\nTransactiereferentie:\nSDD6631E5F4E4CF4E9C85206F3F46C08A8E\nVerwerkingsdatum: 25-04-2025\n\n27-04 cc Rabobank Nederland 151,02\nKaartnummer: ****.****.****.3722 Zi\ne rekeningoverzicht 23-04-2025\nBlad\nRabobank Kop van Noord-Holland\n3 van 3\n\nvervolg Rekeningafschrift\nRabo TotaalRekening\n\n\n\nTen name van\nR.J. van Gulik\nBillitonstraat 47\n1782 CE DEN HELDER\n\n\n\n\nIBAN / Rekeningnummer Datum vanaf Datum tot en met\nNL89 RABO 0330 6895 92 EUR 01-04-2025 30-04-2025\n\nRente Type Tegenrekening Naam/omschrijving Bedrag af (debet) Bedrag bij (credit)\ndatum\n\nVerwerkingsdatum: 27-04-2025\n\n29-04 ei NL93 INGB 0007 9398 33 VODAFONE LIBERTEL BV 35,79\nKlant Nr 370418154/370418154 April\nFactuur Nr 320070157636 zie vodafon\ne.nl/my\nKenmerk machtiging / incassant ID:\n33242538M\nNL85ZZZ140522640000\nTransactiereferentie:\n154U000973998340\nVerwerkingsdatum: 29-04-2025\n\n29-04 cb FR76 3000 4003 3200 0006 0195 990 130,00\nMR SIM TECK YONG\nsmoke\nVerwerkingsdatum: 29-04-2025\n\n\nba = betaalautomaat db = diverse boekingen id = iDEAL tb = eigen rekening\nbc = betalen contactloos eb = bedrijven Euro-incasso kh = kashandeling te = terugboeking Eurobetaling\nbg = betaalopdracht ec = E-commerce ok = OmniKassa wb = wereldbetaling\nbv = Betaalverzoek ei = Euro-incasso sb = salarisbetaling\ncb = crediteurenbetaling ga = geldautomaat Euro sp = Spoedbetaling\ncc = creditcard gb = geldautomaat VV st = storno Euro-incasso",
+  "paperless_metadata": {
+    "date_created": {
+      "raw": "2025-05-19",
+      "parsed": "2025-05-19"
+    },
+    "correspondent": {
+      "id": 1,
+      "name": null
+    },
+    "document_type": {
+      "id": 1,
+      "name": null
+    },
+    "tags": [
+      {
+        "id": 24,
+        "name": "Tag_24"
+      },
+      {
+        "id": 1,
+        "name": "Tag_1"
+      }
+    ],
+    "custom_fields": []
+  },
+  "rule_evaluations": [
+    {
+      "rule_id": "template_001",
+      "rule_name": "Document Type Template",
+      "core_score": 0,
+      "bonus_score": 0,
+      "total_score": 0,
+      "threshold": 70,
+      "pass": false,
+      "core_matches": [],
+      "bonus_matches": []
+    },
+    {
+      "rule_id": "rabobank_check_592",
+      "rule_name": "Rabobank Check Account Statement",
+      "core_score": 80,
+      "bonus_score": 50,
+      "total_score": 130,
+      "threshold": 70,
+      "pass": true,
+      "core_matches": [
+        {
+          "matched": true,
+          "pattern": "Rabobank",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rabobank",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Rekeningafschrift",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Rekeningafschrift",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "TotaalRekening",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "TotaalRekening",
+          "match_groups": []
+        }
+      ],
+      "bonus_matches": [
+        {
+          "matched": true,
+          "pattern": "Datum tot en met",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Datum tot en met",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Afgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal afgeschreven",
+          "match_groups": []
+        },
+        {
+          "matched": true,
+          "pattern": "Totaal Bijgeschreven",
+          "source": "content",
+          "range": "0-600",
+          "match_text": "Totaal bijgeschreven",
+          "match_groups": []
+        }
+      ]
+    }
+  ],
+  "selected_rule": {
+    "rule_id": "rabobank_check_592",
+    "rule_name": "Rabobank Check Account Statement",
+    "core_score": 80,
+    "bonus_score": 50,
+    "total_score": 130,
+    "threshold": 70,
+    "pass": true,
+    "core_matches": [
+      {
+        "matched": true,
+        "pattern": "Rabobank",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rabobank",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Rekeningafschrift",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Rekeningafschrift",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "TotaalRekening",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "TotaalRekening",
+        "match_groups": []
+      }
+    ],
+    "bonus_matches": [
+      {
+        "matched": true,
+        "pattern": "Datum tot en met",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Datum tot en met",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Afgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal afgeschreven",
+        "match_groups": []
+      },
+      {
+        "matched": true,
+        "pattern": "Totaal Bijgeschreven",
+        "source": "content",
+        "range": "0-600",
+        "match_text": "Totaal bijgeschreven",
+        "match_groups": []
+      }
+    ]
+  },
+  "content_metadata": {
+    "correspondent": {
+      "value": "Rabobank",
+      "score": 10
+    },
+    "document_type": {
+      "value": "Bank Statement",
+      "score": 10
+    },
+    "tags": {
+      "value": [
+        "Check Account"
+      ],
+      "score": 10
+    },
+    "custom_fields": {
+      "value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "score": 10
+    },
+    "date_created": {
+      "value": "2025-04-30",
+      "score": 10
+    }
+  },
+  "filename_metadata": {
+    "correspondent": {
+      "value": "Rabobank",
+      "score": 5
+    },
+    "document_type": {
+      "value": "Bank Statement",
+      "score": 5
+    },
+    "tags": {
+      "value": [
+        "Check Account"
+      ],
+      "score": 5
+    },
+    "custom_fields": {
+      "value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "score": 5
+    },
+    "date_created": {
+      "value": null,
+      "score": null
+    }
+  },
+  "filename_scores": {
+    "correspondent": 5,
+    "document_type": 5,
+    "tags": 5,
+    "custom_fields": 5,
+    "date_created": 5
+  },
+  "paperless_scores": {
+    "correspondent": 3,
+    "document_type": 3,
+    "tags": 3,
+    "custom_fields": 3,
+    "date_created": 3
+  },
+  "poco_score_details": {
+    "correspondent": {
+      "field": "correspondent",
+      "rule_score": 130,
+      "filename_score": 5,
+      "paperless_score": 0,
+      "final_score": 135,
+      "content_value": "Rabobank",
+      "filename_value": "Rabobank",
+      "paperless_value": null,
+      "passes_threshold": true
+    },
+    "document_type": {
+      "field": "document_type",
+      "rule_score": 130,
+      "filename_score": 5,
+      "paperless_score": 0,
+      "final_score": 135,
+      "content_value": "Bank Statement",
+      "filename_value": "Bank Statement",
+      "paperless_value": null,
+      "passes_threshold": true
+    },
+    "date_created": {
+      "field": "date_created",
+      "rule_score": 130,
+      "filename_score": 0,
+      "paperless_score": -3,
+      "final_score": 127,
+      "content_value": "2025-04-30",
+      "filename_value": null,
+      "paperless_value": "2025-05-19",
+      "passes_threshold": true
+    },
+    "tags": {
+      "field": "tags",
+      "rule_score": 130,
+      "filename_score": 5,
+      "paperless_score": -3,
+      "final_score": 132,
+      "content_value": [
+        "Check Account"
+      ],
+      "filename_value": [
+        "Check Account"
+      ],
+      "paperless_value": [
+        {
+          "id": 24,
+          "name": "Tag_24"
+        },
+        {
+          "id": 1,
+          "name": "Tag_1"
+        }
+      ],
+      "passes_threshold": true
+    },
+    "custom_fields": {
+      "field": "custom_fields",
+      "rule_score": 130,
+      "filename_score": 5,
+      "paperless_score": 0,
+      "final_score": 135,
+      "content_value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "filename_value": [
+        {
+          "name": "Document Category",
+          "value": "FINANCE"
+        }
+      ],
+      "paperless_value": [],
+      "passes_threshold": true
+    }
+  },
+  "scores": {
+    "content": 130,
+    "filename": 25,
+    "paperless": 15
+  },
+  "processing_info": {
+    "fetched_at": "2025-06-26T22:55:45.600451",
+    "phase": "poco_scoring",
+    "notes": null
+  },
+  "flags": {
+    "is_content_match": true,
+    "is_filename_match": null,
+    "is_paperless_data_available": true
+  },
+  "poco_summary": {
+    "final_score": 127,
+    "pass": true,
+    "should_continue_processing": true,
+    "details": {
+      "correspondent": {
+        "field": "correspondent",
+        "rule_score": 130,
+        "filename_score": 5,
+        "paperless_score": 0,
+        "final_score": 135,
+        "content_value": "Rabobank",
+        "filename_value": "Rabobank",
+        "paperless_value": null,
+        "passes_threshold": true
+      },
+      "document_type": {
+        "field": "document_type",
+        "rule_score": 130,
+        "filename_score": 5,
+        "paperless_score": 0,
+        "final_score": 135,
+        "content_value": "Bank Statement",
+        "filename_value": "Bank Statement",
+        "paperless_value": null,
+        "passes_threshold": true
+      },
+      "date_created": {
+        "field": "date_created",
+        "rule_score": 130,
+        "filename_score": 0,
+        "paperless_score": -3,
+        "final_score": 127,
+        "content_value": "2025-04-30",
+        "filename_value": null,
+        "paperless_value": "2025-05-19",
+        "passes_threshold": true
+      },
+      "tags": {
+        "field": "tags",
+        "rule_score": 130,
+        "filename_score": 5,
+        "paperless_score": -3,
+        "final_score": 132,
+        "content_value": [
+          "Check Account"
+        ],
+        "filename_value": [
+          "Check Account"
+        ],
+        "paperless_value": [
+          {
+            "id": 24,
+            "name": "Tag_24"
+          },
+          {
+            "id": 1,
+            "name": "Tag_1"
+          }
+        ],
+        "passes_threshold": true
+      },
+      "custom_fields": {
+        "field": "custom_fields",
+        "rule_score": 130,
+        "filename_score": 5,
+        "paperless_score": 0,
+        "final_score": 135,
+        "content_value": [
+          {
+            "name": "Document Category",
+            "value": "FINANCE"
+          }
+        ],
+        "filename_value": [
+          {
+            "name": "Document Category",
+            "value": "FINANCE"
+          }
+        ],
+        "paperless_value": [],
+        "passes_threshold": true
+      }
+    },
+    "rule_score": 130,
+    "rule_threshold": 70
+  }
+}
+================================================================================
+
+2025-06-26 22:55:45,842 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+[DRY RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (130/70)
+  POCO Score: 127% (PASS)
+  ============================================================
+  Rule Evaluations:
+    +--------------------+--------------------------------+--------+---------+---------+-------------+----------+
+    | Rule ID            | Rule Name                      |   Core |   Bonus |   Total |   Threshold | Result   |
+    +====================+================================+========+=========+=========+=============+==========+
+    | template_001       | Document Type Template         |      0 |       0 |       0 |          70 | FAIL     |
+    +--------------------+--------------------------------+--------+---------+---------+-------------+----------+
+    | rabobank_check_592 | Rabobank Check Account Stateme |     80 |      50 |     130 |          70 | PASS     |
+    +--------------------+--------------------------------+--------+---------+---------+-------------+----------+
+  Metadata Comparison:
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+    | Field         | Content                   | Filename                  | Paperless                 | Selected                  |
+    +===============+===========================+===========================+===========================+===========================+
+    | Correspondent | Rabobank                  | Rabobank                  |                           | Rabobank                  |
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+    | Document Type | Bank Statement            | Bank Statement            |                           | Bank Statement            |
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+    | Date Created  | 2025-04-30                |                           | 2025-05-19                | 2025-04-30                |
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+    | Tags          | ['Check Account']         | ['Check Account']         | {'id': 24, 'name': 'Ta... | ['Check Account']         |
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+    | Custom Fields | [{'name': 'Document Ca... | [{'name': 'Document Ca... |                           | [{'name': 'Document Ca... |
+    +---------------+---------------------------+---------------------------+---------------------------+---------------------------+
+  Rule Review - Confidence Scoring:
+    +---------------+--------------+------------------+-------------------+---------------+
+    | Metadata      |   Rule Score |   Filename Score |   Paperless Score |   Final Score |
+    +===============+==============+==================+===================+===============+
+    | Correspondent |          130 |                5 |                 0 |           135 |
+    +---------------+--------------+------------------+-------------------+---------------+
+    | Document Type |          130 |                5 |                 0 |           135 |
+    +---------------+--------------+------------------+-------------------+---------------+
+    | Date Created  |          130 |                0 |                -3 |           127 |
+    +---------------+--------------+------------------+-------------------+---------------+
+    | Tags          |          130 |                5 |                -3 |           132 |
+    +---------------+--------------+------------------+-------------------+---------------+
+    | Custom Fields |          130 |                5 |                 0 |           135 |
+    +---------------+--------------+------------------+-------------------+---------------+
+    Final POCO Score: 127 (Lowest final score)
+    Rule Threshold: 70
+    Processing Status: CONTINUE
+  POCO Scoring Details:
+    +---------------+-----------+------------+-------------+---------+----------+
+    | Field         |   Content |   Filename |   Paperless |   Total | Reason   |
+    +===============+===========+============+=============+=========+==========+
+    | Correspondent |         0 |          0 |           0 |       0 | none     |
+    +---------------+-----------+------------+-------------+---------+----------+
+    | Document Type |         0 |          0 |           0 |       0 | none     |
+    +---------------+-----------+------------+-------------+---------+----------+
+    | Date Created  |         0 |          0 |           0 |       0 | none     |
+    +---------------+-----------+------------+-------------+---------+----------+
+    | Tags          |         0 |          0 |           0 |       0 | none     |
+    +---------------+-----------+------------+-------------+---------+----------+
+    | Custom Fields |         0 |          0 |           0 |       0 | none     |
+    +---------------+-----------+------------+-------------+---------+----------+
+  ============================================================
+
+================================================================================
+PROCESSING SUMMARY
+================================================================================
+Total Documents Found: 1
+Documents Processed: 1
+Documents Matched: 1
+POCO Score Passed: 1
+Match Rate: 100.0%
+POCO Pass Rate: 100.0%
+
+Rule Usage:
+  Rabobank Check Account Statement: 1 documents
+
+Processing Time: 2.75 seconds
+================================================================================
+2025-06-26 22:55:45,849 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:45,849 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-26 22:55:45,850 - __main__ - INFO - ================================================================================

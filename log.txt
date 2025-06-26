@@ -630,3 +630,54 @@ Processing Time: 2.29s
 2025-06-26 22:49:09,375 - __main__ - INFO - ================================================================================
 2025-06-26 22:49:09,375 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
 2025-06-26 22:49:09,376 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:43,094 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:43,095 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 22:55:43,095 - __main__ - INFO - Started at: 2025-06-26 22:55:43
+2025-06-26 22:55:43,095 - __main__ - INFO - Mode: DRY RUN
+2025-06-26 22:55:43,097 - __main__ - INFO - Verbose: True
+2025-06-26 22:55:43,099 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:43,100 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 22:55:43,115 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): paperless.erje.nl:443
+2025-06-26 22:55:43,694 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/ HTTP/1.1" 302 0
+2025-06-26 22:55:43,878 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/schema/view/ HTTP/1.1" 200 1681
+2025-06-26 22:55:43,879 - api_client - INFO - Successfully connected to Paperless API
+2025-06-26 22:55:43,880 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-26 22:55:43,881 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-26 22:55:43,888 - rule_loader - DEBUG - Loaded rule: template_001 from template.yaml
+2025-06-26 22:55:43,897 - rule_loader - DEBUG - Loaded rule: rabobank_check_592 from rabobank_check_account_592.yaml
+2025-06-26 22:55:43,897 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-26 22:55:43,898 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-26 22:55:44,114 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 22:55:44,116 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): paperless.erje.nl:80
+2025-06-26 22:55:44,334 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 22:55:44,542 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 22:55:44,746 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 22:55:44,747 - urllib3.connectionpool - DEBUG - Resetting dropped connection: paperless.erje.nl
+2025-06-26 22:55:45,158 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 22:55:45,364 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 22:55:45,598 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+2025-06-26 22:55:45,599 - api_client - DEBUG - Document 683 tags: [24, 1]
+2025-06-26 22:55:45,599 - api_client - DEBUG - Include tag ID: 1, Exclude tag ID: 40
+2025-06-26 22:55:45,599 - api_client - DEBUG - Has include: True, Has exclude: False, Should process: True
+2025-06-26 22:55:45,599 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-26 22:55:45,600 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-26 22:55:45,830 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+2025-06-26 22:55:45,835 - pattern_matcher - DEBUG - Evaluating rule template_001: Document Type Template
+2025-06-26 22:55:45,836 - pattern_matcher - DEBUG - Rule template_001 result: 0/70 (FAIL)
+2025-06-26 22:55:45,836 - pattern_matcher - DEBUG - Evaluating rule rabobank_check_592: Rabobank Check Account Statement
+2025-06-26 22:55:45,837 - pattern_matcher - DEBUG - Rule rabobank_check_592 result: 130/70 (PASS)
+2025-06-26 22:55:45,842 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-26 22:55:45 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (130/70)
+  POCO Score: 127% (PASS)
+
+2025-06-26 22:55:45 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 2.75s
+--------------------------------------------------
+2025-06-26 22:55:45,849 - __main__ - INFO - ================================================================================
+2025-06-26 22:55:45,849 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-26 22:55:45,850 - __main__ - INFO - ================================================================================
