@@ -36,16 +36,21 @@ class PaperlessAPIClient:
     def get_tag_id(self, tag_name: str) -> Optional[int]:
         """Get tag ID by name, create if doesn't exist"""
         try:
-            # First try to find existing tag
-            response = self.session.get(
-                f"{self.config.paperless_url}/api/tags/",
-                params={'name': tag_name}
-            )
-            response.raise_for_status()
+            # Get all tags with pagination and search by name
+            all_tags = []
+            url = f"{self.config.paperless_url}/api/tags/"
             
-            results = response.json().get('results', [])
-            if results:
-                return results[0]['id']
+            while url:
+                response = self.session.get(url)
+                response.raise_for_status()
+                data = response.json()
+                all_tags.extend(data.get('results', []))
+                url = data.get('next')
+            
+            # Search for existing tag
+            for tag in all_tags:
+                if tag['name'] == tag_name:
+                    return tag['id']
             
             # Create tag if it doesn't exist
             response = self.session.post(
@@ -179,7 +184,16 @@ class PaperlessAPIClient:
                         doc_tag_ids.append(tag['id'])
                     else:
                         doc_tag_ids.append(tag)  # Tag is already an ID
-                if include_tag_id in doc_tag_ids and (not exclude_tag_id or exclude_tag_id not in doc_tag_ids):
+                
+                # Debug logging
+                self.logger.debug(f"Document {document_id} tags: {doc_tag_ids}")
+                self.logger.debug(f"Include tag ID: {include_tag_id}, Exclude tag ID: {exclude_tag_id}")
+                has_include = include_tag_id in doc_tag_ids
+                has_exclude = exclude_tag_id and exclude_tag_id in doc_tag_ids
+                should_process = has_include and not has_exclude
+                self.logger.debug(f"Has include: {has_include}, Has exclude: {has_exclude}, Should process: {should_process}")
+                
+                if should_process:
                     return [doc]
                 else:
                     self.logger.warning(f"Document {document_id} does not match filter criteria")
