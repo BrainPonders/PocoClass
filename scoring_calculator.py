@@ -1,0 +1,249 @@
+"""
+POCO Scoring Calculator
+Calculates confidence scores for metadata across different sources
+"""
+
+import logging
+from typing import Dict, List, Any, Optional, Tuple
+
+class ScoringCalculator:
+    """Calculates POCO scores for metadata confidence"""
+    
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+    
+    def calculate_poco_score(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate POCO score for a document based on metadata agreement"""
+        
+        # Get weights from rule
+        poco_weights = rule.get('poco_weights', {})
+        content_weight = 10  # Content is always most reliable
+        filename_weight = poco_weights.get('filename', 5)
+        paperless_weight = poco_weights.get('paperless', 3)
+        
+        # Fields to score
+        fields_to_score = ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']
+        
+        poco_details = {}
+        total_score = 0
+        max_possible_score = 0
+        
+        for field in fields_to_score:
+            field_score = self.calculate_field_score(
+                doc_dict, field, content_weight, filename_weight, paperless_weight
+            )
+            poco_details[field] = field_score
+            total_score += field_score['total']
+            max_possible_score += content_weight + filename_weight + paperless_weight
+        
+        # Calculate final percentage score
+        final_score = int((total_score / max_possible_score) * 100) if max_possible_score > 0 else 0
+        
+        # Determine if it passes the threshold
+        poco_threshold = rule.get('poco_threshold', 60)
+        passes = final_score >= poco_threshold
+        
+        # Update document dictionary
+        doc_dict['poco_score_details'] = poco_details
+        doc_dict['poco_summary'] = {
+            'final_score': final_score,
+            'pass': passes,
+            'winner_rule_id': rule.get('rule_id'),
+            'winner_rule_name': rule.get('rule_name')
+        }
+        
+        return {
+            'final_score': final_score,
+            'pass': passes,
+            'details': poco_details,
+            'total_score': total_score,
+            'max_possible_score': max_possible_score
+        }
+    
+    def calculate_field_score(self, doc_dict: Dict[str, Any], field: str, 
+                            content_weight: int, filename_weight: int, paperless_weight: int) -> Dict[str, Any]:
+        """Calculate score for a specific metadata field"""
+        
+        # Get values from different sources
+        content_value = self.get_field_value(doc_dict.get('content_metadata', {}), field)
+        filename_value = self.get_field_value(doc_dict.get('filename_metadata', {}), field)
+        paperless_value = self.get_field_value(doc_dict.get('paperless_metadata', {}), field)
+        
+        # Initialize scores
+        content_score = content_weight if content_value else 0
+        filename_score = 0
+        paperless_score = 0
+        
+        # Calculate filename score based on match with content
+        if filename_value:
+            if self.values_match(content_value, filename_value, field):
+                filename_score = filename_weight
+        
+        # Calculate paperless score based on match with content
+        if paperless_value:
+            if self.values_match(content_value, paperless_value, field):
+                paperless_score = paperless_weight
+        
+        # Determine best match and reason
+        total_score = content_score + filename_score + paperless_score
+        match_reason = self.determine_match_reason(
+            content_value, filename_value, paperless_value, 
+            content_score, filename_score, paperless_score
+        )
+        
+        return {
+            'content': {
+                'value': content_value,
+                'score': content_score
+            },
+            'filename': {
+                'value': filename_value,
+                'score': filename_score,
+                'match': self.values_match(content_value, filename_value, field) if filename_value else None
+            },
+            'paperless': {
+                'value': paperless_value,
+                'score': paperless_score,
+                'match': self.values_match(content_value, paperless_value, field) if paperless_value else None
+            },
+            'total': total_score,
+            'match_reason': match_reason
+        }
+    
+    def get_field_value(self, metadata: Dict[str, Any], field: str) -> Any:
+        """Extract field value from metadata structure"""
+        if field not in metadata:
+            return None
+        
+        field_data = metadata[field]
+        
+        if isinstance(field_data, dict):
+            # For structured data like {'value': ..., 'score': ...}
+            if 'value' in field_data:
+                return field_data['value']
+            # For data like {'name': ..., 'id': ...}
+            elif 'name' in field_data:
+                return field_data['name']
+            # For parsed date data
+            elif 'parsed' in field_data:
+                return field_data['parsed']
+        
+        return field_data
+    
+    def values_match(self, value1: Any, value2: Any, field: str) -> bool:
+        """Check if two values match for a specific field"""
+        if value1 is None or value2 is None:
+            return False
+        
+        # Handle different field types
+        if field in ['correspondent', 'document_type', 'date_created']:
+            # Simple string comparison
+            return str(value1).lower() == str(value2).lower()
+        
+        elif field == 'tags':
+            # For tags, check if lists have common elements
+            if isinstance(value1, list) and isinstance(value2, list):
+                set1 = {str(tag).lower() for tag in value1}
+                set2 = {str(tag).lower() for tag in value2}
+                return len(set1.intersection(set2)) > 0
+            return False
+        
+        elif field == 'custom_fields':
+            # For custom fields, check if dictionaries have common key-value pairs
+            if isinstance(value1, list) and isinstance(value2, list):
+                # Convert to dictionaries for comparison
+                dict1 = self.custom_fields_to_dict(value1)
+                dict2 = self.custom_fields_to_dict(value2)
+                
+                if not dict1 or not dict2:
+                    return False
+                
+                # Check for common key-value pairs
+                for key, val in dict1.items():
+                    if key in dict2 and str(val).lower() == str(dict2[key]).lower():
+                        return True
+                return False
+            elif isinstance(value1, dict) and isinstance(value2, dict):
+                # Direct dictionary comparison
+                for key, val in value1.items():
+                    if key in value2 and str(val).lower() == str(value2[key]).lower():
+                        return True
+                return False
+            return False
+        
+        # Default comparison
+        return str(value1).lower() == str(value2).lower()
+    
+    def custom_fields_to_dict(self, custom_fields: List[Dict[str, Any]]) -> Dict[str, str]:
+        """Convert custom fields list to dictionary"""
+        result = {}
+        for field in custom_fields:
+            if isinstance(field, dict):
+                name = field.get('name', '')
+                value = field.get('value', '')
+                if name:
+                    result[name] = value
+        return result
+    
+    def determine_match_reason(self, content_value: Any, filename_value: Any, paperless_value: Any,
+                              content_score: int, filename_score: int, paperless_score: int) -> str:
+        """Determine the reason for the match/score"""
+        reasons = []
+        
+        if content_score > 0:
+            reasons.append("content")
+        
+        if filename_score > 0:
+            reasons.append("filename_match")
+        
+        if paperless_score > 0:
+            reasons.append("paperless_match")
+        
+        if not reasons:
+            return "no_match"
+        
+        return "+".join(reasons)
+    
+    def create_score_summary(self, doc_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a summary of all scores for the document"""
+        poco_summary = doc_dict.get('poco_summary', {})
+        selected_rule = doc_dict.get('selected_rule', {})
+        
+        return {
+            'document_id': doc_dict.get('id'),
+            'document_title': doc_dict.get('title'),
+            'rule_match': {
+                'rule_id': selected_rule.get('rule_id'),
+                'rule_name': selected_rule.get('rule_name'),
+                'core_score': selected_rule.get('core_score', 0),
+                'bonus_score': selected_rule.get('bonus_score', 0),
+                'total_score': selected_rule.get('total_score', 0),
+                'threshold': selected_rule.get('threshold', 0),
+                'pass': selected_rule.get('pass', False)
+            },
+            'poco_score': {
+                'final_score': poco_summary.get('final_score', 0),
+                'pass': poco_summary.get('pass', False)
+            },
+            'metadata_confidence': self.calculate_metadata_confidence(doc_dict)
+        }
+    
+    def calculate_metadata_confidence(self, doc_dict: Dict[str, Any]) -> Dict[str, str]:
+        """Calculate confidence level for each metadata field"""
+        poco_details = doc_dict.get('poco_score_details', {})
+        confidence = {}
+        
+        for field, details in poco_details.items():
+            total_score = details.get('total', 0)
+            max_score = 18  # 10 (content) + 5 (filename) + 3 (paperless) - default weights
+            
+            if total_score >= max_score * 0.8:
+                confidence[field] = "high"
+            elif total_score >= max_score * 0.5:
+                confidence[field] = "medium"
+            elif total_score > 0:
+                confidence[field] = "low"
+            else:
+                confidence[field] = "none"
+        
+        return confidence
