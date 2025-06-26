@@ -5,6 +5,7 @@ Main processing pipeline that orchestrates all steps
 
 import logging
 import time
+import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
@@ -33,7 +34,7 @@ class ProcessorPipeline:
         self.scoring_calculator = ScoringCalculator()
         self.output_generator = OutputGenerator(args.verbose, args.debug)
         
-        # Results tracking
+        # Initialize results tracking
         self.results = {
             'total_documents': 0,
             'processed_documents': 0,
@@ -44,6 +45,44 @@ class ProcessorPipeline:
             'processing_time': 0,
             'errors': []
         }
+        
+    def print_debug_dict(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
+        """Print complete document dictionary for debug mode"""
+        if not self.args.debug:
+            return
+            
+        print(f"\n{'='*80}")
+        print(f"DEBUG: {step_name.upper()}")
+        print(f"Document ID: {doc_dict.get('id', 'Unknown')}")
+        print(f"{'='*80}")
+        
+        # Pretty print the entire dictionary with proper JSON formatting
+        try:
+            # Create a copy and handle non-serializable objects
+            debug_dict = self._prepare_dict_for_debug(doc_dict)
+            print(json.dumps(debug_dict, indent=2, ensure_ascii=False))
+        except Exception as e:
+            # Fallback to simple string representation
+            print(f"Error formatting debug output: {e}")
+            for key, value in doc_dict.items():
+                print(f"{key}: {str(value)[:200]}{'...' if len(str(value)) > 200 else ''}")
+        
+        print(f"{'='*80}\n")
+    
+    def _prepare_dict_for_debug(self, obj: Any) -> Any:
+        """Prepare dictionary for JSON serialization by handling non-serializable objects"""
+        if isinstance(obj, dict):
+            return {key: self._prepare_dict_for_debug(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self._prepare_dict_for_debug(item) for item in obj]
+        elif hasattr(obj, 'isoformat'):  # datetime objects
+            return obj.isoformat()
+        elif isinstance(obj, (str, int, float, bool, type(None))):
+            return obj
+        else:
+            return str(obj)
+    
+
     
     def execute(self) -> Dict[str, Any]:
         """Execute the complete processing pipeline"""
@@ -185,9 +224,14 @@ class ProcessorPipeline:
         doc_dict['processing_info']['phase'] = 'data_fetching'
         
         # Fetch OCR content
-        content = self.api_client.get_document_content(doc_dict['id'])
+        document_id = doc_dict.get('id')
+        if document_id is None:
+            self.logger.error("Document ID is None, cannot fetch content")
+            return None
+            
+        content = self.api_client.get_document_content(int(document_id))
         if content is None:
-            self.logger.error(f"Failed to fetch content for document {doc_dict['id']}")
+            self.logger.error(f"Failed to fetch content for document {document_id}")
             return None
         
         doc_dict['content'] = content
@@ -195,6 +239,9 @@ class ProcessorPipeline:
         # Process Paperless metadata
         doc_dict['paperless_metadata'] = self.metadata_processor.process_paperless_metadata(raw_doc)
         doc_dict['flags']['is_paperless_data_available'] = True
+        
+        # Debug output after Step 4
+        self.print_debug_dict("Step 4 - Document Dictionary Initialized", doc_dict)
         
         return doc_dict
     
@@ -212,6 +259,9 @@ class ProcessorPipeline:
             rule_evaluations.append(evaluation)
         
         doc_dict['rule_evaluations'] = rule_evaluations
+        
+        # Debug output after Step 5
+        self.print_debug_dict("Step 5 - Rules Evaluated", doc_dict)
     
     def select_winning_rule(self, doc_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Step 6: Select the best matching rule"""
@@ -226,8 +276,15 @@ class ProcessorPipeline:
             
             # Get the full rule definition
             rule_id = best_rule_eval['rule_id']
-            return self.rule_loader.get_rule(rule_id)
+            rule = self.rule_loader.get_rule(rule_id)
+            
+            # Debug output after Step 6
+            self.print_debug_dict("Step 6 - Winning Rule Selected", doc_dict)
+            
+            return rule
         
+        # Debug output for no rule found
+        self.print_debug_dict("Step 6 - No Winning Rule Found", doc_dict)
         return None
     
     def extract_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> None:
@@ -269,6 +326,9 @@ class ProcessorPipeline:
             'custom_fields': poco_weights.get('paperless', 3),
             'date_created': poco_weights.get('paperless', 3),
         }
+        
+        # Debug output after Step 7
+        self.print_debug_dict("Step 7 - Metadata Extracted", doc_dict)
     
     def convert_metadata_to_dict_format(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Convert metadata to the document dictionary format"""
@@ -299,6 +359,12 @@ class ProcessorPipeline:
             'filename': sum(doc_dict.get('filename_scores', {}).values()),
             'paperless': sum(doc_dict.get('paperless_scores', {}).values()),
         }
+        
+        # Store POCO results
+        doc_dict['poco_summary'] = poco_result
+        
+        # Debug output after Step 8
+        self.print_debug_dict("Step 8 - POCO Score Calculated", doc_dict)
     
     def apply_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> None:
         """Step 9: Apply metadata to Paperless (or simulate)"""
@@ -349,6 +415,9 @@ class ProcessorPipeline:
             self.logger.info(f"Successfully updated document {doc_dict['id']}")
         else:
             self.logger.error(f"Failed to update document {doc_dict['id']}")
+        
+        # Debug output after Step 9
+        self.print_debug_dict("Step 9 - Metadata Applied (or Simulated)", doc_dict)
     
     def prepare_final_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> Dict[str, Any]:
         """Prepare final metadata for application based on POCO scoring"""
