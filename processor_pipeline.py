@@ -72,6 +72,51 @@ class ProcessorPipeline:
         
         print(f"{'='*80}\n")
     
+    def print_debug_raw(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
+        """Print raw dictionary structure with clean formatting"""
+        print(f"{'='*80}")
+        print(f"DEBUG RAW: {step_name.upper()}")
+        print(f"Document ID: {doc_dict.get('id', 'Unknown')}")
+        print(f"{'='*80}")
+        
+        # Format dictionary with clean indentation
+        self._print_dict_clean(doc_dict, indent=0)
+        print(f"{'='*80}\n")
+    
+    def _print_dict_clean(self, obj: Any, indent: int = 0, printed_keys: set = None) -> None:
+        """Print dictionary structure with clean formatting, avoiding duplicate keys"""
+        if printed_keys is None:
+            printed_keys = set()
+        
+        spaces = "  " * indent
+        
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key in printed_keys:
+                    continue
+                printed_keys.add(key)
+                
+                if isinstance(value, (dict, list)):
+                    print(f'{spaces}"{key}": {{' if isinstance(value, dict) else f'{spaces}"{key}": [')
+                    self._print_dict_clean(value, indent + 1, printed_keys)
+                    print(f'{spaces}}}' if isinstance(value, dict) else f'{spaces}]')
+                elif isinstance(value, str):
+                    print(f'{spaces}"{key}": "{value}"')
+                elif isinstance(value, bool):
+                    print(f'{spaces}"{key}": {str(value).lower()}')
+                elif value is None:
+                    print(f'{spaces}"{key}": null')
+                else:
+                    print(f'{spaces}"{key}": {value}')
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                if isinstance(item, (dict, list)):
+                    print(f'{spaces}{{' if isinstance(item, dict) else f'{spaces}[')
+                    self._print_dict_clean(item, indent + 1, printed_keys)
+                    print(f'{spaces}}}' if isinstance(item, dict) else f'{spaces}]')
+                else:
+                    print(f'{spaces}{item}')
+    
     def _debug_step_4(self, doc_dict: Dict[str, Any]) -> None:
         """Show initial document structure"""
         print("Basic Document Info:")
@@ -267,11 +312,15 @@ class ProcessorPipeline:
             return
         if self.args.debug:
             self.print_debug_dict("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
         
         # Step 5: Evaluate rules
         self.evaluate_rules(doc_dict, rules)
         if self.args.debug:
             self.print_debug_dict("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
         
         # Step 6: Select winning rule
         winning_rule = self.select_winning_rule(doc_dict)
@@ -282,21 +331,29 @@ class ProcessorPipeline:
             return
         if self.args.debug:
             self.print_debug_dict("STEP 6 - WINNING RULE SELECTED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 6 - WINNING RULE SELECTED", doc_dict)
         
         # Step 7: Extract metadata from winning rule
         self.extract_metadata(doc_dict, winning_rule)
         if self.args.debug:
             self.print_debug_dict("STEP 7 - METADATA EXTRACTED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 7 - METADATA EXTRACTED", doc_dict)
         
         # Step 8: Calculate POCO score
         self.calculate_poco_score(doc_dict, winning_rule)
         if self.args.debug:
             self.print_debug_dict("STEP 8 - POCO SCORES CALCULATED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 8 - POCO SCORES CALCULATED", doc_dict)
         
         # Step 9: Apply metadata (or simulate)
         self.apply_metadata(doc_dict, winning_rule)
         if self.args.debug:
             self.print_debug_dict("STEP 9 - METADATA APPLIED", doc_dict)
+        elif self.args.debug_raw:
+            self.print_debug_raw("STEP 9 - METADATA APPLIED", doc_dict)
         
         # Update results
         self.results['processed_documents'] += 1
