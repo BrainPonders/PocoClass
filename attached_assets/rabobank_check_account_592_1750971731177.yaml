@@ -1,0 +1,100 @@
+# -------------------------------------------------------------------------------------------------
+# Filename: rabobank_check_account
+#
+# Description:
+# This rule identifies and classifies Rabobank checking account statements.
+# Core identifiers include bank name, document type markers, and IBAN pattern.
+# Metadata such as correspondent, type, tags, and custom fields are extracted accordingly.
+#
+# version: 1.1
+# Created: 2025-06-06
+# history:
+#  - 1.0: Initial rule for Rabobank Check Account created with core and bonus identifiers, 
+#         metadata extraction, and POCO scoring weights.
+#  - 1.1: Restructured to follow template.yaml logic_groups format
+# -------------------------------------------------------------------------------------------------
+rule_name: "Rabobank Check Account Statement"
+rule_id: "rabobank_check_592"
+threshold: 70  # Minimum core score required for rule match
+
+# 4 core identifiers for Rabobank Check Account with max score of 100%
+core_identifiers:
+  logic_groups:
+    - type: "match"
+      score: 30
+      conditions:
+        - pattern: "Rabobank"
+          source: "content"
+          range: "0-600"
+    - type: "match"
+      score: 30
+      conditions:
+        - pattern: "Rekeningafschrift"
+          source: "content"
+          range: "0-600"
+    - type: "match"
+      score: 20
+      conditions:
+        - pattern: "TotaalRekening"
+          source: "content"
+          range: "0-600"
+    - type: "match"
+      score: 20
+      conditions:
+        - pattern: "NL89 ?RABO[0-9\\s]{7,9}592"
+          source: "content"
+          range: "0-600"
+
+# 4 bonus identifiers for Rabobank Check Account adding 10% each
+bonus_identifiers:
+  logic_groups:
+    - type: "or"
+      score: 20
+      conditions:
+        - pattern: "Datum tot en met"
+          source: "content"
+          range: "0-600"
+        - pattern: "Nieuw Afschrift"
+          source: "content"
+          range: "0-600"
+    - type: "match"
+      score: 20
+      conditions:
+        - pattern: "Totaal Afgeschreven"
+          source: "content"
+          range: "0-600"
+    - type: "match"
+      score: 10
+      conditions:
+        - pattern: "Totaal Bijgeschreven"
+          source: "content"
+          range: "0-600"
+
+static_metadata:
+  correspondent: "Rabobank"
+  document_type: "Bank Statement"
+  tags: ["Check Account"]
+  custom_fields:
+    Document Category: "FINANCE"
+
+dynamic_metadata:
+  date_created:
+    pattern_after: "(Datum tot en met|Nieuw Afschrift)[^\\n]*\\n(\\d{2}-\\d{2}-\\d{4})"
+    format: "%d-%m-%Y"
+
+filename_metadata:
+  correspondent: "Rabobank"
+  document_type: "Bank Statement"
+  tags: ["Check Account"]
+  custom_fields:
+    Document Category: "FINANCE"
+
+# Verifying filename pattern for additional matching
+filename_patterns:
+  - pattern: "(\\d{4}-\\d{2})-\\d{2}-NL89RABO\\d{7}592-EUR"
+    date_group: 1
+
+# Setting the weight of filename and paperless metadata
+poco_weights:
+  filename: 5
+  paperless: 3
