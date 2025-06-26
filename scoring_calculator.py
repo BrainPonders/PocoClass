@@ -13,11 +13,15 @@ class ScoringCalculator:
         self.logger = logging.getLogger(__name__)
     
     def calculate_poco_score(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> Dict[str, Any]:
-        """Calculate POCO score for a document based on metadata agreement"""
+        """Calculate POCO score based on rule confidence with filename/paperless modifiers"""
         
-        # Get weights from rule
+        # Get the rule's base score (core + bonus from selected rule)
+        selected_rule = doc_dict.get('selected_rule', {})
+        rule_score = selected_rule.get('total_score', 0)  # This is core + bonus
+        rule_threshold = rule.get('threshold', 70)
+        
+        # Get weights from rule for filename and paperless
         poco_weights = rule.get('poco_weights', {})
-        content_weight = 10  # Content is always most reliable
         filename_weight = poco_weights.get('filename', 5)
         paperless_weight = poco_weights.get('paperless', 3)
         
@@ -25,39 +29,87 @@ class ScoringCalculator:
         fields_to_score = ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']
         
         poco_details = {}
-        total_score = 0
-        max_possible_score = 0
+        final_scores = []
+        process_should_continue = True
         
         for field in fields_to_score:
-            field_score = self.calculate_field_score(
-                doc_dict, field, content_weight, filename_weight, paperless_weight
+            field_score = self.calculate_field_score_with_rule_base(
+                doc_dict, field, rule_score, filename_weight, paperless_weight, rule_threshold
             )
             poco_details[field] = field_score
-            total_score += field_score['total']
-            max_possible_score += content_weight + filename_weight + paperless_weight
+            final_scores.append(field_score['final_score'])
+            
+            # Check if any field falls below threshold
+            if field_score['final_score'] < rule_threshold:
+                process_should_continue = False
         
-        # Calculate final percentage score
-        final_score = int((total_score / max_possible_score) * 100) if max_possible_score > 0 else 0
+        # Final POCO score is the lowest final score
+        final_poco_score = min(final_scores) if final_scores else 0
         
-        # Determine if it passes the threshold
-        poco_threshold = rule.get('poco_threshold', 60)
-        passes = final_score >= poco_threshold
+        # Determine if processing should continue
+        passes = process_should_continue and final_poco_score >= rule_threshold
         
         # Update document dictionary
         doc_dict['poco_score_details'] = poco_details
         doc_dict['poco_summary'] = {
-            'final_score': final_score,
+            'final_score': final_poco_score,
             'pass': passes,
+            'should_continue_processing': process_should_continue,
             'winner_rule_id': rule.get('rule_id'),
-            'winner_rule_name': rule.get('rule_name')
+            'winner_rule_name': rule.get('rule_name'),
+            'rule_threshold': rule_threshold
         }
         
         return {
-            'final_score': final_score,
+            'final_score': final_poco_score,
             'pass': passes,
+            'should_continue_processing': process_should_continue,
             'details': poco_details,
-            'total_score': total_score,
-            'max_possible_score': max_possible_score
+            'rule_score': rule_score,
+            'rule_threshold': rule_threshold
+        }
+    
+    def calculate_field_score_with_rule_base(self, doc_dict: Dict[str, Any], field: str, 
+                            rule_score: int, filename_weight: int, paperless_weight: int, rule_threshold: int) -> Dict[str, Any]:
+        """Calculate field score using rule score as base with filename/paperless modifiers"""
+        
+        # Get values from different sources
+        content_value = self.get_field_value(doc_dict.get('content_metadata', {}), field)
+        filename_value = self.get_field_value(doc_dict.get('filename_metadata', {}), field)
+        paperless_value = self.get_field_value(doc_dict.get('paperless_metadata', {}), field)
+        
+        # Rule score is the base - it's the "truth"
+        base_rule_score = rule_score
+        
+        # Filename score modifier
+        filename_modifier = 0
+        if filename_value and content_value:
+            if self.values_match(content_value, filename_value, field):
+                filename_modifier = filename_weight  # Positive modifier for agreement
+            else:
+                filename_modifier = -filename_weight  # Negative modifier for disagreement
+        
+        # Paperless score modifier  
+        paperless_modifier = 0
+        if paperless_value and content_value:
+            if self.values_match(content_value, paperless_value, field):
+                paperless_modifier = paperless_weight  # Positive modifier for agreement
+            else:
+                paperless_modifier = -paperless_weight  # Negative modifier for disagreement
+        
+        # Final score = rule_score + modifiers
+        final_score = base_rule_score + filename_modifier + paperless_modifier
+        
+        return {
+            'field': field,
+            'rule_score': base_rule_score,
+            'filename_score': filename_modifier,
+            'paperless_score': paperless_modifier,
+            'final_score': final_score,
+            'content_value': content_value,
+            'filename_value': filename_value,
+            'paperless_value': paperless_value,
+            'passes_threshold': final_score >= rule_threshold
         }
     
     def calculate_field_score(self, doc_dict: Dict[str, Any], field: str, 

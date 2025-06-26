@@ -53,6 +53,10 @@ class OutputGenerator:
         print("  Metadata Comparison:")
         self.print_metadata_comparison_table(doc_dict)
         
+        # Rule Review Table (new comprehensive scoring view)
+        print("  Rule Review - Confidence Scoring:")
+        self.print_rule_review_table(doc_dict)
+        
         # POCO scoring details
         print("  POCO Scoring Details:")
         self.print_poco_scoring_table(doc_dict)
@@ -132,6 +136,46 @@ class OutputGenerator:
         table = tabulate(rows, headers=headers, tablefmt="grid")
         for line in table.split('\n'):
             print(f"    {line}")
+    
+    def print_rule_review_table(self, doc_dict: Dict[str, Any]) -> None:
+        """Print rule review table showing confidence scoring breakdown"""
+        headers = ["Metadata", "Rule Score", "Filename Score", "Paperless Score", "Final Score"]
+        rows = []
+        
+        poco_details = doc_dict.get('poco_score_details', {})
+        poco_summary = doc_dict.get('poco_summary', {})
+        rule_threshold = poco_summary.get('rule_threshold', 70)
+        
+        for field, details in poco_details.items():
+            rule_score = details.get('rule_score', 0)
+            filename_score = details.get('filename_score', 0)
+            paperless_score = details.get('paperless_score', 0)
+            final_score = details.get('final_score', 0)
+            
+            # Format scores with color coding for pass/fail
+            final_score_display = f"{final_score}"
+            if final_score < rule_threshold:
+                final_score_display += " (FAIL)"
+            
+            rows.append([
+                field.replace('_', ' ').title(),
+                rule_score,
+                filename_score,
+                paperless_score,
+                final_score_display
+            ])
+        
+        table = tabulate(rows, headers=headers, tablefmt="grid")
+        for line in table.split('\n'):
+            print(f"    {line}")
+        
+        # Add summary information
+        final_poco_score = poco_summary.get('final_score', 0)
+        should_continue = poco_summary.get('should_continue_processing', False)
+        
+        print(f"    Final POCO Score: {final_poco_score} (Lowest final score)")
+        print(f"    Rule Threshold: {rule_threshold}")
+        print(f"    Processing Status: {'CONTINUE' if should_continue else 'ABORT - Apply POCO tag only'}")
     
     def get_display_value(self, metadata: Dict[str, Any], field: str) -> str:
         """Get display value for a metadata field"""
