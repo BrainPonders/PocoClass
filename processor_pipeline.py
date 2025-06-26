@@ -308,7 +308,7 @@ class ProcessorPipeline:
         rule_id = winning_rule.get('rule_id', 'unknown')
         self.results['rule_usage'][rule_id] = self.results['rule_usage'].get(rule_id, 0) + 1
         
-        # Generate output
+        # Generate output - always show verbose tables when verbose is enabled
         self.output_generator.generate_document_output(doc_dict, self.args.dry_run)
         self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
     
