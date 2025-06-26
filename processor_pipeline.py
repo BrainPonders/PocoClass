@@ -265,9 +265,13 @@ class ProcessorPipeline:
         doc_dict = self.initialize_document_dict(raw_doc)
         if not doc_dict:
             return
+        if self.args.debug:
+            self.print_debug_dict("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
         
         # Step 5: Evaluate rules
         self.evaluate_rules(doc_dict, rules)
+        if self.args.debug:
+            self.print_debug_dict("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
         
         # Step 6: Select winning rule
         winning_rule = self.select_winning_rule(doc_dict)
@@ -276,15 +280,23 @@ class ProcessorPipeline:
             self.output_generator.generate_document_output(doc_dict, self.args.dry_run)
             self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
             return
+        if self.args.debug:
+            self.print_debug_dict("STEP 6 - WINNING RULE SELECTED", doc_dict)
         
         # Step 7: Extract metadata from winning rule
         self.extract_metadata(doc_dict, winning_rule)
+        if self.args.debug:
+            self.print_debug_dict("STEP 7 - METADATA EXTRACTED", doc_dict)
         
         # Step 8: Calculate POCO score
         self.calculate_poco_score(doc_dict, winning_rule)
+        if self.args.debug:
+            self.print_debug_dict("STEP 8 - POCO SCORES CALCULATED", doc_dict)
         
         # Step 9: Apply metadata (or simulate)
         self.apply_metadata(doc_dict, winning_rule)
+        if self.args.debug:
+            self.print_debug_dict("STEP 9 - METADATA APPLIED", doc_dict)
         
         # Update results
         self.results['processed_documents'] += 1
