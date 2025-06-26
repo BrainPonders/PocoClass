@@ -1089,3 +1089,57 @@ Processing Time: 2.26s
 2025-06-26 23:21:23,385 - __main__ - INFO - ================================================================================
 2025-06-26 23:21:23,385 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
 2025-06-26 23:21:23,385 - __main__ - INFO - ================================================================================
+2025-06-26 23:22:10,987 - __main__ - INFO - ================================================================================
+2025-06-26 23:22:10,988 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 23:22:10,988 - __main__ - INFO - Started at: 2025-06-26 23:22:10
+2025-06-26 23:22:10,989 - __main__ - INFO - Mode: DRY RUN
+2025-06-26 23:22:10,989 - __main__ - INFO - Verbose: True
+2025-06-26 23:22:10,990 - __main__ - INFO - ================================================================================
+2025-06-26 23:22:10,994 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 23:22:11,002 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): paperless.erje.nl:443
+2025-06-26 23:22:11,474 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/ HTTP/1.1" 302 0
+2025-06-26 23:22:11,642 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/schema/view/ HTTP/1.1" 200 1679
+2025-06-26 23:22:11,649 - api_client - INFO - Successfully connected to Paperless API
+2025-06-26 23:22:11,653 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-26 23:22:11,654 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-26 23:22:11,667 - rule_loader - DEBUG - Loaded rule: template_001 from template.yaml
+2025-06-26 23:22:11,679 - rule_loader - DEBUG - Loaded rule: examplebank_check_592 from examplebank_check_account_592.yaml
+2025-06-26 23:22:11,684 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-26 23:22:11,693 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-26 23:22:11,902 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 23:22:11,905 - urllib3.connectionpool - DEBUG - Starting new HTTP connection (1): paperless.erje.nl:80
+2025-06-26 23:22:12,218 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 23:22:12,422 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 23:22:12,622 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/ HTTP/1.1" 200 717
+2025-06-26 23:22:12,624 - urllib3.connectionpool - DEBUG - Resetting dropped connection: paperless.erje.nl
+2025-06-26 23:22:12,837 - urllib3.connectionpool - DEBUG - http://paperless.erje.nl:80 "GET /api/tags/?page=2 HTTP/1.1" 308 0
+2025-06-26 23:22:13,038 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?page=2 HTTP/1.1" 200 628
+2025-06-26 23:22:13,282 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+2025-06-26 23:22:13,283 - api_client - DEBUG - Document 683 tags: [24, 1]
+2025-06-26 23:22:13,283 - api_client - DEBUG - Include tag ID: 1, Exclude tag ID: 40
+2025-06-26 23:22:13,284 - api_client - DEBUG - Has include: True, Has exclude: False, Should process: True
+2025-06-26 23:22:13,284 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-26 23:22:13,284 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-26 23:22:13,522 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/683/ HTTP/1.1" 200 2303
+2025-06-26 23:22:13,526 - pattern_matcher - DEBUG - Evaluating rule template_001: Document Type Template
+2025-06-26 23:22:13,527 - pattern_matcher - DEBUG - Rule template_001 result: 0/70 (FAIL)
+2025-06-26 23:22:13,527 - pattern_matcher - DEBUG - Evaluating rule examplebank_check_592: ExampleBank Check Account Statement
+2025-06-26 23:22:13,528 - pattern_matcher - DEBUG - Rule examplebank_check_592 result: 130/70 (PASS)
+2025-06-26 23:22:13,530 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-26 23:22:13 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: ExampleBank Check Account Statement (130/70)
+  POCO Score: 127% (PASS)
+
+2025-06-26 23:22:13 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 2.54s
+--------------------------------------------------
+2025-06-26 23:22:13,533 - __main__ - INFO - ================================================================================
+2025-06-26 23:22:13,533 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-26 23:22:13,533 - __main__ - INFO - ================================================================================
+2025-06-26 23:22:37 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: ExampleBank Check Account Statement (130/70)
+  POCO Score: 127% (PASS)
