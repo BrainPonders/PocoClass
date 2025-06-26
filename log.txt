@@ -1,0 +1,73 @@
+2025-06-26 21:18:13,003 - __main__ - INFO - ================================================================================
+2025-06-26 21:18:13,004 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 21:18:13,004 - __main__ - INFO - Started at: 2025-06-26 21:18:13
+2025-06-26 21:18:13,004 - __main__ - INFO - Mode: DRY RUN
+2025-06-26 21:18:13,005 - __main__ - INFO - Verbose: True
+2025-06-26 21:18:13,005 - __main__ - INFO - ================================================================================
+2025-06-26 21:18:13,007 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 21:18:13,007 - processor_pipeline - ERROR - Setup validation failed: PAPERLESS_TOKEN environment variable is required
+2025-06-26 21:18:13,007 - processor_pipeline - ERROR - Pipeline execution failed: Setup validation failed
+2025-06-26 21:18:13,008 - __main__ - ERROR - Fatal error: Setup validation failed
+Traceback (most recent call last):
+  File "/home/runner/workspace/main.py", line 92, in main
+    results = pipeline.execute()
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/processor_pipeline.py", line 56, in execute
+    raise RuntimeError("Setup validation failed")
+RuntimeError: Setup validation failed
+2025-06-26 21:42:07,712 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:07,713 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 21:42:07,713 - __main__ - INFO - Started at: 2025-06-26 21:42:07
+2025-06-26 21:42:07,713 - __main__ - INFO - Mode: DRY RUN
+2025-06-26 21:42:07,713 - __main__ - INFO - Verbose: True
+2025-06-26 21:42:07,713 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:07,714 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 21:42:08,445 - api_client - INFO - Successfully connected to Paperless API
+2025-06-26 21:42:08,445 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-26 21:42:08,446 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-26 21:42:08,469 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-26 21:42:08,470 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-26 21:42:09,108 - processor_pipeline - WARNING - No documents found matching criteria
+
+2025-06-26 21:42:09 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 0
+Processed: 0
+Matched: 0
+POCO Passed: 0
+Processing Time: 0.00s
+--------------------------------------------------
+2025-06-26 21:42:09,109 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:09,110 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-26 21:42:09,110 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:16,225 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:16,225 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-26 21:42:16,226 - __main__ - INFO - Started at: 2025-06-26 21:42:16
+2025-06-26 21:42:16,226 - __main__ - INFO - Mode: LIVE
+2025-06-26 21:42:16,226 - __main__ - INFO - Verbose: False
+2025-06-26 21:42:16,227 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:16,227 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-26 21:42:16,233 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): paperless.erje.nl:443
+2025-06-26 21:42:16,568 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/ HTTP/1.1" 302 0
+2025-06-26 21:42:16,736 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/schema/view/ HTTP/1.1" 200 1680
+2025-06-26 21:42:16,738 - api_client - INFO - Successfully connected to Paperless API
+2025-06-26 21:42:16,738 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-26 21:42:16,740 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-26 21:42:16,749 - rule_loader - DEBUG - Loaded rule: template_001 from template.yaml
+2025-06-26 21:42:16,756 - rule_loader - DEBUG - Loaded rule: examplebank_check_592 from examplebank_check_account_592.yaml
+2025-06-26 21:42:16,756 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-26 21:42:16,757 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-26 21:42:16,964 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?name=NEW HTTP/1.1" 200 725
+2025-06-26 21:42:17,176 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/tags/?name=POCO HTTP/1.1" 200 726
+2025-06-26 21:42:17,412 - urllib3.connectionpool - DEBUG - https://paperless.erje.nl:443 "GET /api/documents/?tags__id__in=26&tags__id__none=26 HTTP/1.1" 200 61
+2025-06-26 21:42:17,412 - processor_pipeline - WARNING - No documents found matching criteria
+
+2025-06-26 21:42:17 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 0
+Processed: 0
+Matched: 0
+POCO Passed: 0
+Processing Time: 0.00s
+--------------------------------------------------
+2025-06-26 21:42:17,413 - __main__ - INFO - ================================================================================
+2025-06-26 21:42:17,413 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-26 21:42:17,414 - __main__ - INFO - ================================================================================

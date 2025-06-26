@@ -1,0 +1,19 @@
+
+    ExampleBank
+    Rekeningafschrift
+    
+    Rekeningnummer: NL89 RABO 0123 4567 592
+    
+    TotaalRekening
+    
+    Datum tot en met
+    25-12-2024
+    
+    Totaal Afgeschreven: €1,234.56
+    Totaal Bijgeschreven: €2,345.67
+    
+    Transacties:
+    23-12-2024  Storting           +€500.00
+    24-12-2024  Betaling           -€123.45
+    25-12-2024  Rente              +€12.34
+    

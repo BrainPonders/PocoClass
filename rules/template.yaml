@@ -1,0 +1,102 @@
+# -------------------------------------------------------------------------------------------------
+# Filename: template.yaml
+#
+# Description:
+# Template for creating new document classification rules.
+# This template demonstrates the complete structure and all available options.
+#
+# version: 1.0
+# Created: 2025-06-26
+# -------------------------------------------------------------------------------------------------
+
+rule_name: "Document Type Template"
+rule_id: "template_001"
+threshold: 70  # Minimum core score required for rule match (0-100)
+
+# Core identifiers - REQUIRED patterns that must match
+# Total score should equal 100 for proper percentage calculation
+core_identifiers:
+  logic_groups:
+    # Match type: ALL conditions must match
+    - type: "match"
+      score: 40
+      conditions:
+        - pattern: "Company Name"
+          source: "content"     # content or filename
+          range: "0-500"        # optional character range for content
+        - pattern: "Document Type"
+          source: "content"
+          range: "0-500"
+    
+    # OR type: At least ONE condition must match
+    - type: "or"
+      score: 30
+      conditions:
+        - pattern: "Account.*Number"
+          source: "content"
+          range: "0-600"
+        - pattern: "Reference.*ID"
+          source: "content"
+          range: "0-600"
+    
+    - type: "match"
+      score: 30
+      conditions:
+        - pattern: "\\d{4}-\\d{2}-\\d{2}"  # Date pattern
+          source: "content"
+          range: "0-1000"
+
+# Bonus identifiers - OPTIONAL patterns that add confidence
+# These add extra points but are not required for matching
+bonus_identifiers:
+  logic_groups:
+    - type: "match"
+      score: 20
+      conditions:
+        - pattern: "Additional Identifier"
+          source: "content"
+          range: "0-800"
+    
+    - type: "or"
+      score: 15
+      conditions:
+        - pattern: "Bonus Pattern 1"
+          source: "content"
+        - pattern: "Bonus Pattern 2"
+          source: "filename"
+
+# Static metadata - Applied directly from rule
+static_metadata:
+  correspondent: "Company Name"
+  document_type: "Document Type Name"
+  tags: ["Tag1", "Tag2"]
+  custom_fields:
+    Document Category: "CATEGORY"
+    Source: "AUTOMATED"
+
+# Dynamic metadata - Extracted from content using patterns
+dynamic_metadata:
+  date_created:
+    pattern_after: "Date:\\s*(\\d{2}-\\d{2}-\\d{4})"  # Capture group for date
+    format: "%d-%m-%Y"  # strptime format for parsing
+
+# Filename-based metadata - Applied when filename matches
+filename_metadata:
+  correspondent: "Company Name"
+  document_type: "Document Type Name"
+  tags: ["Tag1", "Filename"]
+  custom_fields:
+    Document Category: "CATEGORY"
+    Source: "FILENAME"
+
+# Filename patterns for additional validation and date extraction
+filename_patterns:
+  - pattern: "(\\d{4}-\\d{2})-\\d{2}-COMPANY-\\w+"
+    date_group: 1  # Which capture group contains the date
+    date_format: "%Y-%m"  # Format of the date in filename
+
+# POCO scoring weights - How much to trust each source
+poco_weights:
+  filename: 5    # Weight for filename metadata matching
+  paperless: 3   # Weight for existing Paperless metadata matching
+  # Content always has weight 10 (highest priority)
