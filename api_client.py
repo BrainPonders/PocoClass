@@ -173,7 +173,12 @@ class PaperlessAPIClient:
                 doc = response.json()
                 
                 # Check if document matches filter criteria
-                doc_tag_ids = [tag['id'] for tag in doc.get('tags', [])]
+                doc_tag_ids = []
+                for tag in doc.get('tags', []):
+                    if isinstance(tag, dict):
+                        doc_tag_ids.append(tag['id'])
+                    else:
+                        doc_tag_ids.append(tag)  # Tag is already an ID
                 if include_tag_id in doc_tag_ids and (not exclude_tag_id or exclude_tag_id not in doc_tag_ids):
                     return [doc]
                 else:
@@ -203,9 +208,11 @@ class PaperlessAPIClient:
     def get_document_content(self, document_id: int) -> Optional[str]:
         """Get OCR content for a document"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/content/")
+            # Get document metadata which includes the content field
+            response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/")
             response.raise_for_status()
-            return response.text
+            doc_data = response.json()
+            return doc_data.get('content', '')
         except requests.RequestException as e:
             self.logger.error(f"Failed to get content for document {document_id}: {e}")
             return None
