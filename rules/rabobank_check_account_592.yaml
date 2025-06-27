@@ -41,7 +41,7 @@ core_identifiers:
     - type: "match"
       score: 20
       conditions:
-        - pattern: "NL89 ?RABO[0-9\\s]{7,9}592"
+        - pattern: "NL89 ?RABO[0-9\\s]{9,12}[0-9]{2}"
           source: "content"
           range: "0-600"
 
