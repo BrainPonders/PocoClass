@@ -248,12 +248,18 @@ class PaperlessAPIClient:
     def get_all_correspondents(self) -> Dict[str, int]:
         """Get all correspondents as name -> ID mapping"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/correspondents/")
-            response.raise_for_status()
-            
             correspondents = {}
-            for correspondent in response.json().get('results', []):
-                correspondents[correspondent['name']] = correspondent['id']
+            url = f"{self.config.paperless_url}/api/correspondents/"
+            
+            while url:
+                response = self.session.get(url)
+                response.raise_for_status()
+                data = response.json()
+                
+                for correspondent in data.get('results', []):
+                    correspondents[correspondent['name']] = correspondent['id']
+                
+                url = data.get('next')  # Get next page URL or None
             
             return correspondents
         except requests.RequestException as e:
@@ -263,12 +269,18 @@ class PaperlessAPIClient:
     def get_all_document_types(self) -> Dict[str, int]:
         """Get all document types as name -> ID mapping"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/document_types/")
-            response.raise_for_status()
-            
             document_types = {}
-            for doc_type in response.json().get('results', []):
-                document_types[doc_type['name']] = doc_type['id']
+            url = f"{self.config.paperless_url}/api/document_types/"
+            
+            while url:
+                response = self.session.get(url)
+                response.raise_for_status()
+                data = response.json()
+                
+                for doc_type in data.get('results', []):
+                    document_types[doc_type['name']] = doc_type['id']
+                
+                url = data.get('next')  # Get next page URL or None
             
             return document_types
         except requests.RequestException as e:
@@ -278,12 +290,18 @@ class PaperlessAPIClient:
     def get_all_tags(self) -> Dict[str, int]:
         """Get all tags as name -> ID mapping"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/tags/")
-            response.raise_for_status()
-            
             tags = {}
-            for tag in response.json().get('results', []):
-                tags[tag['name']] = tag['id']
+            url = f"{self.config.paperless_url}/api/tags/"
+            
+            while url:
+                response = self.session.get(url)
+                response.raise_for_status()
+                data = response.json()
+                
+                for tag in data.get('results', []):
+                    tags[tag['name']] = tag['id']
+                
+                url = data.get('next')  # Get next page URL or None
             
             return tags
         except requests.RequestException as e:
