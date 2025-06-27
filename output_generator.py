@@ -82,20 +82,19 @@ class OutputGenerator:
         # Rule evaluations table
         rule_evaluations = doc_dict.get('rule_evaluations', [])
         if rule_evaluations:
-            print("  Rule Evaluations:")
             self.print_rule_evaluations_table(rule_evaluations)
         
+        print()  # Extra spacing between tables
+        print()
+        
         # Metadata comparison table
-        print("  Metadata Comparison:")
         self.print_metadata_comparison_table(doc_dict)
         
-        # Rule Review Table (new comprehensive scoring view)
-        print("  Rule Review - Confidence Scoring:")
-        self.print_rule_review_table(doc_dict)
+        print()  # Extra spacing between tables
+        print()
         
-        # POCO scoring details
-        print("  POCO Scoring Details:")
-        self.print_poco_scoring_table(doc_dict)
+        # Rule Review Table (comprehensive scoring view - replaces POCO scoring details)
+        self.print_rule_review_table(doc_dict)
         
         print("  " + "="*60)
     
