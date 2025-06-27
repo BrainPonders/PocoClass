@@ -3166,3 +3166,97 @@ Processing Time: 3.04s
 2025-06-27 15:52:40,226 - __main__ - INFO - ================================================================================
 2025-06-27 15:52:40,226 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
 2025-06-27 15:52:40,226 - __main__ - INFO - ================================================================================
+2025-06-27 15:53:40,595 - __main__ - INFO - ================================================================================
+2025-06-27 15:53:40,595 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-27 15:53:40,595 - __main__ - INFO - Started at: 2025-06-27 15:53:40
+2025-06-27 15:53:40,595 - __main__ - INFO - Mode: DRY RUN
+2025-06-27 15:53:40,595 - __main__ - INFO - Verbose: True
+2025-06-27 15:53:40,595 - __main__ - INFO - ================================================================================
+2025-06-27 15:53:40,596 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-27 15:53:41,200 - api_client - INFO - Successfully connected to Paperless API
+2025-06-27 15:53:41,200 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-27 15:53:41,201 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-27 15:53:41,214 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-27 15:53:41,215 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-27 15:53:42,811 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-27 15:53:42,811 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-27 15:53:43,653 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-27 15:53:43 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (150/70)
+  POCO Score: 147% (PASS)
+
+2025-06-27 15:53:43 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 3.06s
+--------------------------------------------------
+2025-06-27 15:53:43,656 - __main__ - INFO - ================================================================================
+2025-06-27 15:53:43,656 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-27 15:53:43,656 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:43,236 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:43,237 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-27 15:56:43,237 - __main__ - INFO - Started at: 2025-06-27 15:56:43
+2025-06-27 15:56:43,240 - __main__ - INFO - Mode: DRY RUN
+2025-06-27 15:56:43,240 - __main__ - INFO - Verbose: True
+2025-06-27 15:56:43,241 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:43,241 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-27 15:56:44,012 - api_client - INFO - Successfully connected to Paperless API
+2025-06-27 15:56:44,012 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-27 15:56:44,015 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-27 15:56:44,034 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-27 15:56:44,035 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-27 15:56:45,699 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-27 15:56:45,700 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-27 15:56:46,529 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-27 15:56:46 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (150/70)
+  POCO Score: 147% (PASS)
+
+2025-06-27 15:56:46 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 3.29s
+--------------------------------------------------
+2025-06-27 15:56:46,535 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:46,535 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-27 15:56:46,535 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:53,068 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:53,069 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-27 15:56:53,069 - __main__ - INFO - Started at: 2025-06-27 15:56:53
+2025-06-27 15:56:53,070 - __main__ - INFO - Mode: DRY RUN
+2025-06-27 15:56:53,070 - __main__ - INFO - Verbose: True
+2025-06-27 15:56:53,071 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:53,072 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-27 15:56:53,580 - api_client - INFO - Successfully connected to Paperless API
+2025-06-27 15:56:53,581 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-27 15:56:53,585 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-27 15:56:53,604 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-27 15:56:53,607 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-27 15:56:55,076 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-27 15:56:55,076 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-27 15:56:55,909 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-27 15:56:55 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (150/70)
+  POCO Score: 147% (PASS)
+
+2025-06-27 15:56:55 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 2.84s
+--------------------------------------------------
+2025-06-27 15:56:55,913 - __main__ - INFO - ================================================================================
+2025-06-27 15:56:55,914 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-27 15:56:55,914 - __main__ - INFO - ================================================================================
+2025-06-27 15:57:06,781 - __main__ - INFO - ================================================================================
+2025-06-27 15:57:06,781 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-27 15:57:06,781 - __main__ - INFO - Started at: 2025-06-27 15:57:06
+2025-06-27 15:57:06,781 - __main__ - INFO - Mode: DRY RUN
+2025-06-27 15:57:06,781 - __main__ - INFO - Verbose: True
+2025-06-27 15:57:06,781 - __main__ - INFO - ================================================================================
+2025-06-27 15:57:06,782 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection

@@ -235,15 +235,18 @@ class OutputGenerator:
             
             # Pattern line with proper formatting
             source_info = source if range_spec == 'full' else f"{source}, {range_spec}"
+            # Calculate padding based on plain text without color codes
             pattern_plain_text = f"   {cond_status_symbol} Pattern: \"{pattern}\" ({source_info})"
             
             # Truncate if too long
             max_pattern_len = width - 5
             if len(pattern_plain_text) > max_pattern_len:
                 pattern_plain_text = pattern_plain_text[:max_pattern_len-3] + "..."
+                pattern = pattern[:max_pattern_len-30] + "..." if len(pattern) > max_pattern_len-25 else pattern
             
+            # Calculate exact padding needed (accounting for the fact that we're replacing plain symbol with colored symbol)
             pattern_padding = width - len(pattern_plain_text) - 2
-            print(f"    │   {cond_status_color(cond_status_symbol)} Pattern: \"{pattern}\" ({source_info})" + " " * max(0, pattern_padding - 1) + "│")
+            print(f"    │   {cond_status_color(cond_status_symbol)} Pattern: \"{pattern}\" ({source_info})" + " " * max(0, pattern_padding) + "│")
             
             # Match details
             if matched and matches:
