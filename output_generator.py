@@ -102,7 +102,7 @@ class OutputGenerator:
         """Print table of rule evaluations with enhanced formatting"""
         print()
         print("    " + Colors.bold(Colors.cyan("📋 RULE EVALUATIONS")))
-        print("    " + "─" * 85)
+        print("    " + "─" * 105)
         
         headers = [
             Colors.bold("Rule ID"), 
@@ -129,7 +129,7 @@ class OutputGenerator:
             
             rows.append([
                 Colors.blue(rule_eval.get('rule_id', '')),
-                rule_eval.get('rule_name', '')[:28] + "..." if len(rule_eval.get('rule_name', '')) > 28 else rule_eval.get('rule_name', ''),
+                rule_eval.get('rule_name', ''),
                 f"{rule_eval.get('core_score', 0):>3}",
                 f"{rule_eval.get('bonus_score', 0):>3}",
                 total_colored,
@@ -137,7 +137,8 @@ class OutputGenerator:
                 status
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="simple", colalign=("left", "left", "center", "center", "center", "center", "center"))
+        table = tabulate(rows, headers=headers, tablefmt="simple", 
+                         colalign=("left", "left", "center", "center", "center", "center", "center"))
         for line in table.split('\n'):
             print("      " + line)
         print()
@@ -146,7 +147,7 @@ class OutputGenerator:
         """Print metadata comparison across sources with enhanced formatting"""
         print()
         print("    " + Colors.bold(Colors.cyan("🔍 METADATA COMPARISON")))
-        print("    " + "─" * 100)
+        print("    " + "─" * 120)
         
         headers = [
             Colors.bold("Field"), 
@@ -181,7 +182,8 @@ class OutputGenerator:
                 selected_colored
             ])
         
-        table = tabulate(rows, headers=headers, tablefmt="simple", colalign=("left", "left", "left", "left", "left"))
+        table = tabulate(rows, headers=headers, tablefmt="simple", 
+                         colalign=("left", "left", "left", "left", "left"))
         for line in table.split('\n'):
             print("      " + line)
         print()
@@ -279,7 +281,10 @@ class OutputGenerator:
         field_data = metadata[field]
         
         if isinstance(field_data, dict):
-            if 'value' in field_data:
+            # Handle Paperless API objects with ID and name
+            if 'id' in field_data and 'name' in field_data:
+                return str(field_data['name'])
+            elif 'value' in field_data:
                 return str(field_data['value']) if field_data['value'] else ""
             elif 'name' in field_data:
                 return str(field_data['name']) if field_data['name'] else ""
@@ -288,13 +293,20 @@ class OutputGenerator:
         
         if isinstance(field_data, list):
             if field == 'tags':
-                return ", ".join([str(tag) for tag in field_data])
+                # Handle both string tags and dict tags with ID/name
+                tag_names = []
+                for tag in field_data:
+                    if isinstance(tag, dict) and 'name' in tag:
+                        tag_names.append(tag['name'])
+                    else:
+                        tag_names.append(str(tag))
+                return ", ".join(tag_names)
             elif field == 'custom_fields':
                 return ", ".join([f"{item.get('name', '')}:{item.get('value', '')}" for item in field_data if isinstance(item, dict)])
         
         return str(field_data) if field_data else ""
     
-    def truncate_value(self, value: str, max_length: int = 25) -> str:
+    def truncate_value(self, value: str, max_length: int = 35) -> str:
         """Truncate long values for display"""
         if not value:
             return ""
