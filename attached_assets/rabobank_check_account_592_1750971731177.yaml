@@ -91,8 +91,9 @@ filename_metadata:
 
 # Verifying filename pattern for additional matching
 filename_patterns:
-  - pattern: "(\\d{4}-\\d{2})-\\d{2}-NL89RABO\\d{7}592-EUR"
+  - pattern: "(\\d{4}-\\d{2}-\\d{2})-NL89RABO\\d{10}"
     date_group: 1
+    date_format: "%Y-%m-%d"
 
 # Setting the weight of filename and paperless metadata
 poco_weights:
