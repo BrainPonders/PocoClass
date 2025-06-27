@@ -71,11 +71,11 @@ class OutputGenerator:
         
         # Verbose output
         if self.verbose:
-            self.generate_verbose_output(doc_dict)
+            self.generate_verbose_output(doc_dict, dry_run)
         
         print()  # Empty line for readability
     
-    def generate_verbose_output(self, doc_dict: Dict[str, Any]) -> None:
+    def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
         print("  " + "="*60)
         
@@ -99,6 +99,12 @@ class OutputGenerator:
         
         # Rule Review Table (comprehensive scoring view - replaces POCO scoring details)
         self.print_rule_review_table(doc_dict)
+        
+        print()  # Extra spacing between tables
+        print()
+        
+        # Final metadata updates section
+        self.print_final_metadata_updates(doc_dict, dry_run)
         
         print("  " + "="*60)
     
@@ -467,6 +473,149 @@ class OutputGenerator:
         status_color = Colors.green if should_continue else Colors.red
         status_text = "CONTINUE" if should_continue else "ABORT - Apply POCO tag only"
         print("      " + Colors.bold(f"Processing Status: {status_color(status_text)}"))
+        print()
+    
+    def print_final_metadata_updates(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
+        """Print final metadata updates that will be sent to Paperless"""
+        print()
+        print("    " + Colors.bold(Colors.cyan("📤 FINAL METADATA UPDATES")))
+        print("    " + "─" * 120)
+        
+        # Get current Paperless metadata and selected metadata
+        paperless_metadata = doc_dict.get('paperless_metadata', {})
+        selected_rule = doc_dict.get('selected_rule', {})
+        content_metadata = doc_dict.get('content_metadata', {})
+        filename_metadata = doc_dict.get('filename_metadata', {})
+        
+        # Determine what will be sent to Paperless (based on POCO scoring)
+        poco_summary = doc_dict.get('poco_summary', {})
+        should_continue = poco_summary.get('should_continue_processing', False)
+        
+        if not should_continue:
+            print("    " + Colors.yellow("⚠️  Low confidence - Only POCO tag will be added"))
+            print("    " + f"POCO Score: {poco_summary.get('final_score', 0)}")
+            print()
+            return
+        
+        print("    " + Colors.green("✓ High confidence - Full metadata update"))
+        print()
+        
+        # Show what will be updated
+        updates = {}
+        
+        # Date Created
+        current_date = self.get_display_value(paperless_metadata, 'date_created')
+        new_date = self.get_display_value(content_metadata, 'date_created') or self.get_display_value(filename_metadata, 'date_created')
+        if new_date:
+            updates['Date Created'] = {
+                'current': current_date,
+                'new': new_date,
+                'changed': current_date != new_date
+            }
+        
+        # Correspondent
+        current_corr = self.get_display_value(paperless_metadata, 'correspondent')
+        new_corr = self.get_display_value(content_metadata, 'correspondent') or self.get_display_value(filename_metadata, 'correspondent')
+        if new_corr:
+            updates['Correspondent'] = {
+                'current': current_corr,
+                'new': new_corr,
+                'changed': current_corr != new_corr
+            }
+        
+        # Document Type
+        current_type = self.get_display_value(paperless_metadata, 'document_type')
+        new_type = self.get_display_value(content_metadata, 'document_type') or self.get_display_value(filename_metadata, 'document_type')
+        if new_type:
+            updates['Document Type'] = {
+                'current': current_type,
+                'new': new_type,
+                'changed': current_type != new_type
+            }
+        
+        # Tags (always add POCO tag)
+        current_tags = paperless_metadata.get('tags', [])
+        content_tags = content_metadata.get('tags', [])
+        filename_tags = filename_metadata.get('tags', [])
+        
+        # Combine all tags and add POCO
+        new_tags = []
+        if isinstance(current_tags, list):
+            new_tags.extend([tag['name'] if isinstance(tag, dict) else str(tag) for tag in current_tags])
+        elif current_tags:
+            new_tags.append(str(current_tags))
+        
+        # Add content/filename tags
+        for tag_list in [content_tags, filename_tags]:
+            if isinstance(tag_list, list):
+                for tag in tag_list:
+                    tag_name = tag if isinstance(tag, str) else str(tag)
+                    if tag_name and tag_name not in new_tags:
+                        new_tags.append(tag_name)
+        
+        # Add POCO tag
+        if 'POCO' not in new_tags:
+            new_tags.append('POCO')
+        
+        updates['Tags'] = {
+            'current': ', '.join([tag['name'] if isinstance(tag, dict) else str(tag) for tag in current_tags]) if current_tags else '—',
+            'new': ', '.join(new_tags),
+            'changed': True  # Always changed because we add POCO
+        }
+        
+        # Custom Fields
+        current_custom = paperless_metadata.get('custom_fields', [])
+        content_custom = content_metadata.get('custom_fields', [])
+        
+        custom_updates = {}
+        
+        # Add content custom fields
+        if isinstance(content_custom, list):
+            for field in content_custom:
+                if isinstance(field, dict) and 'name' in field:
+                    custom_updates[field['name']] = field.get('value', '')
+        
+        # Add POCO Score
+        custom_updates['POCO Score'] = str(poco_summary.get('final_score', 0))
+        
+        if custom_updates:
+            current_custom_display = []
+            if isinstance(current_custom, list):
+                for field in current_custom:
+                    if isinstance(field, dict) and 'name' in field:
+                        current_custom_display.append(f"{field['name']}: {field.get('value', '')}")
+            
+            new_custom_display = []
+            for name, value in custom_updates.items():
+                new_custom_display.append(f"{name}: {value}")
+            
+            updates['Custom Fields'] = {
+                'current': '; '.join(current_custom_display) if current_custom_display else '—',
+                'new': '; '.join(new_custom_display),
+                'changed': True  # Always changed because we add POCO Score
+            }
+        
+        # Print updates in a clean format
+        for field_name, field_data in updates.items():
+            current_val = field_data['current']
+            new_val = field_data['new']
+            is_changed = field_data['changed']
+            
+            print(f"    {Colors.bold(field_name + ':'):.<25}", end='')
+            
+            if is_changed:
+                if current_val and current_val != '—':
+                    print(f" {Colors.red(current_val)} → {Colors.green(new_val)}")
+                else:
+                    print(f" {Colors.green(new_val)} {Colors.green('(NEW)')}")
+            else:
+                print(f" {Colors.blue(new_val)} {Colors.blue('(unchanged)')}")
+        
+        print()
+        if dry_run:
+            print("    " + Colors.yellow("💡 DRY RUN - No actual changes will be made"))
+        else:
+            print("    " + Colors.green("🚀 These updates will be sent to Paperless"))
         print()
     
     def get_display_value(self, metadata: Dict[str, Any], field: str) -> str:
