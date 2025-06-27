@@ -1,0 +1,49 @@
+================================================================================
+
+[DRY RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (130/70)
+  POCO Score: 127% (PASS)
+  ============================================================
+  Rule Evaluations:
+    Rule ID             Rule Name                         Core    Bonus    Total    Threshold  Result
+------------------  ------------------------------  ------  -------  -------  -----------  --------
+template_001        Document Type Template               0        0        0           70  ❌ FAIL
+rabobank_check_592  Rabobank Check Account Stateme      80       50      130           70  ✅ PASS
+  Metadata Comparison:
+    Field          Content                    Filename                   Paperless                  Selected
+-------------  -------------------------  -------------------------  -------------------------  -------------------------
+Correspondent  Rabobank                   Rabobank                                              Rabobank
+Document Type  Bank Statement             Bank Statement                                        Bank Statement
+Date Created   2025-04-30                                            2025-05-19                 2025-04-30
+Tags           ['Check Account']          ['Check Account']          {'id': 24, 'name': 'Ta...  ['Check Account']
+Custom Fields  [{'name': 'Document Ca...  [{'name': 'Document Ca...                             [{'name': 'Document Ca...
+  Rule Review - Confidence Scoring:
+    Metadata         Rule Score    Filename Score    Paperless Score    Final Score
+-------------  ------------  ----------------  -----------------  -------------
+Correspondent           130                 5                  0            135
+Document Type           130                 5                  0            135
+Date Created            130                 0                 -3            127
+Tags                    130                 5                 -3            132
+Custom Fields           130                 5                  0            135
+    Final POCO Score: 127 (Lowest final score)
+    Rule Threshold: 70
+    Processing Status: CONTINUE
+  POCO Scoring Details:
+    Field            Content    Filename    Paperless    Total  Reason
+-------------  ---------  ----------  -----------  -------  --------
+Correspondent          0           0            0        0  none
+Document Type          0           0            0        0  none
+Date Created           0           0            0        0  none
+Tags                   0           0            0        0  none
+Custom Fields          0           0            0        0  none
+  ============================================================
+
+================================================================================
+PROCESSING SUMMARY
+================================================================================
+Total Documents Found: 1
+Documents Processed: 1
+Documents Matched: 1
+POCO Score Passed: 1
+Match Rate: 100.0%
+POCO Pass Rate: 100.0%
