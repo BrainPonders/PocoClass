@@ -172,10 +172,10 @@ class OutputGenerator:
         
         print("    " + Colors.bold(f"CORE IDENTIFIERS ({core_score}/{core_threshold} points - {status_color(status_text)})"))
         
-        # Print each core logic group
+        # Print each core logic group with simple formatting
         logic_groups = core_details.get('logic_groups', [])
         for i, group in enumerate(logic_groups, 1):
-            self._print_logic_group_details(group, f"Group {i}")
+            self._print_simple_group(group, f"Core Group {i}")
         
         print()
         
@@ -191,17 +191,16 @@ class OutputGenerator:
             
             print("    " + Colors.bold(f"BONUS IDENTIFIERS ({bonus_score}/{bonus_threshold} points - {status_color(status_text)})"))
             
-            # Print each bonus logic group
+            # Print each bonus logic group with simple formatting
             logic_groups = bonus_details.get('logic_groups', [])
             for i, group in enumerate(logic_groups, 1):
-                self._print_logic_group_details(group, f"Group {i}")
+                self._print_simple_group(group, f"Bonus Group {i}")
         
         # Metadata extraction details
         self._print_metadata_extraction_details(doc_dict)
         
-    def _print_logic_group_details(self, group: Dict[str, Any], group_name: str) -> None:
-        """Print details for a single logic group"""
-        group_type = group.get('type', 'unknown')
+    def _print_simple_group(self, group: Dict[str, Any], group_name: str) -> None:
+        """Print details for a single logic group with simple formatting"""
         score = group.get('score', 0)
         max_score = group.get('max_score', 0)
         passed = group.get('passed', False)
@@ -209,85 +208,39 @@ class OutputGenerator:
         
         status_symbol = "✓" if passed else "✗"
         status_color = Colors.green if passed else Colors.red
-        status_text = f"{status_symbol} MATCH" if passed else f"{status_symbol} FAIL"
         
-        # Calculate padding without color codes
-        box_width = 100
-        header_text = f"{group_title}: ({score}/{max_score} points) - {status_text}"
-        padding = box_width - len(header_text) - 2  # -2 for the "│ " and " │"
-        
-        print("    ┌" + "─" * (box_width - 2) + "┐")
-        print(f"    │ {group_title}: ({score}/{max_score} points) - {status_color(status_text)}" + " " * max(0, padding) + "│")
+        print(f"    {group_title}: ({score}/{max_score} points) - {status_color(status_symbol + ' MATCH' if passed else status_symbol + ' FAIL')}")
         
         conditions = group.get('conditions', [])
         for condition in conditions:
-            self._print_condition_details(condition, box_width)
+            pattern = condition.get('pattern', 'unknown')
+            source = condition.get('source', 'content')
+            range_spec = condition.get('range', 'full')
+            matched = condition.get('matched', False)
+            matches = condition.get('matches', [])
             
-        print("    └" + "─" * (box_width - 2) + "┘")
+            status_symbol = "✓" if matched else "✗"
+            status_color = Colors.green if matched else Colors.red
+            
+            # Pattern line
+            source_info = source if range_spec == 'full' else f"{source}, {range_spec}"
+            pattern_line = f"      {status_color(status_symbol)} Pattern: \"{pattern}\" ({source_info})"
+            print(pattern_line)
+            
+            # Match details
+            if matched and matches:
+                if len(matches) == 1:
+                    match_info = matches[0]
+                    position = match_info.get('position', 'unknown')
+                    context = match_info.get('context', '')[:60] + "..." if len(match_info.get('context', '')) > 60 else match_info.get('context', '')
+                    print(f"        Found at position {position}: \"{context}\"")
+                else:
+                    print(f"        Found {len(matches)} matches at multiple positions")
+            elif not matched:
+                print(f"        {Colors.red('No matches found')}")
         print()
         
-    def _print_condition_details(self, condition: Dict[str, Any], box_width: int = 100) -> None:
-        """Print details for a single condition"""
-        pattern = condition.get('pattern', 'unknown')
-        source = condition.get('source', 'content')
-        range_spec = condition.get('range', 'full')
-        matched = condition.get('matched', False)
-        matches = condition.get('matches', [])
-        
-        status_symbol = "✓" if matched else "✗"
-        status_color = Colors.green if matched else Colors.red
-        
-        # Format the condition line
-        condition_text = f"   {status_symbol} Pattern: \"{pattern}\" ({source}"
-        if range_spec != 'full':
-            condition_text += f", {range_spec}"
-        condition_text += ")"
-        
-        # Calculate padding without color codes
-        padding = box_width - len(condition_text) - 2  # -2 for "│ " and " │"
-        print(f"    │   {status_color(status_symbol)} Pattern: \"{pattern}\" ({source}" + 
-              (f", {range_spec}" if range_spec != 'full' else "") + ")" + 
-              " " * max(0, padding - 1) + "│")
-        
-        # Show match details
-        if matched and matches:
-            if len(matches) == 1:
-                match_info = matches[0]
-                position = match_info.get('position', 'unknown')
-                text = match_info.get('text', '')
-                context = match_info.get('context', text)
-                
-                # Truncate context for display
-                max_context_len = box_width - 30  # Reserve space for prefix and padding
-                if len(context) > max_context_len:
-                    context = context[:max_context_len-3] + "..."
-                
-                detail_text = f"     Found at position {position}: \"{context}\""
-                detail_padding = box_width - len(detail_text) - 2
-                print(f"    │{detail_text}" + " " * max(0, detail_padding) + "│")
-            else:
-                positions = [str(match.get('position', '?')) for match in matches[:4]]  # Show first 4
-                if len(matches) > 4:
-                    positions.append(f"...+{len(matches)-4} more")
-                positions_str = ", ".join(positions)
-                
-                detail_text = f"     Found {len(matches)} matches: positions {positions_str}"
-                detail_padding = box_width - len(detail_text) - 2
-                print(f"    │{detail_text}" + " " * max(0, detail_padding) + "│")
-                
-                sample_text = matches[0].get('text', '') if matches else ''
-                if sample_text:
-                    max_sample_len = box_width - 20  # Reserve space for prefix
-                    if len(sample_text) > max_sample_len:
-                        sample_text = sample_text[:max_sample_len-3] + "..."
-                    
-                    sample_detail = f"     Sample: \"{sample_text}\""
-                    sample_padding = box_width - len(sample_detail) - 2
-                    print(f"    │{sample_detail}" + " " * max(0, sample_padding) + "│")
-        elif not matched:
-            no_match_text = "     No matches found"
-            no_match_padding = box_width - len(no_match_text) - 2
-            print(f"    │     {Colors.red('No matches found')}" + " " * max(0, no_match_padding - 10) + "│")
+
             
     def _print_metadata_extraction_details(self, doc_dict: Dict[str, Any]) -> None:
         """Print metadata extraction details"""
