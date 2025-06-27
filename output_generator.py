@@ -524,13 +524,13 @@ class OutputGenerator:
         print(f"Total Documents Found: {total_docs}")
         print(f"Documents Processed: {processed_docs}")
         print(f"Documents Matched: {matched_docs}")
-        print(f"POCO Score Passed: {poco_passed}")
+        print(f"High Confidence Updates: {poco_passed}")
         
         if processed_docs > 0:
             match_rate = (matched_docs / processed_docs) * 100
-            poco_rate = (poco_passed / processed_docs) * 100
+            confidence_rate = (poco_passed / processed_docs) * 100
             print(f"Match Rate: {match_rate:.1f}%")
-            print(f"POCO Pass Rate: {poco_rate:.1f}%")
+            print(f"High Confidence Rate: {confidence_rate:.1f}%")
         
         # Rule usage statistics
         rule_usage = results.get('rule_usage', {})
