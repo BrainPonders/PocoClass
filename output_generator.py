@@ -210,8 +210,8 @@ class OutputGenerator:
         status_color = Colors.green if passed else Colors.red
         status_text = f"{status_symbol} MATCH" if passed else f"{status_symbol} FAIL"
         
-        # Fixed width table with proper borders
-        width = 95
+        # Fixed width table with proper borders - match METADATA COMPARISON table width
+        width = 120
         
         # Top border
         print("    ┌" + "─" * (width - 2) + "┐")
