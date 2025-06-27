@@ -68,23 +68,21 @@ class MetadataProcessor:
         filename_patterns = rule.get('filename_patterns', [])
         
         extracted = {}
+        has_pattern_match = False
         
-        # First, copy static filename metadata
-        for field, value in filename_metadata.items():
-            if field == 'custom_fields' and isinstance(value, dict):
-                extracted[field] = [{'name': k, 'value': v} for k, v in value.items()]
-            elif field == 'tags' and isinstance(value, list):
-                extracted[field] = value
-            else:
-                extracted[field] = value
+        # Check all filename patterns to find matches (supports multiple patterns for flexibility)
+        matched_patterns = []
         
-        # Then, extract dynamic values from filename patterns
-        for pattern_config in filename_patterns:
+        for i, pattern_config in enumerate(filename_patterns):
             if isinstance(pattern_config, dict) and 'pattern' in pattern_config:
                 pattern = pattern_config['pattern']
                 match = re.search(pattern, filename, re.IGNORECASE)
                 
                 if match:
+                    has_pattern_match = True
+                    matched_patterns.append(f"Pattern {i+1}: {pattern}")
+                    self.logger.debug(f"Filename pattern {i+1} matched: {pattern}")
+                    
                     # Extract date if date_group is specified
                     if 'date_group' in pattern_config:
                         date_group = pattern_config['date_group']
@@ -96,6 +94,49 @@ class MetadataProcessor:
                                 parsed_date = self.parse_date(date_str, date_format)
                                 if parsed_date:
                                     extracted['date_created'] = parsed_date
+                                    self.logger.debug(f"Extracted date from filename pattern {i+1}: {parsed_date}")
+                    
+                    # Extract year if year_group is specified
+                    if 'year_group' in pattern_config:
+                        year_group = pattern_config['year_group']
+                        if len(match.groups()) >= year_group:
+                            year_str = match.group(year_group)
+                            if year_str:
+                                # Add year tag if not already present
+                                if 'tags' not in extracted:
+                                    extracted['tags'] = []
+                                year_tag = f"FY{year_str}"
+                                if year_tag not in extracted['tags']:
+                                    extracted['tags'].append(year_tag)
+                                self.logger.debug(f"Extracted year tag from filename: {year_tag}")
+                    
+                    # Extract account info if account_group is specified
+                    if 'account_group' in pattern_config:
+                        account_group = pattern_config['account_group']
+                        if len(match.groups()) >= account_group:
+                            account_str = match.group(account_group)
+                            if account_str:
+                                # Could be used for account-specific tagging
+                                self.logger.debug(f"Extracted account info from filename: {account_str}")
+                    
+                    # Use first matching pattern for primary extraction
+                    break
+        
+        if matched_patterns:
+            self.logger.debug(f"Matched filename patterns: {', '.join(matched_patterns)}")
+        
+        # Only apply static filename metadata if a pattern matched
+        if has_pattern_match:
+            self.logger.debug("Applying static filename metadata due to pattern match")
+            for field, value in filename_metadata.items():
+                if field == 'custom_fields' and isinstance(value, dict):
+                    extracted[field] = [{'name': k, 'value': v} for k, v in value.items()]
+                elif field == 'tags' and isinstance(value, list):
+                    extracted[field] = value
+                else:
+                    extracted[field] = value
+        else:
+            self.logger.debug("No filename patterns matched - no filename metadata applied")
         
         return extracted
     
