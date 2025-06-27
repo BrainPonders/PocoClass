@@ -252,6 +252,11 @@ class OutputGenerator:
                     position = match_info.get('position', 'unknown')
                     context = match_info.get('context', '')
                     
+                    # Clean context by replacing newlines and extra whitespace
+                    context = context.replace('\n', ' ').replace('\r', ' ')
+                    # Collapse multiple spaces into single spaces
+                    context = ' '.join(context.split())
+                    
                     # Truncate context to fit
                     max_context_len = width - 30
                     if len(context) > max_context_len:
