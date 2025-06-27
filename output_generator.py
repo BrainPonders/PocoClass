@@ -209,18 +209,24 @@ class OutputGenerator:
         
         status_symbol = "✓" if passed else "✗"
         status_color = Colors.green if passed else Colors.red
+        status_text = f"{status_symbol} MATCH" if passed else f"{status_symbol} FAIL"
         
-        print("    ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐")
-        print(f"    │ {group_title}: ({score}/{max_score} points) - {status_color(status_symbol + ' MATCH' if passed else status_symbol + ' FAIL')}" + " " * (83 - len(group_title) - len(f"({score}/{max_score} points) - MATCH")) + "│")
+        # Calculate padding without color codes
+        box_width = 100
+        header_text = f"{group_title}: ({score}/{max_score} points) - {status_text}"
+        padding = box_width - len(header_text) - 2  # -2 for the "│ " and " │"
+        
+        print("    ┌" + "─" * (box_width - 2) + "┐")
+        print(f"    │ {group_title}: ({score}/{max_score} points) - {status_color(status_text)}" + " " * max(0, padding) + "│")
         
         conditions = group.get('conditions', [])
         for condition in conditions:
-            self._print_condition_details(condition)
+            self._print_condition_details(condition, box_width)
             
-        print("    └─────────────────────────────────────────────────────────────────────────────────────────────────────┘")
+        print("    └" + "─" * (box_width - 2) + "┘")
         print()
         
-    def _print_condition_details(self, condition: Dict[str, Any]) -> None:
+    def _print_condition_details(self, condition: Dict[str, Any], box_width: int = 100) -> None:
         """Print details for a single condition"""
         pattern = condition.get('pattern', 'unknown')
         source = condition.get('source', 'content')
@@ -232,12 +238,16 @@ class OutputGenerator:
         status_color = Colors.green if matched else Colors.red
         
         # Format the condition line
-        condition_line = f"   {status_color(status_symbol)} Pattern: \"{pattern}\" ({source}"
+        condition_text = f"   {status_symbol} Pattern: \"{pattern}\" ({source}"
         if range_spec != 'full':
-            condition_line += f", {range_spec}"
-        condition_line += ")"
+            condition_text += f", {range_spec}"
+        condition_text += ")"
         
-        print(f"    │{condition_line}" + " " * (95 - len(condition_line)) + "│")
+        # Calculate padding without color codes
+        padding = box_width - len(condition_text) - 2  # -2 for "│ " and " │"
+        print(f"    │   {status_color(status_symbol)} Pattern: \"{pattern}\" ({source}" + 
+              (f", {range_spec}" if range_spec != 'full' else "") + ")" + 
+              " " * max(0, padding - 1) + "│")
         
         # Show match details
         if matched and matches:
@@ -248,25 +258,36 @@ class OutputGenerator:
                 context = match_info.get('context', text)
                 
                 # Truncate context for display
-                if len(context) > 70:
-                    context = context[:67] + "..."
-                    
-                print(f"    │     Found at position {position}: \"{context}\"" + " " * (93 - len(f"     Found at position {position}: \"{context}\"")) + "│")
+                max_context_len = box_width - 30  # Reserve space for prefix and padding
+                if len(context) > max_context_len:
+                    context = context[:max_context_len-3] + "..."
+                
+                detail_text = f"     Found at position {position}: \"{context}\""
+                detail_padding = box_width - len(detail_text) - 2
+                print(f"    │{detail_text}" + " " * max(0, detail_padding) + "│")
             else:
                 positions = [str(match.get('position', '?')) for match in matches[:4]]  # Show first 4
                 if len(matches) > 4:
                     positions.append(f"...+{len(matches)-4} more")
                 positions_str = ", ".join(positions)
                 
+                detail_text = f"     Found {len(matches)} matches: positions {positions_str}"
+                detail_padding = box_width - len(detail_text) - 2
+                print(f"    │{detail_text}" + " " * max(0, detail_padding) + "│")
+                
                 sample_text = matches[0].get('text', '') if matches else ''
-                if len(sample_text) > 50:
-                    sample_text = sample_text[:47] + "..."
-                    
-                print(f"    │     Found {len(matches)} matches: positions {positions_str}" + " " * (93 - len(f"     Found {len(matches)} matches: positions {positions_str}")) + "│")
                 if sample_text:
-                    print(f"    │     Sample: \"{sample_text}\"" + " " * (93 - len(f"     Sample: \"{sample_text}\"")) + "│")
+                    max_sample_len = box_width - 20  # Reserve space for prefix
+                    if len(sample_text) > max_sample_len:
+                        sample_text = sample_text[:max_sample_len-3] + "..."
+                    
+                    sample_detail = f"     Sample: \"{sample_text}\""
+                    sample_padding = box_width - len(sample_detail) - 2
+                    print(f"    │{sample_detail}" + " " * max(0, sample_padding) + "│")
         elif not matched:
-            print(f"    │     {Colors.red('No matches found')}" + " " * (93 - len("     No matches found")) + "│")
+            no_match_text = "     No matches found"
+            no_match_padding = box_width - len(no_match_text) - 2
+            print(f"    │     {Colors.red('No matches found')}" + " " * max(0, no_match_padding - 10) + "│")
             
     def _print_metadata_extraction_details(self, doc_dict: Dict[str, Any]) -> None:
         """Print metadata extraction details"""
@@ -284,6 +305,7 @@ class OutputGenerator:
             print("    " + "─" * 100)
             print("    " + Colors.bold("DYNAMIC METADATA EXTRACTED:"))
             
+            box_width = 100
             for field, details in dynamic_extractions:
                 field_name = field.replace('_', ' ').title()
                 extracted_value = details.get('value', 'N/A')
@@ -292,17 +314,35 @@ class OutputGenerator:
                 raw_match = details.get('raw_match', '')
                 position = details.get('position', 'unknown')
                 
-                print("    ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐")
-                print(f"    │ {field_name}: \"{extracted_value}\"" + " " * (93 - len(f" {field_name}: \"{extracted_value}\"")) + "│")
-                print(f"    │   Pattern: \"{pattern}\" from {source}" + " " * (93 - len(f"   Pattern: \"{pattern}\" from {source}")) + "│")
+                print("    ┌" + "─" * (box_width - 2) + "┐")
                 
+                # Field name and value
+                field_text = f" {field_name}: \"{extracted_value}\""
+                field_padding = box_width - len(field_text) - 2
+                print(f"    │{field_text}" + " " * max(0, field_padding) + "│")
+                
+                # Pattern info
+                pattern_text = f"   Pattern: \"{pattern}\" from {source}"
+                pattern_padding = box_width - len(pattern_text) - 2
+                print(f"    │{pattern_text}" + " " * max(0, pattern_padding) + "│")
+                
+                # Raw match conversion if different
                 if raw_match and raw_match != extracted_value:
-                    print(f"    │   Raw match: \"{raw_match}\" → Converted to: \"{extracted_value}\"" + " " * (93 - len(f"   Raw match: \"{raw_match}\" → Converted to: \"{extracted_value}\"")) + "│")
+                    raw_text = f"   Raw match: \"{raw_match}\" → Converted to: \"{extracted_value}\""
+                    # Truncate if too long
+                    max_raw_len = box_width - 5
+                    if len(raw_text) > max_raw_len:
+                        raw_text = raw_text[:max_raw_len-3] + "..."
+                    raw_padding = box_width - len(raw_text) - 2
+                    print(f"    │{raw_text}" + " " * max(0, raw_padding) + "│")
                 
+                # Position info
                 if position != 'unknown':
-                    print(f"    │   Found at position: {position}" + " " * (93 - len(f"   Found at position: {position}")) + "│")
+                    pos_text = f"   Found at position: {position}"
+                    pos_padding = box_width - len(pos_text) - 2
+                    print(f"    │{pos_text}" + " " * max(0, pos_padding) + "│")
                     
-                print("    └─────────────────────────────────────────────────────────────────────────────────────────────────────┘")
+                print("    └" + "─" * (box_width - 2) + "┘")
             print()
     
     def print_metadata_comparison_table(self, doc_dict: Dict[str, Any]) -> None:
