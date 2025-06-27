@@ -2745,3 +2745,32 @@ Processing Time: 3.06s
 2025-06-27 14:38:08,021 - __main__ - INFO - ================================================================================
 2025-06-27 14:38:08,022 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
 2025-06-27 14:38:08,022 - __main__ - INFO - ================================================================================
+2025-06-27 14:41:25,543 - __main__ - INFO - ================================================================================
+2025-06-27 14:41:25,543 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-27 14:41:25,543 - __main__ - INFO - Started at: 2025-06-27 14:41:25
+2025-06-27 14:41:25,543 - __main__ - INFO - Mode: DRY RUN
+2025-06-27 14:41:25,543 - __main__ - INFO - Verbose: True
+2025-06-27 14:41:25,543 - __main__ - INFO - ================================================================================
+2025-06-27 14:41:25,543 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-27 14:41:26,299 - api_client - INFO - Successfully connected to Paperless API
+2025-06-27 14:41:26,299 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-27 14:41:26,299 - rule_loader - INFO - Loading 2 rule files from rules
+2025-06-27 14:41:26,311 - rule_loader - INFO - Successfully loaded 2 rules
+2025-06-27 14:41:26,312 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-27 14:41:27,978 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-27 14:41:27,978 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-27 14:41:28,808 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-27 14:41:28 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: Rabobank Check Account Statement (150/70)
+  POCO Score: 147% (PASS)
+
+2025-06-27 14:41:28 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 3.27s
+--------------------------------------------------
+2025-06-27 14:41:28,811 - __main__ - INFO - ================================================================================
+2025-06-27 14:41:28,811 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-27 14:41:28,812 - __main__ - INFO - ================================================================================
