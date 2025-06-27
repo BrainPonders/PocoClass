@@ -395,7 +395,7 @@ class ProcessorPipeline:
         doc_dict['content'] = content
         
         # Process Paperless metadata
-        doc_dict['paperless_metadata'] = self.metadata_processor.process_paperless_metadata(raw_doc)
+        doc_dict['paperless_metadata'] = self.metadata_processor.process_paperless_metadata(raw_doc, self.api_client)
         doc_dict['flags']['is_paperless_data_available'] = True
         
         # Debug output after Step 4

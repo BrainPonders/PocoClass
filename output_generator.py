@@ -168,11 +168,11 @@ class OutputGenerator:
             # Determine selected value (priority: content > filename > paperless)
             selected_val = content_val or filename_val or paperless_val
             
-            # Color coding for values
-            content_colored = Colors.green(self.truncate_value(content_val, 22)) if content_val else Colors.red("—")
-            filename_colored = Colors.blue(self.truncate_value(filename_val, 22)) if filename_val else Colors.red("—")
-            paperless_colored = Colors.yellow(self.truncate_value(paperless_val, 22)) if paperless_val else Colors.red("—")
-            selected_colored = Colors.bold(Colors.cyan(self.truncate_value(selected_val, 22))) if selected_val else Colors.red("—")
+            # Color coding for values with longer truncation
+            content_colored = Colors.green(self.truncate_value(content_val, 28)) if content_val else Colors.red("—")
+            filename_colored = Colors.blue(self.truncate_value(filename_val, 28)) if filename_val else Colors.red("—")
+            paperless_colored = Colors.yellow(self.truncate_value(paperless_val, 28)) if paperless_val else Colors.red("—")
+            selected_colored = Colors.bold(Colors.cyan(self.truncate_value(selected_val, 28))) if selected_val else Colors.red("—")
             
             rows.append([
                 Colors.bold(field.replace('_', ' ').title()),

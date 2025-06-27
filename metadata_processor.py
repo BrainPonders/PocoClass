@@ -124,41 +124,60 @@ class MetadataProcessor:
             self.logger.warning(f"Failed to parse date '{date_str}' with format '{date_format}': {e}")
             return None
     
-    def process_paperless_metadata(self, raw_doc: Dict[str, Any]) -> Dict[str, Any]:
+    def process_paperless_metadata(self, raw_doc: Dict[str, Any], api_client=None) -> Dict[str, Any]:
         """Process raw Paperless metadata into structured format"""
         processed = {
             'date_created': {
                 'raw': raw_doc.get('created'),
                 'parsed': self.parse_paperless_date(raw_doc.get('created'))
             },
-            'correspondent': {
-                'id': raw_doc.get('correspondent'),
-                'name': raw_doc.get('correspondent__name')
-            },
-            'document_type': {
-                'id': raw_doc.get('document_type'),
-                'name': raw_doc.get('document_type__name')
-            },
+            'correspondent': None,
+            'document_type': None,
             'tags': [],
             'custom_fields': []
         }
         
+        # Process correspondent
+        if raw_doc.get('correspondent'):
+            if raw_doc.get('correspondent__name'):
+                processed['correspondent'] = raw_doc.get('correspondent__name')
+            elif api_client:
+                # Fetch correspondent name from API
+                all_correspondents = api_client.get_all_correspondents()
+                for name, id_val in all_correspondents.items():
+                    if id_val == raw_doc.get('correspondent'):
+                        processed['correspondent'] = name
+                        break
+        
+        # Process document type
+        if raw_doc.get('document_type'):
+            if raw_doc.get('document_type__name'):
+                processed['document_type'] = raw_doc.get('document_type__name')
+            elif api_client:
+                # Fetch document type name from API
+                all_doc_types = api_client.get_all_document_types()
+                for name, id_val in all_doc_types.items():
+                    if id_val == raw_doc.get('document_type'):
+                        processed['document_type'] = name
+                        break
+        
         # Process tags
-        if 'tags' in raw_doc and isinstance(raw_doc['tags'], list):
+        if 'tags' in raw_doc and isinstance(raw_doc['tags'], list) and api_client:
+            all_tags = api_client.get_all_tags()
+            tag_names = []
             for tag_id in raw_doc['tags']:
-                # In a real implementation, you'd need to fetch tag names
-                processed['tags'].append({
-                    'id': tag_id,
-                    'name': f"Tag_{tag_id}"  # Placeholder
-                })
+                for name, id_val in all_tags.items():
+                    if id_val == tag_id:
+                        tag_names.append(name)
+                        break
+            processed['tags'] = tag_names
         
         # Process custom fields
         if 'custom_fields' in raw_doc and isinstance(raw_doc['custom_fields'], list):
             for field in raw_doc['custom_fields']:
                 if isinstance(field, dict):
                     processed['custom_fields'].append({
-                        'id': field.get('field'),
-                        'name': field.get('field__name'),
+                        'name': field.get('field__name', f"Field_{field.get('field')}"),
                         'value': field.get('value')
                     })
         
