@@ -38,7 +38,7 @@ class PatternMatcher:
         )
         
         # Calculate total score
-        total_score = core_result['score'] + bonus_result['score']
+        total_score = core_result['total_score'] + bonus_result['total_score']
         
         # Determine if rule passes
         passes = total_score >= threshold
@@ -46,13 +46,18 @@ class PatternMatcher:
         result = {
             'rule_id': rule_id,
             'rule_name': rule_name,
-            'core_score': core_result['score'],
-            'bonus_score': bonus_result['score'],
+            'core_score': core_result['total_score'],
+            'bonus_score': bonus_result['total_score'],
             'total_score': total_score,
             'threshold': threshold,
             'pass': passes,
             'core_matches': core_result['matches'],
             'bonus_matches': bonus_result['matches'],
+            # Add detailed evaluation for pattern matching output
+            'evaluation': {
+                'core_identifiers': core_result,
+                'bonus_identifiers': bonus_result if bonus_result['total_score'] > 0 else None
+            }
         }
         
         self.logger.debug(f"Rule {rule_id} result: {total_score}/{threshold} ({'PASS' if passes else 'FAIL'})")
@@ -62,20 +67,41 @@ class PatternMatcher:
     def evaluate_identifiers(self, identifiers: Dict[str, Any], content: str, filename: str, section_type: str) -> Dict[str, Any]:
         """Evaluate an identifiers section (core or bonus)"""
         if not identifiers or 'logic_groups' not in identifiers:
-            return {'score': 0, 'matches': []}
+            return {
+                'total_score': 0, 
+                'threshold': identifiers.get('threshold', 0) if identifiers else 0,
+                'passed': False,
+                'logic_groups': [],
+                'matches': []
+            }
         
         logic_groups = identifiers['logic_groups']
+        threshold = identifiers.get('threshold', 0)
         total_score = 0
         all_matches = []
+        evaluated_groups = []
         
-        for group in logic_groups:
+        for i, group in enumerate(logic_groups):
             group_result = self.evaluate_logic_group(group, content, filename)
+            
+            # Add group metadata for detailed output
+            group_result['title'] = group.get('title', f"{section_type.title()} Group {i+1}")
+            group_result['max_score'] = group.get('score', 0)
+            group_result['score'] = group.get('score', 0) if group_result['matched'] else 0
+            
+            evaluated_groups.append(group_result)
+            
             if group_result['matched']:
-                total_score += group['score']
-                all_matches.extend(group_result['matches'])
+                total_score += group['score'] 
+                all_matches.extend(group_result.get('matches', []))
+        
+        passed = total_score >= threshold
         
         return {
-            'score': total_score,
+            'total_score': total_score,
+            'threshold': threshold,
+            'passed': passed,
+            'logic_groups': evaluated_groups,
             'matches': all_matches
         }
     
@@ -95,29 +121,56 @@ class PatternMatcher:
     def evaluate_match_group(self, conditions: List[Dict[str, Any]], content: str, filename: str) -> Dict[str, Any]:
         """Evaluate a 'match' logic group (all conditions must match)"""
         matches = []
+        condition_results = []
         
         for condition in conditions:
             match_result = self.evaluate_condition(condition, content, filename)
+            condition_results.append(match_result)
+            
             if match_result['matched']:
                 matches.append(match_result)
             else:
                 # If any condition fails, the entire group fails
-                return {'matched': False, 'matches': []}
+                return {
+                    'matched': False, 
+                    'matches': [], 
+                    'conditions': condition_results,
+                    'type': 'match',
+                    'score': 0,
+                    'passed': False
+                }
         
         # All conditions matched
-        return {'matched': True, 'matches': matches}
+        return {
+            'matched': True, 
+            'matches': matches,
+            'conditions': condition_results,
+            'type': 'match',
+            'score': 0,  # Will be set by calling function
+            'passed': True
+        }
     
     def evaluate_or_group(self, conditions: List[Dict[str, Any]], content: str, filename: str) -> Dict[str, Any]:
         """Evaluate an 'or' logic group (at least one condition must match)"""
         matches = []
+        condition_results = []
         
         for condition in conditions:
             match_result = self.evaluate_condition(condition, content, filename)
+            condition_results.append(match_result)
             if match_result['matched']:
                 matches.append(match_result)
         
         # If any condition matched, the group succeeds
-        return {'matched': len(matches) > 0, 'matches': matches}
+        matched = len(matches) > 0
+        return {
+            'matched': matched,
+            'matches': matches,
+            'conditions': condition_results,
+            'type': 'or',
+            'score': 0,  # Will be set by calling function
+            'passed': matched
+        }
     
     def evaluate_condition(self, condition: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
         """Evaluate a single condition"""
@@ -140,22 +193,53 @@ class PatternMatcher:
         
         # Perform pattern matching
         try:
-            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-            if match:
+            # Find all matches for detailed debugging
+            matches = list(re.finditer(pattern, text, re.IGNORECASE | re.MULTILINE))
+            
+            if matches:
+                # Collect detailed match information
+                match_details = []
+                for match in matches:
+                    # Calculate position in original text if range was applied
+                    position = match.start()
+                    if range_spec and source == 'content':
+                        # Adjust position to account for range offset
+                        try:
+                            start_offset = int(range_spec.split('-')[0])
+                            position += start_offset
+                        except (ValueError, IndexError):
+                            pass
+                    
+                    # Get context around the match (±30 characters)
+                    context_start = max(0, match.start() - 30)
+                    context_end = min(len(text), match.end() + 30)
+                    context = text[context_start:context_end]
+                    
+                    match_details.append({
+                        'position': position,
+                        'text': match.group(0),
+                        'context': context,
+                        'groups': match.groups() if match.groups() else []
+                    })
+                
                 return {
                     'matched': True,
                     'pattern': pattern,
                     'source': source,
                     'range': range_spec,
-                    'match_text': match.group(0),
-                    'match_groups': match.groups() if match.groups() else []
+                    'matches': match_details,
+                    'match_count': len(matches),
+                    # Keep backward compatibility
+                    'match_text': matches[0].group(0),
+                    'match_groups': matches[0].groups() if matches[0].groups() else []
                 }
             else:
                 return {
                     'matched': False,
                     'pattern': pattern,
                     'source': source,
-                    'range': range_spec
+                    'range': range_spec,
+                    'matches': []
                 }
         except re.error as e:
             self.logger.error(f"Invalid regex pattern '{pattern}': {e}")
@@ -164,7 +248,8 @@ class PatternMatcher:
                 'pattern': pattern,
                 'source': source,
                 'range': range_spec,
-                'error': str(e)
+                'error': str(e),
+                'matches': []
             }
     
     def apply_range(self, text: str, range_spec: str) -> str:

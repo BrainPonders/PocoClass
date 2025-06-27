@@ -84,6 +84,10 @@ class OutputGenerator:
         if rule_evaluations:
             self.print_rule_evaluations_table(rule_evaluations)
         
+        # Pattern matching details for verbose/debug output
+        if self.verbose or self.debug:
+            self.print_pattern_matching_details(doc_dict)
+        
         print()  # Extra spacing between tables
         print()
         
@@ -142,6 +146,164 @@ class OutputGenerator:
         for line in table.split('\n'):
             print("      " + line)
         print()
+
+    def print_pattern_matching_details(self, doc_dict: Dict[str, Any]) -> None:
+        """Print detailed pattern matching information for rule development"""
+        selected_rule = doc_dict.get('selected_rule')
+        if not selected_rule:
+            return
+            
+        rule_evaluation = selected_rule.get('evaluation', {})
+        rule_id = selected_rule.get('rule_id', 'unknown')
+        rule_name = selected_rule.get('rule_name', 'Unknown Rule')
+        
+        print("    " + Colors.bold(Colors.cyan("🔍 PATTERN MATCHING DETAILS")) + f" ({rule_id})")
+        print("    " + "─" * 100)
+        print()
+        
+        # Core identifiers section
+        core_details = rule_evaluation.get('core_identifiers', {})
+        core_score = core_details.get('total_score', 0)
+        core_threshold = core_details.get('threshold', 70)
+        core_passed = core_details.get('passed', False)
+        
+        status_color = Colors.green if core_passed else Colors.red
+        status_text = "PASS" if core_passed else "FAIL"
+        
+        print("    " + Colors.bold(f"CORE IDENTIFIERS ({core_score}/{core_threshold} points - {status_color(status_text)})"))
+        
+        # Print each core logic group
+        logic_groups = core_details.get('logic_groups', [])
+        for i, group in enumerate(logic_groups, 1):
+            self._print_logic_group_details(group, f"Group {i}")
+        
+        print()
+        
+        # Bonus identifiers section
+        bonus_details = rule_evaluation.get('bonus_identifiers', {})
+        if bonus_details:
+            bonus_score = bonus_details.get('total_score', 0)
+            bonus_threshold = bonus_details.get('threshold', 0)
+            bonus_passed = bonus_details.get('passed', False)
+            
+            status_color = Colors.green if bonus_passed else Colors.red
+            status_text = "PASS" if bonus_passed else "FAIL"
+            
+            print("    " + Colors.bold(f"BONUS IDENTIFIERS ({bonus_score}/{bonus_threshold} points - {status_color(status_text)})"))
+            
+            # Print each bonus logic group
+            logic_groups = bonus_details.get('logic_groups', [])
+            for i, group in enumerate(logic_groups, 1):
+                self._print_logic_group_details(group, f"Group {i}")
+        
+        # Metadata extraction details
+        self._print_metadata_extraction_details(doc_dict)
+        
+    def _print_logic_group_details(self, group: Dict[str, Any], group_name: str) -> None:
+        """Print details for a single logic group"""
+        group_type = group.get('type', 'unknown')
+        score = group.get('score', 0)
+        max_score = group.get('max_score', 0)
+        passed = group.get('passed', False)
+        group_title = group.get('title', group_name)
+        
+        status_symbol = "✓" if passed else "✗"
+        status_color = Colors.green if passed else Colors.red
+        
+        print("    ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐")
+        print(f"    │ {group_title}: ({score}/{max_score} points) - {status_color(status_symbol + ' MATCH' if passed else status_symbol + ' FAIL')}" + " " * (83 - len(group_title) - len(f"({score}/{max_score} points) - MATCH")) + "│")
+        
+        conditions = group.get('conditions', [])
+        for condition in conditions:
+            self._print_condition_details(condition)
+            
+        print("    └─────────────────────────────────────────────────────────────────────────────────────────────────────┘")
+        print()
+        
+    def _print_condition_details(self, condition: Dict[str, Any]) -> None:
+        """Print details for a single condition"""
+        pattern = condition.get('pattern', 'unknown')
+        source = condition.get('source', 'content')
+        range_spec = condition.get('range', 'full')
+        matched = condition.get('matched', False)
+        matches = condition.get('matches', [])
+        
+        status_symbol = "✓" if matched else "✗"
+        status_color = Colors.green if matched else Colors.red
+        
+        # Format the condition line
+        condition_line = f"   {status_color(status_symbol)} Pattern: \"{pattern}\" ({source}"
+        if range_spec != 'full':
+            condition_line += f", {range_spec}"
+        condition_line += ")"
+        
+        print(f"    │{condition_line}" + " " * (95 - len(condition_line)) + "│")
+        
+        # Show match details
+        if matched and matches:
+            if len(matches) == 1:
+                match_info = matches[0]
+                position = match_info.get('position', 'unknown')
+                text = match_info.get('text', '')
+                context = match_info.get('context', text)
+                
+                # Truncate context for display
+                if len(context) > 70:
+                    context = context[:67] + "..."
+                    
+                print(f"    │     Found at position {position}: \"{context}\"" + " " * (93 - len(f"     Found at position {position}: \"{context}\"")) + "│")
+            else:
+                positions = [str(match.get('position', '?')) for match in matches[:4]]  # Show first 4
+                if len(matches) > 4:
+                    positions.append(f"...+{len(matches)-4} more")
+                positions_str = ", ".join(positions)
+                
+                sample_text = matches[0].get('text', '') if matches else ''
+                if len(sample_text) > 50:
+                    sample_text = sample_text[:47] + "..."
+                    
+                print(f"    │     Found {len(matches)} matches: positions {positions_str}" + " " * (93 - len(f"     Found {len(matches)} matches: positions {positions_str}")) + "│")
+                if sample_text:
+                    print(f"    │     Sample: \"{sample_text}\"" + " " * (93 - len(f"     Sample: \"{sample_text}\"")) + "│")
+        elif not matched:
+            print(f"    │     {Colors.red('No matches found')}" + " " * (93 - len("     No matches found")) + "│")
+            
+    def _print_metadata_extraction_details(self, doc_dict: Dict[str, Any]) -> None:
+        """Print metadata extraction details"""
+        rule_metadata = doc_dict.get('rule_metadata', {})
+        dynamic_extractions = []
+        
+        # Look for dynamic metadata with extraction details
+        for field, value in rule_metadata.items():
+            if isinstance(value, dict) and 'extracted_from' in value:
+                dynamic_extractions.append((field, value))
+        
+        if dynamic_extractions:
+            print()
+            print("    " + Colors.bold(Colors.cyan("🔧 METADATA EXTRACTION DETAILS")))
+            print("    " + "─" * 100)
+            print("    " + Colors.bold("DYNAMIC METADATA EXTRACTED:"))
+            
+            for field, details in dynamic_extractions:
+                field_name = field.replace('_', ' ').title()
+                extracted_value = details.get('value', 'N/A')
+                pattern = details.get('pattern', 'N/A')
+                source = details.get('source', 'content')
+                raw_match = details.get('raw_match', '')
+                position = details.get('position', 'unknown')
+                
+                print("    ┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐")
+                print(f"    │ {field_name}: \"{extracted_value}\"" + " " * (93 - len(f" {field_name}: \"{extracted_value}\"")) + "│")
+                print(f"    │   Pattern: \"{pattern}\" from {source}" + " " * (93 - len(f"   Pattern: \"{pattern}\" from {source}")) + "│")
+                
+                if raw_match and raw_match != extracted_value:
+                    print(f"    │   Raw match: \"{raw_match}\" → Converted to: \"{extracted_value}\"" + " " * (93 - len(f"   Raw match: \"{raw_match}\" → Converted to: \"{extracted_value}\"")) + "│")
+                
+                if position != 'unknown':
+                    print(f"    │   Found at position: {position}" + " " * (93 - len(f"   Found at position: {position}")) + "│")
+                    
+                print("    └─────────────────────────────────────────────────────────────────────────────────────────────────────┘")
+            print()
     
     def print_metadata_comparison_table(self, doc_dict: Dict[str, Any]) -> None:
         """Print metadata comparison across sources with enhanced formatting"""
