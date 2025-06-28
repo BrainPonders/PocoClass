@@ -1,0 +1,49 @@
+# External POCOmeta Service - Non-Intrusive Setup
+# This runs POCOmeta as a separate service that connects to your existing Paperless
+
+version: "3.8"
+
+services:
+  pocometa:
+    build: 
+      context: ../..
+      dockerfile: docker/external-setup/Dockerfile.external
+    container_name: pocometa
+    restart: unless-stopped
+    environment:
+      # Connection to your Paperless instance
+      PAPERLESS_URL: ${PAPERLESS_URL:-http://paperless-webserver:8000}
+      PAPERLESS_TOKEN: ${PAPERLESS_TOKEN}
+      
+      # POCOmeta behavior
+      POCO_DRY_RUN: ${POCO_DRY_RUN:-false}
+      POCO_VERBOSE: ${POCO_VERBOSE:-false}
+      POCO_MAX_DOCUMENTS: ${POCO_MAX_DOCUMENTS:-0}
+      
+      # Processing settings
+      FILTER_TAG_INCLUDE: ${FILTER_TAG_INCLUDE:-NEW}
+      FILTER_TAG_EXCLUDE: ${FILTER_TAG_EXCLUDE:-POCO}
+      POCO_TAG_NAME: ${POCO_TAG_NAME:-POCO}
+      
+      # Schedule processing every 5 minutes
+      POCO_SCHEDULE: ${POCO_SCHEDULE:-*/5 * * * *}
+      
+    volumes:
+      # Mount your rule files
+      - ./rules:/app/rules:ro
+      # Mount logs directory
+      - ./logs:/app/logs:rw
+    
+    networks:
+      - paperless
+    
+    depends_on:
+      - paperless-webserver
+
+  # Reference to your existing Paperless service
+  paperless-webserver:
+    external: true
+    
+networks:
+  paperless:
+    external: true
