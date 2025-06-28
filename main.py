@@ -12,9 +12,16 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
-from config import Config
-from processor_pipeline import ProcessorPipeline
-from output_generator import OutputGenerator
+try:
+    # Try relative imports first (when run as module)
+    from .config import Config
+    from .processor_pipeline import ProcessorPipeline
+    from .output_generator import OutputGenerator
+except ImportError:
+    # Fall back to absolute imports (when run directly)
+    from config import Config
+    from processor_pipeline import ProcessorPipeline
+    from output_generator import OutputGenerator
 
 def setup_logging(debug=False):
     """Configure logging for the application"""
