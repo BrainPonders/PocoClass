@@ -115,18 +115,12 @@ LOG_FILE_NAME = "processing.log"
 ENABLE_DEBUG_LOGGING = False
 
 # =============================================================================
-# SAFETY AND BACKUP
+# SAFETY SETTINGS
 # =============================================================================
 
 # Enable dry-run mode by default (safer for new users)
 # When True, shows what would be changed without actually changing anything
 DEFAULT_DRY_RUN = False
-
-# Create backup of document metadata before making changes
-ENABLE_METADATA_BACKUP = True
-
-# Backup file name
-BACKUP_FILE_NAME = "metadata_backup.json"
 
 # =============================================================================
 # ADVANCED SETTINGS
@@ -142,20 +136,8 @@ API_RETRY_COUNT = 3
 API_DELAY = 0.1
 
 # Maximum file size to process (in MB, 0 = no limit)
+# NOTE: Currently not enforced - planned for future implementation
 MAX_FILE_SIZE_MB = 100
-
-# =============================================================================
-# NOTIFICATION SETTINGS
-# =============================================================================
-
-# Send summary email after processing (requires email configuration)
-ENABLE_EMAIL_NOTIFICATIONS = False
-
-# Email address to send notifications to
-NOTIFICATION_EMAIL = ""
-
-# Send notification only if errors occurred
-NOTIFY_ON_ERRORS_ONLY = True
 
 # =============================================================================
 # RULE DEVELOPMENT HELPERS
@@ -169,6 +151,40 @@ HIGHLIGHT_MATCHES = True
 
 # Show confidence score breakdown
 SHOW_SCORE_BREAKDOWN = True
+
+# =============================================================================
+# PLANNED FEATURES (Not Yet Implemented)
+# =============================================================================
+
+# The following features are planned for future releases:
+# - Email notifications after processing completion
+# - Automatic metadata backup before changes
+# - File size limits for processing
+# - Advanced error recovery mechanisms
+# - Webhook integration for external systems
+
+# =============================================================================
+# IMPLEMENTATION STATUS
+# =============================================================================
+
+# ✅ FULLY IMPLEMENTED:
+# - Server connection and API communication
+# - Document filtering by tags, types, and correspondents
+# - Rule-based pattern matching and classification
+# - Confidence scoring and thresholds
+# - Custom field management
+# - Comprehensive logging and output formatting
+# - Dry-run mode and safety features
+# - API retry logic and rate limiting
+# - Rule development helpers and debugging tools
+
+# 🔄 PARTIALLY IMPLEMENTED:
+# - MAX_FILE_SIZE_MB: Setting exists but not enforced during processing
+
+# ❌ NOT IMPLEMENTED (Removed from configuration):
+# - Email notifications
+# - Metadata backup system
+# - File size validation
 
 # =============================================================================
 # END OF CONFIGURATION
