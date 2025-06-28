@@ -1,6 +1,6 @@
 """
-Document Dictionary Structure
-Defines the complete data structure for document processing
+POCOmeta - Document Dictionary Structure
+Defines the complete data structure for document processing workflow
 """
 
 from typing import Dict, List, Any, Optional

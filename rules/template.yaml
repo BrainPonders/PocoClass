@@ -2,11 +2,13 @@
 # Filename: template.yaml
 #
 # Description:
-# Template for creating new document classification rules.
-# This template demonstrates the complete structure and all available options.
+# POCOmeta rule template for creating new document classification rules.
+# This template demonstrates the complete structure and all available options for intelligent
+# metadata extraction and document categorization.
 #
-# version: 1.0
+# version: 2.0
 # Created: 2025-06-26
+# Updated: 2025-06-28 - Enhanced with POCOmeta branding and comprehensive documentation
 # -------------------------------------------------------------------------------------------------
 
 rule_name: "Document Type Template"

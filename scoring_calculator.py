@@ -1,6 +1,6 @@
 """
-POCO Scoring Calculator
-Calculates confidence scores for metadata across different sources
+POCOmeta - POCO Scoring Calculator
+Calculates confidence scores for metadata across different sources to ensure data quality
 """
 
 import logging
