@@ -340,7 +340,7 @@ The following files are excluded from version control:
 
 ## 📄 License
 
-This project is released under the MIT License. See LICENSE file for details.
+This project is released under the GNU General Public License. See LICENSE file for details.
 
 ## 🆕 Recent Changes
 
