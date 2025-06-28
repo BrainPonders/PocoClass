@@ -25,8 +25,8 @@ class ScoringCalculator:
         filename_weight = poco_weights.get('filename', 5)
         paperless_weight = poco_weights.get('paperless', 3)
         
-        # Fields to score
-        fields_to_score = ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']
+        # Fields to score including specific custom fields
+        fields_to_score = ['correspondent', 'document_type', 'date_created', 'tags', 'Document Category']
         
         poco_details = {}
         final_scores = []
