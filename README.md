@@ -1,6 +1,6 @@
-# Post-Consumption Script for Paperless-ngx
+# POCOmeta
 
-A powerful document classification tool that automatically processes and categorizes your Paperless-ngx documents using intelligent rule-based pattern matching.
+A powerful post-consumption metadata processor for Paperless-ngx that automatically classifies and enriches your documents using intelligent rule-based pattern matching.
 
 ## 🚀 Quick Start
 
