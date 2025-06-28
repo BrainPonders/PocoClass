@@ -7,10 +7,16 @@ import os
 from typing import Dict, Any, List, Optional
 
 try:
-    from settings import get_settings
+    # Try relative imports first (when run as module)
+    from .settings import get_settings
     user_settings = get_settings()
 except ImportError:
-    user_settings = {}
+    try:
+        # Fall back to absolute imports (when run directly)
+        from settings import get_settings
+        user_settings = get_settings()
+    except ImportError:
+        user_settings = {}
 
 class Config:
     """Configuration class for the application"""

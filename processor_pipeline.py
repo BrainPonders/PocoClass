@@ -9,14 +9,26 @@ import json
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from config import Config
-from document_dict import create_document_dict
-from api_client import PaperlessAPIClient
-from rule_loader import RuleLoader
-from pattern_matcher import PatternMatcher
-from metadata_processor import MetadataProcessor
-from scoring_calculator import ScoringCalculator
-from output_generator import OutputGenerator
+try:
+    # Try relative imports first (when run as module)
+    from .config import Config
+    from .document_dict import create_document_dict
+    from .api_client import PaperlessAPIClient
+    from .rule_loader import RuleLoader
+    from .pattern_matcher import PatternMatcher
+    from .metadata_processor import MetadataProcessor
+    from .scoring_calculator import ScoringCalculator
+    from .output_generator import OutputGenerator
+except ImportError:
+    # Fall back to absolute imports (when run directly)
+    from config import Config
+    from document_dict import create_document_dict
+    from api_client import PaperlessAPIClient
+    from rule_loader import RuleLoader
+    from pattern_matcher import PatternMatcher
+    from metadata_processor import MetadataProcessor
+    from scoring_calculator import ScoringCalculator
+    from output_generator import OutputGenerator
 
 class ProcessorPipeline:
     """Main processing pipeline for document classification"""
