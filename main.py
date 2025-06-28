@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Post-Consumption Script for Paperless-ngx
-A modular, rule-based document classification tool
+POCOmeta - Post-Consumption Metadata Processor for Paperless-ngx
+A modular, rule-based document classification and metadata enrichment tool
 
 Main entry point that orchestrates the step-by-step processing pipeline
 """
@@ -35,7 +35,7 @@ def setup_logging(debug=False):
 def parse_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description='Post-Consumption Script for Paperless-ngx',
+        description='POCOmeta - Post-Consumption Metadata Processor for Paperless-ngx',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -74,7 +74,7 @@ def main():
     logger = setup_logging(args.debug or args.debug_raw)
     
     logger.info("=" * 80)
-    logger.info("POST-CONSUMPTION SCRIPT STARTED")
+    logger.info("POCOmeta - POST-CONSUMPTION METADATA PROCESSOR STARTED")
     logger.info(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     logger.info(f"Mode: {'DRY RUN' if args.dry_run else 'LIVE'}")
     logger.info(f"Verbose: {args.verbose}")
