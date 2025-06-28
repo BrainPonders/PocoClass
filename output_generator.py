@@ -70,7 +70,8 @@ class OutputGenerator:
         current_time = datetime.now().strftime("%Y-%m-%d @ %H:%M:%S")
         mode_text = "[DRY RUN] " if dry_run else ""
         
-        print(f"== {mode_text}{current_time} " + "="*34)
+        print("="*64)
+        print(f"{mode_text}{current_time}")
         print(f"Document {doc_id}: {filename}")
         print(f"  Original Filename: {original_filename}")
         
@@ -90,12 +91,16 @@ class OutputGenerator:
     
     def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
-        print("  " + "="*60)
+        print()
         
         # Rule evaluations table
         rule_evaluations = doc_dict.get('rule_evaluations', [])
         if rule_evaluations:
             self.print_rule_evaluations_table(rule_evaluations)
+        
+        # Add extra spacing before pattern matching details
+        print()
+        print()
         
         # Pattern matching details for verbose/debug output
         if self.verbose or self.debug:
@@ -119,7 +124,7 @@ class OutputGenerator:
         # Final metadata updates section
         self.print_final_metadata_updates(doc_dict, dry_run)
         
-        print("  " + "="*60)
+        print()
     
     def print_rule_evaluations_table(self, rule_evaluations: List[Dict[str, Any]]) -> None:
         """Print table of rule evaluations with enhanced formatting"""
@@ -379,8 +384,7 @@ class OutputGenerator:
             ('correspondent', 'Correspondent'), 
             ('document_type', 'Document Type'),
             ('tags', 'Tags'),
-            ('Document Category', 'CF: Document Category'),
-            ('POCO Score', 'CF: POCO Score')
+            ('Document Category', 'CF: Document Category')
         ]
         
         for field_key, field_display in fields:
@@ -485,8 +489,7 @@ class OutputGenerator:
             ('correspondent', 'Correspondent'), 
             ('document_type', 'Document Type'),
             ('tags', 'Tags'),
-            ('Document Category', 'CF: Document Category'),
-            ('POCO Score', 'CF: POCO Score')
+            ('Document Category', 'CF: Document Category')
         ]
         
         for field_key, field_display in fields:
