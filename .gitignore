@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Development and debug files
+debug_*.py
+debug_*.txt
+test_*.py
+*_demo.py
+sample_*.txt
+log.txt
+
+# Development assets
+attached_assets/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
