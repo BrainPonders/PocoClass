@@ -21,6 +21,7 @@ rules/*
 
 # Project documentation (keep development notes private)
 replit.md
+Documents
 
 # Virtual environments
 venv/
