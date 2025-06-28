@@ -1,5 +1,5 @@
 """
-Configuration module for Post-Consumption Script
+POCOmeta - Configuration Management
 Handles settings from settings.py and environment variables (environment takes priority)
 """
 

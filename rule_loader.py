@@ -1,6 +1,6 @@
 """
-YAML Rule Loader
-Handles loading and validation of YAML rule files
+POCOmeta - YAML Rule Loader
+Handles loading and validation of YAML rule files for document classification
 """
 
 import yaml

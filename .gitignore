@@ -15,6 +15,12 @@ log.txt
 # Development assets
 attached_assets/
 
+# Personal rule files (keep your specific account rules private)
+rules/*_262.yaml
+rules/*_369.yaml
+rules/*_295.yaml
+rules/*_592.yaml
+
 # Virtual environments
 venv/
 env/
