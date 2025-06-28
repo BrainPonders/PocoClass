@@ -21,6 +21,9 @@ rules/*_369.yaml
 rules/*_295.yaml
 rules/*_592.yaml
 
+# Project documentation (keep development notes private)
+replit.md
+
 # Virtual environments
 venv/
 env/
