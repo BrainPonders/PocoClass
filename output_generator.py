@@ -56,18 +56,31 @@ class OutputGenerator:
         """Generate output for a single document"""
         doc_id = doc_dict.get('id', 'Unknown')
         title = doc_dict.get('title', 'Unknown')
+        filename = doc_dict.get('filename', 'Unknown')
+        raw_api_doc = doc_dict.get('raw_api_doc', {})
+        original_filename = raw_api_doc.get('original_filename', filename)
         selected_rule = doc_dict.get('selected_rule', {})
         poco_summary = doc_dict.get('poco_summary', {})
         
-        # Basic output (always shown)
-        mode_prefix = "[DRY RUN] " if dry_run else ""
+        # Add spacing and header
+        print()
+        print()
+        
+        from datetime import datetime
+        current_time = datetime.now().strftime("%Y-%m-%d @ %H:%M:%S")
+        mode_text = "[DRY RUN] " if dry_run else ""
+        
+        print(f"== {mode_text}{current_time} " + "="*34)
+        print(f"Document {doc_id}: {filename}")
+        print(f"  Original Filename: {original_filename}")
         
         if selected_rule.get('pass', False):
-            print(f"{mode_prefix}Document {doc_id}: {title}")
             print(f"  Rule: {selected_rule.get('rule_name', 'Unknown')} ({selected_rule.get('total_score', 0)}/{selected_rule.get('threshold', 0)})")
             print(f"  POCO Score: {poco_summary.get('final_score', 0)}% ({'PASS' if poco_summary.get('pass', False) else 'FAIL'})")
         else:
-            print(f"{mode_prefix}Document {doc_id}: {title} - NO MATCHING RULE")
+            print(f"  Rule: NO MATCHING RULE")
+        
+        print("="*64)
         
         # Verbose output
         if self.verbose:
@@ -360,24 +373,56 @@ class OutputGenerator:
         ]
         rows = []
         
-        fields = ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']
+        # Standardized field order as requested
+        fields = [
+            ('date_created', 'Date Created'),
+            ('correspondent', 'Correspondent'), 
+            ('document_type', 'Document Type'),
+            ('tags', 'Tags'),
+            ('Document Category', 'CF: Document Category'),
+            ('POCO Score', 'CF: POCO Score')
+        ]
         
-        for field in fields:
-            content_val = self.get_display_value(doc_dict.get('content_metadata', {}), field)
-            filename_val = self.get_display_value(doc_dict.get('filename_metadata', {}), field)
-            paperless_val = self.get_display_value(doc_dict.get('paperless_metadata', {}), field)
+        for field_key, field_display in fields:
+            if field_key.startswith('CF:') or field_display.startswith('CF:'):
+                # Handle custom fields
+                cf_name = field_key if not field_key.startswith('CF:') else field_key[4:]
+                content_val = self.get_custom_field_value(doc_dict.get('content_metadata', {}), cf_name)
+                filename_val = self.get_custom_field_value(doc_dict.get('filename_metadata', {}), cf_name)
+                paperless_val = self.get_custom_field_value(doc_dict.get('paperless_metadata', {}), cf_name)
+            else:
+                # Handle regular fields
+                content_val = self.get_display_value(doc_dict.get('content_metadata', {}), field_key)
+                filename_val = self.get_display_value(doc_dict.get('filename_metadata', {}), field_key)
+                paperless_val = self.get_display_value(doc_dict.get('paperless_metadata', {}), field_key)
             
-            # Determine selected value (priority: content > filename > paperless)
-            selected_val = content_val or filename_val or paperless_val
-            
-            # Color coding for values with longer truncation
+            # Color coding: Content is green baseline, others green if matching, red if different
             content_colored = Colors.green(self.truncate_value(content_val, 28)) if content_val else Colors.red("—")
-            filename_colored = Colors.blue(self.truncate_value(filename_val, 28)) if filename_val else Colors.red("—")
-            paperless_colored = Colors.yellow(self.truncate_value(paperless_val, 28)) if paperless_val else Colors.red("—")
+            
+            # Filename: green if matches content, red if different, red dash if empty
+            if filename_val:
+                if filename_val == content_val:
+                    filename_colored = Colors.green(self.truncate_value(filename_val, 28))
+                else:
+                    filename_colored = Colors.red(self.truncate_value(filename_val, 28))
+            else:
+                filename_colored = Colors.red("—")
+            
+            # Paperless: green if matches content, red if different, red dash if empty
+            if paperless_val:
+                if paperless_val == content_val:
+                    paperless_colored = Colors.green(self.truncate_value(paperless_val, 28))
+                else:
+                    paperless_colored = Colors.red(self.truncate_value(paperless_val, 28))
+            else:
+                paperless_colored = Colors.red("—")
+            
+            # Selected value (priority: content > filename > paperless)
+            selected_val = content_val or filename_val or paperless_val
             selected_colored = Colors.bold(Colors.cyan(self.truncate_value(selected_val, 28))) if selected_val else Colors.red("—")
             
             rows.append([
-                Colors.bold(field.replace('_', ' ').title()),
+                Colors.bold(field_display),
                 content_colored,
                 filename_colored,
                 paperless_colored,
@@ -419,13 +464,13 @@ class OutputGenerator:
         """Print rule review table showing confidence scoring breakdown with enhanced formatting"""
         print()
         print("    " + Colors.bold(Colors.cyan("📊 CONFIDENCE SCORING")))
-        print("    " + "─" * 85)
+        print("    " + "─" * 120)
         
         headers = [
-            Colors.bold("Metadata"), 
-            Colors.bold("Rule Score"), 
-            Colors.bold("Filename Score"), 
-            Colors.bold("Paperless Score"), 
+            Colors.bold("Field"), 
+            Colors.bold("Content"), 
+            Colors.bold("Filename"), 
+            Colors.bold("Paperless"), 
             Colors.bold("Final Score")
         ]
         rows = []
@@ -434,16 +479,37 @@ class OutputGenerator:
         poco_summary = doc_dict.get('poco_summary', {})
         rule_threshold = poco_summary.get('rule_threshold', 70)
         
-        for field, details in poco_details.items():
+        # Standardized field order matching metadata comparison table
+        fields = [
+            ('date_created', 'Date Created'),
+            ('correspondent', 'Correspondent'), 
+            ('document_type', 'Document Type'),
+            ('tags', 'Tags'),
+            ('Document Category', 'CF: Document Category'),
+            ('POCO Score', 'CF: POCO Score')
+        ]
+        
+        for field_key, field_display in fields:
+            details = poco_details.get(field_key, {})
             rule_score = details.get('rule_score', 0)
             filename_score = details.get('filename_score', 0)
             paperless_score = details.get('paperless_score', 0)
             final_score = details.get('final_score', 0)
             
-            # Color coding for scores
-            rule_colored = Colors.cyan(f"{rule_score:>3}")
-            filename_colored = Colors.green(f"{filename_score:>+3}") if filename_score >= 0 else Colors.red(f"{filename_score:>3}")
-            paperless_colored = Colors.yellow(f"{paperless_score:>+3}") if paperless_score >= 0 else Colors.red(f"{paperless_score:>3}")
+            # Color coding: Content (rule) is green baseline, others green if positive, red if negative/zero
+            rule_colored = Colors.green(f"{rule_score:>3}")
+            
+            # Filename: green if positive, red if zero/negative
+            if filename_score > 0:
+                filename_colored = Colors.green(f"{filename_score:>+3}")
+            else:
+                filename_colored = Colors.red(f"{filename_score:>3}")
+            
+            # Paperless: green if positive, red if zero/negative
+            if paperless_score > 0:
+                paperless_colored = Colors.green(f"{paperless_score:>+3}")
+            else:
+                paperless_colored = Colors.red(f"{paperless_score:>3}")
             
             # Final score color based on threshold
             if final_score >= rule_threshold:
@@ -452,7 +518,7 @@ class OutputGenerator:
                 final_colored = Colors.bold(Colors.red(f"{final_score:>3}"))
             
             rows.append([
-                Colors.bold(field.replace('_', ' ').title()),
+                Colors.bold(field_display),
                 rule_colored,
                 filename_colored,
                 paperless_colored,
@@ -650,6 +716,24 @@ class OutputGenerator:
                 return ", ".join([f"{item.get('name', '')}:{item.get('value', '')}" for item in field_data if isinstance(item, dict)])
         
         return str(field_data) if field_data else ""
+    
+    def get_custom_field_value(self, metadata: Dict[str, Any], field_name: str) -> str:
+        """Get value for a specific custom field"""
+        if 'custom_fields' not in metadata:
+            return ""
+        
+        custom_fields_data = metadata['custom_fields']
+        if isinstance(custom_fields_data, dict):
+            custom_fields = custom_fields_data.get('value', [])
+        else:
+            custom_fields = custom_fields_data
+        
+        if isinstance(custom_fields, list):
+            for cf in custom_fields:
+                if isinstance(cf, dict) and cf.get('name') == field_name:
+                    return str(cf.get('value', ''))
+        
+        return ""
     
     def truncate_value(self, value: str, max_length: int = 35) -> str:
         """Truncate long values for display"""

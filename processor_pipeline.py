@@ -375,8 +375,8 @@ class ProcessorPipeline:
         
         # Basic document info
         doc_dict['id'] = raw_doc.get('id')
-        doc_dict['title'] = raw_doc.get('title', 'Unknown')
-        doc_dict['filename'] = raw_doc.get('original_filename', 'Unknown')
+        doc_dict['title'] = raw_doc.get('title', raw_doc.get('original_filename', 'Unknown'))
+        doc_dict['filename'] = raw_doc.get('original_filename', raw_doc.get('title', 'Unknown'))
         doc_dict['raw_api_doc'] = raw_doc
         doc_dict['processing_info']['fetched_at'] = datetime.now().isoformat()
         doc_dict['processing_info']['phase'] = 'data_fetching'
