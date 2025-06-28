@@ -4212,3 +4212,32 @@ Processing Time: 4.03s
 2025-06-28 10:56:02,435 - __main__ - INFO - ================================================================================
 2025-06-28 10:56:02,435 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
 2025-06-28 10:56:02,435 - __main__ - INFO - ================================================================================
+2025-06-28 11:20:40,466 - __main__ - INFO - ================================================================================
+2025-06-28 11:20:40,474 - __main__ - INFO - POST-CONSUMPTION SCRIPT STARTED
+2025-06-28 11:20:40,474 - __main__ - INFO - Started at: 2025-06-28 11:20:40
+2025-06-28 11:20:40,474 - __main__ - INFO - Mode: DRY RUN
+2025-06-28 11:20:40,480 - __main__ - INFO - Verbose: True
+2025-06-28 11:20:40,480 - __main__ - INFO - ================================================================================
+2025-06-28 11:20:40,480 - processor_pipeline - INFO - Step 1: Validating configuration and testing connection
+2025-06-28 11:20:41,334 - api_client - INFO - Successfully connected to Paperless API
+2025-06-28 11:20:41,335 - processor_pipeline - INFO - Step 2: Loading and validating rules
+2025-06-28 11:20:41,335 - rule_loader - INFO - Loading 3 rule files from rules
+2025-06-28 11:20:41,359 - rule_loader - INFO - Successfully loaded 3 rules
+2025-06-28 11:20:41,359 - processor_pipeline - INFO - Step 3: Retrieving documents from Paperless
+2025-06-28 11:20:43,078 - processor_pipeline - INFO - Step 4-9: Processing 1 documents
+2025-06-28 11:20:43,078 - processor_pipeline - INFO - Processing document 683: 2025-05-19-NL89RABO0330689592
+2025-06-28 11:20:44,741 - processor_pipeline - INFO - DRY RUN: Would apply metadata to document 683
+2025-06-28 11:20:44 - [DRY_RUN] Document 683: 2025-05-19-NL89RABO0330689592
+  Rule: ExampleBank Check Account Statement (150/70)
+  POCO Score: 142% (PASS)
+
+2025-06-28 11:20:44 - POST-CONSUMPTION PROCESSING SUMMARY
+Total Documents: 1
+Processed: 1
+Matched: 1
+POCO Passed: 1
+Processing Time: 4.27s
+--------------------------------------------------
+2025-06-28 11:20:44,754 - __main__ - INFO - ================================================================================
+2025-06-28 11:20:44,756 - __main__ - INFO - POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY
+2025-06-28 11:20:44,757 - __main__ - INFO - ================================================================================
