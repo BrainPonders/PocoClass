@@ -58,7 +58,7 @@ class OutputGenerator:
         title = doc_dict.get('title', 'Unknown')
         filename = doc_dict.get('filename', 'Unknown')
         raw_api_doc = doc_dict.get('raw_api_doc', {})
-        original_filename = raw_api_doc.get('original_filename', filename)
+        original_filename = raw_api_doc.get('original_file_name', filename)
         selected_rule = doc_dict.get('selected_rule', {})
         poco_summary = doc_dict.get('poco_summary', {})
         
