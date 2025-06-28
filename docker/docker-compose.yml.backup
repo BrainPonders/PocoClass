@@ -1,5 +1,4 @@
 # eRJe 15-05-2025: from the original paperless docker-comppose.yml
-# UPDATED: AI components removed, POCOmeta integration added
 #
 # -----------------------------------------------------------------------------
 # Docker Compose file for running paperless from the docker container registry.
@@ -22,27 +21,32 @@
 #   is configured to use these services. These provide support for consuming
 #   Office documents (Word, Excel, Power Point and their LibreOffice counter-
 #   parts.
-# - POCOmeta post-consumption script for intelligent metadata processing
 #
 # To install and update paperless with this file, do the following:
 #
-# - Copy this file as 'docker-compose.yml' and the files 'paperless.env'
-#   into a folder.
-# - Place POCOmeta in scripts/post_consume/POCOmeta/
-# - Run 'docker compose build'.
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker compose pull'.
 # - Run 'docker compose run --rm webserver createsuperuser' to create a user.
 # - Run 'docker compose up -d'.
 #
 # For more extensive installation and update instructions, refer to the
 # documentation.
 # -----------------------------------------------------------------------------
+# History:
+# 15-05-2025 by eRJe: Created based on original docker-compose.yml
+# 15-05-2025 by eRJe: Added Paperless-ai and Deepseek
+# 25-05-2025 by eRJe: Enabled paperless.env for parsing variables into container
+# -----------------------------------------------------------------------------
+
+# version: "3.9"
 
 services:
   broker:
     image: docker.io/library/redis:7
     restart: unless-stopped
     volumes:
-      - redisdata:/data
+      - /home/paperless/paperless-ngx/redisdata:/data
 
   db:
     image: docker.io/library/postgres:16
@@ -82,10 +86,38 @@ services:
       PAPERLESS_CONSUMER_POLLING: 60
       # POCOmeta Configuration
       PAPERLESS_POST_CONSUME_SCRIPT: /usr/src/paperless/scripts/post_consume/poco_wrapper.sh
+      
       # POCOmeta Environment Variables  
       POCO_DRY_RUN: "false"
       POCO_VERBOSE: "false"
       POCO_MAX_DOCUMENTS: "0"
+
+  # AI COMPONENTS COMMENTED OUT - Remove if not needed
+  # paperless-ai:
+  #   image: clusterzx/paperless-ai
+  #   container_name: paperless-ai
+  #   restart: unless-stopped
+  #   cap_drop:
+  #     - ALL
+  #   security_opt:
+  #     - no-new-privileges=true
+  #   ports:
+  #     - "3000:${PAPERLESS_AI_PORT:-3000}"
+  #   volumes:
+  #     - /home/paperless/paperless-ai/data:/app/data
+  #   environment:
+  #     - PAPERLESS_AI_PORT=${PAPERLESS_AI_PORT:-3000}
+
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   restart: unless-stopped
+  #   ports:
+  #     - "11434:11434"
+  #   environment:
+  #     - OLLAMA_HOST=0.0.0.0
+  #   volumes:
+  #     - /home/paperless/ollama:/root/.ollama
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.7
@@ -102,15 +134,3 @@ services:
 volumes:
   redisdata:
     driver: local
-
-# -----------------------------------------------------------------------------
-# AI COMPONENTS REMOVED
-# -----------------------------------------------------------------------------
-# The following services were removed for clean POCOmeta-only setup:
-# - paperless-ai (clusterzx/paperless-ai image)
-# - ollama (ollama/ollama image)
-# 
-# If you need AI functionality, you can add these services back by uncommenting
-# and configuring them separately. See the original docker-compose.yml for
-# the complete configuration.
-# -----------------------------------------------------------------------------
