@@ -24,7 +24,90 @@ Every decision made by the pipeline is traceable: each rule match, score, and ex
 • **Bulk Import Ready:**
 Whether migrating a personal archive or processing corporate records, the pipeline is designed to handle high volumes with minimal manual intervention.
 
----
+## Installation
+
+POCOmeta integrates with your existing Paperless-ngx setup with minimal changes. No complex configuration or separate containers required.
+
+### Prerequisites
+
+- Working Paperless-ngx installation with Docker
+- API token from Paperless-ngx (Account Settings > API Tokens)
+
+### Quick Installation
+
+1. **Get POCOmeta files**
+   ```bash
+   cd /home/paperless/paperless-ngx/scripts
+   git clone https://github.com/your-repo/POCOmeta.git
+   ```
+
+2. **Copy wrapper script**
+   ```bash
+   cp POCOmeta/poco_wrapper.sh /home/paperless/paperless-ngx/scripts/poco_wrapper.sh
+   chmod +x /home/paperless/paperless-ngx/scripts/poco_wrapper.sh
+   ```
+
+3. **Update Dockerfile**
+   Add Python dependencies to your existing Dockerfile:
+   ```dockerfile
+   # Install Python dependencies for POCOmeta
+   RUN pip3 install requests pyyaml tabulate
+   ```
+
+4. **Update docker-compose.yml**
+   Add volume mount for scripts directory:
+   ```yaml
+   services:
+     webserver:
+       # ... your existing configuration ...
+       volumes:
+         # ... your existing volumes ...
+         - /home/paperless/paperless-ngx/scripts:/usr/src/paperless/scripts:rw
+   ```
+
+5. **Configure POCOmeta**
+   Edit `/home/paperless/paperless-ngx/scripts/POCOmeta/settings.py`:
+   ```python
+   # Your Paperless-ngx server URL
+   PAPERLESS_URL = "http://localhost:8000"
+   
+   # Your Paperless API token
+   PAPERLESS_TOKEN = "your-api-token-here"
+   
+   # Document processing tags
+   INCLUDE_TAG = "NEW"        # Process documents with this tag
+   COMPLETION_TAG = "POCO"    # Add this tag after successful processing
+   ```
+
+6. **Update paperless.env**
+   Add post-consumption script setting:
+   ```env
+   PAPERLESS_POST_CONSUME_SCRIPT=python3 -m scripts.POCOmeta.main
+   ```
+
+7. **Rebuild and start**
+   ```bash
+   docker compose build
+   docker compose up -d
+   ```
+
+### How It Works
+
+1. Upload documents to Paperless (web interface or consume folder)
+2. Tag new documents with "NEW"
+3. POCOmeta automatically processes them after consumption
+4. Successfully processed documents get tagged "POCO"
+
+### Testing
+
+Test your installation:
+```bash
+# Test configuration and API connection
+docker compose exec webserver python3 -m scripts.POCOmeta.main --dry-run --verbose
+
+# Process specific document
+docker compose exec webserver python3 -m scripts.POCOmeta.main --limit-id 123
+```
 
 ### Typical Use Cases
 
