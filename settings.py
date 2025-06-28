@@ -1,8 +1,8 @@
 """
-User-Friendly Configuration Settings
-====================================
+POCOmeta Configuration Settings
+===============================
 
-This file contains all the customizable settings for the Post-Consumption Script.
+This file contains all the customizable settings for POCOmeta.
 New users can easily modify these values to match their Paperless setup.
 
 IMPORTANT: After changing settings here, restart the script for changes to take effect.
