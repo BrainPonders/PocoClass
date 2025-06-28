@@ -1,6 +1,6 @@
 """
-Processor Pipeline
-Main processing pipeline that orchestrates all steps
+POCOmeta - Processor Pipeline
+Main processing pipeline that orchestrates all document classification and metadata enrichment steps
 """
 
 import logging

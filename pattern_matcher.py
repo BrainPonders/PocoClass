@@ -1,6 +1,6 @@
 """
-Pattern Matcher
-Handles logic group evaluation and pattern matching
+POCOmeta - Pattern Matcher
+Handles logic group evaluation and pattern matching for rule-based document classification
 """
 
 import re

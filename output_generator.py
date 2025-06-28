@@ -1,6 +1,6 @@
 """
-Output Generator
-Handles all output formatting, logging, and report generation
+POCOmeta - Output Generator
+Handles all output formatting, logging, and report generation with colored console output
 """
 
 import logging
