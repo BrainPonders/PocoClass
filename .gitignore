@@ -15,11 +15,9 @@ log.txt
 # Development assets
 attached_assets/
 
-# Personal rule files (keep your specific account rules private)
-rules/*_262.yaml
-rules/*_369.yaml
-rules/*_295.yaml
-rules/*_592.yaml
+# Rules directory - only allow template.yaml
+rules/*
+!rules/template.yaml
 
 # Project documentation (keep development notes private)
 replit.md
