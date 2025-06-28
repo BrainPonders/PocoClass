@@ -66,10 +66,8 @@ class Config:
         self.log_file_name = get_setting('LOG_FILE_NAME', 'LOG_FILE_NAME', 'processing.log')
         self.enable_debug_logging = self._parse_bool(get_setting('ENABLE_DEBUG_LOGGING', 'ENABLE_DEBUG_LOGGING', 'False'))
         
-        # Safety and backup
+        # Safety settings
         self.default_dry_run = self._parse_bool(get_setting('DEFAULT_DRY_RUN', 'DEFAULT_DRY_RUN', 'False'))
-        self.enable_metadata_backup = self._parse_bool(get_setting('ENABLE_METADATA_BACKUP', 'ENABLE_METADATA_BACKUP', 'True'))
-        self.backup_file_name = get_setting('BACKUP_FILE_NAME', 'BACKUP_FILE_NAME', 'metadata_backup.json')
         
         # Advanced settings
         self.api_timeout = int(get_setting('API_TIMEOUT', 'API_TIMEOUT', '30'))
