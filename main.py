@@ -49,6 +49,7 @@ Examples:
   %(prog)s                          # Process all NEW documents
   %(prog)s --dry-run                # Simulate processing without changes
   %(prog)s --verbose                # Show detailed processing information
+  %(prog)s --bulk-verify            # Compact output for bulk rule verification
   %(prog)s --limit 10               # Process only first 10 documents
   %(prog)s --limit-id 123           # Process only document ID 123
   %(prog)s --show-content 123       # Show OCR content for document 123
@@ -62,6 +63,8 @@ Examples:
                        help='Enable verbose output with detailed scoring')
     parser.add_argument('--debug', action='store_true',
                        help='Enable comprehensive debug mode with detailed diagnostics and raw data output')
+    parser.add_argument('--bulk-verify', action='store_true',
+                       help='Enable bulk verification mode for processing many documents efficiently')
     parser.add_argument('--limit', type=int, metavar='N',
                        help='Limit processing to first N documents')
     parser.add_argument('--limit-id', type=int, metavar='ID',
@@ -99,7 +102,8 @@ def main():
         results = pipeline.execute()
         
         # Generate output and summary
-        output_gen.generate_summary(results)
+        bulk_verify = hasattr(args, 'bulk_verify') and args.bulk_verify
+        output_gen.generate_summary(results, bulk_verify)
         
         logger.info("=" * 80)
         logger.info("POST-CONSUMPTION SCRIPT COMPLETED SUCCESSFULLY")
