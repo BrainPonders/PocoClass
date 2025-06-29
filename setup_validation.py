@@ -22,14 +22,15 @@ def check_settings_file():
     
     # Check if settings.py exists
     if not settings_path.exists():
-        print("❌ settings.py file not found!")
+        print("📝 Initial setup required: settings.py not found")
         if example_path.exists():
             print("✅ Found settings.py.example template")
-            print("📝 Please copy settings.py.example to settings.py and customize it:")
+            print("📋 Run this command to get started:")
             print("   cp settings.py.example settings.py")
+            print("   Then edit settings.py with your Paperless server details")
             return False
         else:
-            print("❌ No template file found either!")
+            print("❌ No template file found - repository may be corrupted")
             return False
     
     # Check if settings.py looks like it's been customized
