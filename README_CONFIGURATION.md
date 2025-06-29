@@ -2,12 +2,12 @@
 
 ## Quick Start (Prevents Git Overwrite Issues)
 
-### 1. Initial Setup
+### 1. Initial Setup (Required for Fresh Installation)
 ```bash
-# Copy template to your custom settings
+# Copy template to create your settings file
 cp settings.py.example settings.py
 
-# Edit your settings
+# Edit your settings with your server details
 nano settings.py
 ```
 
@@ -30,17 +30,16 @@ python3 main.py --dry-run --verbose --limit 1
 ## Preventing Git Overwrite Issues
 
 ### Problem
-When you run `git pull` to update POCOmeta, it can overwrite your `settings.py` file, losing your configuration and causing the script to fail with errors like:
-```
-PAPERLESS_TOKEN environment variable is required
-```
+When you run `git pull` to update POCOmeta, it could overwrite your `settings.py` file, losing your configuration and causing the script to fail.
 
 ### Solution
-POCOmeta now uses a template-based configuration system:
+POCOmeta uses a template-based configuration system that prevents this issue:
 
-1. **Template File**: `settings.py.example` contains the template with documentation
-2. **User File**: `settings.py` contains your customized settings (git-ignored)
+1. **Template File**: `settings.py.example` contains the template with documentation (tracked in git)
+2. **User File**: `settings.py` contains your customized settings (git-ignored, never overwritten)
 3. **Validation**: Built-in validation prevents unconfigured deployments
+
+**Key Point**: Since `settings.py` is not tracked in git, your configuration is safe from overwrites during updates.
 
 ### Safe Update Procedure
 ```bash
