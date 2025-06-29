@@ -329,6 +329,11 @@ class ProcessorPipeline:
             
             # Step 4-9: Process each document
             self.logger.info(f"Step 4-9: Processing {len(documents)} documents")
+            
+            # Print bulk verification header if needed
+            if hasattr(self.args, 'bulk_verify') and self.args.bulk_verify:
+                self.output_generator.print_bulk_verify_header()
+            
             for doc in documents:
                 try:
                     self.process_document(doc, rules)
@@ -398,7 +403,8 @@ class ProcessorPipeline:
         winning_rule = self.select_winning_rule(doc_dict)
         if not winning_rule:
             self.logger.info(f"Document {doc_id}: No matching rule found")
-            self.output_generator.generate_document_output(doc_dict, self.args.dry_run)
+            bulk_verify = hasattr(self.args, 'bulk_verify') and self.args.bulk_verify
+            self.output_generator.generate_document_output(doc_dict, self.args.dry_run, bulk_verify)
             self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
             return
         self.print_debug_output("STEP 6 - WINNING RULE SELECTED", doc_dict)
@@ -426,7 +432,8 @@ class ProcessorPipeline:
         self.results['rule_usage'][rule_id] = self.results['rule_usage'].get(rule_id, 0) + 1
         
         # Generate output - always show verbose tables when verbose is enabled
-        self.output_generator.generate_document_output(doc_dict, self.args.dry_run)
+        bulk_verify = hasattr(self.args, 'bulk_verify') and self.args.bulk_verify
+        self.output_generator.generate_document_output(doc_dict, self.args.dry_run, bulk_verify)
         self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
     
     def initialize_document_dict(self, raw_doc: Dict[str, Any]) -> Optional[Dict[str, Any]]:
