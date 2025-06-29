@@ -384,7 +384,8 @@ class OutputGenerator:
             ('correspondent', 'Correspondent'), 
             ('document_type', 'Document Type'),
             ('tags', 'Tags'),
-            ('Document Category', 'CF: Document Category')
+            ('Document Category', 'CF: Document Category'),
+            ('POCO Score', 'CF: POCO Score')
         ]
         
         for field_key, field_display in fields:
@@ -404,8 +405,8 @@ class OutputGenerator:
             content_colored = Colors.green(self.truncate_value(content_val, 28)) if content_val else Colors.red("—")
             
             # Filename: green if matches content, red if different, red dash if empty
-            if filename_val:
-                if filename_val == content_val:
+            if filename_val and filename_val != "—":
+                if self._values_match_for_display(content_val, filename_val, field_key):
                     filename_colored = Colors.green(self.truncate_value(filename_val, 28))
                 else:
                     filename_colored = Colors.red(self.truncate_value(filename_val, 28))
@@ -413,8 +414,8 @@ class OutputGenerator:
                 filename_colored = Colors.red("—")
             
             # Paperless: green if matches content, red if different, red dash if empty
-            if paperless_val:
-                if paperless_val == content_val:
+            if paperless_val and paperless_val != "—":
+                if self._values_match_for_display(content_val, paperless_val, field_key):
                     paperless_colored = Colors.green(self.truncate_value(paperless_val, 28))
                 else:
                     paperless_colored = Colors.red(self.truncate_value(paperless_val, 28))
@@ -797,6 +798,30 @@ class OutputGenerator:
                 return result if result else "—"
         
         return self.get_display_value(metadata, field)
+
+    def _values_match_for_display(self, value1: str, value2: str, field: str) -> bool:
+        """Check if two display values match, ignoring workflow tags for tags field"""
+        if not value1 or not value2 or value1 == "—" or value2 == "—":
+            return False
+        
+        if field == 'tags':
+            # For tags, extract non-workflow tags and compare
+            def extract_content_tags(tag_str):
+                if not tag_str or tag_str == "—":
+                    return set()
+                # Remove workflow tags in parentheses
+                import re
+                clean_str = re.sub(r'\s*\([^)]*\)\s*', '', tag_str)
+                # Split by comma and clean
+                tags = [tag.strip() for tag in clean_str.split(',') if tag.strip()]
+                return set(tags)
+            
+            tags1 = extract_content_tags(value1)
+            tags2 = extract_content_tags(value2)
+            return tags1 == tags2
+        
+        # For other fields, simple string comparison
+        return value1.strip() == value2.strip()
     
     def get_custom_field_value(self, metadata: Dict[str, Any], field_name: str) -> str:
         """Get value for a specific custom field"""
