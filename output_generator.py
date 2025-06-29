@@ -125,7 +125,11 @@ class OutputGenerator:
         # Print compact single-line output with proper alignment
         mode_indicator = "[DRY] " if dry_run else "      "
         doc_id_padded = f"{mode_indicator}{str(doc_id)}"
-        print(f"{doc_id_padded:<11} {display_filename:<35} | {rule_display:<28} | {core_display:>5} | {bonus_display:>5} | {poco_display:>5} | {status}")
+        rule_padded = self.pad_colored_text(rule_display, 28, 'left')
+        core_padded = self.pad_colored_text(core_display, 5, 'right')
+        bonus_padded = self.pad_colored_text(bonus_display, 5, 'right')
+        poco_padded = self.pad_colored_text(poco_display, 5, 'right')
+        print(f"{doc_id_padded:<11} {display_filename:<35} | {rule_padded} | {core_padded} | {bonus_padded} | {poco_padded} | {status}")
     
     def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
@@ -893,6 +897,27 @@ class OutputGenerator:
         if len(value) > max_length:
             return value[:max_length-3] + "..."
         return value
+    
+    def pad_colored_text(self, text: str, width: int, align: str = 'left') -> str:
+        """Pad colored text properly accounting for ANSI escape codes"""
+        # Remove ANSI color codes to get actual text length
+        import re
+        clean_text = re.sub(r'\x1b\[[0-9;]*m', '', text)
+        visual_length = len(clean_text)
+        
+        if visual_length >= width:
+            return text
+        
+        padding_needed = width - visual_length
+        
+        if align == 'left':
+            return text + ' ' * padding_needed
+        elif align == 'right':
+            return ' ' * padding_needed + text
+        else:  # center
+            left_pad = padding_needed // 2
+            right_pad = padding_needed - left_pad
+            return ' ' * left_pad + text + ' ' * right_pad
     
     def print_bulk_verify_header(self) -> None:
         """Print header for bulk verification mode"""
