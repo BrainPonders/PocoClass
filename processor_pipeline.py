@@ -6,7 +6,7 @@ Main processing pipeline that orchestrates all document classification and metad
 import logging
 import time
 import json
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Set
 from datetime import datetime
 
 try:
@@ -95,7 +95,7 @@ class ProcessorPipeline:
         self._print_dict_clean(doc_dict, indent=0)
         print(f"{'='*80}\n")
     
-    def _print_dict_clean(self, obj: Any, indent: int = 0, printed_keys: set = None) -> None:
+    def _print_dict_clean(self, obj: Any, indent: int = 0, printed_keys: Optional[Set[str]] = None) -> None:
         """Print dictionary structure with clean formatting, avoiding duplicate keys"""
         if printed_keys is None:
             printed_keys = set()
@@ -171,8 +171,23 @@ class ProcessorPipeline:
         filename_meta = doc_dict.get('filename_metadata', {})
         
         for field in ['correspondent', 'document_type', 'date_created', 'tags', 'custom_fields']:
-            content_val = content_meta.get(field, {}).get('value')
-            filename_val = filename_meta.get(field, {}).get('value')
+            # Safely extract values with type checking
+            content_field = content_meta.get(field, {})
+            filename_field = filename_meta.get(field, {})
+            
+            content_val = None
+            filename_val = None
+            
+            if isinstance(content_field, dict):
+                content_val = content_field.get('value')
+            elif content_field:  # Handle string values
+                content_val = content_field
+                
+            if isinstance(filename_field, dict):
+                filename_val = filename_field.get('value')
+            elif filename_field:  # Handle string values
+                filename_val = filename_field
+            
             if content_val or filename_val:
                 print(f"  {field.title()}:")
                 if content_val:
