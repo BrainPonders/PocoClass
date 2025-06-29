@@ -384,8 +384,7 @@ class OutputGenerator:
             ('correspondent', 'Correspondent'), 
             ('document_type', 'Document Type'),
             ('tags', 'Tags'),
-            ('Document Category', 'CF: Document Category'),
-            ('POCO Score', 'CF: POCO Score')
+            ('Document Category', 'CF: Document Category')
         ]
         
         for field_key, field_display in fields:
@@ -641,37 +640,30 @@ class OutputGenerator:
             'changed': True  # Always changed because we add POCO
         }
         
-        # Custom Fields
+        # Custom Fields - show individual fields with CF: prefix
         current_custom = paperless_metadata.get('custom_fields', [])
         content_custom = content_metadata.get('custom_fields', [])
         
-        custom_updates = {}
+        # Process Document Category custom field
+        current_doc_category = self.get_custom_field_value(paperless_metadata, 'Document Category')
+        new_doc_category = self.get_custom_field_value(content_metadata, 'Document Category')
         
-        # Add content custom fields
-        if isinstance(content_custom, list):
-            for field in content_custom:
-                if isinstance(field, dict) and 'name' in field:
-                    custom_updates[field['name']] = field.get('value', '')
-        
-        # Add POCO Score
-        custom_updates['POCO Score'] = str(poco_summary.get('final_score', 0))
-        
-        if custom_updates:
-            current_custom_display = []
-            if isinstance(current_custom, list):
-                for field in current_custom:
-                    if isinstance(field, dict) and 'name' in field:
-                        current_custom_display.append(f"{field['name']}: {field.get('value', '')}")
-            
-            new_custom_display = []
-            for name, value in custom_updates.items():
-                new_custom_display.append(f"{name}: {value}")
-            
-            updates['Custom Fields'] = {
-                'current': '; '.join(current_custom_display) if current_custom_display else '—',
-                'new': '; '.join(new_custom_display),
-                'changed': True  # Always changed because we add POCO Score
+        if new_doc_category:
+            updates['CF: Document Category'] = {
+                'current': current_doc_category if current_doc_category else '—',
+                'new': new_doc_category,
+                'changed': current_doc_category != new_doc_category
             }
+        
+        # POCO Score custom field (always added)
+        current_poco_score = self.get_custom_field_value(paperless_metadata, 'POCO Score')
+        new_poco_score = str(poco_summary.get('final_score', 0))
+        
+        updates['CF: POCO Score'] = {
+            'current': current_poco_score if current_poco_score else '—',
+            'new': new_poco_score,
+            'changed': True  # Always changed/added
+        }
         
         # Print updates in a clean format
         for field_name, field_data in updates.items():
