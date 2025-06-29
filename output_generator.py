@@ -50,6 +50,8 @@ class OutputGenerator:
     def __init__(self, verbose: bool = False, debug: bool = False):
         self.verbose = verbose
         self.debug = debug
+        # Track status counts for bulk verification
+        self.status_counts = {'pass': 0, 'partial': 0, 'fail': 0, 'total': 0}
         self.logger = logging.getLogger(__name__)
     
     def generate_document_output(self, doc_dict: Dict[str, Any], dry_run: bool = False, bulk_verify: bool = False) -> None:
@@ -110,10 +112,17 @@ class OutputGenerator:
         # Handle None values as 0 (no scoring performed)
         if poco_score is None or poco_score == 0:
             status = Colors.red("✗ FAIL")
+            status_type = 'fail'
         elif poco_pass:
             status = Colors.green("✓ PASS")
+            status_type = 'pass'
         else:
             status = Colors.yellow("~ PARTIAL")
+            status_type = 'partial'
+        
+        # Track status counts for accurate summary
+        self.status_counts[status_type] += 1
+        self.status_counts['total'] += 1
         
         if selected_rule.get('pass', False):
             rule_id = selected_rule.get('rule_id', 'unknown')
@@ -961,6 +970,8 @@ class OutputGenerator:
     
     def print_bulk_verify_header(self) -> None:
         """Print header for bulk verification mode"""
+        # Reset status counts for fresh tracking
+        self.status_counts = {'pass': 0, 'partial': 0, 'fail': 0, 'total': 0}
         print()
         print(Colors.bold(Colors.cyan("🔍 BULK RULE VERIFICATION MODE")))
         print("─" * 120)
@@ -971,15 +982,16 @@ class OutputGenerator:
         """Generate compact summary for bulk verification mode"""
         print("─" * 120)
         
-        total_docs = results.get('total_documents', 0)
-        processed_docs = results.get('processed_documents', 0)
-        matched_docs = results.get('matched_documents', 0)
-        poco_passed = results.get('poco_passed', 0)
+        # Use actual tracked status counts instead of flawed pipeline calculation
+        total_docs = self.status_counts['total']
+        pass_count = self.status_counts['pass']
+        partial_count = self.status_counts['partial']
+        fail_count = self.status_counts['fail']
         
         print(f"📊 SUMMARY: {Colors.bold(str(total_docs))} docs | " +
-              f"{Colors.green('✓')} {poco_passed} pass | " +
-              f"{Colors.yellow('~')} {matched_docs - poco_passed} partial | " +
-              f"{Colors.red('✗')} {total_docs - matched_docs} fail")
+              f"{Colors.green('✓')} {pass_count} pass | " +
+              f"{Colors.yellow('~')} {partial_count} partial | " +
+              f"{Colors.red('✗')} {fail_count} fail")
         
         # Rule usage statistics in compact format
         rule_usage = results.get('rule_usage', {})
