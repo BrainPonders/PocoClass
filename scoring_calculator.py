@@ -78,8 +78,9 @@ class ScoringCalculator:
         filename_value = self.get_field_value(doc_dict.get('filename_metadata', {}), field)
         paperless_value = self.get_field_value(doc_dict.get('paperless_metadata', {}), field)
         
-        # Rule score is the base - it's the "truth"
-        base_rule_score = rule_score
+        # Rule score is the base - but only if content metadata exists
+        # If content metadata is missing, score should be 0
+        base_rule_score = rule_score if content_value else 0
         
         # Filename score modifier
         filename_modifier = 0
