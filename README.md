@@ -26,410 +26,365 @@ Whether migrating a personal archive or processing corporate records, the pipeli
 
 ## Installation
 
-POCOmeta integrates with your existing Paperless-ngx setup with minimal changes. No complex configuration or separate containers required.
+POCOmeta integrates with your existing Paperless-ngx setup with minimal changes. Choose the installation method that works best for your setup.
 
 ### Prerequisites
 
 - Working Paperless-ngx installation with Docker
 - API token from Paperless-ngx (Account Settings > API Tokens)
+- Python 3.7+ environment (inside Paperless container or standalone)
 
-### Quick Installation
+### Method 1: Docker Integration (Recommended)
 
-1. **Get POCOmeta files**
+For users running Paperless-ngx in Docker containers:
+
+1. **Clone POCOmeta to your scripts directory**
    ```bash
-   cd /home/paperless/paperless-ngx/scripts
+   # Navigate to your Paperless installation directory
+   cd /path/to/your/paperless-ngx/scripts
    git clone https://github.com/your-repo/POCOmeta.git
    ```
 
-2. **Copy wrapper script**
-   ```bash
-   cp POCOmeta/poco_wrapper.sh /home/paperless/paperless-ngx/scripts/poco_wrapper.sh
-   chmod +x /home/paperless/paperless-ngx/scripts/poco_wrapper.sh
-   ```
-
-3. **Update Dockerfile**
-   Add Python dependencies to your existing Dockerfile:
+2. **Install Python dependencies**
+   Update your Dockerfile to include:
    ```dockerfile
    # Install Python dependencies for POCOmeta
    RUN pip3 install requests pyyaml tabulate
    ```
 
-4. **Update docker-compose.yml**
-   Add volume mount for scripts directory:
+3. **Mount scripts directory**
+   Update your docker-compose.yml:
    ```yaml
    services:
      webserver:
-       # ... your existing configuration ...
        volumes:
-         # ... your existing volumes ...
-         - /home/paperless/paperless-ngx/scripts:/usr/src/paperless/scripts:rw
+         - /path/to/your/paperless-ngx/scripts:/usr/src/paperless/scripts:rw
    ```
 
-5. **Configure POCOmeta**
-   Edit `/home/paperless/paperless-ngx/scripts/POCOmeta/settings.py`:
-   ```python
-   # Your Paperless-ngx server URL
-   PAPERLESS_URL = "http://localhost:8000"
-   
-   # Your Paperless API token
-   PAPERLESS_TOKEN = "your-api-token-here"
-   
-   # Document processing tags
-   INCLUDE_TAG = "NEW"        # Process documents with this tag
-   COMPLETION_TAG = "POCO"    # Add this tag after successful processing
+4. **Configure POCOmeta**
+   Copy and edit the settings file:
+   ```bash
+   cd POCOmeta
+   cp settings.py.example settings.py
+   # Edit settings.py with your configuration
    ```
 
-6. **Update paperless.env**
-   Add post-consumption script setting:
+5. **Set up post-consumption hook**
+   In your paperless.env file:
    ```env
    PAPERLESS_POST_CONSUME_SCRIPT=python3 -m scripts.POCOmeta.main
    ```
 
-7. **Rebuild and start**
+6. **Rebuild and restart**
    ```bash
-   docker compose build
-   docker compose up -d
+   docker compose build && docker compose up -d
    ```
 
-### How It Works
+### Method 2: Standalone Installation
 
-1. Upload documents to Paperless (web interface or consume folder)
-2. Tag new documents with "NEW"
-3. POCOmeta automatically processes them after consumption
-4. Successfully processed documents get tagged "POCO"
+For users with standalone Paperless installations or custom setups:
 
-### Testing
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-repo/POCOmeta.git
+   cd POCOmeta
+   ```
 
-Test your installation:
-```bash
-# Test configuration and API connection
-docker compose exec webserver python3 -m scripts.POCOmeta.main --dry-run --verbose
+2. **Install dependencies**
+   ```bash
+   pip install requests pyyaml tabulate
+   ```
 
-# Process specific document
-docker compose exec webserver python3 -m scripts.POCOmeta.main --limit-id 123
-```
+3. **Configure settings**
+   ```bash
+   cp settings.py.example settings.py
+   # Edit settings.py with your Paperless-ngx URL and API token
+   ```
 
-### Typical Use Cases
+4. **Test configuration**
+   ```bash
+   python main.py --dry-run --verbose
+   ```
 
-• **Initial Migration:**
-Importing a large backlog of mixed documents (bank statements, invoices, contracts, etc.) into a fresh Paperless-ngx instance.
+### Configuration
 
-• **Ongoing Automation:**
-Ensuring future bulk or scheduled imports are correctly and automatically tagged and classified.
-
-• **Consistency Enforcement:**
-Standardizing metadata across existing archives, reducing manual correction efforts.
-
-## System Architecture
-
-### Core Architecture Pattern
-- **Modular Pipeline Design**: The system follows a pipeline architecture where each processing step is handled by a dedicated module
-- **Rule-Based Classification**: Uses YAML configuration files to define document classification rules with pattern matching
-- **API-First Integration**: Built around the Paperless-ngx REST API for document retrieval and updates
-- **Confidence Scoring System**: Implements POCO scoring to measure metadata reliability across different sources
-
-### Processing Flow
-1. **Document Retrieval**: Fetch documents from Paperless-ngx API based on tag filters
-2. **Rule Loading**: Load and validate YAML rule files from the rules directory
-3. **Pattern Matching**: Apply core and bonus identifiers against document content
-4. **Metadata Extraction**: Extract static and dynamic metadata from matching rules
-5. **Confidence Scoring**: Calculate POCO scores based on metadata agreement
-6. **Output Generation**: Provide formatted results with optional verbose reporting
-
-## Key Components
-
-### Configuration Management (`config.py`)
-- **Environment Variable Handling**: Manages API endpoints, tokens, and processing parameters
-- **Default Settings**: Provides sensible defaults for tag names, thresholds, and field names
-- **Validation**: Ensures required configuration is present before processing
-
-### API Integration (`api_client.py`)
-- **Session Management**: Maintains authenticated HTTP sessions with Paperless-ngx
-- **Token Authentication**: Uses API tokens for secure communication
-- **Connection Testing**: Validates API connectivity before processing
-- **Tag Management**: Handles tag creation and retrieval operations
-
-### Rule Processing System
-- **Rule Loader** (`rule_loader.py`): Loads and validates YAML rule files
-- **Pattern Matcher** (`pattern_matcher.py`): Evaluates logic groups and pattern conditions
-- **Metadata Processor** (`metadata_processor.py`): Extracts static and dynamic metadata
-
-### Document Processing Pipeline (`processor_pipeline.py`)
-- **Orchestration**: Coordinates all processing steps in sequence
-- **Error Handling**: Manages processing errors and continues with remaining documents
-- **Results Tracking**: Maintains statistics on processing success and rule usage
-- **Performance Monitoring**: Tracks processing time and throughput
-
-### Scoring and Confidence (`scoring_calculator.py`)
-- **POCO Algorithm**: Calculates confidence scores based on metadata source agreement
-- **Weighted Scoring**: Uses configurable weights for different metadata sources
-- **Threshold Evaluation**: Determines pass/fail status based on confidence thresholds
-
-## Data Flow
-
-### Document Dictionary Structure (`document_dict.py`)
-The system uses a comprehensive dictionary structure to track document processing:
+Edit your `settings.py` file with these essential settings:
 
 ```python
-{
-    "id": int,                    # Paperless document ID
-    "title": str,                 # Document title
-    "filename": str,              # Original filename
-    "content": str,               # Full OCR text content
-    "paperless_metadata": {...},  # API metadata
-    "rule_evaluations": [...],    # Rule matching results
-    "selected_rule": {...},       # Best matching rule
-    "poco_summary": {...}         # Confidence scoring results
-}
+# Paperless-ngx connection
+PAPERLESS_URL = "http://localhost:8000"  # Your Paperless-ngx URL
+PAPERLESS_TOKEN = "your-api-token-here"  # Your API token
+
+# Document filtering
+INCLUDE_TAG = "NEW"     # Process documents with this tag
+COMPLETION_TAG = "POCO" # Add this tag after successful processing
+
+# Processing behavior
+DRY_RUN = False        # Set to True to simulate without changes
+DOCUMENT_LIMIT = None  # Limit documents per run (None = no limit)
 ```
 
-### Rule Structure (YAML)
-Rules define classification logic using:
-- **Core Identifiers**: Required patterns that must match (threshold-based)
-- **Bonus Identifiers**: Optional patterns that increase confidence
-- **Logic Groups**: Support AND/OR conditions with scoring weights
-- **Metadata Extraction**: Static and dynamic metadata assignment
+### Testing Your Installation
 
-## 🚀 Quick Start
+Verify everything works correctly:
 
-1. **Configure your settings** in `settings.py`
-2. **Set up your Paperless connection** (URL and API token)
-3. **Create classification rules** in the `rules/` folder
-4. **Run the script** to process your documents
-
-## ⚙️ Configuration
-
-### Easy Configuration with settings.py
-
-The script uses a user-friendly configuration file (`settings.py`) where you can customize all settings with clear explanations. Simply edit the values in this file to match your setup.
-
-**Key settings to configure:**
-
-```python
-# Your Paperless server
-PAPERLESS_URL = "https://your-paperless-server.com"
-PAPERLESS_TOKEN = "your-api-token"
-
-# Which documents to process
-INCLUDE_TAG = "NEW"        # Only process documents with this tag
-EXCLUDE_TAG = "POCO"       # Skip documents that already have this tag
-COMPLETION_TAG = "POCO"    # Tag to add after processing
-
-# Processing limits
-MAX_DOCUMENTS = 10         # Limit for testing (0 = no limit)
-```
-
-### Environment Variables (Optional)
-
-You can also use environment variables which take priority over settings.py:
-- `PAPERLESS_URL` - Your Paperless server URL
-- `PAPERLESS_TOKEN` - Your API authentication token
-- `FILTER_TAG_INCLUDE` - Tag for documents to process
-- `FILTER_TAG_EXCLUDE` - Tag to skip documents
-
-## 📁 Project Structure
-
-```
-├── main.py                 # Main application entry point
-├── settings.py             # User-friendly configuration
-├── config.py               # Configuration handler
-├── rules/                  # Your classification rules
-│   ├── template.yaml       # Rule template and examples
-│   └── *.yaml             # Your custom rule files
-├── api_client.py           # Paperless API communication
-├── processor_pipeline.py   # Main processing orchestration
-├── pattern_matcher.py      # Rule evaluation and pattern matching
-├── metadata_processor.py   # Metadata extraction and processing
-├── scoring_calculator.py   # POCO confidence scoring
-├── output_generator.py     # Formatted output and reporting
-└── document_dict.py        # Document data structure
-```
-
-## 🔧 Installation
-
-### Requirements
-- Python 3.11+
-- Network access to your Paperless-ngx instance
-- API token with read/write permissions
-
-### Dependencies
 ```bash
-pip install requests pyyaml tabulate
+# Test API connection and configuration
+python main.py --dry-run --verbose
+
+# Process a specific document by ID
+python main.py --limit-id 123
+
+# Bulk verification mode for rule testing
+python main.py --dry-run --bulk-verify --limit 10
 ```
 
-### Setup
-1. Clone this repository
-2. Install dependencies
-3. Copy `settings.py.example` to `settings.py` and configure your settings
-4. Create rule files in the `rules/` directory
-5. Run with `python main.py`
+## How It Works
 
-## 📖 Usage
+POCOmeta follows a systematic pipeline approach to document processing:
 
-### Basic Usage
-```bash
-# Process documents with default settings
-python main.py
+### System Architecture
 
-# Dry run (no changes made)
-python main.py --dry-run
+**Pipeline Design**: Each processing step is handled by a dedicated module, ensuring modularity and maintainability.
 
-# Verbose output with detailed information
-python main.py --verbose
+**Rule-Based Classification**: YAML configuration files define document classification rules with flexible pattern matching capabilities.
 
-# Process specific document by ID
-python main.py --document-id 123
+**API Integration**: Built around the Paperless-ngx REST API for seamless document retrieval and metadata updates.
 
-# Limit processing to 5 documents
-python main.py --limit 5
-```
+**Confidence Scoring**: POCO (Post-COnsumption) scoring system measures metadata reliability across different sources.
 
-### Command Line Options
-- `--dry-run` - Simulate processing without making changes
-- `--verbose` - Show detailed processing information
-- `--debug` - Enable debug output and logging
-- `--document-id ID` - Process only a specific document
-- `--limit N` - Process maximum N documents
-- `--help` - Show all available options
+### Processing Workflow
 
-## 📝 Creating Rules
+1. **Document Retrieval**: Fetch documents from Paperless-ngx based on tag filters
+2. **Rule Evaluation**: Apply classification rules using pattern matching against content and filenames
+3. **Metadata Extraction**: Extract both static metadata and dynamic values from document content
+4. **Confidence Calculation**: Calculate POCO scores based on metadata agreement between sources
+5. **Document Update**: Apply validated metadata back to Paperless-ngx (or simulate in dry-run mode)
 
-### Rule File Structure
-Rules are defined in YAML files in the `rules/` directory. Each rule contains:
+### Key Components
+
+- **Configuration Management**: Handles settings, environment variables, and validation
+- **API Client**: Manages authentication and communication with Paperless-ngx
+- **Rule Processing**: Loads YAML rules and evaluates pattern matching logic
+- **Scoring System**: Calculates confidence scores using weighted metadata comparison
+- **Output Generation**: Provides detailed reporting with colored console output
+
+## Rule Development
+
+### Rule Structure
+
+Rules are defined in YAML files with this structure:
 
 ```yaml
 rule_id: "example_rule"
-description: "Example document classification rule"
-version: "1.0"
+rule_name: "Example Document Type"
+threshold: 70
 
-# Core patterns that must match
-core_identifiers:
-  - type: "match"
-    score: 50
-    conditions:
-      - pattern: "Required Pattern"
-        source: "content"
+identifiers:
+  core:
+    - logic_group:
+        match:
+          - field: "content"
+            pattern: "Required Pattern"
+            points: 50
+  
+  bonus:
+    - logic_group:
+        match:
+          - field: "filename"
+            pattern: "Optional Pattern"
+            points: 25
 
-# Optional bonus patterns
-bonus_identifiers:
-  - type: "or"
-    score: 10
-    conditions:
-      - pattern: "Bonus Pattern"
-        source: "content"
-
-# Metadata to extract and apply
-static_metadata:
-  correspondent: "Example Corp"
-  document_type: "Invoice"
-  tags: ["Finance", "Important"]
-
-# Dynamic extraction from content
-dynamic_metadata:
-  date_created:
-    pattern: "Date: (\\d{4}-\\d{2}-\\d{2})"
-    date_format: "%Y-%m-%d"
+metadata:
+  static:
+    correspondent: "Example Corp"
+    document_type: "Invoice"
+    tags: ["finance", "invoice"]
+  
+  dynamic:
+    date_patterns:
+      - pattern: "Date: (\\d{4}-\\d{2}-\\d{2})"
+        format: "%Y-%m-%d"
 ```
 
 ### Pattern Matching
-- **Content patterns**: Match against OCR text
-- **Filename patterns**: Match against original filename
-- **Logic groups**: Combine patterns with AND/OR logic
-- **Scoring**: Weight patterns by importance
 
-## 📊 Output and Reporting
+- **Core Identifiers**: Required patterns that must achieve the threshold score
+- **Bonus Identifiers**: Optional patterns that increase confidence
+- **Logic Groups**: Support AND (`match`) and OR (`or`) conditions
+- **Field Targets**: Match against `content`, `filename`, or both
 
-### Standard Output
-- Document processing summary
-- Rule matching results
-- Metadata extraction details
-- POCO confidence scores
+### Metadata Extraction
 
-### Verbose Mode
-- Detailed pattern matching analysis
-- Step-by-step processing breakdown
-- Metadata comparison across sources
-- Rule evaluation scoring
+- **Static Metadata**: Fixed values assigned when rule matches
+- **Dynamic Metadata**: Values extracted from document content using regex patterns
+- **Date Handling**: Automatic date parsing with configurable formats
 
-### Debug Mode
-- Complete document data structures
-- API response details
-- Internal processing states
-- Error diagnostics
+## Command Line Usage
 
-## 🔒 Security and Privacy
+POCOmeta provides comprehensive command-line options:
 
-### Data Protection
-- No personal information stored in code
-- Rule files can be kept private
-- Secure API token handling
-- Local processing only
+### Basic Commands
 
-### Git Repository
-The following files are excluded from version control:
-- Personal rule files (`*_###.yaml`)
-- Development documentation (`replit.md`)
-- Debug and log files
-- API tokens and credentials
+```bash
+# Process all NEW documents
+python main.py
 
-## 🤝 Contributing
+# Dry-run mode (simulate without changes)
+python main.py --dry-run
 
-### Rule Development
-1. Create rule files in the `rules/` directory
-2. Test with `--dry-run` and `--verbose` flags
-3. Validate pattern matching with debug output
-4. Share templates (without personal data)
+# Verbose output with detailed scoring
+python main.py --verbose
 
-### Code Contributions
-1. Follow existing code structure
-2. Add comprehensive docstrings
-3. Test with real Paperless data
-4. Document changes in commit messages
+# Debug mode with comprehensive diagnostics
+python main.py --debug
+```
 
-## 📋 External Dependencies
+### Document Targeting
 
-### Required Libraries
-- **requests**: HTTP client for Paperless-ngx API communication
-- **pyyaml**: YAML parsing for rule configuration files
-- **tabulate**: Formatted table output for reporting
+```bash
+# Process specific document
+python main.py --limit-id 123
 
-### Paperless-ngx Integration
-- **API Version**: Compatible with Paperless-ngx REST API v1
-- **Authentication**: Token-based authentication required
-- **Required Permissions**: Read access for documents, write access for tags and metadata
+# Limit number of documents
+python main.py --limit 50
 
-### Environment Requirements
-- **Python 3.11+**: Modern Python runtime with type hints support
-- **Network Access**: HTTP/HTTPS connectivity to Paperless-ngx instance
-- **File System**: Read access to rules directory, write access for logging
+# Show document IDs only
+python main.py --id-only
 
-## 🚀 Deployment Strategy
+# Display document content
+python main.py --show-content 123
+```
 
-### Container Environment
-- **Python Environment**: Uses Python 3.11 with YAML system dependencies
-- **Package Management**: Standard pip installation with requirements
-- **Configuration**: Environment variables or settings file
+### Rule Validation
 
-### Configuration Management
-- **Environment Variables**: All sensitive configuration via environment variables
-- **Default Values**: Sensible defaults for development and testing
-- **Validation**: Runtime validation of required configuration
+```bash
+# Bulk verification mode
+python main.py --dry-run --bulk-verify
 
-### Execution Modes
-- **Production Mode**: Normal processing with API updates
-- **Dry Run Mode**: Simulation without making changes
-- **Verbose Mode**: Detailed logging and debugging output
-- **Limited Processing**: Support for processing subsets of documents
+# Test against all documents (ignore tag filtering)
+python main.py --dry-run --bulk-verify --ignore-tags
 
-## 📄 License
+# Quick rule testing with limited documents
+python main.py --dry-run --bulk-verify --limit 25
+```
 
-This project is released under the GNU General Public License. See LICENSE file for details.
+## Features
 
-## 🆕 Recent Changes
+### ✅ Fully Implemented
 
-### Initial Release
-- Complete modular document classification system
-- Rule-based pattern matching with confidence scoring
-- Comprehensive API integration with Paperless-ngx
-- User-friendly configuration and extensive documentation
-- Privacy-focused design with secure rule management
+**Core Document Processing**
+- Document retrieval from Paperless-ngx API with flexible filtering
+- OCR content analysis and pattern matching
+- YAML-based rule system for document classification
+- Static and dynamic metadata extraction
+
+**Filtering and Selection**
+- Tag-based document filtering (include/exclude)
+- Document type and correspondent filtering
+- Individual document targeting by ID
+- Configurable processing limits
+
+**Confidence Scoring**
+- Multi-tier rule scoring (core + bonus identifiers)
+- POCO confidence calculation across metadata sources
+- Configurable thresholds for rule matching and metadata application
+- Detailed score breakdown and analysis
+
+**API Integration**
+- Full Paperless-ngx REST API integration
+- Token-based authentication with environment variable support
+- Automatic tag, correspondent, and document type creation
+- Custom field support for extended metadata
+
+**Output and Reporting**
+- Colored console output for enhanced readability
+- Verbose mode with detailed processing information
+- Debug mode for rule development and troubleshooting
+- Bulk verification mode for efficient rule testing
+- Comprehensive processing summaries and statistics
+
+**Safety Features**
+- Dry-run mode for safe testing
+- Configuration validation before processing
+- Graceful error handling with detailed reporting
+- Automatic success/failure tagging
+
+### 🚧 Partially Implemented
+
+**Advanced Error Recovery**
+- Basic error handling and logging implemented
+- Automatic retry mechanisms planned for future implementation
+
+### 🚀 Planned Features
+
+**Test File Mode**
+- YAML-based test data input for testing POCO scoring logic
+- Validate scoring algorithms and test edge cases quickly
+- Fast execution without live Paperless connection
+
+**Rule Templates**
+- Pre-built rule templates for common document types
+- Faster setup for new users with standard document categories
+
+**Webhook Integration**
+- Send processing results to external systems
+- Integration with workflow automation tools
+
+**Enhanced Analytics**
+- Processing statistics and performance metrics
+- Monitor system performance and rule effectiveness
+
+## Typical Use Cases
+
+**Initial Migration**: Import large backlogs of mixed documents (bank statements, invoices, contracts) into fresh Paperless-ngx instances with automatic classification.
+
+**Ongoing Automation**: Ensure future bulk or scheduled imports are correctly and automatically tagged and classified without manual intervention.
+
+**Consistency Enforcement**: Standardize metadata across existing archives, reducing manual correction efforts and improving searchability.
+
+**Rule Development**: Use bulk verification mode to test and refine classification rules against large document sets.
+
+## Troubleshooting
+
+### Common Issues
+
+**API Connection Problems**
+- Verify `PAPERLESS_URL` and `PAPERLESS_TOKEN` in settings
+- Test with: `python main.py --dry-run --verbose`
+- Check Paperless-ngx logs for authentication errors
+
+**No Documents Found**
+- Ensure documents are tagged with your `INCLUDE_TAG` (default: "NEW")
+- Verify tag filtering settings in configuration
+- Use `--id-only` to list available documents
+
+**Rule Matching Issues**
+- Use `--debug` mode to see detailed pattern matching
+- Test with single documents: `--limit-id 123 --verbose`
+- Verify rule YAML syntax and pattern formatting
+
+**Performance Issues**
+- Use `--limit` to process smaller batches
+- Consider rule optimization for complex patterns
+- Monitor processing time in verbose output
+
+### Getting Help
+
+1. **Enable debug mode**: `python main.py --debug` for detailed diagnostics
+2. **Check configuration**: Use `python setup_validation.py` to verify settings
+3. **Test with single documents**: `--limit-id` for isolated testing
+4. **Review logs**: Check both POCOmeta and Paperless-ngx logs
+
+## Contributing
+
+POCOmeta is designed to be extensible and welcomes contributions:
+
+- **Rule Templates**: Share rules for common document types
+- **Feature Enhancements**: Improve scoring algorithms or add new capabilities
+- **Bug Reports**: Report issues with detailed reproduction steps
+- **Documentation**: Help improve setup guides and usage examples
+
+## License
+
+This project is licensed under the MIT License. See LICENSE file for details.
