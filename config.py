@@ -4,6 +4,7 @@ Handles settings from settings.py and environment variables (environment takes p
 """
 
 import os
+import logging
 from typing import Dict, Any, List, Optional
 
 try:
@@ -95,12 +96,56 @@ class Config:
         return []
     
     def validate(self) -> bool:
-        """Validate configuration settings"""
+        """Validate configuration settings with helpful error messages"""
+        # First check if settings.py has validation function
+        try:
+            validate_func = user_settings.get('validate_required_settings')
+            if validate_func:
+                is_valid, error_messages = validate_func()
+                if not is_valid:
+                    logging.error("=" * 80)
+                    logging.error("CONFIGURATION SETUP REQUIRED")
+                    logging.error("=" * 80)
+                    logging.error("POCOmeta requires some basic configuration to work properly.")
+                    logging.error("Please edit your settings.py file and fix the following issues:")
+                    logging.error("")
+                    for i, error in enumerate(error_messages, 1):
+                        logging.error(f"{i}. {error}")
+                    logging.error("")
+                    logging.error("QUICK SETUP GUIDE:")
+                    logging.error("1. Edit settings.py in your POCOmeta directory")
+                    logging.error("2. Set PAPERLESS_URL to your server URL (e.g., 'http://localhost:8000')")
+                    logging.error("3. Set PAPERLESS_TOKEN to your API token (get from Paperless > Account Settings > API Tokens)")
+                    logging.error("4. Save the file and run the script again")
+                    logging.error("=" * 80)
+                    raise ValueError("Configuration validation failed")
+        except Exception as e:
+            if "Configuration validation failed" in str(e):
+                raise
+            # Continue with basic validation if settings validation fails
+            pass
+        
+        # Basic validation checks with better error messages
         if not self.paperless_url:
-            raise ValueError("PAPERLESS_URL environment variable is required")
+            logging.error("=" * 80)
+            logging.error("PAPERLESS_URL NOT SET")
+            logging.error("=" * 80)
+            logging.error("Please set PAPERLESS_URL in settings.py or as environment variable")
+            logging.error("Example: PAPERLESS_URL='http://localhost:8000'")
+            logging.error("=" * 80)
+            raise ValueError("PAPERLESS_URL is required")
         
         if not self.paperless_token:
-            raise ValueError("PAPERLESS_TOKEN environment variable is required")
+            logging.error("=" * 80)
+            logging.error("PAPERLESS_TOKEN NOT SET")
+            logging.error("=" * 80)
+            logging.error("Please set PAPERLESS_TOKEN either:")
+            logging.error("1. In settings.py: PAPERLESS_TOKEN='your_token_here'")
+            logging.error("2. As environment variable: export PAPERLESS_TOKEN='your_token_here'")
+            logging.error("")
+            logging.error("Get your token from: Paperless > Account Settings > API Tokens")
+            logging.error("=" * 80)
+            raise ValueError("PAPERLESS_TOKEN is required")
         
         return True
     
