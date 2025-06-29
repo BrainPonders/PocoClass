@@ -373,6 +373,10 @@ class ProcessorPipeline:
             self.results['processing_time'] = time.time() - start_time
             raise
     
+    def get_output_generator(self) -> OutputGenerator:
+        """Get the pipeline's output generator instance"""
+        return self.output_generator
+    
     def validate_setup(self) -> bool:
         """Step 1: Validate configuration and test API connection"""
         try:
