@@ -214,11 +214,17 @@ class MetadataProcessor:
             processed['tags'] = tag_names
         
         # Process custom fields
-        if 'custom_fields' in raw_doc and isinstance(raw_doc['custom_fields'], list):
+        if 'custom_fields' in raw_doc and isinstance(raw_doc['custom_fields'], list) and api_client:
+            all_custom_fields = api_client.get_all_custom_fields()
+            # Create reverse mapping from ID to name
+            id_to_name = {id_val: name for name, id_val in all_custom_fields.items()}
+            
             for field in raw_doc['custom_fields']:
-                if isinstance(field, dict):
+                if isinstance(field, dict) and field.get('value') is not None:
+                    field_id = field.get('field')
+                    field_name = id_to_name.get(field_id, f"Field_{field_id}")
                     processed['custom_fields'].append({
-                        'name': field.get('field__name', f"Field_{field.get('field')}"),
+                        'name': field_name,
                         'value': field.get('value')
                     })
         

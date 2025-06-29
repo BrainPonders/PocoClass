@@ -80,7 +80,10 @@ class ScoringCalculator:
         
         # Rule score is the base - but only if content metadata exists
         # If content metadata is missing, score should be 0
-        base_rule_score = rule_score if content_value else 0
+        if not content_value:
+            base_rule_score = 0
+        else:
+            base_rule_score = rule_score
         
         # Filename score modifier
         filename_modifier = 0
@@ -165,8 +168,21 @@ class ScoringCalculator:
     
     def get_field_value(self, metadata: Dict[str, Any], field: str) -> Any:
         """Extract field value from metadata structure"""
-        if field not in metadata:
-            return None
+        # Handle custom fields (e.g., "Document Category")
+        if field.startswith("CF:") or not field in metadata:
+            # Remove "CF:" prefix if present for custom field lookup
+            clean_field_name = field.replace("CF:", "").strip()
+            
+            # Look in custom_fields list
+            custom_fields = metadata.get('custom_fields', [])
+            if isinstance(custom_fields, list):
+                for cf in custom_fields:
+                    if isinstance(cf, dict) and cf.get('name') == clean_field_name:
+                        return cf.get('value')
+            
+            # If not found in custom_fields and original field name not in metadata, return None
+            if field not in metadata:
+                return None
         
         field_data = metadata[field]
         
