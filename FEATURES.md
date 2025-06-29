@@ -103,6 +103,13 @@ This document provides a comprehensive overview of POCOmeta's features and their
 - **Use Case**: Faster setup for new users
 - **Priority**: High
 
+### Test File Mode
+- **Description**: YAML-based test data input for testing POCO scoring logic without live Paperless connection
+- **Use Case**: Validate scoring algorithms, test edge cases, and debug rule changes quickly
+- **Priority**: Medium
+- **Implementation**: Add --test-file parameter to load pre-defined metadata scenarios and feed directly into POCO scoring stage
+- **Benefits**: Fast execution, reliable testing, comprehensive edge case coverage for rule development
+
 ## Configuration Coverage
 
 ### Environment Variables Support
