@@ -50,6 +50,7 @@ Examples:
   %(prog)s --dry-run                # Simulate processing without changes
   %(prog)s --verbose                # Show detailed processing information
   %(prog)s --bulk-verify            # Compact output for bulk rule verification
+  %(prog)s --dry-run --bulk-verify --ignore-tags  # Test rules against ALL documents
   %(prog)s --limit 10               # Process only first 10 documents
   %(prog)s --limit-id 123           # Process only document ID 123
   %(prog)s --show-content 123       # Show OCR content for document 123
@@ -65,6 +66,8 @@ Examples:
                        help='Enable comprehensive debug mode with detailed diagnostics and raw data output')
     parser.add_argument('--bulk-verify', action='store_true',
                        help='Enable bulk verification mode for processing many documents efficiently')
+    parser.add_argument('--ignore-tags', action='store_true',
+                       help='Ignore tag filtering (only works with --dry-run and --bulk-verify)')
     parser.add_argument('--limit', type=int, metavar='N',
                        help='Limit processing to first N documents')
     parser.add_argument('--limit-id', type=int, metavar='ID',
@@ -89,6 +92,11 @@ def main():
     logger.info("=" * 80)
     
     try:
+        # Validate argument combinations
+        if args.ignore_tags and not (args.dry_run and args.bulk_verify):
+            logger.error("--ignore-tags can only be used with both --dry-run and --bulk-verify")
+            return 1
+        
         # Initialize configuration
         config = Config()
         
