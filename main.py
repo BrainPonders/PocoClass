@@ -103,11 +103,11 @@ def main():
         # Initialize pipeline
         pipeline = ProcessorPipeline(config, args)
         
-        # Initialize output generator
-        output_gen = OutputGenerator(args.verbose, args.debug)
-        
         # Execute processing pipeline
         results = pipeline.execute()
+        
+        # Use pipeline's output generator (which has correct status counts for bulk verification)
+        output_gen = pipeline.get_output_generator()
         
         # Generate output and summary
         bulk_verify = hasattr(args, 'bulk_verify') and args.bulk_verify
