@@ -671,7 +671,7 @@ class OutputGenerator:
             new_val = field_data['new']
             is_changed = field_data['changed']
             
-            print(f"    {Colors.bold(field_name + ':'):.<25}", end='')
+            print(f"    {Colors.bold(field_name + ':'):.<30}", end='')
             
             if is_changed:
                 if current_val and current_val != '—':
