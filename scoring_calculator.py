@@ -193,10 +193,23 @@ class ScoringCalculator:
             return str(value1).lower() == str(value2).lower()
         
         elif field == 'tags':
-            # For tags, check if lists have common elements
+            # For tags, check if lists have common elements (excluding workflow tags)
             if isinstance(value1, list) and isinstance(value2, list):
-                set1 = {str(tag).lower() for tag in value1}
-                set2 = {str(tag).lower() for tag in value2}
+                workflow_tags = {'new', 'poco'}
+                
+                # Extract tag names and filter out workflow tags
+                set1 = set()
+                for tag in value1:
+                    tag_name = tag['name'].lower() if isinstance(tag, dict) and 'name' in tag else str(tag).lower()
+                    if tag_name not in workflow_tags:
+                        set1.add(tag_name)
+                
+                set2 = set()
+                for tag in value2:
+                    tag_name = tag['name'].lower() if isinstance(tag, dict) and 'name' in tag else str(tag).lower()
+                    if tag_name not in workflow_tags:
+                        set2.add(tag_name)
+                
                 return len(set1.intersection(set2)) > 0
             return False
         
