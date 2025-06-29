@@ -420,6 +420,7 @@ class ProcessorPipeline:
             doc_dict['content'] = ''  # Empty content for failed fetch
             doc_dict['selected_rule'] = {'pass': False}  # Mark as no match
             doc_dict['poco_summary'] = {'final_score': 0, 'pass': False}
+            doc_dict['rule_evaluations'] = []  # Empty rule evaluations for failed fetch
             
             # Update results and generate output for content fetch failures
             self.results['processed_documents'] += 1

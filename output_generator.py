@@ -102,21 +102,23 @@ class OutputGenerator:
         # Truncate filename for display
         display_filename = self.truncate_value(filename, 35)
         
+        # Get POCO score first to determine overall status
+        poco_score = poco_summary.get('final_score', 0)
+        poco_pass = poco_summary.get('pass', False)
+        
+        # Determine status based on POCO score regardless of rule match
+        if poco_score == 0:
+            status = Colors.red("✗ FAIL")
+        elif poco_pass:
+            status = Colors.green("✓ PASS")
+        else:
+            status = Colors.yellow("~ PARTIAL")
+        
         if selected_rule.get('pass', False):
             rule_id = selected_rule.get('rule_id', 'unknown')
             core_score = selected_rule.get('core_score', 0)
             bonus_score = selected_rule.get('bonus_score', 0)
             total_score = core_score + bonus_score
-            poco_score = poco_summary.get('final_score', 0)
-            poco_pass = poco_summary.get('pass', False)
-            
-            # Determine status first - POCO 0 should always be FAIL
-            if poco_score == 0:
-                status = Colors.red("✗ FAIL")
-            elif poco_pass:
-                status = Colors.green("✓ PASS")
-            else:
-                status = Colors.yellow("~ PARTIAL")
             
             # Color coding based on core+bonus total score
             if total_score == 150:  # Perfect score - green entire row
@@ -140,13 +142,13 @@ class OutputGenerator:
                 poco_display = Colors.green(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
                 display_filename = self.truncate_value(filename, 35)
         else:
-            # No match - red entire row
+            # No match - red entire row, but preserve POCO-based status
             row_color = Colors.red
             rule_display = row_color("NO MATCH")
             core_display = row_color("0")
             bonus_display = row_color("0")
-            poco_display = row_color("0")
-            status = row_color("✗ FAIL")
+            poco_display = row_color(f"{poco_score}")
+            # Don't override status here - use the POCO-based status determined above
             display_filename = row_color(self.truncate_value(filename, 35))
         
         # Print compact single-line output with proper alignment
