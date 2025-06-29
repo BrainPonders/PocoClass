@@ -172,7 +172,17 @@ class ScoringCalculator:
         if isinstance(field_data, dict):
             # For structured data like {'value': ..., 'score': ...}
             if 'value' in field_data:
-                return field_data['value']
+                value = field_data['value']
+                # Handle tags that might be stored as string representations of lists
+                if field == 'tags' and isinstance(value, str) and value.startswith('[') and value.endswith(']'):
+                    try:
+                        # Convert string representation back to list
+                        import ast
+                        return ast.literal_eval(value)
+                    except:
+                        # If conversion fails, treat as a single tag
+                        return [value.strip("[]'\"")]
+                return value
             # For data like {'name': ..., 'id': ...}
             elif 'name' in field_data:
                 return field_data['name']
