@@ -377,9 +377,11 @@ class ProcessorPipeline:
     
     def retrieve_documents(self) -> List[Dict[str, Any]]:
         """Step 3: Retrieve documents from Paperless API"""
+        ignore_tags = getattr(self.args, 'ignore_tags', False)
         return self.api_client.get_documents(
             limit=self.args.limit,
-            document_id=self.args.limit_id
+            document_id=self.args.limit_id,
+            ignore_tags=ignore_tags
         )
     
     def process_document(self, raw_doc: Dict[str, Any], rules: Dict[str, Dict[str, Any]]) -> None:
