@@ -107,7 +107,8 @@ class OutputGenerator:
         poco_pass = poco_summary.get('pass', False)
         
         # Determine status based on POCO score regardless of rule match
-        if poco_score == 0:
+        # Handle None values as 0 (no scoring performed)
+        if poco_score is None or poco_score == 0:
             status = Colors.red("✗ FAIL")
         elif poco_pass:
             status = Colors.green("✓ PASS")
@@ -126,20 +127,20 @@ class OutputGenerator:
                 rule_display = row_color(rule_id)
                 core_display = row_color(f"{core_score}")
                 bonus_display = row_color(f"{bonus_score}")
-                poco_display = row_color(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                poco_display = row_color(f"{poco_score if poco_score is not None else 0}") if poco_pass else Colors.red(f"{poco_score if poco_score is not None else 0}")
                 display_filename = row_color(self.truncate_value(filename, 35))
             elif total_score >= 100:  # Partial match but decent score - orange entire row
                 row_color = Colors.yellow
                 rule_display = row_color(rule_id)
                 core_display = row_color(f"{core_score}")
                 bonus_display = row_color(f"{bonus_score}")
-                poco_display = row_color(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                poco_display = row_color(f"{poco_score if poco_score is not None else 0}") if poco_pass else Colors.red(f"{poco_score if poco_score is not None else 0}")
                 display_filename = row_color(self.truncate_value(filename, 35))
             else:  # Low score match - keep normal colors
                 rule_display = Colors.blue(rule_id)
                 core_display = f"{core_score}"
                 bonus_display = f"{bonus_score}"
-                poco_display = Colors.green(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                poco_display = Colors.green(f"{poco_score if poco_score is not None else 0}") if poco_pass else Colors.red(f"{poco_score if poco_score is not None else 0}")
                 display_filename = self.truncate_value(filename, 35)
         else:
             # No match - red entire row, but preserve POCO-based status
@@ -147,7 +148,7 @@ class OutputGenerator:
             rule_display = row_color("NO MATCH")
             core_display = row_color("0")
             bonus_display = row_color("0")
-            poco_display = row_color(f"{poco_score}")
+            poco_display = row_color(f"{poco_score if poco_score is not None else 0}")
             # Don't override status here - use the POCO-based status determined above
             display_filename = row_color(self.truncate_value(filename, 35))
         
