@@ -438,6 +438,10 @@ class ProcessorPipeline:
         winning_rule = self.select_winning_rule(doc_dict)
         if not winning_rule:
             self.logger.info(f"Document {doc_id}: No matching rule found")
+            # Ensure NO MATCH documents have zero POCO scores
+            doc_dict['selected_rule'] = {'pass': False, 'total_score': 0, 'core_score': 0, 'bonus_score': 0}
+            doc_dict['poco_summary'] = {'final_score': 0, 'pass': False}
+            doc_dict['poco_score_details'] = {}
             # Update results for failed documents
             self.results['processed_documents'] += 1
             # Generate output for failed documents
