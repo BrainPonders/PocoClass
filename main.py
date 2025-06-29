@@ -93,8 +93,8 @@ def main():
     
     try:
         # Validate argument combinations
-        if args.ignore_tags and not (args.dry_run and args.bulk_verify):
-            logger.error("--ignore-tags can only be used with both --dry-run and --bulk-verify")
+        if args.ignore_tags and not (args.dry_run and (args.bulk_verify or args.id_only)):
+            logger.error("--ignore-tags can only be used with --dry-run and either --bulk-verify or --id-only")
             return 1
         
         # Initialize configuration
