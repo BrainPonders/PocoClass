@@ -13,7 +13,13 @@ class ScoringCalculator:
         self.logger = logging.getLogger(__name__)
     
     def calculate_poco_score(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> Dict[str, Any]:
-        """Calculate POCO score based on rule confidence with filename/paperless modifiers"""
+        """Calculate POCO score based on rule confidence with filename/paperless modifiers
+        
+        Scoring Logic:
+        - PASS: final score >= threshold
+        - PARTIAL: final score between 1 and (threshold-1)  
+        - FAIL: final score = 0
+        """
         
         # Get the rule's base score (core + bonus from selected rule)
         selected_rule = doc_dict.get('selected_rule', {})
@@ -30,7 +36,6 @@ class ScoringCalculator:
         
         poco_details = {}
         final_scores = []
-        process_should_continue = True
         
         for field in fields_to_score:
             field_score = self.calculate_field_score_with_rule_base(
@@ -38,16 +43,16 @@ class ScoringCalculator:
             )
             poco_details[field] = field_score
             final_scores.append(field_score['final_score'])
-            
-            # Check if any field falls below threshold
-            if field_score['final_score'] < rule_threshold:
-                process_should_continue = False
         
         # Final POCO score is the lowest final score
         final_poco_score = min(final_scores) if final_scores else 0
         
-        # Determine if processing should continue
-        passes = process_should_continue and final_poco_score >= rule_threshold
+        # New flexible logic: Pass/Partial/Fail based on final score only
+        # PASS: final score >= threshold
+        # PARTIAL: final score between 1 and (threshold-1)  
+        # FAIL: final score = 0
+        passes = final_poco_score >= rule_threshold
+        process_should_continue = final_poco_score > 0  # Continue processing if any score > 0
         
         # Update document dictionary
         doc_dict['poco_score_details'] = poco_details
