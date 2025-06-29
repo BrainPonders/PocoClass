@@ -395,10 +395,10 @@ class OutputGenerator:
                 filename_val = self.get_custom_field_value(doc_dict.get('filename_metadata', {}), cf_name)
                 paperless_val = self.get_custom_field_value(doc_dict.get('paperless_metadata', {}), cf_name)
             else:
-                # Handle regular fields
-                content_val = self.get_display_value(doc_dict.get('content_metadata', {}), field_key)
-                filename_val = self.get_display_value(doc_dict.get('filename_metadata', {}), field_key)
-                paperless_val = self.get_display_value(doc_dict.get('paperless_metadata', {}), field_key)
+                # Handle regular fields using comparison-specific display
+                content_val = self.get_display_value_for_comparison(doc_dict.get('content_metadata', {}), field_key, 'content')
+                filename_val = self.get_display_value_for_comparison(doc_dict.get('filename_metadata', {}), field_key, 'filename')
+                paperless_val = self.get_display_value_for_comparison(doc_dict.get('paperless_metadata', {}), field_key, 'paperless')
             
             # Color coding: Content is green baseline, others green if matching, red if different
             content_colored = Colors.green(self.truncate_value(content_val, 28)) if content_val else Colors.red("—")
@@ -719,6 +719,44 @@ class OutputGenerator:
                 return ", ".join([f"{item.get('name', '')}:{item.get('value', '')}" for item in field_data if isinstance(item, dict)])
         
         return str(field_data) if field_data else ""
+
+    def get_display_value_for_comparison(self, metadata: Dict[str, Any], field: str, source: str) -> str:
+        """Get display value for metadata comparison, excluding workflow tags"""
+        if field not in metadata:
+            return ""
+        
+        field_data = metadata[field]
+        
+        if field == 'tags' and isinstance(field_data, list):
+            # Filter out workflow tags for comparison
+            workflow_tags = {'NEW', 'POCO'}
+            tag_names = []
+            for tag in field_data:
+                tag_name = tag['name'] if isinstance(tag, dict) and 'name' in tag else str(tag)
+                if tag_name not in workflow_tags:
+                    tag_names.append(tag_name)
+            
+            if source in ['content', 'filename']:
+                # Show content/filename tags without brackets for cleaner display
+                return ", ".join(tag_names) if tag_names else "—"
+            else:
+                # Paperless tags - show workflow tags in parentheses
+                all_tags = []
+                workflow_found = []
+                for tag in field_data:
+                    tag_name = tag['name'] if isinstance(tag, dict) and 'name' in tag else str(tag)
+                    if tag_name in workflow_tags:
+                        workflow_found.append(tag_name)
+                    else:
+                        all_tags.append(tag_name)
+                
+                result = ", ".join(all_tags) if all_tags else ""
+                if workflow_found:
+                    workflow_str = "(" + ", ".join(workflow_found) + ")"
+                    result = f"{result}, {workflow_str}" if result else workflow_str
+                return result if result else "—"
+        
+        return self.get_display_value(metadata, field)
     
     def get_custom_field_value(self, metadata: Dict[str, Any], field_name: str) -> str:
         """Get value for a specific custom field"""
