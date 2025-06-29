@@ -160,16 +160,22 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to get/create custom field '{field_name}': {e}")
             return None
     
-    def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None) -> List[Dict[str, Any]]:
+    def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None, ignore_tags: bool = False) -> List[Dict[str, Any]]:
         """Get documents matching filter criteria"""
         try:
-            # Get tag IDs for filtering
-            include_tag_id = self.get_tag_id(self.config.filter_tag_include)
-            exclude_tag_id = self.get_tag_id(self.config.filter_tag_exclude)
-            
-            if not include_tag_id:
-                self.logger.error(f"Cannot find or create tag '{self.config.filter_tag_include}'")
-                return []
+            # Skip tag filtering if ignore_tags is True
+            if ignore_tags:
+                include_tag_id = None
+                exclude_tag_id = None
+                self.logger.info("Ignoring tag filtering - retrieving all documents")
+            else:
+                # Get tag IDs for filtering
+                include_tag_id = self.get_tag_id(self.config.filter_tag_include)
+                exclude_tag_id = self.get_tag_id(self.config.filter_tag_exclude)
+                
+                if not include_tag_id:
+                    self.logger.error(f"Cannot find or create tag '{self.config.filter_tag_include}'")
+                    return []
             
             # Build query parameters
             params = {}
@@ -179,6 +185,10 @@ class PaperlessAPIClient:
                 response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/")
                 response.raise_for_status()
                 doc = response.json()
+                
+                # Skip tag filtering if ignore_tags is True
+                if ignore_tags:
+                    return [doc]
                 
                 # Check if document matches filter criteria
                 doc_tag_ids = []
@@ -202,10 +212,12 @@ class PaperlessAPIClient:
                     self.logger.warning(f"Document {document_id} does not match filter criteria")
                     return []
             else:
-                # Get documents with tag filters
-                params['tags__id__in'] = include_tag_id
-                if exclude_tag_id:
-                    params['tags__id__none'] = exclude_tag_id
+                # Build query parameters
+                if not ignore_tags:
+                    # Apply tag filters
+                    params['tags__id__in'] = include_tag_id
+                    if exclude_tag_id:
+                        params['tags__id__none'] = exclude_tag_id
                 
                 if limit:
                     params['page_size'] = limit
