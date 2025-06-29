@@ -219,16 +219,36 @@ class PaperlessAPIClient:
                     if exclude_tag_id:
                         params['tags__id__none'] = exclude_tag_id
                 
-                if limit:
-                    params['page_size'] = limit
+                # Handle pagination to get all documents
+                all_documents = []
+                page = 1
+                page_size = 100  # Use larger page size for efficiency
                 
-                response = self.session.get(
-                    f"{self.config.paperless_url}/api/documents/",
-                    params=params
-                )
-                response.raise_for_status()
+                while True:
+                    params['page'] = page
+                    params['page_size'] = page_size
+                    
+                    response = self.session.get(
+                        f"{self.config.paperless_url}/api/documents/",
+                        params=params
+                    )
+                    response.raise_for_status()
+                    
+                    data = response.json()
+                    results = data.get('results', [])
+                    all_documents.extend(results)
+                    
+                    # Check if we have more pages
+                    if not data.get('next') or (limit and len(all_documents) >= limit):
+                        break
+                    
+                    page += 1
                 
-                return response.json().get('results', [])
+                # Apply limit after getting all documents (for ignore_tags mode)
+                if limit and len(all_documents) > limit:
+                    all_documents = all_documents[:limit]
+                
+                return all_documents
                 
         except requests.RequestException as e:
             self.logger.error(f"Failed to get documents: {e}")

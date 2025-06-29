@@ -405,6 +405,9 @@ class ProcessorPipeline:
         winning_rule = self.select_winning_rule(doc_dict)
         if not winning_rule:
             self.logger.info(f"Document {doc_id}: No matching rule found")
+            # Update results for failed documents
+            self.results['processed_documents'] += 1
+            # Generate output for failed documents
             bulk_verify = hasattr(self.args, 'bulk_verify') and self.args.bulk_verify
             self.output_generator.generate_document_output(doc_dict, self.args.dry_run, bulk_verify)
             self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
