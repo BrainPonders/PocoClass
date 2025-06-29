@@ -61,9 +61,7 @@ Examples:
     parser.add_argument('--verbose', action='store_true',
                        help='Enable verbose output with detailed scoring')
     parser.add_argument('--debug', action='store_true',
-                       help='Enable debug mode with extended diagnostics')
-    parser.add_argument('--debug-raw', action='store_true',
-                       help='Enable raw debug mode with complete dictionary output')
+                       help='Enable comprehensive debug mode with detailed diagnostics and raw data output')
     parser.add_argument('--limit', type=int, metavar='N',
                        help='Limit processing to first N documents')
     parser.add_argument('--limit-id', type=int, metavar='ID',
@@ -78,7 +76,7 @@ Examples:
 def main():
     """Main application entry point"""
     args = parse_arguments()
-    logger = setup_logging(args.debug or args.debug_raw)
+    logger = setup_logging(args.debug)
     
     logger.info("=" * 80)
     logger.info("POCOmeta - POST-CONSUMPTION METADATA PROCESSOR STARTED")
