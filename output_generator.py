@@ -103,27 +103,28 @@ class OutputGenerator:
         display_filename = self.truncate_value(filename, 40)
         
         if selected_rule.get('pass', False):
-            rule_name = self.truncate_value(selected_rule.get('rule_name', 'Unknown'), 30)
             rule_id = selected_rule.get('rule_id', 'unknown')
-            rule_score = selected_rule.get('total_score', 0)
-            rule_threshold = selected_rule.get('threshold', 0)
+            core_score = selected_rule.get('core_score', 0)
+            bonus_score = selected_rule.get('bonus_score', 0)
             poco_score = poco_summary.get('final_score', 0)
             poco_pass = poco_summary.get('pass', False)
             
             # Color coding based on results
-            rule_display = Colors.green(f"{rule_name} ({rule_id})")
-            score_display = Colors.bold(Colors.green(f"{rule_score}/{rule_threshold}"))
-            poco_display = Colors.green(f"{poco_score}%") if poco_pass else Colors.red(f"{poco_score}%")
+            rule_display = Colors.green(rule_id)
+            core_display = Colors.green(f"{core_score:>4}")
+            bonus_display = Colors.green(f"{bonus_score:>5}")
+            poco_display = Colors.green(f"{poco_score:>4}") if poco_pass else Colors.red(f"{poco_score:>4}")
             status = Colors.green("✓ PASS") if poco_pass else Colors.yellow("~ PARTIAL")
         else:
             rule_display = Colors.red("NO MATCH")
-            score_display = Colors.red("0/--")
-            poco_display = Colors.red("0%")
+            core_display = Colors.red("   0")
+            bonus_display = Colors.red("    0")
+            poco_display = Colors.red("   0")
             status = Colors.red("✗ FAIL")
         
-        # Print compact single-line output
-        mode_indicator = Colors.yellow("[DRY] ") if dry_run else ""
-        print(f"{mode_indicator}Doc {Colors.blue(str(doc_id).rjust(3))}: {display_filename:<40} | {rule_display:<45} | {score_display:<8} | {poco_display:<6} | {status}")
+        # Print compact single-line output with proper alignment
+        mode_indicator = Colors.yellow("[DRY] ") if dry_run else "      "
+        print(f"{mode_indicator}{Colors.blue(str(doc_id)):>6} {display_filename:<40} | {rule_display:<20} | {core_display} | {bonus_display} | {poco_display} | {status}")
     
     def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
@@ -168,7 +169,7 @@ class OutputGenerator:
         """Print table of rule evaluations with enhanced formatting and winner highlighting"""
         print()
         print("    " + Colors.bold(Colors.cyan("📋 RULE EVALUATIONS")))
-        print("    " + "─" * 115)
+        print("    " + "─" * 105)
         
         headers = [
             Colors.bold("Rule ID"), 
@@ -177,8 +178,7 @@ class OutputGenerator:
             Colors.bold("Bonus"), 
             Colors.bold("Total"), 
             Colors.bold("Threshold"), 
-            Colors.bold("Result"),
-            Colors.bold("Winner")
+            Colors.bold("Result")
         ]
         rows = []
         
@@ -191,20 +191,17 @@ class OutputGenerator:
             
             # Enhanced color coding for results and winner highlighting
             if is_winner:
-                status = Colors.bold(Colors.green("✓ PASS"))
-                winner_mark = Colors.bold(Colors.yellow("🏆 WIN"))
-                total_colored = Colors.bold(Colors.green(f"{total_score:>3}"))
+                status = Colors.bold(Colors.yellow("WIN"))
+                total_colored = Colors.bold(Colors.yellow(f"{total_score:>3}"))
                 rule_id_colored = Colors.bold(Colors.yellow(rule_id))
-                rule_name_colored = Colors.bold(rule_name)
+                rule_name_colored = Colors.bold(Colors.yellow(rule_name))
             elif is_pass:
                 status = Colors.green("✓ PASS")
-                winner_mark = ""
                 total_colored = Colors.green(f"{total_score:>3}")
                 rule_id_colored = Colors.blue(rule_id)
                 rule_name_colored = rule_name
             else:
                 status = Colors.red("✗ FAIL")
-                winner_mark = ""
                 total_colored = Colors.red(f"{total_score:>3}")
                 rule_id_colored = Colors.blue(rule_id)
                 rule_name_colored = rule_name
@@ -216,12 +213,11 @@ class OutputGenerator:
                 f"{rule_eval.get('bonus_score', 0):>3}",
                 total_colored,
                 f"{rule_eval.get('threshold', 0):>3}",
-                status,
-                winner_mark
+                status
             ])
         
         table = tabulate(rows, headers=headers, tablefmt="simple", 
-                         colalign=("left", "left", "center", "center", "center", "center", "center", "center"))
+                         colalign=("left", "left", "center", "center", "center", "center", "center"))
         for line in table.split('\n'):
             print("      " + line)
         print()
@@ -901,13 +897,13 @@ class OutputGenerator:
         """Print header for bulk verification mode"""
         print()
         print(Colors.bold(Colors.cyan("🔍 BULK RULE VERIFICATION MODE")))
-        print("─" * 120)
-        print(f"{'Doc ID':>6} {'Filename':<40} | {'Matched Rule':<45} | {'Score':<8} | {'POCO':<6} | {'Status'}")
-        print("─" * 120)
+        print("─" * 110)
+        print(f"{'Doc ID':>6} {'Filename':<40} | {'Rule ID':<20} | {'Core':>4} | {'Bonus':>5} | {'POCO':>4} | {'Status'}")
+        print("─" * 110)
 
     def generate_bulk_verify_summary(self, results: Dict[str, Any]) -> None:
         """Generate compact summary for bulk verification mode"""
-        print("─" * 120)
+        print("─" * 110)
         
         total_docs = results.get('total_documents', 0)
         processed_docs = results.get('processed_documents', 0)
