@@ -58,8 +58,8 @@ class ProcessorPipeline:
             'errors': []
         }
         
-    def print_debug_dict(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
-        """Print only new/changed data for debug mode"""
+    def print_debug_output(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
+        """Print comprehensive debug information for the current step"""
         if not self.args.debug:
             return
             
@@ -68,7 +68,7 @@ class ProcessorPipeline:
         print(f"Document ID: {doc_dict.get('id', 'Unknown')}")
         print(f"{'='*80}")
         
-        # Show only relevant data for each step
+        # Show step-specific formatted data
         if "STEP 4" in step_name:
             self._debug_step_4(doc_dict)
         elif "STEP 5" in step_name:
@@ -82,18 +82,13 @@ class ProcessorPipeline:
         elif "STEP 9" in step_name:
             self._debug_step_9(doc_dict)
         
+        # Also show raw data structure for comprehensive debugging
+        print(f"\n--- RAW DATA STRUCTURE ---")
+        self._print_dict_clean(doc_dict, indent=0)
+        
         print(f"{'='*80}\n")
     
-    def print_debug_raw(self, step_name: str, doc_dict: Dict[str, Any]) -> None:
-        """Print raw dictionary structure with clean formatting"""
-        print(f"{'='*80}")
-        print(f"DEBUG RAW: {step_name.upper()}")
-        print(f"Document ID: {doc_dict.get('id', 'Unknown')}")
-        print(f"{'='*80}")
-        
-        # Format dictionary with clean indentation
-        self._print_dict_clean(doc_dict, indent=0)
-        print(f"{'='*80}\n")
+
     
     def _print_dict_clean(self, obj: Any, indent: int = 0, printed_keys: Optional[Set[str]] = None) -> None:
         """Print dictionary structure with clean formatting, avoiding duplicate keys"""
@@ -139,10 +134,59 @@ class ProcessorPipeline:
         
         print("\nPaperless Metadata:")
         pm = doc_dict.get('paperless_metadata', {})
-        print(f"  Date Created: {pm.get('date_created', {}).get('parsed')}")
-        print(f"  Correspondent: ID {pm.get('correspondent', {}).get('id')}")
-        print(f"  Document Type: ID {pm.get('document_type', {}).get('id')}")
-        print(f"  Tags: {[tag.get('id') for tag in pm.get('tags', [])]}")
+        
+        # Safely extract date_created - it can be string or dict
+        date_created = pm.get('date_created')
+        if isinstance(date_created, dict):
+            date_val = date_created.get('parsed', date_created.get('value', 'Unknown'))
+        elif isinstance(date_created, str):
+            date_val = date_created
+        else:
+            date_val = 'None'
+        print(f"  Date Created: {date_val}")
+        
+        # Safely extract correspondent - it can be string or dict
+        correspondent = pm.get('correspondent')
+        if isinstance(correspondent, dict):
+            corr_val = f"ID {correspondent.get('id')} ({correspondent.get('name', 'Unknown')})"
+        elif isinstance(correspondent, str):
+            corr_val = correspondent
+        else:
+            corr_val = 'None'
+        print(f"  Correspondent: {corr_val}")
+        
+        # Safely extract document_type - it can be string or dict
+        doc_type = pm.get('document_type')
+        if isinstance(doc_type, dict):
+            type_val = f"ID {doc_type.get('id')} ({doc_type.get('name', 'Unknown')})"
+        elif isinstance(doc_type, str):
+            type_val = doc_type
+        else:
+            type_val = 'None'
+        print(f"  Document Type: {type_val}")
+        
+        # Safely extract tags - they can be list of strings or dicts
+        tags = pm.get('tags', [])
+        if isinstance(tags, list):
+            tag_info = []
+            for tag in tags:
+                if isinstance(tag, dict):
+                    tag_info.append(f"ID {tag.get('id')} ({tag.get('name', 'Unknown')})")
+                elif isinstance(tag, str):
+                    tag_info.append(tag)
+                else:
+                    tag_info.append(str(tag))
+            print(f"  Tags: {tag_info}")
+        else:
+            print(f"  Tags: {tags}")
+        
+        print(f"\nContent Preview (first 200 chars):")
+        content = doc_dict.get('content', '')
+        preview = content[:200] + "..." if len(content) > 200 else content
+        print(f"  {preview}")
+        
+        print(f"\nDocument Structure Keys:")
+        print(f"  Available keys: {list(doc_dict.keys())}")
     
     def _debug_step_5(self, doc_dict: Dict[str, Any]) -> None:
         """Show rule evaluation results"""
@@ -205,12 +249,14 @@ class ProcessorPipeline:
             
             # Show field scores in a clean format
             field_scores = poco_summary.get('field_scores', {})
-            if field_scores:
+            if field_scores and isinstance(field_scores, dict):
                 print("  Field Confidence Scores:")
                 for field, scores in field_scores.items():
                     if isinstance(scores, dict):
                         final = scores.get('final_score', 0)
                         print(f"    {field.title()}: {final}")
+                    else:
+                        print(f"    {field.title()}: {scores}")
     
     def _debug_step_9(self, doc_dict: Dict[str, Any]) -> None:
         """Show final application results"""
@@ -287,7 +333,12 @@ class ProcessorPipeline:
                 try:
                     self.process_document(doc, rules)
                 except Exception as e:
+                    import traceback
+                    error_details = traceback.format_exc()
                     self.logger.error(f"Error processing document {doc.get('id', 'Unknown')}: {e}")
+                    if self.args.debug:
+                        print(f"\nDEBUG TRACEBACK:")
+                        print(error_details)
                     self.results['errors'].append(f"Document {doc.get('id', 'Unknown')}: {str(e)}")
             
             # Calculate processing time
@@ -337,17 +388,11 @@ class ProcessorPipeline:
         doc_dict = self.initialize_document_dict(raw_doc)
         if not doc_dict:
             return
-        if self.args.debug:
-            self.print_debug_dict("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
+        self.print_debug_output("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
         
         # Step 5: Evaluate rules
         self.evaluate_rules(doc_dict, rules)
-        if self.args.debug:
-            self.print_debug_dict("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
+        self.print_debug_output("STEP 5 - RULE EVALUATIONS COMPLETED", doc_dict)
         
         # Step 6: Select winning rule
         winning_rule = self.select_winning_rule(doc_dict)
@@ -356,31 +401,19 @@ class ProcessorPipeline:
             self.output_generator.generate_document_output(doc_dict, self.args.dry_run)
             self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
             return
-        if self.args.debug:
-            self.print_debug_dict("STEP 6 - WINNING RULE SELECTED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 6 - WINNING RULE SELECTED", doc_dict)
+        self.print_debug_output("STEP 6 - WINNING RULE SELECTED", doc_dict)
         
         # Step 7: Extract metadata from winning rule
         self.extract_metadata(doc_dict, winning_rule)
-        if self.args.debug:
-            self.print_debug_dict("STEP 7 - METADATA EXTRACTED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 7 - METADATA EXTRACTED", doc_dict)
+        self.print_debug_output("STEP 7 - METADATA EXTRACTED", doc_dict)
         
         # Step 8: Calculate POCO score
         self.calculate_poco_score(doc_dict, winning_rule)
-        if self.args.debug:
-            self.print_debug_dict("STEP 8 - POCO SCORES CALCULATED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 8 - POCO SCORES CALCULATED", doc_dict)
+        self.print_debug_output("STEP 8 - POCO SCORES CALCULATED", doc_dict)
         
         # Step 9: Apply metadata (or simulate)
         self.apply_metadata(doc_dict, winning_rule)
-        if self.args.debug:
-            self.print_debug_dict("STEP 9 - METADATA APPLIED", doc_dict)
-        elif self.args.debug_raw:
-            self.print_debug_raw("STEP 9 - METADATA APPLIED", doc_dict)
+        self.print_debug_output("STEP 9 - METADATA APPLIED", doc_dict)
         
         # Update results
         self.results['processed_documents'] += 1
@@ -426,7 +459,7 @@ class ProcessorPipeline:
         doc_dict['flags']['is_paperless_data_available'] = True
         
         # Debug output after Step 4
-        self.print_debug_dict("Step 4 - Document Dictionary Initialized", doc_dict)
+        self.print_debug_output("Step 4 - Document Dictionary Initialized", doc_dict)
         
         return doc_dict
     
@@ -446,7 +479,7 @@ class ProcessorPipeline:
         doc_dict['rule_evaluations'] = rule_evaluations
         
         # Debug output after Step 5
-        self.print_debug_dict("Step 5 - Rules Evaluated", doc_dict)
+        self.print_debug_output("Step 5 - Rules Evaluated", doc_dict)
     
     def select_winning_rule(self, doc_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Step 6: Select the best matching rule"""
@@ -465,12 +498,12 @@ class ProcessorPipeline:
             rule = self.rule_loader.get_rule(rule_id)
             
             # Debug output after Step 6
-            self.print_debug_dict("Step 6 - Winning Rule Selected", doc_dict)
+            self.print_debug_output("Step 6 - Winning Rule Selected", doc_dict)
             
             return rule
         
         # Debug output for no rule found
-        self.print_debug_dict("Step 6 - No Winning Rule Found", doc_dict)
+        self.print_debug_output("Step 6 - No Winning Rule Found", doc_dict)
         return None
     
     def extract_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> None:
@@ -513,7 +546,7 @@ class ProcessorPipeline:
             doc_dict['paperless_scores'][field] = poco_weights.get('paperless', 3)
         
         # Debug output after Step 7
-        self.print_debug_dict("Step 7 - Metadata Extracted", doc_dict)
+        self.print_debug_output("Step 7 - Metadata Extracted", doc_dict)
     
     def convert_metadata_to_dict_format(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Convert metadata to the document dictionary format"""
@@ -549,7 +582,7 @@ class ProcessorPipeline:
         doc_dict['poco_summary'] = poco_result
         
         # Debug output after Step 8
-        self.print_debug_dict("Step 8 - POCO Score Calculated", doc_dict)
+        self.print_debug_output("Step 8 - POCO Score Calculated", doc_dict)
     
     def apply_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> None:
         """Step 9: Apply metadata to Paperless (or simulate)"""
@@ -602,7 +635,7 @@ class ProcessorPipeline:
             self.logger.error(f"Failed to update document {doc_dict['id']}")
         
         # Debug output after Step 9
-        self.print_debug_dict("Step 9 - Metadata Applied (or Simulated)", doc_dict)
+        self.print_debug_output("Step 9 - Metadata Applied (or Simulated)", doc_dict)
     
     def prepare_final_metadata(self, doc_dict: Dict[str, Any], rule: Dict[str, Any]) -> Dict[str, Any]:
         """Prepare final metadata for application based on POCO scoring"""
