@@ -526,7 +526,24 @@ class ProcessorPipeline:
         # Update content metadata with static values from rule
         static_metadata = rule_metadata['static']
         for field, value in static_metadata.items():
-            if field in doc_dict['content_metadata'] and value is not None:
+            if field == 'custom_fields' and isinstance(value, list):
+                # Handle custom fields specially - they need to be stored individually
+                if 'custom_fields' not in doc_dict['content_metadata']:
+                    doc_dict['content_metadata']['custom_fields'] = {'value': [], 'score': 10}
+                
+                doc_dict['content_metadata']['custom_fields']['value'] = value
+                doc_dict['content_metadata']['custom_fields']['score'] = 10
+                
+                # Also store individual custom fields for scoring
+                for cf in value:
+                    if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
+                        cf_name = cf['name']
+                        cf_value = cf['value']
+                        if cf_name not in doc_dict['content_metadata']:
+                            doc_dict['content_metadata'][cf_name] = {'value': None, 'score': None}
+                        doc_dict['content_metadata'][cf_name]['value'] = cf_value
+                        doc_dict['content_metadata'][cf_name]['score'] = 10
+            elif field in doc_dict['content_metadata'] and value is not None:
                 doc_dict['content_metadata'][field]['value'] = value
                 doc_dict['content_metadata'][field]['score'] = 10  # Content weight
         
