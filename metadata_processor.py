@@ -343,12 +343,29 @@ class MetadataProcessor:
         # Handle custom fields
         if 'custom_fields' in metadata and metadata['custom_fields']:
             custom_fields = []
-            for field_name, field_value in metadata['custom_fields'].items():
-                if field_name in api_mappings.get('custom_fields', {}):
-                    custom_fields.append({
-                        'field': api_mappings['custom_fields'][field_name],
-                        'value': str(field_value)
-                    })
+            custom_field_data = metadata['custom_fields']
+            
+            # Handle both dictionary and list formats for custom fields
+            if isinstance(custom_field_data, dict):
+                # Dictionary format: {field_name: field_value}
+                for field_name, field_value in custom_field_data.items():
+                    if field_name in api_mappings.get('custom_fields', {}):
+                        custom_fields.append({
+                            'field': api_mappings['custom_fields'][field_name],
+                            'value': str(field_value)
+                        })
+            elif isinstance(custom_field_data, list):
+                # List format: [{name: field_name, value: field_value}]
+                for field_item in custom_field_data:
+                    if isinstance(field_item, dict) and 'name' in field_item:
+                        field_name = field_item['name']
+                        field_value = field_item.get('value', '')
+                        if field_name in api_mappings.get('custom_fields', {}):
+                            custom_fields.append({
+                                'field': api_mappings['custom_fields'][field_name],
+                                'value': str(field_value)
+                            })
+            
             if custom_fields:
                 payload['custom_fields'] = custom_fields
         
