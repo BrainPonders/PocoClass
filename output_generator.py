@@ -106,21 +106,43 @@ class OutputGenerator:
             rule_id = selected_rule.get('rule_id', 'unknown')
             core_score = selected_rule.get('core_score', 0)
             bonus_score = selected_rule.get('bonus_score', 0)
+            total_score = core_score + bonus_score
             poco_score = poco_summary.get('final_score', 0)
             poco_pass = poco_summary.get('pass', False)
             
-            # Color coding based on results
-            rule_display = Colors.green(rule_id)
-            core_display = Colors.green(f"{core_score}")
-            bonus_display = Colors.green(f"{bonus_score}")
-            poco_display = Colors.green(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
-            status = Colors.green("✓ PASS") if poco_pass else Colors.yellow("~ PARTIAL")
+            # Color coding based on core+bonus total score
+            if total_score == 150:  # Perfect score - green entire row
+                row_color = Colors.green
+                rule_display = row_color(rule_id)
+                core_display = row_color(f"{core_score}")
+                bonus_display = row_color(f"{bonus_score}")
+                poco_display = row_color(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                status = Colors.green("✓ PASS") if poco_pass else Colors.yellow("~ PARTIAL")
+                display_filename = row_color(self.truncate_value(filename, 35))
+            elif total_score >= 100:  # Partial match but decent score - orange entire row
+                row_color = Colors.yellow
+                rule_display = row_color(rule_id)
+                core_display = row_color(f"{core_score}")
+                bonus_display = row_color(f"{bonus_score}")
+                poco_display = row_color(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                status = Colors.green("✓ PASS") if poco_pass else Colors.yellow("~ PARTIAL")
+                display_filename = row_color(self.truncate_value(filename, 35))
+            else:  # Low score match - keep normal colors
+                rule_display = Colors.blue(rule_id)
+                core_display = f"{core_score}"
+                bonus_display = f"{bonus_score}"
+                poco_display = Colors.green(f"{poco_score}") if poco_pass else Colors.red(f"{poco_score}")
+                status = Colors.green("✓ PASS") if poco_pass else Colors.yellow("~ PARTIAL")
+                display_filename = self.truncate_value(filename, 35)
         else:
-            rule_display = Colors.red("NO MATCH")
-            core_display = Colors.red("0")
-            bonus_display = Colors.red("0")
-            poco_display = Colors.red("0")
-            status = Colors.red("✗ FAIL")
+            # No match - red entire row
+            row_color = Colors.red
+            rule_display = row_color("NO MATCH")
+            core_display = row_color("0")
+            bonus_display = row_color("0")
+            poco_display = row_color("0")
+            status = row_color("✗ FAIL")
+            display_filename = row_color(self.truncate_value(filename, 35))
         
         # Print compact single-line output with proper alignment
         mode_indicator = "[DRY] " if dry_run else "      "
@@ -129,7 +151,8 @@ class OutputGenerator:
         core_padded = self.pad_colored_text(core_display, 5, 'right')
         bonus_padded = self.pad_colored_text(bonus_display, 5, 'right')
         poco_padded = self.pad_colored_text(poco_display, 5, 'right')
-        print(f"{doc_id_padded:<11} {display_filename:<35} | {rule_padded} | {core_padded} | {bonus_padded} | {poco_padded} | {status}")
+        filename_padded = self.pad_colored_text(display_filename, 35, 'left')
+        print(f"{doc_id_padded:<11} {filename_padded} | {rule_padded} | {core_padded} | {bonus_padded} | {poco_padded} | {status}")
     
     def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
