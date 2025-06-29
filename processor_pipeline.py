@@ -345,6 +345,23 @@ class ProcessorPipeline:
                         print(f"\nDEBUG TRACEBACK:")
                         print(error_details)
                     self.results['errors'].append(f"Document {doc.get('id', 'Unknown')}: {str(e)}")
+                    
+                    # Create minimal doc_dict for failed processing to ensure it appears in bulk verify
+                    doc_dict = create_document_dict()
+                    doc_dict['id'] = doc.get('id', 'Unknown')
+                    doc_dict['document_id'] = doc.get('id', 'Unknown')
+                    doc_dict['title'] = doc.get('title', doc.get('original_file_name', 'Unknown'))
+                    doc_dict['filename'] = doc.get('original_file_name', doc.get('title', 'Unknown'))
+                    doc_dict['content'] = ''  # Empty content for failed processing
+                    doc_dict['selected_rule'] = {'pass': False}  # Mark as no match
+                    doc_dict['poco_summary'] = {'final_score': 0, 'pass': False}
+                    
+                    # Update results and generate output for processing failures
+                    self.results['processed_documents'] += 1
+                    bulk_verify = hasattr(self.args, 'bulk_verify') and self.args.bulk_verify
+                    if bulk_verify:
+                        self.output_generator.generate_document_output(doc_dict, self.args.dry_run, bulk_verify)
+                    self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
             
             # Calculate processing time
             self.results['processing_time'] = time.time() - start_time
@@ -394,6 +411,21 @@ class ProcessorPipeline:
         # Step 4: Initialize document dictionary and fetch data
         doc_dict = self.initialize_document_dict(raw_doc)
         if not doc_dict:
+            # Create minimal doc_dict for failed content fetching
+            doc_dict = create_document_dict()
+            doc_dict['id'] = raw_doc.get('id', 'Unknown')
+            doc_dict['document_id'] = raw_doc.get('id', 'Unknown')
+            doc_dict['title'] = raw_doc.get('title', raw_doc.get('original_file_name', 'Unknown'))
+            doc_dict['filename'] = raw_doc.get('original_file_name', raw_doc.get('title', 'Unknown'))
+            doc_dict['content'] = ''  # Empty content for failed fetch
+            doc_dict['selected_rule'] = {'pass': False}  # Mark as no match
+            doc_dict['poco_summary'] = {'final_score': 0, 'pass': False}
+            
+            # Update results and generate output for content fetch failures
+            self.results['processed_documents'] += 1
+            bulk_verify = hasattr(self.args, 'bulk_verify') and self.args.bulk_verify
+            self.output_generator.generate_document_output(doc_dict, self.args.dry_run, bulk_verify)
+            self.output_generator.log_document_processing(doc_dict, self.args.dry_run)
             return
         self.print_debug_output("STEP 4 - DOCUMENT DICTIONARY INITIALIZED", doc_dict)
         
