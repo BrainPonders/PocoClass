@@ -557,7 +557,24 @@ class ProcessorPipeline:
         # Update filename metadata
         filename_metadata = rule_metadata['filename']
         for field, value in filename_metadata.items():
-            if field in doc_dict['filename_metadata'] and value is not None:
+            if field == 'custom_fields' and isinstance(value, list):
+                # Handle custom fields specially - they need to be stored individually
+                if 'custom_fields' not in doc_dict['filename_metadata']:
+                    doc_dict['filename_metadata']['custom_fields'] = {'value': [], 'score': 5}
+                
+                doc_dict['filename_metadata']['custom_fields']['value'] = value
+                doc_dict['filename_metadata']['custom_fields']['score'] = 5
+                
+                # Also store individual custom fields for scoring
+                for cf in value:
+                    if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
+                        cf_name = cf['name']
+                        cf_value = cf['value']
+                        if cf_name not in doc_dict['filename_metadata']:
+                            doc_dict['filename_metadata'][cf_name] = {'value': None, 'score': None}
+                        doc_dict['filename_metadata'][cf_name]['value'] = cf_value
+                        doc_dict['filename_metadata'][cf_name]['score'] = 5
+            elif field in doc_dict['filename_metadata'] and value is not None:
                 doc_dict['filename_metadata'][field]['value'] = value
                 doc_dict['filename_metadata'][field]['score'] = 5  # Filename weight
         
