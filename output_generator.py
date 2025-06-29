@@ -421,9 +421,17 @@ class OutputGenerator:
             else:
                 paperless_colored = Colors.red("—")
             
-            # Selected value (priority: content > filename > paperless)
-            selected_val = content_val or filename_val or paperless_val
-            selected_colored = Colors.bold(Colors.cyan(self.truncate_value(selected_val, 28))) if selected_val else Colors.red("—")
+            # Selected value (priority: content > filename > paperless) - use clean format
+            if content_val and content_val != "—":
+                selected_val = content_val
+            elif filename_val and filename_val != "—":
+                selected_val = filename_val
+            elif paperless_val and paperless_val != "—":
+                selected_val = paperless_val
+            else:
+                selected_val = "—"
+            
+            selected_colored = Colors.bold(Colors.cyan(self.truncate_value(selected_val, 28))) if selected_val != "—" else Colors.red("—")
             
             rows.append([
                 Colors.bold(field_display),
@@ -707,16 +715,25 @@ class OutputGenerator:
         
         if isinstance(field_data, list):
             if field == 'tags':
-                # Handle both string tags and dict tags with ID/name
+                # Handle both string tags and dict tags with ID/name - always clean format
                 tag_names = []
                 for tag in field_data:
                     if isinstance(tag, dict) and 'name' in tag:
                         tag_names.append(tag['name'])
                     else:
                         tag_names.append(str(tag))
-                return ", ".join(tag_names)
+                return ", ".join(tag_names) if tag_names else ""
             elif field == 'custom_fields':
                 return ", ".join([f"{item.get('name', '')}:{item.get('value', '')}" for item in field_data if isinstance(item, dict)])
+        
+        # Handle any remaining list fields (especially tags that might not be caught above)
+        if isinstance(field_data, list):
+            if field == 'tags':
+                # Fallback for any tag lists not handled above
+                return ", ".join([str(item) for item in field_data]) if field_data else ""
+            else:
+                # For other list fields, join with commas
+                return ", ".join([str(item) for item in field_data]) if field_data else ""
         
         return str(field_data) if field_data else ""
 
@@ -727,11 +744,34 @@ class OutputGenerator:
         
         field_data = metadata[field]
         
-        if field == 'tags' and isinstance(field_data, list):
-            # Filter out workflow tags for comparison
+        # Handle tags field specifically
+        if field == 'tags':
+            # Extract the actual tag data
+            tag_list = None
+            if isinstance(field_data, dict) and 'value' in field_data:
+                tag_list = field_data['value']
+            elif isinstance(field_data, list):
+                tag_list = field_data
+            elif isinstance(field_data, str):
+                # Handle string representation of lists like "['Check Account']"
+                if field_data.startswith('[') and field_data.endswith(']'):
+                    try:
+                        import ast
+                        tag_list = ast.literal_eval(field_data)
+                    except:
+                        # Fallback: extract content between quotes
+                        import re
+                        tag_list = re.findall(r"'([^']*)'", field_data)
+                else:
+                    tag_list = [field_data] if field_data else []
+            
+            if tag_list is None:
+                return "—"
+            
+            # Filter out workflow tags
             workflow_tags = {'NEW', 'POCO'}
             tag_names = []
-            for tag in field_data:
+            for tag in tag_list:
                 tag_name = tag['name'] if isinstance(tag, dict) and 'name' in tag else str(tag)
                 if tag_name not in workflow_tags:
                     tag_names.append(tag_name)
@@ -743,7 +783,7 @@ class OutputGenerator:
                 # Paperless tags - show workflow tags in parentheses
                 all_tags = []
                 workflow_found = []
-                for tag in field_data:
+                for tag in tag_list:
                     tag_name = tag['name'] if isinstance(tag, dict) and 'name' in tag else str(tag)
                     if tag_name in workflow_tags:
                         workflow_found.append(tag_name)
