@@ -4,34 +4,67 @@ __pycache__/
 *$py.class
 *.so
 
+# User configuration (prevents overwriting custom settings)
+settings.py
+settings_backup_*.py
+
+# Runtime files
+log.txt
+*.log
+
 # Development and debug files
 debug_*.py
 debug_*.txt
 test_*.py
 *_demo.py
 sample_*.txt
-log.txt
 
-# Development assets
+# Development assets and attachments
 attached_assets/
 
-# Rules directory - only allow template.yaml
+# User rules (only distribute templates)
 rules/*
 !rules/template.yaml
 
-# Project documentation (keep development notes private)
-replit.md
-Documents
+# Replit development environment (not needed for production)
+.replit
+replit.nix
 
-# Virtual environments
+# Project memory and development notes (keep private)
+replit.md
+Documents/
+README_CONFIGURATION.md
+
+# Python virtual environments
 venv/
 env/
 ENV/
+.venv/
+.pythonlibs/
 
-# IDE files
+# Package management
+uv.lock
+Pipfile.lock
+poetry.lock
+
+# IDE and editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS files
 .DS_Store
 Thumbs.db
+.directory
+
+# Docker development files (use production Dockerfile instead)
+docker-compose.dev.yml
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
