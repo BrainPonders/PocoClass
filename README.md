@@ -318,6 +318,13 @@ python main.py --dry-run --bulk-verify --limit 25
 
 ### 🚀 Planned Features
 
+**Interactive Rule Editor**
+- Wizard-based rule creation tool with guided workflow
+- Fetch document content via API and display for pattern identification
+- Step-by-step questions to generate optimized YAML rules
+- Visual pattern highlighting and validation testing
+- Automatic threshold calculation and scoring optimization
+
 **Test File Mode**
 - YAML-based test data input for testing POCO scoring logic
 - Validate scoring algorithms and test edge cases quickly
