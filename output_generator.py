@@ -125,7 +125,7 @@ class OutputGenerator:
         # Print compact single-line output with proper alignment
         mode_indicator = "[DRY] " if dry_run else "      "
         doc_id_padded = f"{mode_indicator}{str(doc_id)}"
-        print(f"{doc_id_padded:<11} {display_filename:<35} | {rule_display:<20} | {core_display:>4} | {bonus_display:>5} | {poco_display:>4} | {status}")
+        print(f"{doc_id_padded:<11} {display_filename:<35} | {rule_display:<28} | {core_display:>5} | {bonus_display:>5} | {poco_display:>5} | {status}")
     
     def generate_verbose_output(self, doc_dict: Dict[str, Any], dry_run: bool = False) -> None:
         """Generate detailed verbose output for a document"""
@@ -898,13 +898,13 @@ class OutputGenerator:
         """Print header for bulk verification mode"""
         print()
         print(Colors.bold(Colors.cyan("🔍 BULK RULE VERIFICATION MODE")))
-        print("─" * 100)
-        print(f"{'Doc ID':<11} {'Filename':<35} | {'Rule ID':<20} | {'Core':>4} | {'Bonus':>5} | {'POCO':>4} | {'Status'}")
-        print("─" * 100)
+        print("─" * 120)
+        print(f"{'Doc ID':<11} {'Filename':<35} | {'Rule ID':<28} | {'Core':>5} | {'Bonus':>5} | {'POCO':>5} | {'Status'}")
+        print("─" * 120)
 
     def generate_bulk_verify_summary(self, results: Dict[str, Any]) -> None:
         """Generate compact summary for bulk verification mode"""
-        print("─" * 100)
+        print("─" * 120)
         
         total_docs = results.get('total_documents', 0)
         processed_docs = results.get('processed_documents', 0)
