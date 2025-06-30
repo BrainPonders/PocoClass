@@ -85,10 +85,24 @@ class MetadataProcessor:
                     
                     # Extract date if date_group is specified
                     if 'date_group' in pattern_config:
-                        date_group = int(pattern_config['date_group'])
-                        if len(match.groups()) >= date_group:
-                            date_str = match.group(date_group)
-                            if date_str:
+                        date_group_config = pattern_config['date_group']
+                        date_str = ""
+                        
+                        # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                        if '-' in str(date_group_config):
+                            # Handle group range like "1-2" (concatenate groups 1 and 2)
+                            start_group, end_group = str(date_group_config).split('-', 1)
+                            start_group, end_group = int(start_group), int(end_group)
+                            if len(match.groups()) >= end_group:
+                                for group_num in range(start_group, end_group + 1):
+                                    date_str += match.group(group_num) or ""
+                        else:
+                            # Handle single group
+                            date_group = int(date_group_config)
+                            if len(match.groups()) >= date_group:
+                                date_str = match.group(date_group)
+                        
+                        if date_str:
                                 # Try to parse the date
                                 date_format = pattern_config.get('date_format', '%Y-%m')
                                 parsed_date = self.parse_date(date_str, date_format)
@@ -98,26 +112,54 @@ class MetadataProcessor:
                     
                     # Extract year if year_group is specified
                     if 'year_group' in pattern_config:
-                        year_group = int(pattern_config['year_group'])
-                        if len(match.groups()) >= year_group:
-                            year_str = match.group(year_group)
-                            if year_str:
-                                # Add year tag if not already present
-                                if 'tags' not in extracted:
-                                    extracted['tags'] = []
-                                year_tag = f"FY{year_str}"
-                                if year_tag not in extracted['tags']:
-                                    extracted['tags'].append(year_tag)
-                                self.logger.debug(f"Extracted year tag from filename: {year_tag}")
+                        year_group_config = pattern_config['year_group']
+                        year_str = ""
+                        
+                        # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                        if '-' in str(year_group_config):
+                            # Handle group range like "1-2" (concatenate groups 1 and 2)
+                            start_group, end_group = str(year_group_config).split('-', 1)
+                            start_group, end_group = int(start_group), int(end_group)
+                            if len(match.groups()) >= end_group:
+                                for group_num in range(start_group, end_group + 1):
+                                    year_str += match.group(group_num) or ""
+                        else:
+                            # Handle single group
+                            year_group = int(year_group_config)
+                            if len(match.groups()) >= year_group:
+                                year_str = match.group(year_group)
+                        
+                        if year_str:
+                            # Add year tag if not already present
+                            if 'tags' not in extracted:
+                                extracted['tags'] = []
+                            year_tag = f"FY{year_str}"
+                            if year_tag not in extracted['tags']:
+                                extracted['tags'].append(year_tag)
+                            self.logger.debug(f"Extracted year tag from filename: {year_tag}")
                     
                     # Extract account info if account_group is specified
                     if 'account_group' in pattern_config:
-                        account_group = int(pattern_config['account_group'])
-                        if len(match.groups()) >= account_group:
-                            account_str = match.group(account_group)
-                            if account_str:
-                                # Could be used for account-specific tagging
-                                self.logger.debug(f"Extracted account info from filename: {account_str}")
+                        account_group_config = pattern_config['account_group']
+                        account_str = ""
+                        
+                        # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                        if '-' in str(account_group_config):
+                            # Handle group range like "1-2" (concatenate groups 1 and 2)
+                            start_group, end_group = str(account_group_config).split('-', 1)
+                            start_group, end_group = int(start_group), int(end_group)
+                            if len(match.groups()) >= end_group:
+                                for group_num in range(start_group, end_group + 1):
+                                    account_str += match.group(group_num) or ""
+                        else:
+                            # Handle single group
+                            account_group = int(account_group_config)
+                            if len(match.groups()) >= account_group:
+                                account_str = match.group(account_group)
+                        
+                        if account_str:
+                            # Could be used for account-specific tagging
+                            self.logger.debug(f"Extracted account info from filename: {account_str}")
                     
                     # Use first matching pattern for primary extraction
                     break
