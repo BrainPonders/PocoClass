@@ -85,7 +85,7 @@ class MetadataProcessor:
                     
                     # Extract date if date_group is specified
                     if 'date_group' in pattern_config:
-                        date_group = pattern_config['date_group']
+                        date_group = int(pattern_config['date_group'])
                         if len(match.groups()) >= date_group:
                             date_str = match.group(date_group)
                             if date_str:
@@ -98,7 +98,7 @@ class MetadataProcessor:
                     
                     # Extract year if year_group is specified
                     if 'year_group' in pattern_config:
-                        year_group = pattern_config['year_group']
+                        year_group = int(pattern_config['year_group'])
                         if len(match.groups()) >= year_group:
                             year_str = match.group(year_group)
                             if year_str:
@@ -112,7 +112,7 @@ class MetadataProcessor:
                     
                     # Extract account info if account_group is specified
                     if 'account_group' in pattern_config:
-                        account_group = pattern_config['account_group']
+                        account_group = int(pattern_config['account_group'])
                         if len(match.groups()) >= account_group:
                             account_str = match.group(account_group)
                             if account_str:
