@@ -125,24 +125,42 @@ class Config:
             # Continue with basic validation if settings validation fails
             pass
         
+        # Check if we're running in post-consumption mode (detect Docker environment)
+        in_docker = os.path.exists('/usr/src/paperless') or os.environ.get('PAPERLESS_CONSUMPTION_DIR')
+        
         # Basic validation checks with better error messages
         if not self.paperless_url:
-            logging.error("=" * 80)
-            logging.error("PAPERLESS_URL NOT SET")
-            logging.error("=" * 80)
-            logging.error("Please set PAPERLESS_URL in settings.py or as environment variable")
-            logging.error("Example: PAPERLESS_URL='http://localhost:8000'")
-            logging.error("=" * 80)
-            raise ValueError("PAPERLESS_URL is required")
+            if in_docker:
+                # In Docker, try to auto-detect paperless URL
+                self.paperless_url = "http://localhost:8000"
+                logging.warning("PAPERLESS_URL not set, using default: http://localhost:8000")
+            else:
+                logging.error("=" * 80)
+                logging.error("PAPERLESS_URL NOT SET")
+                logging.error("=" * 80)
+                logging.error("Please set PAPERLESS_URL in settings.py or as environment variable")
+                logging.error("Example: PAPERLESS_URL='http://localhost:8000'")
+                logging.error("=" * 80)
+                raise ValueError("PAPERLESS_URL is required")
         
         if not self.paperless_token:
-            logging.error("=" * 80)
-            logging.error("PAPERLESS_TOKEN NOT SET")
-            logging.error("=" * 80)
-            logging.error("Please set PAPERLESS_TOKEN either:")
-            logging.error("1. In settings.py: PAPERLESS_TOKEN='your_token_here'")
-            logging.error("2. As environment variable: export PAPERLESS_TOKEN='your_token_here'")
-            logging.error("")
+            if in_docker:
+                # In Docker environment, check for Paperless environment variables
+                paperless_secret = os.environ.get('PAPERLESS_SECRET_KEY')
+                if paperless_secret:
+                    logging.warning("PAPERLESS_TOKEN not set, attempting to use PAPERLESS_SECRET_KEY")
+                    self.paperless_token = paperless_secret
+                else:
+                    logging.error("No authentication available in Docker environment")
+                    return False
+            else:
+                logging.error("=" * 80)
+                logging.error("PAPERLESS_TOKEN NOT SET")
+                logging.error("=" * 80)
+                logging.error("Please set PAPERLESS_TOKEN either:")
+                logging.error("1. In settings.py: PAPERLESS_TOKEN='your_token_here'")
+                logging.error("2. As environment variable: export PAPERLESS_TOKEN='your_token_here'")
+                logging.error("")
             logging.error("Get your token from: Paperless > Account Settings > API Tokens")
             logging.error("=" * 80)
             raise ValueError("PAPERLESS_TOKEN is required")
