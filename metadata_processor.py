@@ -19,8 +19,15 @@ class MetadataProcessor:
         metadata = {
             'static': self.extract_static_metadata(rule),
             'dynamic': self.extract_dynamic_metadata(rule, content),
-            'filename': self.extract_filename_metadata(rule, filename)
+            'filename': {}
         }
+        
+        # Filename extraction should never prevent content-based processing
+        try:
+            metadata['filename'] = self.extract_filename_metadata(rule, filename)
+        except Exception as e:
+            self.logger.warning(f"Filename metadata extraction failed for rule {rule.get('rule_id', 'unknown')}: {e}")
+            metadata['filename'] = {}
         
         return metadata
     
