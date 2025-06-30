@@ -2,27 +2,17 @@
 
 ## Overview
 
-POCOmeta is a sophisticated post-consumption metadata processor for Paperless-ngx that automatically enriches documents with intelligent metadata using rule-based pattern matching and confidence scoring. It's designed specifically for bulk document imports and provides automated, high-quality metadata extraction with transparency and customizability.
+POCOmeta is a post-consumption metadata processor for Paperless-ngx that automatically enriches documents with metadata using rule-based pattern matching and confidence scoring. It's designed specifically for bulk document imports and provides automated, high-quality metadata extraction with transparency and customizability.
 
 ## Why This Project Exists
 
-Bulk-importing documents into Paperless-ngx—such as years' worth of bank statements, tax returns, pay slips, and other records—is a common need for new users or organizations migrating from legacy archives.
+When I first set up Paperless-ngx and began importing decades’ worth of bank statements, payslips, tax returns, and other routine documents, I quickly realized that the built-in learning and classification system wasn’t keeping up. Even after manually correcting dozens of documents, Paperless kept making the same mistakes. What began as a simple post-consumption script, tailored for a few common document types, gradually evolved into this project—a flexible, rule-based tool that lets me accurately identify and tag any document, reliably and repeatably, with minimal manual effort.
 
-However, Paperless-ngx's built-in metadata extraction and document classification capabilities often fall short when handling diverse, historic, or large sets of documents. This results in inaccurate or missing metadata (e.g., document type, date, correspondent, tags), which in turn leads to extensive manual correction and inconsistent archives.
+## How it works
 
-To address these challenges, this project introduces a modular, rule-based post-consumption pipeline for Paperless-ngx:
+POCOmeta uses simple YAML rule files to describe how each document type can be recognized. For every rule, you define core and bonus identifiers—key words or patterns to look for in the document’s OCR text, filename, or even its existing Paperless metadata. Each rule can also include scoring instructions and patterns for extracting specific metadata, such as dates.
 
-• **Automated High-Quality Metadata Extraction:**
-By defining clear rules for each document type, the pipeline ensures that imported documents are consistently and accurately classified, even during large-scale imports.
-
-• **Customizability & Modularity:**
-Rules can be tailored or extended for any kind of document, not just the most frequent types. This makes the system adaptable to different archives and future needs.
-
-• **Transparency & Explainability:**
-Every decision made by the pipeline is traceable: each rule match, score, and extracted metadata is logged and available for review. This provides users with confidence in the automation and makes troubleshooting straightforward.
-
-• **Bulk Import Ready:**
-Whether migrating a personal archive or processing corporate records, the pipeline is designed to handle high volumes with minimal manual intervention.
+When POCOmeta runs, it loads all your rules and checks each document against them. It matches the document’s content and filename to the patterns you set, calculates a confidence score based on your rules, and then applies the static and dynamic metadata you’ve defined—like document type, tags, or a creation date. The end result: every document is classified using transparent, fully customizable logic, with a confidence score to help you catch any uncertainties.
 
 ## Installation
 
@@ -139,36 +129,6 @@ python main.py --limit-id 123
 python main.py --dry-run --bulk-verify --limit 10
 ```
 
-## How It Works
-
-POCOmeta follows a systematic pipeline approach to document processing:
-
-### System Architecture
-
-**Pipeline Design**: Each processing step is handled by a dedicated module, ensuring modularity and maintainability.
-
-**Rule-Based Classification**: YAML configuration files define document classification rules with flexible pattern matching capabilities.
-
-**API Integration**: Built around the Paperless-ngx REST API for seamless document retrieval and metadata updates.
-
-**Confidence Scoring**: POCO (Post-COnsumption) scoring system measures metadata reliability across different sources.
-
-### Processing Workflow
-
-1. **Document Retrieval**: Fetch documents from Paperless-ngx based on tag filters
-2. **Rule Evaluation**: Apply classification rules using pattern matching against content and filenames
-3. **Metadata Extraction**: Extract both static metadata and dynamic values from document content
-4. **Confidence Calculation**: Calculate POCO scores based on metadata agreement between sources
-5. **Document Update**: Apply validated metadata back to Paperless-ngx (or simulate in dry-run mode)
-
-### Key Components
-
-- **Configuration Management**: Handles settings, environment variables, and validation
-- **API Client**: Manages authentication and communication with Paperless-ngx
-- **Rule Processing**: Loads YAML rules and evaluates pattern matching logic
-- **Scoring System**: Calculates confidence scores using weighted metadata comparison
-- **Output Generation**: Provides detailed reporting with colored console output
-
 ## Rule Development
 
 ### Rule Structure
@@ -273,121 +233,29 @@ python main.py --dry-run --bulk-verify --limit 25
 
 ### ✅ Fully Implemented
 
-**Core Document Processing**
-- Document retrieval from Paperless-ngx API with flexible filtering
-- OCR content analysis and pattern matching
-- YAML-based rule system for document classification
-- Static and dynamic metadata extraction
+**Document Processing**
+-	Modular, human-readable YAML rules
+-	Full support for static and dynamic metadata extraction
+-	Confidence (“POCO”) scoring for every field and document
+-	Compatible with bulk imports and archive rescans
 
-**Filtering and Selection**
-- Tag-based document filtering (include/exclude)
-- Document type and correspondent filtering
-- Individual document targeting by ID
-- Configurable processing limits
+**Test File Mode**
+- Bulk Rule evaluation to see which rule matches which files
+- Detailed file rule evaluation to examine the rule and scoring
 
-**Confidence Scoring**
-- Multi-tier rule scoring (core + bonus identifiers)
-- POCO confidence calculation across metadata sources
-- Configurable thresholds for rule matching and metadata application
-- Detailed score breakdown and analysis
-
-**API Integration**
-- Full Paperless-ngx REST API integration
-- Token-based authentication with environment variable support
-- Automatic tag, correspondent, and document type creation
-- Custom field support for extended metadata
-
-**Output and Reporting**
-- Colored console output for enhanced readability
-- Verbose mode with detailed processing information
-- Debug mode for rule development and troubleshooting
-- Bulk verification mode for efficient rule testing
-- Comprehensive processing summaries and statistics
-
-**Safety Features**
-- Dry-run mode for safe testing
-- Configuration validation before processing
-- Graceful error handling with detailed reporting
-- Automatic success/failure tagging
-
-### 🚧 Partially Implemented
-
-**Advanced Error Recovery**
-- Basic error handling and logging implemented
-- Automatic retry mechanisms planned for future implementation
 
 ### 🚀 Planned Features
 
 **Interactive Rule Editor**
 - Wizard-based rule creation tool with guided workflow
-- Fetch document content via API and display for pattern identification
-- Step-by-step questions to generate optimized YAML rules
 - Visual pattern highlighting and validation testing
 - Automatic threshold calculation and scoring optimization
 
-**Test File Mode**
-- YAML-based test data input for testing POCO scoring logic
-- Validate scoring algorithms and test edge cases quickly
-- Fast execution without live Paperless connection
-
-**Rule Templates**
-- Pre-built rule templates for common document types
-- Faster setup for new users with standard document categories
-
-**Webhook Integration**
-- Send processing results to external systems
-- Integration with workflow automation tools
-
-**Enhanced Analytics**
-- Processing statistics and performance metrics
-- Monitor system performance and rule effectiveness
-
-## Typical Use Cases
-
-**Initial Migration**: Import large backlogs of mixed documents (bank statements, invoices, contracts) into fresh Paperless-ngx instances with automatic classification.
-
-**Ongoing Automation**: Ensure future bulk or scheduled imports are correctly and automatically tagged and classified without manual intervention.
-
-**Consistency Enforcement**: Standardize metadata across existing archives, reducing manual correction efforts and improving searchability.
-
-**Rule Development**: Use bulk verification mode to test and refine classification rules against large document sets.
-
-## Troubleshooting
-
-### Common Issues
-
-**API Connection Problems**
-- Verify `PAPERLESS_URL` and `PAPERLESS_TOKEN` in settings
-- Test with: `python main.py --dry-run --verbose`
-- Check Paperless-ngx logs for authentication errors
-
-**No Documents Found**
-- Ensure documents are tagged with your `INCLUDE_TAG` (default: "NEW")
-- Verify tag filtering settings in configuration
-- Use `--id-only` to list available documents
-
-**Rule Matching Issues**
-- Use `--debug` mode to see detailed pattern matching
-- Test with single documents: `--limit-id 123 --verbose`
-- Verify rule YAML syntax and pattern formatting
-
-**Performance Issues**
-- Use `--limit` to process smaller batches
-- Consider rule optimization for complex patterns
-- Monitor processing time in verbose output
-
-### Getting Help
-
-1. **Enable debug mode**: `python main.py --debug` for detailed diagnostics
-2. **Check configuration**: Use `python setup_validation.py` to verify settings
-3. **Test with single documents**: `--limit-id` for isolated testing
-4. **Review logs**: Check both POCOmeta and Paperless-ngx logs
 
 ## Contributing
 
 POCOmeta is designed to be extensible and welcomes contributions:
 
-- **Rule Templates**: Share rules for common document types
 - **Feature Enhancements**: Improve scoring algorithms or add new capabilities
 - **Bug Reports**: Report issues with detailed reproduction steps
 - **Documentation**: Help improve setup guides and usage examples
