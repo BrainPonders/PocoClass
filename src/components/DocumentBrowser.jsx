@@ -90,16 +90,8 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       {/* Filter Section */}
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
-        <div className="flex items-center gap-3 mb-6">
-          <input 
-            type="text" 
-            placeholder="Title & content" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-3 py-2 rounded border text-sm max-w-md"
-            style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}
-          />
-          <div className="flex gap-3">
+        <div className="flex items-center gap-6 mb-8">
+          <div className="flex gap-6">
             {/* Tags Filter */}
             <div className="relative">
               <button 
@@ -192,28 +184,28 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
           </div>
         </div>
 
-        {/* Active Filters Display - More Spacious */}
+        {/* Active Filters Display - Much More Spacious */}
         {(selectedCorrespondent || selectedDocType || selectedTags.length > 0) && (
-          <div className="mt-6 pt-4" style={{borderTop: '1px solid var(--paperless-border)'}}>
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
-              <div className="flex gap-3 flex-wrap">
+          <div className="mt-8 mb-6 py-6 px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+            <div className="flex items-start gap-8 flex-wrap">
+              <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
+              <div className="flex gap-4 flex-wrap">
                 {selectedCorrespondent && (
-                  <span className="text-sm px-3 py-1.5 rounded flex items-center gap-2" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Correspondent:</strong> {selectedCorrespondent}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded" onClick={() => setSelectedCorrespondent(null)} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedCorrespondent(null)} />
                   </span>
                 )}
                 {selectedDocType && (
-                  <span className="text-sm px-3 py-1.5 rounded flex items-center gap-2" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Type:</strong> {selectedDocType}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded" onClick={() => setSelectedDocType(null)} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedDocType(null)} />
                   </span>
                 )}
                 {selectedTags.map(tag => (
-                  <span key={tag} className="text-sm px-3 py-1.5 rounded flex items-center gap-2" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span key={tag} className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Tag:</strong> {tag}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))} />
                   </span>
                 ))}
               </div>
@@ -230,6 +222,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
               <tr>
                 <th className="w-8"></th>
                 <th>Title</th>
+                <th className="w-24">ID</th>
                 <th>Created</th>
                 <th>Correspondent</th>
                 <th>Document type</th>
@@ -250,12 +243,14 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                     />
                   </td>
                   <td>
-                    <div className="font-medium" style={{color: 'var(--paperless-text)'}}>{doc.title}</div>
-                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>ID: {doc.id}</div>
+                    <div className="font-medium text-sm" style={{color: 'var(--paperless-text)'}}>{doc.title}</div>
                   </td>
-                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.createdDate}</td>
-                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.correspondent || '-'}</td>
-                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.documentType}</td>
+                  <td>
+                    <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.id}</div>
+                  </td>
+                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.createdDate}</td>
+                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.correspondent || '-'}</td>
+                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.documentType}</td>
                   <td>
                     <div className="flex gap-1 flex-wrap">
                       {doc.tags.map((tag) => {
@@ -274,7 +269,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                       })}
                     </div>
                   </td>
-                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.owner}</td>
+                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.owner}</td>
                   <td>
                     <button
                       onClick={() => onNewRule(doc)}
