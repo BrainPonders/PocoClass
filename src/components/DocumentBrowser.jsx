@@ -244,9 +244,9 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
 
         {/* Active Filters Display - Always Visible */}
         <div className="px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px', minHeight: '40px', display: 'flex', alignItems: 'center'}}>
-          <div className="flex items-start gap-8 flex-wrap">
-            <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
-            <div className="flex gap-4 flex-wrap">
+          <div className="flex items-start flex-wrap">
+            <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)', marginLeft: '20px', marginRight: '20px'}}>Active filters:</span>
+            <div className="flex gap-5 flex-wrap" style={{marginLeft: '20px'}}>
               {!selectedCorrespondent && !selectedDocType && selectedTags.length === 0 && (
                 <span className="text-sm pt-2" style={{color: 'var(--paperless-text-secondary)'}}>
                   No filters applied
