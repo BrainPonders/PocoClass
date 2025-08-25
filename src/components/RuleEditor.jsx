@@ -111,59 +111,65 @@ My Bank
 `
   }
 
+  // Mock YAML generation
   const generateRawYaml = () => {
-    return `rule_name: "${ruleName}"
-rule_id: "${ruleName.toLowerCase().replace(/\s+/g, '_')}"
+    return `name: "${ruleName || 'Untitled Rule'}"
+description: "Auto-generated rule for ${document?.title || 'unknown document'}"
+
+ocr_identifiers:
+${identifiers.length === 0 
+  ? '  # No identifiers defined yet' 
+  : identifiers.map(id => 
+      `  - name: "${id.name}"\n    pattern: "${id.pattern}"\n    mandatory: ${id.mandatory}`
+    ).join('\n')
+}
+
 threshold: ${threshold}
 
-core_identifiers:
-  logic_groups:
-${identifiers.map((id, idx) => `    - type: "match"
-      score: ${Math.floor(100 / identifiers.length)}
-      conditions:
-        - pattern: "${id.pattern}"
-          source: "content"`).join('\n')}
-
-static_metadata:
-  correspondent: ""
-  document_type: ""
+paperless_classifiers:
+  correspondent: null
+  document_type: null
   tags: []
-  custom_fields: {}
-
-poco_weights:
-  filename: 5
-  paperless: 3`
+  archive_serial: null
+  
+scoring:
+  ocr_base: 0-100
+  filename: -5 to +5
+  paperless: -3 to +3`
   }
 
   return (
-    <div className="flex h-full bg-gray-50">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 bg-white border-b border-gray-200 z-10 px-4 py-3">
+    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
+      {/* Welcome Message */}
+      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 px-3 py-2 rounded-md transition-colors hover:bg-opacity-10"
+              style={{color: 'var(--paperless-text-secondary)'}}
             >
               <ArrowLeft size={16} />
               Back to Documents
             </button>
-            <div className="h-6 w-px bg-gray-300"></div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              {rule ? `Edit Rule: ${rule.name}` : 'Create New Rule'}
-            </h2>
-            {document && (
-              <span className="text-sm text-gray-600">
-                for "{document.title}"
-              </span>
-            )}
+            <div style={{width: '1px', height: '24px', backgroundColor: 'var(--paperless-border)'}}></div>
+            <div>
+              <h2 className="text-lg font-semibold" style={{color: 'var(--paperless-text)'}}>
+                {rule ? `Edit Rule: ${rule.name}` : 'Create New Rule'}
+              </h2>
+              {document && (
+                <p className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>
+                  for "{document.title}"
+                </p>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-50">
+            <button className="flex items-center gap-1 px-3 py-2 rounded-md text-sm" style={{border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)', backgroundColor: 'var(--paperless-surface-light)'}}>
               <Eye size={14} />
               Test Rule
             </button>
-            <button className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+            <button className="flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
               <Save size={14} />
               Save Rule
             </button>
@@ -172,38 +178,40 @@ poco_weights:
       </div>
 
       {/* Main Content - 3 Panes */}
-      <div className="flex w-full pt-16 h-screen">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Pane - OCR Text */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col min-h-0">
-          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-gray-900">OCR Content</h3>
-              <button className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">
+        <div className="w-1/3 flex flex-col min-h-0" style={{backgroundColor: 'var(--paperless-surface)', borderRight: '1px solid var(--paperless-border)'}}>
+          <div className="p-4 flex-shrink-0" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold" style={{color: 'var(--paperless-text)'}}>OCR Content</h3>
+              <button className="flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
                 <FileText size={12} />
                 View PDF
               </button>
             </div>
-            <div className="text-xs text-gray-600 mb-2">
+            <div className="text-xs mb-3" style={{color: 'var(--paperless-text-secondary)'}}>
               📄 {document?.title || 'No document selected'}
             </div>
-            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+            <div className="text-xs p-3 rounded mb-3" style={{backgroundColor: 'var(--paperless-bg)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}>
               💡 <strong>Tip:</strong> Select any text below and click "Add as Identifier" to create pattern matches
             </div>
             {selectedText && (
-              <div className="mt-2 p-2 bg-yellow-100 rounded border-l-4 border-yellow-500">
-                <div className="text-xs text-yellow-800 font-medium">Selected: "{selectedText.substring(0, 50)}{selectedText.length > 50 ? '...' : ''}"</div>
+              <div className="p-3 rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
+                <div className="text-xs font-medium mb-2">Selected: "{selectedText.substring(0, 50)}{selectedText.length > 50 ? '...' : ''}"</div>
                 <button
                   onClick={addIdentifier}
-                  className="mt-2 text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 font-medium"
+                  className="text-xs px-3 py-1 rounded font-medium"
+                  style={{backgroundColor: '#000', color: 'white'}}
                 >
                   ✅ Add as Identifier
                 </button>
               </div>
             )}
           </div>
-          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin min-h-0">
+          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin min-h-0">
             <pre
-              className="text-xs font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text bg-gray-50 p-3 rounded border"
+              className="text-xs font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text p-3 rounded"
+              style={{backgroundColor: 'var(--paperless-bg)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}
               onMouseUp={handleTextSelection}
             >
               {mockOcrText}
@@ -212,27 +220,28 @@ poco_weights:
         </div>
 
         {/* Middle Pane - Rule Edit Tools */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col min-h-0">
-          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-            <h3 className="text-sm font-semibold text-gray-900">🔧 Rule Configuration</h3>
+        <div className="w-1/3 flex flex-col min-h-0" style={{backgroundColor: 'var(--paperless-surface)', borderRight: '1px solid var(--paperless-border)'}}>
+          <div className="p-4 flex-shrink-0" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)'}}>
+            <h3 className="text-sm font-semibold" style={{color: 'var(--paperless-text)'}}>🔧 Rule Configuration</h3>
           </div>
-          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin space-y-4 min-h-0">
+          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin space-y-6 min-h-0">
             
             {/* Basic Settings */}
             <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Basic Settings</h4>
+              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Basic Settings</h4>
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Rule Name</label>
+                <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Rule Name</label>
                 <input
                   type="text"
                   value={ruleName}
                   onChange={(e) => setRuleName(e.target.value)}
                   placeholder="e.g., Bank Statements"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  className="w-full rounded-md px-3 py-2 text-sm"
+                  style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Threshold (%)</label>
+                <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
                 <input
                   type="range"
                   min="0"
@@ -240,138 +249,99 @@ poco_weights:
                   value={threshold}
                   onChange={(e) => setThreshold(e.target.value)}
                   className="w-full"
+                  style={{accentColor: 'var(--paperless-accent)'}}
                 />
-                <div className="text-sm text-gray-600 mt-1">{threshold}%</div>
               </div>
             </div>
 
             {/* OCR Identifiers */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-medium text-gray-900">OCR Identifiers</h4>
-                <button
-                  onClick={() => setIdentifiers([...identifiers, {
-                    id: Date.now(),
-                    name: `Identifier ${identifiers.length + 1}`,
-                    pattern: '',
-                    mandatory: false,
-                    type: 'text'
-                  }])}
-                  className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>OCR Identifiers</h4>
+                <button 
+                  className="text-xs px-2 py-1 rounded"
+                  style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
                 >
-                  <Plus size={12} />
-                  Add
+                  + Add
                 </button>
               </div>
-              <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
-                {identifiers.map((identifier) => (
-                  <div key={identifier.id} className="border border-gray-200 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <input
-                        type="text"
-                        value={identifier.name}
-                        onChange={(e) => {
-                          const updated = identifiers.map(id => 
-                            id.id === identifier.id ? {...id, name: e.target.value} : id
-                          )
-                          setIdentifiers(updated)
-                        }}
-                        className="text-sm font-medium border-none bg-transparent p-0 flex-1"
-                        placeholder="Identifier name"
-                      />
-                      <button
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {identifiers.map((identifier, index) => (
+                  <div key={identifier.id} className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>{identifier.name}</span>
+                      <button 
                         onClick={() => setIdentifiers(identifiers.filter(id => id.id !== identifier.id))}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-xs p-1"
+                        style={{color: 'var(--paperless-red)'}}
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={12} />
                       </button>
                     </div>
-                    <input
-                      type="text"
-                      value={identifier.pattern}
-                      onChange={(e) => {
-                        const updated = identifiers.map(id => 
-                          id.id === identifier.id ? {...id, pattern: e.target.value} : id
-                        )
-                        setIdentifiers(updated)
-                      }}
-                      placeholder="Pattern or text to match"
-                      className="w-full text-xs border border-gray-200 rounded px-2 py-1 mb-2"
-                    />
-                    <div className="flex items-center gap-2">
-                      <label className="flex items-center gap-1 text-xs">
-                        <input
-                          type="checkbox"
-                          checked={identifier.mandatory}
-                          onChange={(e) => {
-                            const updated = identifiers.map(id => 
-                              id.id === identifier.id ? {...id, mandatory: e.target.checked} : id
-                            )
-                            setIdentifiers(updated)
-                          }}
-                        />
-                        Mandatory
-                      </label>
+                    <div className="text-xs mt-1" style={{color: 'var(--paperless-text-secondary)'}}>\"{identifier.pattern}\"</div>
+                    <div className="text-xs mt-1">
+                      <span className={`px-1.5 py-0.5 rounded text-xs ${identifier.mandatory ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'}`}>
+                        {identifier.mandatory ? 'Mandatory' : 'Optional'}
+                      </span>
                     </div>
                   </div>
                 ))}
-                {identifiers.length === 0 && (
-                  <div className="text-sm text-gray-500 text-center py-4">
-                    No identifiers defined. Select text from OCR and click "Add as Identifier"
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Dynamic Extractors - Placeholder */}
-            <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Dynamic Data</h4>
-              <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded border">
-                Dynamic extractors (dates, amounts) coming soon...
               </div>
             </div>
 
             {/* Paperless Classifiers */}
             <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Paperless Classifiers</h4>
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-600 block mb-1">Correspondent:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-600 block mb-1">Document Type:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Type:</label>
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
                   </div>
                 </div>
                 
                 <div>
-                  <label className="text-xs text-gray-600 block mb-1">Tags (comma-separated):</label>
-                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags (comma-separated):</label>
+                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
                 </div>
                 
                 <div>
-                  <label className="text-xs text-gray-600 block mb-1">Archive Serial:</label>
-                  <input type="text" placeholder="ASN pattern" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial:</label>
+                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
                 </div>
               </div>
             </div>
 
+            {/* Dynamic Data */}
+            <div className="space-y-3">
+              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
+              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}}>
+                Dynamic extractors (dates, amounts) coming soon...
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Pane - Rule Preview */}
-        <div className="w-1/3 bg-white flex flex-col min-h-0">
-          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+        <div className="w-1/3 flex flex-col min-h-0" style={{backgroundColor: 'var(--paperless-surface)'}}>
+          <div className="p-4 flex-shrink-0" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)'}}>
             <div className="flex items-center gap-2 mb-2">
               <button
                 onClick={() => setShowRawYaml(false)}
                 className={`px-3 py-1.5 text-sm rounded font-medium ${
                   !showRawYaml 
-                    ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'shadow-sm' 
+                    : ''
                 }`}
+                style={{
+                  backgroundColor: !showRawYaml ? 'var(--paperless-accent)' : 'var(--paperless-surface)',
+                  color: !showRawYaml ? '#000' : 'var(--paperless-text-secondary)',
+                  border: '1px solid var(--paperless-border)'
+                }}
               >
                 📖 Rule Story
               </button>
@@ -379,24 +349,29 @@ poco_weights:
                 onClick={() => setShowRawYaml(true)}
                 className={`px-3 py-1.5 text-sm rounded font-medium ${
                   showRawYaml 
-                    ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    ? 'shadow-sm' 
+                    : ''
                 }`}
+                style={{
+                  backgroundColor: showRawYaml ? 'var(--paperless-accent)' : 'var(--paperless-surface)',
+                  color: showRawYaml ? '#000' : 'var(--paperless-text-secondary)',
+                  border: '1px solid var(--paperless-border)'
+                }}
               >
                 ⚙️ Raw YAML
               </button>
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
               {!showRawYaml ? 'Human-readable rule description' : 'Technical YAML configuration'}
             </div>
           </div>
-          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin min-h-0">
+          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin min-h-0">
             {!showRawYaml ? (
-              <pre className="text-sm leading-relaxed whitespace-pre-wrap bg-blue-50 p-3 rounded border border-blue-200">
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: 'var(--paperless-bg)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}>
                 {generateRuleStory()}
               </pre>
             ) : (
-              <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap bg-gray-900 text-green-400 p-3 rounded border">
+              <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: '#1a1a1a', color: '#4ade80', border: '1px solid var(--paperless-border)'}}>
                 {generateRawYaml()}
               </pre>
             )}
