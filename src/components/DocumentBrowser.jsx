@@ -91,7 +91,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
         <div className="flex items-center mb-12">
-          <div className="flex gap-6">
+          <div className="flex gap-12">
             {/* Tags Filter */}
             <div className="relative">
               <button 
