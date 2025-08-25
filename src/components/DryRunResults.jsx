@@ -40,109 +40,106 @@ const DryRunResults = ({ documents, onBack }) => {
   }
 
   const DetailedResult = ({ result }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-6">
+    <div className="rounded-lg p-6 space-y-6" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold" style={{color: 'var(--paperless-text)'}}>
           {result.document.title}
         </h3>
         <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
           result.status === 'pass' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-red-100 text-red-800'
-        }`}>
+            ? 'text-white' 
+            : 'text-white'
+        }`}
+        style={{
+          backgroundColor: result.status === 'pass' ? 'var(--paperless-accent)' : 'var(--paperless-red)'
+        }}
+        >
           {result.status === 'pass' ? <CheckCircle size={16} /> : <XCircle size={16} />}
           {result.status === 'pass' ? 'PASS' : 'FAIL'}
         </div>
       </div>
 
-      {/* Score Breakdown */}
-      <div className="bg-gray-50 rounded-lg p-4">
-        <h4 className="font-medium text-gray-900 mb-3">🎯 POCO Score Breakdown</h4>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <div className="text-sm text-gray-600">OCR Score</div>
-            <div className="text-xl font-bold text-gray-900">{result.ocrScore}/100</div>
+      {/* POCO Score Breakdown */}
+      <div>
+        <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>🎯 POCO Score Breakdown</h4>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="text-center p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-2xl font-bold" style={{color: 'var(--paperless-text)'}}>{result.ocrScore}</div>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>OCR Base</div>
           </div>
-          <div>
-            <div className="text-sm text-gray-600">Final POCO Score</div>
-            <div className="text-xl font-bold text-blue-600">{result.finalScore}/120</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-600">Filename Bonus</div>
-            <div className={`text-lg font-semibold ${
-              result.filenameBonus >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+          <div className="text-center p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className={`text-2xl font-bold ${result.filenameBonus >= 0 ? '' : ''}`} style={{color: result.filenameBonus >= 0 ? 'var(--paperless-accent)' : 'var(--paperless-red)'}}>
               {result.filenameBonus >= 0 ? '+' : ''}{result.filenameBonus}
             </div>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Filename</div>
           </div>
-          <div>
-            <div className="text-sm text-gray-600">Paperless Bonus</div>
-            <div className={`text-lg font-semibold ${
-              result.paperlessBonus >= 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
+          <div className="text-center p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className={`text-2xl font-bold ${result.paperlessBonus >= 0 ? '' : ''}`} style={{color: result.paperlessBonus >= 0 ? 'var(--paperless-accent)' : 'var(--paperless-red)'}}>
               {result.paperlessBonus >= 0 ? '+' : ''}{result.paperlessBonus}
             </div>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Paperless</div>
+          </div>
+          <div className="text-center p-3 rounded" style={{backgroundColor: result.status === 'pass' ? 'var(--paperless-accent)' : 'var(--paperless-red)', color: result.status === 'pass' ? '#000' : 'white'}}>
+            <div className="text-2xl font-bold">{result.finalScore}</div>
+            <div className="text-xs">Final Score</div>
           </div>
         </div>
       </div>
 
-      {/* Pattern Analysis */}
+      {/* Identifier Matches */}
       <div>
-        <h4 className="font-medium text-gray-900 mb-3">🔍 Pattern Analysis</h4>
+        <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>🔍 Identifier Matches</h4>
         <div className="space-y-2">
-          {result.identifierMatches.map((match, idx) => (
-            <div key={idx} className="flex items-center justify-between p-2 rounded border">
+          {result.identifierMatches.map((match, index) => (
+            <div key={index} className="flex items-center justify-between p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
               <div className="flex items-center gap-2">
-                {match.matched ? (
-                  <CheckCircle size={16} className="text-green-600" />
-                ) : (
-                  <XCircle size={16} className="text-red-600" />
-                )}
-                <span className="text-sm font-medium">{match.name}</span>
+                {match.matched ? 
+                  <CheckCircle size={16} style={{color: 'var(--paperless-accent)'}} /> : 
+                  <XCircle size={16} style={{color: 'var(--paperless-red)'}} />
+                }
+                <span className="font-medium" style={{color: 'var(--paperless-text)'}}>{match.name}</span>
               </div>
-              <span className="text-xs text-gray-500">
-                {match.matched ? match.location : 'Not found'}
-              </span>
+              <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{match.location}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Extracted Data */}
+      {/* Extracted Dynamic Data */}
       <div>
-        <h4 className="font-medium text-gray-900 mb-3">📅 Extracted Data</h4>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-blue-50 p-3 rounded">
-            <div className="text-xs text-blue-600 font-medium">Date</div>
-            <div className="text-sm font-semibold text-blue-900">{result.extractedData.date}</div>
+        <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>📊 Extracted Dynamic Data</h4>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Date</div>
+            <div className="font-medium" style={{color: 'var(--paperless-text)'}}>{result.extractedData.date}</div>
           </div>
-          <div className="bg-green-50 p-3 rounded">
-            <div className="text-xs text-green-600 font-medium">Amount</div>
-            <div className="text-sm font-semibold text-green-900">{result.extractedData.amount}</div>
+          <div className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Amount</div>
+            <div className="font-medium" style={{color: 'var(--paperless-text)'}}>{result.extractedData.amount}</div>
           </div>
-          <div className="bg-purple-50 p-3 rounded">
-            <div className="text-xs text-purple-600 font-medium">Correspondent</div>
-            <div className="text-sm font-semibold text-purple-900">{result.extractedData.correspondent}</div>
+          <div className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent</div>
+            <div className="font-medium" style={{color: 'var(--paperless-text)'}}>{result.extractedData.correspondent}</div>
           </div>
         </div>
       </div>
 
       {/* Paperless Classifier Changes */}
       <div>
-        <h4 className="font-medium text-gray-900 mb-3">📝 Paperless Classifier Changes</h4>
+        <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>📝 Paperless Classifier Changes</h4>
         <div className="space-y-2">
           {Object.entries(result.classifierChanges).map(([field, change]) => (
-            <div key={field} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-              <span className="text-sm font-medium capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</span>
+            <div key={field} className="flex items-center justify-between p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+              <span className="text-sm font-medium capitalize" style={{color: 'var(--paperless-text)'}}>{field.replace(/([A-Z])/g, ' $1').trim()}</span>
               <div className="text-sm">
                 {change.changed ? (
                   <span>
-                    <span className="text-gray-500">{JSON.stringify(change.from)}</span>
-                    <span className="mx-2">→</span>
-                    <span className="text-blue-600 font-medium">{JSON.stringify(change.to)}</span>
+                    <span style={{color: 'var(--paperless-text-secondary)'}}>{JSON.stringify(change.from)}</span>
+                    <span className="mx-2" style={{color: 'var(--paperless-text-secondary)'}}>→</span>
+                    <span className="font-medium" style={{color: 'var(--paperless-accent)'}}>{JSON.stringify(change.to)}</span>
                   </span>
                 ) : (
-                  <span className="text-gray-400">No change</span>
+                  <span style={{color: 'var(--paperless-text-muted)'}}>No change</span>
                 )}
               </div>
             </div>
@@ -153,102 +150,122 @@ const DryRunResults = ({ documents, onBack }) => {
   )
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3">
+    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
+      {/* Welcome Message */}
+      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 px-3 py-2 rounded-md transition-colors hover:bg-opacity-10"
+              style={{color: 'var(--paperless-text-secondary)'}}
             >
               <ArrowLeft size={16} />
               Back to Documents
             </button>
-            <div className="h-6 w-px bg-gray-300"></div>
-            <h2 className="text-lg font-semibold text-gray-900">Test Results</h2>
-            <span className="text-sm text-gray-600">
-              {documents.length} document{documents.length !== 1 ? 's' : ''} processed
-            </span>
+            <div style={{width: '1px', height: '24px', backgroundColor: 'var(--paperless-border)'}}></div>
+            <div>
+              <h2 className="text-lg font-semibold" style={{color: 'var(--paperless-text)'}}>Rule Test Results</h2>
+              <p className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>
+                Testing {documents.length} document{documents.length !== 1 ? 's' : ''}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="grid grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{summaryStats.total}</div>
-            <div className="text-sm text-gray-600">Total Documents</div>
+      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="text-center p-4 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-3xl font-bold mb-1" style={{color: 'var(--paperless-text)'}}>{summaryStats.total}</div>
+            <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Total Documents</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{summaryStats.passed}</div>
-            <div className="text-sm text-gray-600">Passed</div>
+          <div className="text-center p-4 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-3xl font-bold mb-1" style={{color: 'var(--paperless-accent)'}}>{summaryStats.passed}</div>
+            <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Passed</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-red-600">{summaryStats.failed}</div>
-            <div className="text-sm text-gray-600">Failed</div>
+          <div className="text-center p-4 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-3xl font-bold mb-1" style={{color: 'var(--paperless-red)'}}>{summaryStats.failed}</div>
+            <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Failed</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{summaryStats.avgScore}/120</div>
-            <div className="text-sm text-gray-600">Avg POCO Score</div>
+          <div className="text-center p-4 rounded" style={{backgroundColor: 'var(--paperless-surface-light)'}}>
+            <div className="text-3xl font-bold mb-1" style={{color: 'var(--paperless-text)'}}>{summaryStats.avgScore}%</div>
+            <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Avg POCO Score</div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel - Document List */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900">Document Results</h3>
-          </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="p-2 space-y-2">
-              {mockResults.map((result, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => setSelectedDocument(result)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    selectedDocument === result
-                      ? 'bg-blue-50 border-blue-200 border'
-                      : 'hover:bg-gray-50 border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    {result.status === 'pass' ? (
-                      <CheckCircle size={16} className="text-green-600" />
-                    ) : (
-                      <XCircle size={16} className="text-red-600" />
-                    )}
-                    <span className="text-sm font-medium text-gray-900 truncate">
-                      {result.document.title}
-                    </span>
+      {/* Results List */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full flex">
+          {/* Left side - Document list */}
+          <div className="w-1/3 overflow-y-auto scrollbar-thin" style={{backgroundColor: 'var(--paperless-surface)', borderRight: '1px solid var(--paperless-border)'}}>
+            <div className="p-4">
+              <h3 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>Documents Tested</h3>
+              <div className="space-y-2">
+                {mockResults.map((result, index) => (
+                  <div
+                    key={index}
+                    className={`p-3 rounded cursor-pointer transition-colors ${
+                      selectedDocument === index ? 'ring-2' : ''
+                    }`}
+                    style={{
+                      backgroundColor: selectedDocument === index ? 'var(--paperless-surface-light)' : 'transparent',
+                      ringColor: selectedDocument === index ? 'var(--paperless-accent)' : 'transparent',
+                      border: '1px solid var(--paperless-border)'
+                    }}
+                    onClick={() => setSelectedDocument(index)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="font-medium text-sm truncate" style={{color: 'var(--paperless-text)'}}>
+                        {result.document.title}
+                      </div>
+                      <div className={`text-xs px-2 py-1 rounded ${
+                        result.status === 'pass' ? 'text-white' : 'text-white'
+                      }`}
+                      style={{
+                        backgroundColor: result.status === 'pass' ? 'var(--paperless-accent)' : 'var(--paperless-red)'
+                      }}
+                      >
+                        {result.finalScore}%
+                      </div>
+                    </div>
+                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
+                      ID: {result.document.id}
+                    </div>
+                    <div className={`text-xs mt-1 flex items-center gap-1 ${
+                      result.status === 'pass' ? '' : ''
+                    }`}
+                    style={{
+                      color: result.status === 'pass' ? 'var(--paperless-accent)' : 'var(--paperless-red)'
+                    }}
+                    >
+                      {result.status === 'pass' ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                      {result.status === 'pass' ? 'PASSED' : 'FAILED'}
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">
-                    POCO: {result.finalScore}/120
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    OCR: {result.ocrScore}/100 | Bonus: {result.filenameBonus + result.paperlessBonus}
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Panel - Detailed Results */}
-        <div className="flex-1 p-6 overflow-y-auto scrollbar-thin">
-          {selectedDocument ? (
-            <DetailedResult result={selectedDocument} />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <Eye size={48} className="mb-4" />
-              <h3 className="text-lg font-medium mb-2">Select a Document</h3>
-              <p className="text-sm text-center">
-                Click on a document from the left panel to view detailed test results
-              </p>
-            </div>
-          )}
+          {/* Right side - Detailed results */}
+          <div className="flex-1 p-6 overflow-y-auto scrollbar-thin">
+            {selectedDocument !== null ? (
+              <DetailedResult result={mockResults[selectedDocument]} />
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Eye size={48} className="mx-auto mb-4" style={{color: 'var(--paperless-text-muted)'}} />
+                  <h3 className="text-lg font-medium mb-2" style={{color: 'var(--paperless-text)'}}>Select a Document</h3>
+                  <p className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>
+                    Click on a document from the list to see detailed test results
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
