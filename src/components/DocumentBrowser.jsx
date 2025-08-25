@@ -119,25 +119,34 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   {/* Tags List */}
                   <div className="max-h-64 overflow-y-auto">
                     {availableTags.map(tag => (
-                      <label key={tag} className="flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-opacity-10" style={{backgroundColor: selectedTags.includes(tag) ? 'var(--paperless-surface-light)' : 'transparent'}}>
-                        <div className="flex items-center gap-3">
-                          <input 
-                            type="checkbox" 
-                            checked={selectedTags.includes(tag)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedTags([...selectedTags, tag])
-                              } else {
-                                setSelectedTags(selectedTags.filter(t => t !== tag))
-                              }
-                            }}
-                            className="w-4 h-4"
-                            style={{accentColor: 'var(--paperless-accent)'}}
-                          />
-                          <span style={{color: 'var(--paperless-text)'}}>{tag}</span>
-                        </div>
+                      <button 
+                        key={tag} 
+                        className="flex items-center justify-between w-full px-3 py-2 text-xs cursor-pointer hover:bg-opacity-20 text-left transition-colors"
+                        style={{
+                          backgroundColor: selectedTags.includes(tag) ? 'var(--paperless-surface-light)' : 'transparent',
+                          color: 'var(--paperless-text)'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!selectedTags.includes(tag)) {
+                            e.target.style.backgroundColor = 'var(--paperless-surface-light)'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!selectedTags.includes(tag)) {
+                            e.target.style.backgroundColor = 'transparent'
+                          }
+                        }}
+                        onClick={() => {
+                          if (selectedTags.includes(tag)) {
+                            setSelectedTags(selectedTags.filter(t => t !== tag))
+                          } else {
+                            setSelectedTags([...selectedTags, tag])
+                          }
+                        }}
+                      >
+                        <span>{selectedTags.includes(tag) ? '✓ ' : ''}{tag}</span>
                         <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
-                      </label>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -170,14 +179,27 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   </div>
                   {/* Correspondents List */}
                   <div className="max-h-64 overflow-y-auto">
-                    <div className="px-3 py-2 text-sm" style={{color: 'var(--paperless-text-secondary)'}}>
+                    <div className="px-3 py-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
                       Not assigned
                     </div>
                     {availableCorrespondents.map(correspondent => (
                       <button 
                         key={correspondent} 
-                        className="flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-opacity-10 text-left"
-                        style={{color: 'var(--paperless-text)', backgroundColor: selectedCorrespondent === correspondent ? 'var(--paperless-surface-light)' : 'transparent'}}
+                        className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-opacity-20 text-left transition-colors"
+                        style={{
+                          color: 'var(--paperless-text)', 
+                          backgroundColor: selectedCorrespondent === correspondent ? 'var(--paperless-surface-light)' : 'transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (selectedCorrespondent !== correspondent) {
+                            e.target.style.backgroundColor = 'var(--paperless-surface-light)'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (selectedCorrespondent !== correspondent) {
+                            e.target.style.backgroundColor = 'transparent'
+                          }
+                        }}
                         onClick={() => {
                           setSelectedCorrespondent(selectedCorrespondent === correspondent ? null : correspondent)
                           setShowCorrespondentFilter(false)
@@ -218,14 +240,27 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   </div>
                   {/* Document Types List */}
                   <div className="max-h-64 overflow-y-auto">
-                    <div className="px-3 py-2 text-sm" style={{color: 'var(--paperless-text-secondary)'}}>
+                    <div className="px-3 py-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
                       Not assigned
                     </div>
                     {availableDocTypes.map(docType => (
                       <button 
                         key={docType} 
-                        className="flex items-center justify-between w-full px-3 py-2 text-sm hover:bg-opacity-10 text-left"
-                        style={{color: 'var(--paperless-text)', backgroundColor: selectedDocType === docType ? 'var(--paperless-surface-light)' : 'transparent'}}
+                        className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-opacity-20 text-left transition-colors"
+                        style={{
+                          color: 'var(--paperless-text)', 
+                          backgroundColor: selectedDocType === docType ? 'var(--paperless-surface-light)' : 'transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (selectedDocType !== docType) {
+                            e.target.style.backgroundColor = 'var(--paperless-surface-light)'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (selectedDocType !== docType) {
+                            e.target.style.backgroundColor = 'transparent'
+                          }
+                        }}
                         onClick={() => {
                           setSelectedDocType(selectedDocType === docType ? null : docType)
                           setShowDocTypeFilter(false)
@@ -246,7 +281,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
         <div className="px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px', minHeight: '40px', display: 'flex', alignItems: 'center'}}>
           <div className="flex items-start flex-wrap">
             <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)', marginLeft: '20px', marginRight: '20px'}}>Active filters:</span>
-            <div className="flex gap-5 flex-wrap" style={{marginLeft: '20px'}}>
+            <div className="flex gap-5 flex-wrap" style={{marginLeft: '10px'}}>
               {!selectedCorrespondent && !selectedDocType && selectedTags.length === 0 && (
                 <span className="text-sm pt-2" style={{color: 'var(--paperless-text-secondary)'}}>
                   No filters applied
