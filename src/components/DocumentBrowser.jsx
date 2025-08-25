@@ -90,7 +90,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       {/* Filter Section */}
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
-        <div className="flex items-center" style={{marginBottom: '40px'}}>
+        <div className="flex items-center" style={{marginTop: '40px', marginBottom: '40px'}}>
           <div className="flex">
             {/* Tags Filter */}
             <div className="relative" style={{marginRight: '20px'}}>
@@ -185,7 +185,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
         </div>
 
         {/* Active Filters Display - Always Visible */}
-        <div className="py-6 px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px'}}>
+        <div className="py-12 px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px'}}>
           <div className="flex items-start gap-8 flex-wrap">
             <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
             <div className="flex gap-4 flex-wrap">
