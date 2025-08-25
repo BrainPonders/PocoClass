@@ -160,33 +160,62 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       <div className="flex-1 flex flex-col">
         {/* Filters */}
         <div className="p-4 bg-white border-b border-gray-200">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Filter size={16} className="text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Filters:</span>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Filter size={16} className="text-gray-400" />
+                Document Filters
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-600 block mb-1">Tags (multiple):</label>
+                  <select multiple className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full h-20">
+                    <option value="NEW">NEW</option>
+                    <option value="POCO">POCO</option>
+                    <option value="PROCESSED">PROCESSED</option>
+                    <option value="BANKING">BANKING</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="text-xs text-gray-600 block mb-1">Correspondent:</label>
+                  <select className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full mb-2">
+                    <option value="ALL">All Correspondents</option>
+                    <option value="My Bank">My Bank</option>
+                    <option value="Supplier ABC">Supplier ABC</option>
+                    <option value="Electric Company">Electric Company</option>
+                  </select>
+                  
+                  <label className="text-xs text-gray-600 block mb-1">Document Type:</label>
+                  <select className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full">
+                    <option value="ALL">All Types</option>
+                    <option value="Bank Statement">Bank Statement</option>
+                    <option value="Invoice">Invoice</option>
+                    <option value="Receipt">Receipt</option>
+                    <option value="Bill">Bill</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">Tags:</label>
-              <select
-                value={filterTag}
-                onChange={(e) => setFilterTag(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm"
-              >
-                <option value="NEW">NEW</option>
-                <option value="ALL">All</option>
-                <option value="POCO">POCO</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">Max Results:</label>
-              <input
-                type="number"
-                value={maxResults}
-                onChange={(e) => setMaxResults(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm w-20"
-                min="1"
-                max="1000"
-              />
+            
+            <div className="space-y-3">
+              <div className="text-sm font-medium text-gray-700">Search & Limits</div>
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Search in filename/content:</label>
+                <input type="text" placeholder="Search documents..." className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full mb-2" />
+              </div>
+              <div>
+                <label className="text-xs text-gray-600 block mb-1">Max Results:</label>
+                <input
+                  type="number"
+                  value={maxResults}
+                  onChange={(e) => setMaxResults(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full"
+                  min="1"
+                  max="1000"
+                />
+              </div>
             </div>
           </div>
         </div>
