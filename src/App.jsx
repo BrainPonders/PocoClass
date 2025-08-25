@@ -37,10 +37,10 @@ function App() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <h1 className="text-2xl font-bold text-gray-900">
-          POCOmeta v2.0 - GUI Rule Builder
+          DocumentAI v2.0 - Intelligent Classifier Builder
         </h1>
         <p className="text-sm text-gray-600 mt-1">
-          Intelligent document classification with visual rule creation
+          Visual rule creation for Paperless-ngx document classification
         </p>
       </div>
 
