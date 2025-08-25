@@ -1,76 +1,62 @@
 import React, { useState } from 'react'
-import { FileText, Plus, Edit3, Trash2, Settings, Filter, Search, Eye } from 'lucide-react'
+import { FileText, Plus, Edit3, Trash2, Settings, Filter, Search, Eye, ChevronDown, X } from 'lucide-react'
 
 const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
-  const [selectedRule, setSelectedRule] = useState(null)
   const [selectedDocuments, setSelectedDocuments] = useState([])
-  const [filterTag, setFilterTag] = useState('NEW')
-  const [maxResults, setMaxResults] = useState(100)
+  const [showTagsFilter, setShowTagsFilter] = useState(false)
+  const [showCorrespondentFilter, setShowCorrespondentFilter] = useState(false)
+  const [showDocTypeFilter, setShowDocTypeFilter] = useState(false)
+  const [selectedTags, setSelectedTags] = useState(['NEW'])
+  const [selectedCorrespondent, setSelectedCorrespondent] = useState(null)
+  const [selectedDocType, setSelectedDocType] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Mock data for demonstration
-  const mockRules = [
-    {
-      id: 'bank_statements',
-      name: 'Bank Statements',
-      documentId: 1234,
-      description: 'Processes monthly bank statements',
-      lastModified: '2024-01-15',
-      status: 'active'
-    },
-    {
-      id: 'invoices',
-      name: 'Supplier Invoices', 
-      documentId: 5678,
-      description: 'Handles supplier invoices and bills',
-      lastModified: '2024-01-10',
-      status: 'active'
-    },
-    {
-      id: 'receipts',
-      name: 'Expense Receipts',
-      documentId: 9012,
-      description: 'Processes expense receipts',
-      lastModified: '2024-01-08',
-      status: 'draft'
-    }
-  ]
-
+  // Mock data matching Paperless format
   const mockDocuments = [
     {
-      id: 1001,
+      id: '0198_25061913_3639_001',
       title: 'bank_statement_january_2024.pdf',
       correspondent: 'My Bank',
-      documentType: 'Unknown',
-      createdDate: '2024-01-20',
+      documentType: 'Bank Statement',
+      createdDate: '15 Jun 1990',
       tags: ['NEW'],
-      hasContent: true
+      owner: 'Robbert Jan'
     },
     {
-      id: 1002,
+      id: '0183_25061912_2905_001',
       title: 'invoice_supplier_abc_202401.pdf',
-      correspondent: null,
-      documentType: 'Unknown',
-      createdDate: '2024-01-19',
+      correspondent: 'Supplier ABC',
+      documentType: 'Invoice',
+      createdDate: '1 Jun 1997',
       tags: ['NEW'],
-      hasContent: true
+      owner: 'Robbert Jan'
     },
     {
-      id: 1003,
+      id: '0185_25061912_3737_001',
       title: 'receipt_office_supplies.pdf',
-      correspondent: null,
-      documentType: 'Unknown', 
-      createdDate: '2024-01-18',
+      correspondent: 'Office Store',
+      documentType: 'Receipt', 
+      createdDate: '1 Jun 1997',
       tags: ['NEW'],
-      hasContent: true
+      owner: 'Robbert Jan'
     },
     {
-      id: 1004,
+      id: 'anwb_visa_0132_2503',
       title: 'utility_bill_electric_jan2024.pdf',
-      correspondent: null,
-      documentType: 'Unknown',
-      createdDate: '2024-01-17',
-      tags: ['NEW'],
-      hasContent: true
+      correspondent: 'Electric Company',
+      documentType: 'Bill',
+      createdDate: '28 May 2000',
+      tags: ['NEW', 'Credit Card'],
+      owner: 'Robbert Jan'
+    },
+    {
+      id: '2000-10-30-Rabobank_Credit Card',
+      title: 'rabobank_credit_statement.pdf',
+      correspondent: 'Rabobank',
+      documentType: 'Credit Card Statement',
+      createdDate: '30 Oct 2000',
+      tags: ['NEW', 'Credit Card'],
+      owner: 'Robbert Jan'
     }
   ]
 
@@ -90,205 +76,231 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
     }
   }
 
+  const availableTags = ['NEW', 'POCO', 'PROCESSED', 'BANKING', 'Credit Card']
+  const availableCorrespondents = ['My Bank', 'Supplier ABC', 'Office Store', 'Electric Company', 'Rabobank']
+  const availableDocTypes = ['Bank Statement', 'Invoice', 'Receipt', 'Bill', 'Credit Card Statement']
+
   return (
-    <div className="flex h-full">
-      {/* Left Panel - Rules Management */}
-      <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Existing Rules</h2>
-          <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
-            {mockRules.map((rule) => (
-              <div
-                key={rule.id}
-                className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                  selectedRule?.id === rule.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-                onClick={() => setSelectedRule(rule)}
+    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
+      {/* Dashboard Header */}
+      <div className="p-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold" style={{color: 'var(--paperless-text)'}}>Dashboard</h1>
+            <p className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Hello Robbert Jan, welcome to DocumentAI</p>
+          </div>
+          <div className="text-sm px-3 py-1 rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', fontWeight: '500'}}>
+            Tag: NEW
+          </div>
+        </div>
+
+        {/* Paperless-style Filter Bar */}
+        <div className="flex items-center gap-2 mb-4">
+          <input 
+            type="text" 
+            placeholder="Title & content" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 px-3 py-2 rounded border text-sm"
+            style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}
+          />
+          <div className="flex gap-2">
+            {/* Tags Filter */}
+            <div className="relative">
+              <button 
+                className="filter-pill" 
+                onClick={() => setShowTagsFilter(!showTagsFilter)}
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium text-gray-900">{rule.name}</h3>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    rule.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {rule.status}
-                  </span>
+                Tags <ChevronDown size={14} />
+              </button>
+              {showTagsFilter && (
+                <div className="absolute top-full left-0 mt-1 w-48 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                  <div className="p-2">
+                    {availableTags.map(tag => (
+                      <label key={tag} className="flex items-center gap-2 p-1 text-sm cursor-pointer hover:bg-opacity-10">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedTags.includes(tag)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedTags([...selectedTags, tag])
+                            } else {
+                              setSelectedTags(selectedTags.filter(t => t !== tag))
+                            }
+                          }}
+                        />
+                        <span style={{color: 'var(--paperless-text)'}}>{tag}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{rule.description}</p>
-                <p className="text-xs text-gray-500 mt-2">Doc ID: {rule.documentId}</p>
-              </div>
+              )}
+            </div>
+
+            {/* Correspondent Filter */}
+            <div className="relative">
+              <button 
+                className="filter-pill" 
+                onClick={() => setShowCorrespondentFilter(!showCorrespondentFilter)}
+              >
+                Correspondents <ChevronDown size={14} />
+              </button>
+              {showCorrespondentFilter && (
+                <div className="absolute top-full left-0 mt-1 w-48 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                  <div className="p-2">
+                    {availableCorrespondents.map(correspondent => (
+                      <button 
+                        key={correspondent} 
+                        className="block w-full text-left p-2 text-sm hover:bg-opacity-10 rounded"
+                        style={{color: 'var(--paperless-text)'}}
+                        onClick={() => {
+                          setSelectedCorrespondent(selectedCorrespondent === correspondent ? null : correspondent)
+                          setShowCorrespondentFilter(false)
+                        }}
+                      >
+                        {correspondent}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Document Type Filter */}
+            <div className="relative">
+              <button 
+                className="filter-pill" 
+                onClick={() => setShowDocTypeFilter(!showDocTypeFilter)}
+              >
+                Document type <ChevronDown size={14} />
+              </button>
+              {showDocTypeFilter && (
+                <div className="absolute top-full left-0 mt-1 w-48 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                  <div className="p-2">
+                    {availableDocTypes.map(docType => (
+                      <button 
+                        key={docType} 
+                        className="block w-full text-left p-2 text-sm hover:bg-opacity-10 rounded"
+                        style={{color: 'var(--paperless-text)'}}
+                        onClick={() => {
+                          setSelectedDocType(selectedDocType === docType ? null : docType)
+                          setShowDocTypeFilter(false)
+                        }}
+                      >
+                        {docType}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Active Filters Display */}
+        {(selectedCorrespondent || selectedDocType || selectedTags.length > 0) && (
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Active filters:</span>
+            {selectedCorrespondent && (
+              <span className="text-xs px-2 py-1 rounded flex items-center gap-1" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                Correspondent: {selectedCorrespondent}
+                <X size={12} className="cursor-pointer" onClick={() => setSelectedCorrespondent(null)} />
+              </span>
+            )}
+            {selectedDocType && (
+              <span className="text-xs px-2 py-1 rounded flex items-center gap-1" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                Type: {selectedDocType}
+                <X size={12} className="cursor-pointer" onClick={() => setSelectedDocType(null)} />
+              </span>
+            )}
+            {selectedTags.map(tag => (
+              <span key={tag} className="text-xs px-2 py-1 rounded flex items-center gap-1" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                {tag}
+                <X size={12} className="cursor-pointer" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))} />
+              </span>
             ))}
           </div>
-        </div>
-
-        {/* Rule Actions */}
-        <div className="p-4 space-y-2">
-          <div className="text-sm text-gray-600 mb-2">
-            Selected Rule: <span className="font-medium">{selectedRule?.name || 'None'}</span>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => selectedRule && onEditRule(selectedRule)}
-              disabled={!selectedRule}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
-            >
-              <Edit3 size={14} />
-              Edit
-            </button>
-            <button
-              disabled={!selectedRule}
-              className="px-3 py-2 border border-red-300 text-red-600 rounded-md text-sm font-medium disabled:border-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-red-50"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-          <button
-            onClick={() => selectedRule && onTestRules(selectedDocuments.map(id => mockDocuments.find(doc => doc.id === id)))}
-            disabled={!selectedRule || selectedDocuments.length === 0}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-md text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-green-700"
-          >
-            <Eye size={14} />
-            Test Selected ({selectedDocuments.length})
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* Right Panel - Document Browser */}
-      <div className="flex-1 flex flex-col">
-        {/* Filters */}
-        <div className="p-4 bg-white border-b border-gray-200">
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Filter size={16} className="text-gray-400" />
-                Document Filters
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-gray-600 block mb-1">Tags (multiple):</label>
-                  <select multiple className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full h-20">
-                    <option value="NEW">NEW</option>
-                    <option value="POCO">POCO</option>
-                    <option value="PROCESSED">PROCESSED</option>
-                    <option value="BANKING">BANKING</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="text-xs text-gray-600 block mb-1">Correspondent:</label>
-                  <select className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full mb-2">
-                    <option value="ALL">All Correspondents</option>
-                    <option value="My Bank">My Bank</option>
-                    <option value="Supplier ABC">Supplier ABC</option>
-                    <option value="Electric Company">Electric Company</option>
-                  </select>
-                  
-                  <label className="text-xs text-gray-600 block mb-1">Document Type:</label>
-                  <select className="border border-gray-300 rounded-md px-2 py-1 text-sm w-full">
-                    <option value="ALL">All Types</option>
-                    <option value="Bank Statement">Bank Statement</option>
-                    <option value="Invoice">Invoice</option>
-                    <option value="Receipt">Receipt</option>
-                    <option value="Bill">Bill</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="text-sm font-medium text-gray-700">Search & Limits</div>
-              <div>
-                <label className="text-xs text-gray-600 block mb-1">Search in filename/content:</label>
-                <input type="text" placeholder="Search documents..." className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full mb-2" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-600 block mb-1">Max Results:</label>
-                <input
-                  type="number"
-                  value={maxResults}
-                  onChange={(e) => setMaxResults(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full"
-                  min="1"
-                  max="1000"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Document List */}
-        <div className="flex-1 p-4 overflow-y-auto scrollbar-thin">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Documents ({mockDocuments.length})
-            </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={handleSelectAll}
-                className="px-3 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
-              >
-                {selectedDocuments.length === mockDocuments.length ? 'Deselect All' : 'Select All'}
-              </button>
-              <button
-                onClick={() => onTestRules(selectedDocuments.map(id => mockDocuments.find(doc => doc.id === id)))}
-                disabled={selectedDocuments.length === 0}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700"
-              >
-                Test Rules ({selectedDocuments.length})
-              </button>
-            </div>
-          </div>
-
-          <div className="grid gap-3">
-            {mockDocuments.map((doc) => (
-              <div
-                key={doc.id}
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-300 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedDocuments.includes(doc.id)}
-                    onChange={(e) => handleDocumentSelect(doc.id, e.target.checked)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <FileText size={20} className="text-gray-400 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 truncate">{doc.title}</h3>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
-                      <span>ID: {doc.id}</span>
-                      <span>Date: {doc.createdDate}</span>
-                      <span>Type: {doc.documentType}</span>
-                      {doc.correspondent && <span>From: {doc.correspondent}</span>}
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
+      {/* Paperless-style Document Table */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto scrollbar-thin">
+          <table className="w-full paperless-table">
+            <thead>
+              <tr>
+                <th className="w-8"></th>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Correspondent</th>
+                <th>Document type</th>
+                <th>Tags</th>
+                <th>Owner</th>
+                <th className="w-32">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mockDocuments.map((doc) => (
+                <tr key={doc.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedDocuments.includes(doc.id)}
+                      onChange={(e) => handleDocumentSelect(doc.id, e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                  </td>
+                  <td>
+                    <div className="font-medium" style={{color: 'var(--paperless-text)'}}>{doc.title}</div>
+                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>ID: {doc.id}</div>
+                  </td>
+                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.createdDate}</td>
+                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.correspondent || '-'}</td>
+                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.documentType}</td>
+                  <td>
+                    <div className="flex gap-1 flex-wrap">
                       {doc.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full"
+                          className={tag === 'NEW' ? 'tag-new' : 'tag-blue'}
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
-                  </div>
-                  <button
-                    onClick={() => onNewRule(doc)}
-                    className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700"
-                  >
-                    <Plus size={14} />
-                    New Rule
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </td>
+                  <td style={{color: 'var(--paperless-text-secondary)'}}>{doc.owner}</td>
+                  <td>
+                    <button
+                      onClick={() => onNewRule(doc)}
+                      className="text-xs px-2 py-1 rounded font-medium"
+                      style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+                    >
+                      + New Rule
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
+
+      {/* Bottom Action Bar */}
+      {selectedDocuments.length > 0 && (
+        <div className="p-4 flex items-center justify-between" style={{backgroundColor: 'var(--paperless-surface)', borderTop: '1px solid var(--paperless-border)'}}>
+          <span className="text-sm" style={{color: 'var(--paperless-text)'}}>
+            {selectedDocuments.length} documents selected
+          </span>
+          <button
+            onClick={() => onTestRules(selectedDocuments.map(id => mockDocuments.find(doc => doc.id === id)))}
+            className="px-4 py-2 rounded font-medium"
+            style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+          >
+            Test Rules on Selected
+          </button>
+        </div>
+      )}
     </div>
   )
 }

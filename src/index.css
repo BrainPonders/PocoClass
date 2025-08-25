@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Paperless-ngx Dark Theme Variables */
+:root {
+  --paperless-bg: #121212;
+  --paperless-surface: #1e1e1e;
+  --paperless-surface-light: #2a2a2a;
+  --paperless-text: #ffffff;
+  --paperless-text-secondary: #b0b0b0;
+  --paperless-text-muted: #666666;
+  --paperless-accent: #4ade80;
+  --paperless-accent-hover: #22c55e;
+  --paperless-border: #3a3a3a;
+  --paperless-red: #ef4444;
+  --paperless-blue: #3b82f6;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,23 +24,91 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--paperless-bg);
+  color: var(--paperless-text);
 }
 
-/* Custom scrollbar styles */
+/* Custom scrollbar styles for dark theme */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--paperless-surface);
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--paperless-border);
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: var(--paperless-text-muted);
+}
+
+/* Paperless-style table */
+.paperless-table {
+  background: var(--paperless-surface);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.paperless-table th {
+  background: var(--paperless-surface-light);
+  color: var(--paperless-text);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--paperless-border);
+}
+
+.paperless-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--paperless-border);
+  color: var(--paperless-text);
+}
+
+.paperless-table tr:hover {
+  background: var(--paperless-surface-light);
+}
+
+/* Filter pills */
+.filter-pill {
+  background: var(--paperless-accent);
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-pill:hover {
+  background: var(--paperless-accent-hover);
+}
+
+/* Tag badges */
+.tag-new {
+  background: var(--paperless-red);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tag-blue {
+  background: var(--paperless-blue);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
