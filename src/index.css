@@ -75,22 +75,28 @@ body {
 
 /* Filter pills */
 .filter-pill {
-  background: var(--paperless-accent);
-  color: #000;
+  background: transparent;
+  color: var(--paperless-text);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  border: none;
+  border: 1px solid var(--paperless-border);
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
 .filter-pill:hover {
-  background: var(--paperless-accent-hover);
+  background: var(--paperless-surface-light);
+}
+
+.filter-pill.active {
+  background: var(--paperless-accent);
+  color: #000;
+  border-color: var(--paperless-accent);
 }
 
 /* Tag badges */
