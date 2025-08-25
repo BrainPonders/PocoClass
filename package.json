@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.12",
     "@vitejs/plugin-react": "^5.0.1",
     "autoprefixer": "^10.4.21",
     "lucide-react": "^0.541.0",
