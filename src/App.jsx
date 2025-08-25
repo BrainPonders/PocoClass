@@ -33,46 +33,51 @@ function App() {
   }
 
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900">
+      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
+        <h1 className="text-2xl font-bold" style={{color: 'var(--paperless-text)'}}>
           DocumentAI v2.0 - Intelligent Classifier Builder
         </h1>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm mt-1" style={{color: 'var(--paperless-text-secondary)'}}>
           Visual rule creation for Paperless-ngx document classification
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-gray-200">
+      <div style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         <nav className="flex space-x-8 px-6">
           <button
             onClick={() => setActiveTab('documents')}
             className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
               activeTab === 'documents'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'text-white'
+                : 'hover:text-white'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'documents' ? 'var(--paperless-accent)' : 'transparent',
+              color: activeTab === 'documents' ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)'
+            }}
           >
             <FileText size={16} />
-            Documents & Rules
+            Dashboard
           </button>
           <button
             onClick={() => setActiveTab('rule-editor')}
             disabled={!selectedDocument && !selectedRule}
             className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-              activeTab === 'rule-editor'
-                ? 'border-blue-500 text-blue-600'
-                : selectedDocument || selectedRule
-                ? 'border-transparent text-gray-500 hover:text-gray-700'
-                : 'border-transparent text-gray-300 cursor-not-allowed'
+              selectedDocument || selectedRule ? 'hover:text-white' : 'cursor-not-allowed'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'rule-editor' ? 'var(--paperless-accent)' : 'transparent',
+              color: activeTab === 'rule-editor' ? 'var(--paperless-text)' : 
+                     selectedDocument || selectedRule ? 'var(--paperless-text-secondary)' : 'var(--paperless-text-muted)'
+            }}
           >
             <Edit3 size={16} />
             Rule Editor
             {(selectedDocument || selectedRule) && (
-              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+              <span className="tag-blue">
                 {selectedRule ? selectedRule.name : 'New Rule'}
               </span>
             )}
@@ -81,17 +86,18 @@ function App() {
             onClick={() => setActiveTab('dry-run')}
             disabled={selectedDocuments.length === 0}
             className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
-              activeTab === 'dry-run'
-                ? 'border-blue-500 text-blue-600'
-                : selectedDocuments.length > 0
-                ? 'border-transparent text-gray-500 hover:text-gray-700'
-                : 'border-transparent text-gray-300 cursor-not-allowed'
+              selectedDocuments.length > 0 ? 'hover:text-white' : 'cursor-not-allowed'
             }`}
+            style={{
+              borderBottomColor: activeTab === 'dry-run' ? 'var(--paperless-accent)' : 'transparent',
+              color: activeTab === 'dry-run' ? 'var(--paperless-text)' : 
+                     selectedDocuments.length > 0 ? 'var(--paperless-text-secondary)' : 'var(--paperless-text-muted)'
+            }}
           >
             <Play size={16} />
             Test Results
             {selectedDocuments.length > 0 && (
-              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+              <span style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}} className="text-xs px-2 py-1 rounded-full font-medium">
                 {selectedDocuments.length} docs
               </span>
             )}
