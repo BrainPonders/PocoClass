@@ -90,8 +90,8 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       {/* Filter Section */}
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
-        <div className="flex items-center gap-8 mb-8">
-          <div className="flex gap-8">
+        <div className="flex items-center mb-12">
+          <div className="flex gap-6">
             {/* Tags Filter */}
             <div className="relative">
               <button 
@@ -186,26 +186,26 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
 
         {/* Active Filters Display - Much More Spacious */}
         {(selectedCorrespondent || selectedDocType || selectedTags.length > 0) && (
-          <div className="mt-8 mb-6 py-6 px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
-            <div className="flex items-start gap-12 flex-wrap">
+          <div className="mt-8 mb-8 py-6 px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+            <div className="flex items-start gap-8 flex-wrap">
               <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
-              <div className="flex gap-6 flex-wrap">
+              <div className="flex gap-4 flex-wrap">
                 {selectedCorrespondent && (
-                  <span className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span className="text-sm px-4 py-2 rounded flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Correspondent:</strong> {selectedCorrespondent}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedCorrespondent(null)} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded p-1" onClick={() => setSelectedCorrespondent(null)} />
                   </span>
                 )}
                 {selectedDocType && (
-                  <span className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span className="text-sm px-4 py-2 rounded flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Type:</strong> {selectedDocType}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedDocType(null)} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded p-1" onClick={() => setSelectedDocType(null)} />
                   </span>
                 )}
                 {selectedTags.map(tag => (
-                  <span key={tag} className="text-sm px-4 py-2 rounded-full flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
+                  <span key={tag} className="text-sm px-4 py-2 rounded flex items-center gap-3 shadow-sm" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
                     <strong>Tag:</strong> {tag}
-                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded-full p-1" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))} />
+                    <X size={14} className="cursor-pointer hover:bg-white hover:bg-opacity-20 rounded p-1" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))} />
                   </span>
                 ))}
               </div>
