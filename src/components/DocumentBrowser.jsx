@@ -91,9 +91,9 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
         <div className="flex items-center mb-12">
-          <div className="flex gap-12">
+          <div className="flex">
             {/* Tags Filter */}
-            <div className="relative">
+            <div className="relative" style={{marginRight: '20px'}}>
               <button 
                 className={`filter-pill ${selectedTags.length > 0 ? 'active' : ''}`}
                 onClick={() => setShowTagsFilter(!showTagsFilter)}
@@ -125,7 +125,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
             </div>
 
             {/* Correspondent Filter */}
-            <div className="relative">
+            <div className="relative" style={{marginRight: '20px'}}>
               <button 
                 className={`filter-pill ${selectedCorrespondent ? 'active' : ''}`}
                 onClick={() => setShowCorrespondentFilter(!showCorrespondentFilter)}
