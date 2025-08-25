@@ -40,6 +40,7 @@ function App() {
       description: 'Processes monthly bank statements',
       lastModified: '2024-01-15',
       status: 'active',
+      enabled: true,
       poco_score: 85
     },
     {
@@ -48,6 +49,7 @@ function App() {
       description: 'Handles supplier invoices and bills',
       lastModified: '2024-01-10',
       status: 'active',
+      enabled: true,
       poco_score: 92
     },
     {
@@ -56,6 +58,7 @@ function App() {
       description: 'Processes expense receipts',
       lastModified: '2024-01-08',
       status: 'draft',
+      enabled: false,
       poco_score: 73
     }
   ]
@@ -139,13 +142,24 @@ function App() {
               >
                 <div className="font-medium truncate">{rule.name}</div>
                 <div className="text-xs opacity-75 flex items-center justify-between mt-1">
-                  <span className={`px-1.5 py-0.5 rounded text-xs ${
-                    rule.status === 'active' 
-                      ? 'bg-green-600 text-white' 
-                      : 'bg-yellow-600 text-white'
-                  }`}>
-                    {rule.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-1.5 py-0.5 rounded text-xs ${
+                      rule.status === 'active' 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-yellow-600 text-white'
+                    }`}>
+                      {rule.status}
+                    </span>
+                    <label className="flex items-center gap-1 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={rule.enabled} 
+                        className="w-3 h-3" 
+                        style={{accentColor: 'var(--paperless-accent)'}} 
+                      />
+                      <span className="text-xs">enabled</span>
+                    </label>
+                  </div>
                   <span>POCO: {rule.poco_score}%</span>
                 </div>
               </div>
@@ -190,9 +204,6 @@ function App() {
                 {selectedDocuments.length} documents
               </span>
             )}
-          </div>
-          <div className="text-sm px-3 py-1 rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', fontWeight: '500'}}>
-            Tag: NEW
           </div>
         </div>
 
