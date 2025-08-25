@@ -101,30 +101,34 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Tags <ChevronDown size={14} />
               </button>
               {showTagsFilter && (
-                <div className="absolute top-full left-0 mt-1 w-64 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                <div className="absolute top-full left-0 mt-1 w-80 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
-                  <div className="p-3 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
+                  <div className="p-4 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
                     <input 
                       type="text" 
                       placeholder="Filter tags" 
-                      className="w-full px-3 py-2 text-sm rounded" 
+                      className="w-full px-4 py-3 text-sm rounded" 
                       style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} 
                     />
                   </div>
                   {/* Tags List */}
-                  <div className="max-h-64 overflow-y-auto">
+                  <div className="max-h-80 overflow-y-auto">
+                    <div className="px-4 py-3 text-sm" style={{color: 'var(--paperless-text-secondary)', borderBottom: '1px solid var(--paperless-border)'}}>
+                      Not assigned
+                    </div>
                     {availableTags.map(tag => (
                       <button 
                         key={tag} 
-                        className="flex items-center justify-between w-full px-3 py-2 text-xs cursor-pointer hover:bg-opacity-20 text-left transition-colors"
+                        className="flex items-center justify-between w-full px-4 py-3 text-sm cursor-pointer hover:bg-opacity-20 text-left transition-colors"
                         style={{
                           backgroundColor: selectedTags.includes(tag) ? 'var(--paperless-surface-light)' : 'transparent',
-                          color: 'var(--paperless-text)'
+                          color: 'var(--paperless-text)',
+                          borderBottom: '1px solid var(--paperless-border)'
                         }}
                         onMouseEnter={(e) => {
                           if (!selectedTags.includes(tag)) {
@@ -145,7 +149,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                         }}
                       >
                         <span>{selectedTags.includes(tag) ? '✓ ' : ''}{tag}</span>
-                        <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
                       </button>
                     ))}
                   </div>
@@ -162,33 +166,34 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Correspondents <ChevronDown size={14} />
               </button>
               {showCorrespondentFilter && (
-                <div className="absolute top-full left-0 mt-1 w-64 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                <div className="absolute top-full left-0 mt-1 w-80 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
-                  <div className="p-3 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
+                  <div className="p-4 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
                     <input 
                       type="text" 
                       placeholder="Filter correspondents" 
-                      className="w-full px-3 py-2 text-sm rounded" 
+                      className="w-full px-4 py-3 text-sm rounded" 
                       style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} 
                     />
                   </div>
                   {/* Correspondents List */}
-                  <div className="max-h-64 overflow-y-auto">
-                    <div className="px-3 py-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
+                  <div className="max-h-80 overflow-y-auto">
+                    <div className="px-4 py-3 text-sm" style={{color: 'var(--paperless-text-secondary)', borderBottom: '1px solid var(--paperless-border)'}}>
                       Not assigned
                     </div>
                     {availableCorrespondents.map(correspondent => (
                       <button 
                         key={correspondent} 
-                        className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-opacity-20 text-left transition-colors"
+                        className="flex items-center justify-between w-full px-4 py-3 text-sm hover:bg-opacity-20 text-left transition-colors"
                         style={{
                           color: 'var(--paperless-text)', 
-                          backgroundColor: selectedCorrespondent === correspondent ? 'var(--paperless-surface-light)' : 'transparent'
+                          backgroundColor: selectedCorrespondent === correspondent ? 'var(--paperless-surface-light)' : 'transparent',
+                          borderBottom: '1px solid var(--paperless-border)'
                         }}
                         onMouseEnter={(e) => {
                           if (selectedCorrespondent !== correspondent) {
@@ -206,7 +211,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                         }}
                       >
                         <span>{selectedCorrespondent === correspondent ? '✓ ' : ''}{correspondent}</span>
-                        <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text-secondary)'}}>12</span>
                       </button>
                     ))}
                   </div>
@@ -223,33 +228,34 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Document type <ChevronDown size={14} />
               </button>
               {showDocTypeFilter && (
-                <div className="absolute top-full left-0 mt-1 w-64 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                <div className="absolute top-full left-0 mt-1 w-80 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
-                    <button className="flex-1 py-2 px-3 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>Include</button>
+                    <button className="flex-1 py-3 px-4 text-sm font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
-                  <div className="p-3 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
+                  <div className="p-4 border-b" style={{borderBottomColor: 'var(--paperless-border)'}}>
                     <input 
                       type="text" 
                       placeholder="Filter document types" 
-                      className="w-full px-3 py-2 text-sm rounded" 
+                      className="w-full px-4 py-3 text-sm rounded" 
                       style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} 
                     />
                   </div>
                   {/* Document Types List */}
-                  <div className="max-h-64 overflow-y-auto">
-                    <div className="px-3 py-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>
+                  <div className="max-h-80 overflow-y-auto">
+                    <div className="px-4 py-3 text-sm" style={{color: 'var(--paperless-text-secondary)', borderBottom: '1px solid var(--paperless-border)'}}>
                       Not assigned
                     </div>
                     {availableDocTypes.map(docType => (
                       <button 
                         key={docType} 
-                        className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-opacity-20 text-left transition-colors"
+                        className="flex items-center justify-between w-full px-4 py-3 text-sm hover:bg-opacity-20 text-left transition-colors"
                         style={{
                           color: 'var(--paperless-text)', 
-                          backgroundColor: selectedDocType === docType ? 'var(--paperless-surface-light)' : 'transparent'
+                          backgroundColor: selectedDocType === docType ? 'var(--paperless-surface-light)' : 'transparent',
+                          borderBottom: '1px solid var(--paperless-border)'
                         }}
                         onMouseEnter={(e) => {
                           if (selectedDocType !== docType) {
@@ -267,7 +273,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                         }}
                       >
                         <span>{selectedDocType === docType ? '✓ ' : ''}{docType}</span>
-                        <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text-secondary)'}}>1</span>
                       </button>
                     ))}
                   </div>
