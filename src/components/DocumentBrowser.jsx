@@ -243,7 +243,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
         </div>
 
         {/* Active Filters Display - Always Visible */}
-        <div className="px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px', minHeight: '120px', display: 'flex', alignItems: 'center'}}>
+        <div className="px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px', minHeight: '60px', display: 'flex', alignItems: 'center'}}>
           <div className="flex items-start gap-8 flex-wrap">
             <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)'}}>Active filters:</span>
             <div className="flex gap-4 flex-wrap">
