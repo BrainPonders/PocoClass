@@ -86,25 +86,28 @@ My Bank
    ❌ If mandatory identifiers missing → STOP (POCO = 0%)
 
 📅 STEP 2: EXTRACT DYNAMIC DATA
+   ✅ Extract dates, amounts, reference numbers from OCR text
    ✅ No dynamic extractors defined yet
    
-📝 STEP 3: SET DOCUMENT CLASSIFIERS
-   ✅ Apply these classifications:
-      • Title: [Not set]
-      • Archive serial: [Not set]
-      • Date created: [Not set]
-      • Correspondent: [Not set]
-      • Document type: [Not set]
-      • Storage path: [Not set]
-      • Tags: [Not set]
+📝 STEP 3: SET PAPERLESS CLASSIFIERS
+   Apply these document classifications to Paperless-ngx:
+      • Correspondent: [Auto-detected from patterns]
+      • Document Type: [Auto-detected from patterns]  
+      • Archive Serial Number: [Pattern-based]
+      • Created Date: [Extracted from document]
+      • Tags: [Rule-based + POCO]
+      • Storage Path: [Classification-based]
 
-📁 STEP 4: FILENAME VALIDATION (Optional)
+📁 STEP 4: FILENAME CROSS-CHECK (Optional)
+   ⚠️ Validate against filename patterns (+/-5 POCO points)
    ⚠️ Not configured
 
-📋 STEP 5: PAPERLESS CROSS-CHECK (Optional)
+📋 STEP 5: PAPERLESS CROSS-CHECK (Optional) 
+   ⚠️ Validate against existing Paperless data (+/-3 POCO points)
    ⚠️ Not configured
 
-⚖️ SCORING: No cross-checks configured
+⚖️ FINAL POCO SCORE: OCR Base (0-100) + Filename Bonus + Paperless Bonus
+   📈 Target: 70+ points for automatic processing
 `
   }
 
@@ -169,36 +172,38 @@ poco_weights:
       </div>
 
       {/* Main Content - 3 Panes */}
-      <div className="flex w-full pt-16">
+      <div className="flex w-full pt-16 h-screen">
         {/* Left Pane - OCR Text */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
+        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col min-h-0">
+          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-gray-900">OCR Text</h3>
+              <h3 className="text-sm font-semibold text-gray-900">OCR Content</h3>
               <button className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">
                 <FileText size={12} />
                 View PDF
               </button>
             </div>
-            <div className="text-xs text-gray-600">
-              Document: {document?.title || 'No document selected'}
+            <div className="text-xs text-gray-600 mb-2">
+              📄 {document?.title || 'No document selected'}
+            </div>
+            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              💡 <strong>Tip:</strong> Select any text below and click "Add as Identifier" to create pattern matches
             </div>
             {selectedText && (
               <div className="mt-2 p-2 bg-yellow-100 rounded border-l-4 border-yellow-500">
-                <div className="text-xs text-yellow-800 font-medium">Selected Text:</div>
-                <div className="text-xs text-yellow-700 mt-1">"{selectedText}"</div>
+                <div className="text-xs text-yellow-800 font-medium">Selected: "{selectedText.substring(0, 50)}{selectedText.length > 50 ? '...' : ''}"</div>
                 <button
                   onClick={addIdentifier}
-                  className="mt-2 text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+                  className="mt-2 text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 font-medium"
                 >
-                  Add as Identifier
+                  ✅ Add as Identifier
                 </button>
               </div>
             )}
           </div>
-          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin">
+          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin min-h-0">
             <pre
-              className="text-sm font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text"
+              className="text-xs font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text bg-gray-50 p-3 rounded border"
               onMouseUp={handleTextSelection}
             >
               {mockOcrText}
@@ -207,11 +212,11 @@ poco_weights:
         </div>
 
         {/* Middle Pane - Rule Edit Tools */}
-        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <h3 className="text-sm font-semibold text-gray-900">Rule Builder</h3>
+        <div className="w-1/3 bg-white border-r border-gray-200 flex flex-col min-h-0">
+          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+            <h3 className="text-sm font-semibold text-gray-900">🔧 Rule Configuration</h3>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin space-y-6">
+          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin space-y-4 min-h-0">
             
             {/* Basic Settings */}
             <div className="space-y-3">
@@ -326,11 +331,30 @@ poco_weights:
               </div>
             </div>
 
-            {/* Classifiers - Placeholder */}
+            {/* Paperless Classifiers */}
             <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Classifiers</h4>
-              <div className="text-sm text-gray-500 p-3 bg-gray-50 rounded border">
-                Document classifiers configuration coming soon...
+              <h4 className="font-medium text-gray-900">Paperless Classifiers</h4>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">Correspondent:</label>
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">Document Type:</label>
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-xs text-gray-600 block mb-1">Tags (comma-separated):</label>
+                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                </div>
+                
+                <div>
+                  <label className="text-xs text-gray-600 block mb-1">Archive Serial:</label>
+                  <input type="text" placeholder="ASN pattern" className="w-full text-xs border border-gray-200 rounded px-2 py-1" />
+                </div>
               </div>
             </div>
 
@@ -338,38 +362,41 @@ poco_weights:
         </div>
 
         {/* Right Pane - Rule Preview */}
-        <div className="w-1/3 bg-white flex flex-col">
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <div className="flex items-center gap-2">
+        <div className="w-1/3 bg-white flex flex-col min-h-0">
+          <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+            <div className="flex items-center gap-2 mb-2">
               <button
                 onClick={() => setShowRawYaml(false)}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-3 py-1.5 text-sm rounded font-medium ${
                   !showRawYaml 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                Rule Story
+                📖 Rule Story
               </button>
               <button
                 onClick={() => setShowRawYaml(true)}
-                className={`px-3 py-1 text-sm rounded ${
+                className={`px-3 py-1.5 text-sm rounded font-medium ${
                   showRawYaml 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                Raw YAML
+                ⚙️ Raw YAML
               </button>
             </div>
+            <div className="text-xs text-gray-600">
+              {!showRawYaml ? 'Human-readable rule description' : 'Technical YAML configuration'}
+            </div>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto scrollbar-thin">
+          <div className="flex-1 p-3 overflow-y-auto scrollbar-thin min-h-0">
             {!showRawYaml ? (
-              <pre className="text-sm leading-relaxed whitespace-pre-wrap">
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap bg-blue-50 p-3 rounded border border-blue-200">
                 {generateRuleStory()}
               </pre>
             ) : (
-              <pre className="text-sm font-mono leading-relaxed whitespace-pre-wrap bg-gray-900 text-green-400 p-4 rounded -mx-4">
+              <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap bg-gray-900 text-green-400 p-3 rounded border">
                 {generateRawYaml()}
               </pre>
             )}

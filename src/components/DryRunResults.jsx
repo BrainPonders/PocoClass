@@ -23,11 +23,12 @@ const DryRunResults = ({ documents, onBack }) => {
       amount: '$2,625.00',
       correspondent: 'My Bank'
     },
-    metadataChanges: {
+    classifierChanges: {
       correspondent: { from: null, to: 'My Bank', changed: true },
       documentType: { from: 'Unknown', to: 'Bank Statement', changed: true },
       dateCreated: { from: '2024-01-20', to: '2024-01-31', changed: true },
-      tags: { from: ['NEW'], to: ['NEW', 'POCO', 'banking'], changed: true }
+      tags: { from: ['NEW'], to: ['NEW', 'POCO', 'banking'], changed: true },
+      archiveSerial: { from: null, to: 'ASN000123', changed: true }
     }
   }))
 
@@ -126,11 +127,11 @@ const DryRunResults = ({ documents, onBack }) => {
         </div>
       </div>
 
-      {/* Metadata Changes */}
+      {/* Paperless Classifier Changes */}
       <div>
-        <h4 className="font-medium text-gray-900 mb-3">📝 Metadata Changes</h4>
+        <h4 className="font-medium text-gray-900 mb-3">📝 Paperless Classifier Changes</h4>
         <div className="space-y-2">
-          {Object.entries(result.metadataChanges).map(([field, change]) => (
+          {Object.entries(result.classifierChanges).map(([field, change]) => (
             <div key={field} className="flex items-center justify-between p-2 bg-gray-50 rounded">
               <span className="text-sm font-medium capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</span>
               <div className="text-sm">
