@@ -85,7 +85,7 @@ function App() {
       <div className="flex items-center justify-between px-3 py-2" style={{backgroundColor: '#2563eb', borderBottom: '1px solid var(--paperless-border)', height: '48px'}}>
         <div className="flex items-center gap-1">
           <div className="w-5 h-5 rounded" style={{backgroundColor: '#3b82f6'}}></div>
-          <span className="font-semibold text-sm text-white">DocumentAI</span>
+          <span className="font-semibold text-sm text-white">POCOclass</span>
         </div>
         <div className="flex items-center" style={{marginRight: '16px'}}>
           <div className="relative" ref={userMenuRef}>
@@ -185,9 +185,9 @@ function App() {
                   onClick={() => setSelectedRule(rule)}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium truncate" style={{fontSize: '11px'}}>{rule.name}</span>
+                    <span className="text-xs font-medium truncate" style={{fontSize: '12px'}}>{rule.name}</span>
                     {rule.enabled && (
-                      <span className="text-xs" style={{color: 'var(--paperless-accent)', fontSize: '10px'}}>✓</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-accent)', fontSize: '11px'}}>✓</span>
                     )}
                   </div>
                 </div>
