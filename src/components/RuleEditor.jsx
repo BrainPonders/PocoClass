@@ -360,7 +360,7 @@ scoring:
 
                   {/* Identifier List */}
                   {ocrIdentifiers.map((identifier) => (
-                    <div key={identifier.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
+                    <div key={identifier.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
                         <button 
@@ -381,7 +381,7 @@ scoring:
                           placeholder="Enter title" 
                           className="col-span-10 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -398,7 +398,7 @@ scoring:
                           placeholder="Enter pattern/regex" 
                           className="col-span-7 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -426,7 +426,7 @@ scoring:
                           placeholder="0" 
                           className="col-span-4 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -440,7 +440,7 @@ scoring:
                           placeholder="100" 
                           className="col-span-4 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -456,7 +456,7 @@ scoring:
                           onChange={(e) => updateOcrIdentifier(identifier.id, 'logic', e.target.value)}
                           className="col-span-6 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -483,7 +483,7 @@ scoring:
 
                   {/* Groups List */}
                   {ocrGroups.map((group) => (
-                    <div key={group.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
+                    <div key={group.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <button onClick={() => toggleGroup(group.id)}>
@@ -499,7 +499,7 @@ scoring:
                         </button>
                       </div>
                       {!collapsedGroups[group.id] && (
-                        <div className="text-xs p-2 rounded" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>
+                        <div className="text-xs p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
                           Group functionality (nested identifiers) coming soon...
                         </div>
                       )}
@@ -572,7 +572,7 @@ scoring:
                   
                   {/* Extractor List */}
                   {dynamicExtractors.map((extractor) => (
-                    <div key={extractor.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
+                    <div key={extractor.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
                         <button 
@@ -592,7 +592,7 @@ scoring:
                           placeholder="Start text/regex" 
                           className="col-span-10 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -609,7 +609,7 @@ scoring:
                           placeholder="End text/regex" 
                           className="col-span-10 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -626,7 +626,7 @@ scoring:
                           placeholder="Value extraction regex" 
                           className="col-span-10 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
@@ -641,7 +641,7 @@ scoring:
                           onChange={(e) => updateDynamicExtractor(extractor.id, 'targetField', e.target.value)}
                           className="col-span-10 text-xs rounded px-2" 
                           style={{
-                            backgroundColor: 'var(--paperless-surface)', 
+                            backgroundColor: 'var(--paperless-surface-light)', 
                             color: 'var(--paperless-text)', 
                             border: '1px solid var(--paperless-border)',
                             height: '24px'
