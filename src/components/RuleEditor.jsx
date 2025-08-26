@@ -270,6 +270,11 @@ scoring:
                 </div>
                 
                 <div>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Date Created:</label>
+                  <input type="text" placeholder="Date pattern or extraction rule" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                </div>
+                
+                <div>
                   <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
                   <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
                     <option value="">Select correspondent...</option>
@@ -286,6 +291,8 @@ scoring:
                     <option value="statement">Statement</option>
                     <option value="invoice">Invoice</option>
                     <option value="receipt">Receipt</option>
+                    <option value="contract">Contract</option>
+                    <option value="report">Report</option>
                   </select>
                 </div>
                 
@@ -295,8 +302,27 @@ scoring:
                 </div>
                 
                 <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial:</label>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial Number (ASN):</label>
                   <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                </div>
+                
+                <div>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Custom Fields:</label>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="text" placeholder="Field name" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                      <input type="text" placeholder="Field value" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <select className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                        <option value="">POCO Score</option>
+                        <option value="category">Document Category</option>
+                        <option value="processing">Processing Date</option>
+                        <option value="source">Source</option>
+                      </select>
+                      <input type="text" placeholder="Auto-calculated" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
