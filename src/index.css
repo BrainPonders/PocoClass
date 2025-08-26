@@ -96,9 +96,9 @@ body {
 }
 
 .filter-pill.active {
-  background: var(--paperless-accent);
-  color: #000;
-  border-color: var(--paperless-accent);
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
 }
 
 /* Tag badges */
