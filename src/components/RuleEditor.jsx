@@ -151,7 +151,7 @@ scoring:
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1 px-3 py-2 rounded-md text-sm" style={{border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)', backgroundColor: 'var(--paperless-surface-light)'}}>
+            <button className="flex items-center gap-1 px-3 py-2 rounded-md text-sm" style={{ color: 'var(--paperless-text)', backgroundColor: 'var(--paperless-surface-light)'}}>
               <Eye size={14} />
               Test Rule
             </button>
@@ -167,7 +167,7 @@ scoring:
       <div className="flex flex-1 overflow-hidden gap-0">
         {/* Left Pane - OCR Text */}
         <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
-          <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
+          <div className="flex-shrink-0 rounded-t" style={{ backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold" style={{color: 'var(--paperless-text)'}}>📄 OCR Content</h3>
               <button className="flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
@@ -182,7 +182,7 @@ scoring:
           <div className="flex-1 overflow-y-auto scrollbar-thin min-h-0" style={{padding: '5px'}}>
             <pre
               className="text-xs font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text p-3 rounded"
-              style={{backgroundColor: 'var(--paperless-bg)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}
+              style={{backgroundColor: 'var(--paperless-bg)', color: 'var(--paperless-text)'}}
               onMouseUp={handleTextSelection}
             >
               {mockOcrText}
@@ -192,7 +192,7 @@ scoring:
 
         {/* Middle Pane - Rule Edit Tools */}
         <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
-          <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
+          <div className="flex-shrink-0 rounded-t" style={{ backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold" style={{color: 'var(--paperless-text)'}}>🔧 Rule Configuration</h3>
             </div>
@@ -233,7 +233,7 @@ scoring:
               </div>
               <div className="space-y-2 max-h-32 overflow-y-auto">
                 {identifiers.map((identifier, index) => (
-                  <div key={identifier.id} className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                  <div key={identifier.id} className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', }}>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>{identifier.name}</span>
                       <button 
@@ -262,22 +262,22 @@ scoring:
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
                   </div>
                   <div>
                     <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Type:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
+                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags (comma-separated):</label>
-                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
+                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
                 </div>
                 
                 <div>
                   <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial:</label>
-                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}} />
+                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
                 </div>
               </div>
             </div>
@@ -285,7 +285,7 @@ scoring:
             {/* Dynamic Data */}
             <div className="space-y-3">
               <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
-              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}}>
+              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', }}>
                 Dynamic extractors (dates, amounts) coming soon...
               </div>
             </div>
@@ -294,7 +294,7 @@ scoring:
 
         {/* Right Pane - Rule Preview */}
         <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
-          <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
+          <div className="flex-shrink-0 rounded-t" style={{ backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <h3 className="text-base font-semibold mb-3" style={{color: 'var(--paperless-text)'}}>📖 Rule Preview</h3>
             <div className="flex items-center gap-2 mb-2">
               <button
@@ -307,7 +307,7 @@ scoring:
                 style={{
                   backgroundColor: !showRawYaml ? 'var(--paperless-accent)' : 'var(--paperless-surface)',
                   color: !showRawYaml ? '#000' : 'var(--paperless-text-secondary)',
-                  border: '1px solid var(--paperless-border)'
+                  
                 }}
               >
                 Rule Story
@@ -322,7 +322,7 @@ scoring:
                 style={{
                   backgroundColor: showRawYaml ? 'var(--paperless-accent)' : 'var(--paperless-surface)',
                   color: showRawYaml ? '#000' : 'var(--paperless-text-secondary)',
-                  border: '1px solid var(--paperless-border)'
+                  
                 }}
               >
                 Raw YAML
@@ -334,11 +334,11 @@ scoring:
           </div>
           <div className="flex-1 overflow-y-auto scrollbar-thin min-h-0" style={{padding: '5px'}}>
             {!showRawYaml ? (
-              <pre className="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: 'var(--paperless-bg)', border: '1px solid var(--paperless-border)', color: 'var(--paperless-text)'}}>
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: 'var(--paperless-bg)', color: 'var(--paperless-text)'}}>
                 {generateRuleStory()}
               </pre>
             ) : (
-              <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: '#1a1a1a', color: '#4ade80', border: '1px solid var(--paperless-border)'}}>
+              <pre className="text-xs font-mono leading-relaxed whitespace-pre-wrap p-3 rounded" style={{backgroundColor: '#1a1a1a', color: '#4ade80', }}>
                 {generateRawYaml()}
               </pre>
             )}
