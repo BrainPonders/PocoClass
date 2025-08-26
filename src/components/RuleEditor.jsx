@@ -34,16 +34,109 @@ const RuleEditor = ({ document, rule, onBack }) => {
   // Collapsible section states
   const [collapsedSections, setCollapsedSections] = useState({
     ocrIdentifiers: false,
-    threshold: false,
     dynamicData: false,
     paperlessClassifiers: false
   })
+
+  // OCR Identifiers management
+  const [ocrIdentifiers, setOcrIdentifiers] = useState([
+    {
+      id: 1,
+      title: '',
+      pattern: '',
+      fromLine: '',
+      toLine: '',
+      logic: 'true',
+      mandatory: false
+    }
+  ])
+  
+  const [ocrGroups, setOcrGroups] = useState([])
+  const [collapsedGroups, setCollapsedGroups] = useState({})
+
+  // Dynamic Data Extractors management
+  const [dynamicExtractors, setDynamicExtractors] = useState([])
+
+  // Validation helpers
+  const totalIdentifiersAndGroups = ocrIdentifiers.length + ocrGroups.length
+  const isValidIdentifierCount = totalIdentifiersAndGroups >= 3 && totalIdentifiersAndGroups <= 10
 
   const toggleSection = (section) => {
     setCollapsedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }))
+  }
+
+  // OCR Identifier management functions
+  const addOcrIdentifier = () => {
+    const newId = Math.max(...ocrIdentifiers.map(i => i.id), 0) + 1
+    setOcrIdentifiers(prev => [...prev, {
+      id: newId,
+      title: '',
+      pattern: '',
+      fromLine: '',
+      toLine: '',
+      logic: 'true',
+      mandatory: false
+    }])
+  }
+
+  const removeOcrIdentifier = (id) => {
+    setOcrIdentifiers(prev => prev.filter(identifier => identifier.id !== id))
+  }
+
+  const updateOcrIdentifier = (id, field, value) => {
+    setOcrIdentifiers(prev => prev.map(identifier => 
+      identifier.id === id ? { ...identifier, [field]: value } : identifier
+    ))
+  }
+
+  // Group management functions
+  const addOcrGroup = () => {
+    const newId = Math.max(...ocrGroups.map(g => g.id), 0) + 1
+    setOcrGroups(prev => [...prev, {
+      id: newId,
+      title: 'New Group',
+      identifiers: []
+    }])
+  }
+
+  const removeOcrGroup = (id) => {
+    setOcrGroups(prev => prev.filter(group => group.id !== id))
+    setCollapsedGroups(prev => {
+      const { [id]: removed, ...rest } = prev
+      return rest
+    })
+  }
+
+  const toggleGroup = (id) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }))
+  }
+
+  // Dynamic Extractor management functions
+  const addDynamicExtractor = () => {
+    const newId = Math.max(...dynamicExtractors.map(e => e.id), 0) + 1
+    setDynamicExtractors(prev => [...prev, {
+      id: newId,
+      anchor1: '',
+      anchor2: '',
+      pattern: '',
+      targetField: 'date'
+    }])
+  }
+
+  const removeDynamicExtractor = (id) => {
+    setDynamicExtractors(prev => prev.filter(extractor => extractor.id !== id))
+  }
+
+  const updateDynamicExtractor = (id, field, value) => {
+    setDynamicExtractors(prev => prev.map(extractor => 
+      extractor.id === id ? { ...extractor, [field]: value } : extractor
+    ))
   }
 
   // Mock OCR text for demonstration
@@ -193,7 +286,7 @@ scoring:
               <Eye size={14} />
               Test Rule
             </button>
-            <button className="flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
+            <button className="flex items-center gap-1 px-4 py-2 rounded-md text-sm font-medium" style={{backgroundColor: '#2563eb', color: '#fff'}}>
               <Save size={14} />
               Save Rule
             </button>
@@ -208,7 +301,7 @@ scoring:
           <div className="flex-shrink-0 rounded-t" style={{ backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px', borderRight: '3px solid var(--paperless-bg)'}}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold" style={{color: 'var(--paperless-text)'}}>📄 OCR Content</h3>
-              <button className="flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
+              <button className="flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#2563eb', color: '#fff'}}>
                 <FileText size={12} />
                 View PDF
               </button>
@@ -248,138 +341,217 @@ scoring:
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('ocrIdentifiers')}
               >
-                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>OCR Identifiers</h4>
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>OCR Identifiers ({totalIdentifiersAndGroups}/3-10)</h4>
                 {collapsedSections.ocrIdentifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.ocrIdentifiers && (
-                <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column', paddingTop: '10px'}}>
-                  {/* Title */}
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
-                    <input 
-                      type="text" 
-                      placeholder="Enter identifier title" 
-                      className="col-span-8 text-sm rounded px-3" 
-                      style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: 'var(--paperless-text)', 
-                        border: '1px solid var(--paperless-border)',
-                        height: '30px'
-                      }} 
-                    />
-                    <div className="col-span-1"></div>
-                  </div>
-
-                  {/* Pattern */}
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
-                    <input 
-                      type="text" 
-                      placeholder="Enter pattern" 
-                      className="col-span-6 text-sm rounded px-3" 
-                      style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: 'var(--paperless-text)', 
-                        border: '1px solid var(--paperless-border)',
-                        height: '30px'
-                      }} 
-                    />
-                    <button 
-                      className="col-span-2 text-sm px-3 py-2 rounded" 
-                      style={{backgroundColor: '#2563eb', color: '#fff', height: '30px'}}
-                    >
-                      Use Selected Text
-                    </button>
-                    <div className="col-span-1"></div>
-                  </div>
-
-                  {/* Between lines */}
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Between lines:</label>
-                    <div className="col-span-8 flex items-center gap-2">
-                      <input 
-                        type="number" 
-                        placeholder="0" 
-                        className="flex-1 text-sm rounded px-3" 
-                        style={{
-                          backgroundColor: 'var(--paperless-surface-light)', 
-                          color: 'var(--paperless-text)', 
-                          border: '1px solid var(--paperless-border)',
-                          height: '30px'
-                        }} 
-                      />
-                      <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>to</span>
-                      <input 
-                        type="number" 
-                        placeholder="100" 
-                        className="flex-1 text-sm rounded px-3" 
-                        style={{
-                          backgroundColor: 'var(--paperless-surface-light)', 
-                          color: 'var(--paperless-text)', 
-                          border: '1px solid var(--paperless-border)',
-                          height: '30px'
-                        }} 
-                      />
+                <div className="space-y-3" style={{paddingTop: '10px'}}>
+                  
+                  {/* Validation Message */}
+                  {!isValidIdentifierCount && (
+                    <div className="text-xs p-2 rounded" style={{
+                      backgroundColor: totalIdentifiersAndGroups < 3 ? '#fee2e2' : '#fef3c7',
+                      color: totalIdentifiersAndGroups < 3 ? '#dc2626' : '#d97706',
+                      border: '1px solid ' + (totalIdentifiersAndGroups < 3 ? '#fecaca' : '#fde68a')
+                    }}>
+                      {totalIdentifiersAndGroups < 3 ? 'Minimum 3 identifiers/groups required' : 'Maximum 10 identifiers/groups allowed'}
                     </div>
-                    <div className="col-span-1"></div>
-                  </div>
+                  )}
 
-                  {/* Logic */}
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
-                    <select 
-                      className="col-span-8 text-sm rounded px-3" 
+                  {/* Identifier List */}
+                  {ocrIdentifiers.map((identifier) => (
+                    <div key={identifier.id} className="border rounded p-3 space-y-2" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
+                        <button 
+                          onClick={() => removeOcrIdentifier(identifier.id)}
+                          className="text-red-500 hover:text-red-700"
+                          disabled={ocrIdentifiers.length <= 1}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
+                        <input 
+                          type="text" 
+                          value={identifier.title}
+                          onChange={(e) => updateOcrIdentifier(identifier.id, 'title', e.target.value)}
+                          placeholder="Enter title" 
+                          className="col-span-10 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
+                        <input 
+                          type="text" 
+                          value={identifier.pattern}
+                          onChange={(e) => updateOcrIdentifier(identifier.id, 'pattern', e.target.value)}
+                          placeholder="Enter pattern/regex" 
+                          className="col-span-7 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                        <button 
+                          className="col-span-3 text-xs px-2 py-1 rounded" 
+                          style={{backgroundColor: '#2563eb', color: '#fff', height: '24px'}}
+                          onClick={() => {
+                            if (selectedText) {
+                              updateOcrIdentifier(identifier.id, 'pattern', selectedText)
+                            }
+                          }}
+                        >
+                          Use Selected
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
+                        <input 
+                          type="number" 
+                          value={identifier.fromLine}
+                          onChange={(e) => updateOcrIdentifier(identifier.id, 'fromLine', e.target.value)}
+                          placeholder="0" 
+                          className="col-span-4 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                        <span className="col-span-1 text-xs text-center" style={{color: 'var(--paperless-text-secondary)'}}>to</span>
+                        <input 
+                          type="number" 
+                          value={identifier.toLine}
+                          onChange={(e) => updateOcrIdentifier(identifier.id, 'toLine', e.target.value)}
+                          placeholder="100" 
+                          className="col-span-4 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                        <div className="col-span-1"></div>
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
+                        <select 
+                          value={identifier.logic}
+                          onChange={(e) => updateOcrIdentifier(identifier.id, 'logic', e.target.value)}
+                          className="col-span-6 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }}
+                        >
+                          <option value="true">True</option>
+                          <option value="false">False</option>
+                          <option value="regex">Regex Match</option>
+                        </select>
+                        <div className="col-span-2 flex items-center gap-1">
+                          <input 
+                            type="checkbox" 
+                            checked={identifier.mandatory}
+                            onChange={(e) => updateOcrIdentifier(identifier.id, 'mandatory', e.target.checked)}
+                            className="w-3 h-3 rounded" 
+                            style={{accentColor: '#2563eb'}} 
+                          />
+                          <label className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Required</label>
+                        </div>
+                        <div className="col-span-2"></div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Groups List */}
+                  {ocrGroups.map((group) => (
+                    <div key={group.id} className="border rounded p-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => toggleGroup(group.id)}>
+                            {collapsedGroups[group.id] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                          </button>
+                          <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Group: {group.title}</span>
+                        </div>
+                        <button 
+                          onClick={() => removeOcrGroup(group.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      {!collapsedGroups[group.id] && (
+                        <div className="text-xs p-2 rounded" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)'}}>
+                          Group functionality (nested identifiers) coming soon...
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Add Buttons */}
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={addOcrIdentifier}
+                      disabled={totalIdentifiersAndGroups >= 10}
+                      className="flex items-center gap-1 px-3 py-2 text-sm rounded"
                       style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: 'var(--paperless-text)', 
-                        border: '1px solid var(--paperless-border)',
-                        height: '30px'
+                        backgroundColor: totalIdentifiersAndGroups >= 10 ? 'var(--paperless-surface-light)' : '#2563eb',
+                        color: totalIdentifiersAndGroups >= 10 ? 'var(--paperless-text-secondary)' : '#fff',
+                        opacity: totalIdentifiersAndGroups >= 10 ? 0.5 : 1
                       }}
                     >
-                      <option value="true">True</option>
-                      <option value="false">False</option>
-                    </select>
-                    <div className="col-span-1"></div>
+                      <Plus size={14} />
+                      Add Identifier
+                    </button>
+                    <button 
+                      onClick={addOcrGroup}
+                      disabled={totalIdentifiersAndGroups >= 10}
+                      className="flex items-center gap-1 px-3 py-2 text-sm rounded"
+                      style={{
+                        backgroundColor: totalIdentifiersAndGroups >= 10 ? 'var(--paperless-surface-light)' : 'var(--paperless-surface)',
+                        color: totalIdentifiersAndGroups >= 10 ? 'var(--paperless-text-secondary)' : 'var(--paperless-text)',
+                        border: '1px solid var(--paperless-border)',
+                        opacity: totalIdentifiersAndGroups >= 10 ? 0.5 : 1
+                      }}
+                    >
+                      <Plus size={14} />
+                      Add Group
+                    </button>
                   </div>
 
-                  {/* Mandatory */}
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <div className="col-span-3 flex items-center gap-2">
-                      <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Mandatory:</label>
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 rounded" 
-                        style={{accentColor: '#2563eb'}} 
-                      />
-                    </div>
-                    <div className="col-span-9"></div>
+                  {/* Threshold - moved inside OCR section */}
+                  <div className="border-t pt-3 mt-4" style={{borderColor: 'var(--paperless-border)'}}>
+                    <label className="block text-sm mb-2" style={{color: 'var(--paperless-text-secondary)'}}>
+                      Threshold – {threshold}% <span className="text-xs">(How many identifiers/groups must pass)</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="30"
+                      max="100"
+                      value={threshold}
+                      onChange={(e) => setThreshold(e.target.value)}
+                      className="w-full"
+                      style={{accentColor: '#2563eb'}}
+                    />
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Threshold */}
-            <div className="space-y-3">
-              <div 
-                className="flex items-center justify-between px-1 py-0 rounded cursor-pointer"
-                style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
-                onClick={() => toggleSection('threshold')}
-              >
-                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Threshold</h4>
-                {collapsedSections.threshold ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-              </div>
-              {!collapsedSections.threshold && (
-                <div style={{paddingTop: '10px'}}>
-                  <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={threshold}
-                    onChange={(e) => setThreshold(e.target.value)}
-                    className="w-full"
-                    style={{accentColor: '#2563eb'}}
-                  />
                 </div>
               )}
             </div>
@@ -392,13 +564,119 @@ scoring:
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('dynamicData')}
               >
-                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data Extractors ({dynamicExtractors.length})</h4>
                 {collapsedSections.dynamicData ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.dynamicData && (
-                <div style={{paddingTop: '10px'}}>
-                  <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
-                    Dynamic extractors (dates, amounts) coming soon...
+                <div className="space-y-3" style={{paddingTop: '10px'}}>
+                  
+                  {/* Extractor List */}
+                  {dynamicExtractors.map((extractor) => (
+                    <div key={extractor.id} className="border rounded p-3 space-y-2" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
+                        <button 
+                          onClick={() => removeDynamicExtractor(extractor.id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
+                        <input 
+                          type="text" 
+                          value={extractor.anchor1}
+                          onChange={(e) => updateDynamicExtractor(extractor.id, 'anchor1', e.target.value)}
+                          placeholder="Start text/regex" 
+                          className="col-span-10 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
+                        <input 
+                          type="text" 
+                          value={extractor.anchor2}
+                          onChange={(e) => updateDynamicExtractor(extractor.id, 'anchor2', e.target.value)}
+                          placeholder="End text/regex" 
+                          className="col-span-10 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
+                        <input 
+                          type="text" 
+                          value={extractor.pattern}
+                          onChange={(e) => updateDynamicExtractor(extractor.id, 'pattern', e.target.value)}
+                          placeholder="Value extraction regex" 
+                          className="col-span-10 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }} 
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-12 gap-2 items-center">
+                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Target:</label>
+                        <select 
+                          value={extractor.targetField}
+                          onChange={(e) => updateDynamicExtractor(extractor.id, 'targetField', e.target.value)}
+                          className="col-span-10 text-xs rounded px-2" 
+                          style={{
+                            backgroundColor: 'var(--paperless-surface)', 
+                            color: 'var(--paperless-text)', 
+                            border: '1px solid var(--paperless-border)',
+                            height: '24px'
+                          }}
+                        >
+                          <option value="date">Date</option>
+                          <option value="amount">Amount</option>
+                          <option value="custom_tag">Custom Tag</option>
+                          <option value="invoice_number">Invoice Number</option>
+                          <option value="account_number">Account Number</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* No extractors message */}
+                  {dynamicExtractors.length === 0 && (
+                    <div className="text-sm p-3 rounded text-center" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
+                      No extractors defined. Click "Add Extractor" to create your first dynamic data extractor.
+                    </div>
+                  )}
+
+                  {/* Add Extractor Button */}
+                  <div className="flex">
+                    <button 
+                      onClick={addDynamicExtractor}
+                      className="flex items-center gap-1 px-3 py-2 text-sm rounded"
+                      style={{
+                        backgroundColor: '#2563eb',
+                        color: '#fff'
+                      }}
+                    >
+                      <Plus size={14} />
+                      Add Extractor
+                    </button>
                   </div>
                 </div>
               )}
