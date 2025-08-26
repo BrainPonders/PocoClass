@@ -244,7 +244,7 @@ scoring:
             {/* OCR Identifiers */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-1 rounded cursor-pointer"
+                className="flex items-center justify-between px-1 py-0 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('ocrIdentifiers')}
               >
@@ -351,12 +351,6 @@ scoring:
                         className="w-4 h-4 rounded" 
                         style={{accentColor: '#2563eb'}} 
                       />
-                      <button 
-                        className="text-sm px-3 py-1 rounded ml-2" 
-                        style={{backgroundColor: '#2563eb', color: '#fff', height: '30px'}}
-                      >
-                        Add
-                      </button>
                     </div>
                     <div className="col-span-9"></div>
                   </div>
@@ -367,7 +361,7 @@ scoring:
             {/* Threshold */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-1 rounded cursor-pointer"
+                className="flex items-center justify-between px-1 py-0 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('threshold')}
               >
@@ -394,7 +388,7 @@ scoring:
             {/* Dynamic Data */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-1 rounded cursor-pointer"
+                className="flex items-center justify-between px-1 py-0 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('dynamicData')}
               >
@@ -414,7 +408,7 @@ scoring:
             {/* Paperless Classifiers */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-1 rounded cursor-pointer"
+                className="flex items-center justify-between px-1 py-0 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('paperlessClassifiers')}
               >
