@@ -360,7 +360,7 @@ scoring:
 
                   {/* Identifier List */}
                   {ocrIdentifiers.map((identifier) => (
-                    <div key={identifier.id} className="border rounded p-3 space-y-2" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                    <div key={identifier.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
                         <button 
@@ -372,7 +372,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                         <input 
                           type="text" 
@@ -389,7 +389,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
@@ -417,7 +417,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
                         <input 
                           type="number" 
@@ -449,7 +449,7 @@ scoring:
                         <div className="col-span-1"></div>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
                         <select 
                           value={identifier.logic}
@@ -483,7 +483,7 @@ scoring:
 
                   {/* Groups List */}
                   {ocrGroups.map((group) => (
-                    <div key={group.id} className="border rounded p-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                    <div key={group.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <button onClick={() => toggleGroup(group.id)}>
@@ -507,7 +507,7 @@ scoring:
                   ))}
 
                   {/* Add Buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-3" style={{marginTop: '20px'}}>
                     <button 
                       onClick={addOcrIdentifier}
                       disabled={totalIdentifiersAndGroups >= 10}
@@ -572,7 +572,7 @@ scoring:
                   
                   {/* Extractor List */}
                   {dynamicExtractors.map((extractor) => (
-                    <div key={extractor.id} className="border rounded p-3 space-y-2" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)'}}>
+                    <div key={extractor.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '16px'}}>
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
                         <button 
@@ -583,7 +583,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
                         <input 
                           type="text" 
@@ -600,7 +600,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
                         <input 
                           type="text" 
@@ -617,7 +617,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
@@ -634,7 +634,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-2 items-center">
+                      <div className="grid grid-cols-12 gap-3 items-center">
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Target:</label>
                         <select 
                           value={extractor.targetField}
