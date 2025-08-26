@@ -360,8 +360,8 @@ scoring:
 
                   {/* Identifier List */}
                   {ocrIdentifiers.map((identifier) => (
-                    <div key={identifier.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
-                      <div className="flex items-center justify-between">
+                    <div key={identifier.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
+                      <div className="flex items-center justify-between" style={{marginBottom: '12px'}}>
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
                         <button 
                           onClick={() => removeOcrIdentifier(identifier.id)}
@@ -372,7 +372,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                         <input 
                           type="text" 
@@ -389,7 +389,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
@@ -417,7 +417,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
                         <input 
                           type="number" 
@@ -572,8 +572,8 @@ scoring:
                   
                   {/* Extractor List */}
                   {dynamicExtractors.map((extractor) => (
-                    <div key={extractor.id} className="border rounded p-4 space-y-3" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
-                      <div className="flex items-center justify-between">
+                    <div key={extractor.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
+                      <div className="flex items-center justify-between" style={{marginBottom: '12px'}}>
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
                         <button 
                           onClick={() => removeDynamicExtractor(extractor.id)}
@@ -583,7 +583,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
                         <input 
                           type="text" 
@@ -600,7 +600,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
                         <input 
                           type="text" 
@@ -617,7 +617,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
