@@ -348,36 +348,23 @@ scoring:
                 {/* Date Created */}
                 <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
-                  <div className="col-span-8 flex gap-2">
-                    <input 
-                      type="date" 
-                      disabled={!classifierEnabled.dateCreated}
-                      className="flex-1 text-sm rounded px-3" 
-                      style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
-                        border: '1px solid var(--paperless-border)',
-                        opacity: classifierEnabled.dateCreated ? 1 : 0.5,
-                        height: '40px'
-                      }} 
-                    />
-                    <select 
-                      disabled={!classifierEnabled.dateCreated}
-                      className="flex-1 text-sm rounded px-3" 
-                      style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
-                        border: '1px solid var(--paperless-border)',
-                        opacity: classifierEnabled.dateCreated ? 1 : 0.5,
-                        height: '40px'
-                      }}
-                    >
-                      <option value="">Select dynamic data...</option>
-                      <option value="invoice_date">Invoice Date</option>
-                      <option value="statement_date">Statement Date</option>
-                      <option value="due_date">Due Date</option>
-                    </select>
-                  </div>
+                  <select 
+                    disabled={!classifierEnabled.dateCreated}
+                    className="col-span-8 text-sm rounded px-3" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.dateCreated ? 1 : 0.5,
+                      height: '40px'
+                    }}
+                  >
+                    <option value="">Select date option...</option>
+                    <option value="manual_date">Manual Date Entry</option>
+                    <option value="invoice_date">Dynamic: Invoice Date</option>
+                    <option value="statement_date">Dynamic: Statement Date</option>
+                    <option value="due_date">Dynamic: Due Date</option>
+                  </select>
                   <input 
                     type="checkbox" 
                     checked={classifierEnabled.dateCreated}
@@ -464,7 +451,7 @@ scoring:
                         <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
                       </>
                     ) : (
-                      <div className="text-xs text-gray-500 px-1 py-1">Select Tags</div>
+                      <div className="text-sm px-3 py-2 rounded" style={{color: 'var(--paperless-text-secondary)', backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', height: '40px', display: 'flex', alignItems: 'center'}}>Select Tags</div>
                     )}
                   </div>
                   <input 
