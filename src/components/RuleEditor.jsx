@@ -244,7 +244,7 @@ scoring:
             {/* OCR Identifiers */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                className="flex items-center justify-between p-2 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('ocrIdentifiers')}
               >
@@ -252,7 +252,7 @@ scoring:
                 {collapsedSections.ocrIdentifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.ocrIdentifiers && (
-                <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
+                <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column', paddingTop: '10px'}}>
                   {/* Title */}
                   <div className="grid grid-cols-12 gap-3 items-center">
                     <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
@@ -264,7 +264,7 @@ scoring:
                         backgroundColor: 'var(--paperless-surface-light)', 
                         color: 'var(--paperless-text)', 
                         border: '1px solid var(--paperless-border)',
-                        height: '40px'
+                        height: '30px'
                       }} 
                     />
                     <div className="col-span-1"></div>
@@ -281,7 +281,7 @@ scoring:
                         backgroundColor: 'var(--paperless-surface-light)', 
                         color: 'var(--paperless-text)', 
                         border: '1px solid var(--paperless-border)',
-                        height: '40px'
+                        height: '30px'
                       }} 
                     />
                     <button 
@@ -293,11 +293,10 @@ scoring:
                     <div className="col-span-1"></div>
                   </div>
 
-                  {/* Range */}
+                  {/* Between lines */}
                   <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Range</label>
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Between lines:</label>
                     <div className="col-span-8 flex items-center gap-2">
-                      <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>from</span>
                       <input 
                         type="number" 
                         placeholder="0" 
@@ -306,7 +305,7 @@ scoring:
                           backgroundColor: 'var(--paperless-surface-light)', 
                           color: 'var(--paperless-text)', 
                           border: '1px solid var(--paperless-border)',
-                          height: '40px'
+                          height: '30px'
                         }} 
                       />
                       <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>to</span>
@@ -318,7 +317,7 @@ scoring:
                           backgroundColor: 'var(--paperless-surface-light)', 
                           color: 'var(--paperless-text)', 
                           border: '1px solid var(--paperless-border)',
-                          height: '40px'
+                          height: '30px'
                         }} 
                       />
                     </div>
@@ -334,7 +333,7 @@ scoring:
                         backgroundColor: 'var(--paperless-surface-light)', 
                         color: 'var(--paperless-text)', 
                         border: '1px solid var(--paperless-border)',
-                        height: '40px'
+                        height: '30px'
                       }}
                     >
                       <option value="true">True</option>
@@ -345,13 +344,21 @@ scoring:
 
                   {/* Mandatory */}
                   <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Mandatory</label>
-                    <div className="col-span-8"></div>
-                    <input 
-                      type="checkbox" 
-                      className="col-span-1 w-4 h-4 rounded justify-self-center" 
-                      style={{accentColor: 'var(--paperless-accent)'}} 
-                    />
+                    <div className="col-span-3 flex items-center gap-2">
+                      <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Mandatory</label>
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 rounded" 
+                        style={{accentColor: 'var(--paperless-accent)'}} 
+                      />
+                      <button 
+                        className="text-sm px-3 py-1 rounded ml-2" 
+                        style={{backgroundColor: 'var(--paperless-accent)', color: '#000', height: '30px'}}
+                      >
+                        Add
+                      </button>
+                    </div>
+                    <div className="col-span-9"></div>
                   </div>
                 </div>
               )}
@@ -360,7 +367,7 @@ scoring:
             {/* Threshold */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                className="flex items-center justify-between p-2 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('threshold')}
               >
@@ -368,7 +375,7 @@ scoring:
                 {collapsedSections.threshold ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.threshold && (
-                <div>
+                <div style={{paddingTop: '10px'}}>
                   <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
                   <input
                     type="range"
@@ -386,7 +393,7 @@ scoring:
             {/* Dynamic Data */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                className="flex items-center justify-between p-2 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('dynamicData')}
               >
@@ -394,8 +401,10 @@ scoring:
                 {collapsedSections.dynamicData ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.dynamicData && (
-                <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
-                  Dynamic extractors (dates, amounts) coming soon...
+                <div style={{paddingTop: '10px'}}>
+                  <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
+                    Dynamic extractors (dates, amounts) coming soon...
+                  </div>
                 </div>
               )}
             </div>
@@ -403,7 +412,7 @@ scoring:
             {/* Paperless Classifiers */}
             <div className="space-y-3">
               <div 
-                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                className="flex items-center justify-between p-2 rounded cursor-pointer"
                 style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
                 onClick={() => toggleSection('paperlessClassifiers')}
               >
@@ -411,7 +420,7 @@ scoring:
                 {collapsedSections.paperlessClassifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.paperlessClassifiers && (
-              <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
+              <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column', paddingTop: '10px'}}>
                 {/* Title */}
                 <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
@@ -556,7 +565,7 @@ scoring:
                     style={{
                       backgroundColor: 'var(--paperless-surface-light)', 
                       border: '1px solid var(--paperless-border)', 
-                      minHeight: '40px',
+                      minHeight: '30px',
                       opacity: classifierEnabled.tags ? 1 : 0.5
                     }}
                   >
@@ -568,7 +577,7 @@ scoring:
                         <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
                       </>
                     ) : (
-                      <div className="text-sm px-3 py-2 rounded" style={{color: 'var(--paperless-text-secondary)', backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', height: '40px', display: 'flex', alignItems: 'center'}}>Select Tags</div>
+                      <div className="text-sm px-3 py-2 rounded" style={{color: 'var(--paperless-text-secondary)', backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', height: '30px', display: 'flex', alignItems: 'center'}}>Select Tags</div>
                     )}
                   </div>
                   <input 
