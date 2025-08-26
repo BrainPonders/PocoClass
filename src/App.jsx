@@ -156,12 +156,12 @@ function App() {
           <div style={{borderTop: '1px solid var(--paperless-border)', margin: '6px 0'}}></div>
 
           {/* Rules Section Header */}
-          <div className="px-3 py-1.5">
+          <div className="py-1.5" style={{paddingLeft: '29px', paddingRight: '12px'}}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase'}}>
                 AVAILABLE RULES
               </span>
-              <Plus size={10} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)'}} />
+              <Plus size={10} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)', marginRight: '10px'}} />
             </div>
           </div>
 
@@ -186,7 +186,7 @@ function App() {
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium truncate" style={{fontSize: '12px'}}>{rule.name}</span>
                     {rule.enabled && (
-                      <span className="text-xs" style={{color: 'var(--paperless-accent)', fontSize: '11px'}}>✓</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-accent)', fontSize: '11px', marginRight: '10px'}}>✓</span>
                     )}
                   </div>
                 </div>
