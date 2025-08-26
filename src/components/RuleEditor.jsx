@@ -264,64 +264,111 @@ scoring:
             <div className="space-y-3">
               <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
               <div className="space-y-3">
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
-                  <input type="text" placeholder="Enter title pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                {/* Title */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
+                    <input type="text" placeholder="Enter title pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                  </div>
                 </div>
                 
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Date Created:</label>
-                  <input type="text" placeholder="Date pattern or extraction rule" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                {/* Archive Serial Number */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number</label>
+                    <input type="number" placeholder="ASN" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                  </div>
                 </div>
                 
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
-                  <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                    <option value="">Select correspondent...</option>
-                    <option value="bank">Bank of America</option>
-                    <option value="utility">Electric Company</option>
-                    <option value="insurance">Insurance Co.</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Type:</label>
-                  <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                    <option value="">Select document type...</option>
-                    <option value="statement">Statement</option>
-                    <option value="invoice">Invoice</option>
-                    <option value="receipt">Receipt</option>
-                    <option value="contract">Contract</option>
-                    <option value="report">Report</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
-                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
-                </div>
-                
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial Number (ASN):</label>
-                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
-                </div>
-                
-                <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Custom Fields:</label>
-                  <div className="space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <input type="text" placeholder="Field name" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
-                      <input type="text" placeholder="Field value" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                {/* Date Created */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
+                    <div className="relative">
+                      <input type="date" className="w-full text-xs rounded px-2 py-1 pr-8" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                      <button className="absolute right-1 top-1 text-xs px-1" style={{color: 'var(--paperless-accent)'}} title="Link to dynamic extractor">🔗</button>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <select className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                        <option value="">POCO Score</option>
-                        <option value="category">Document Category</option>
-                        <option value="processing">Processing Date</option>
-                        <option value="source">Source</option>
-                      </select>
-                      <input type="text" placeholder="Auto-calculated" className="text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                    <div className="text-xs mt-1" style={{color: 'var(--paperless-text-secondary)'}}>Suggestions: 21/02/1979, 01/01/2006</div>
+                  </div>
+                </div>
+                
+                {/* Correspondent - Cannot be disabled */}
+                <div className="flex items-center gap-2">
+                  <div className="w-4"></div>
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent</label>
+                    <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                      <option value="">Select correspondent...</option>
+                      <option value="bank">Bank of America</option>
+                      <option value="utility">Electric Company</option>
+                      <option value="insurance">Insurance Co.</option>
+                    </select>
+                  </div>
+                </div>
+                
+                {/* Document Type - Cannot be disabled */}
+                <div className="flex items-center gap-2">
+                  <div className="w-4"></div>
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document type</label>
+                    <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                      <option value="">Select document type...</option>
+                      <option value="statement">Bank Statement</option>
+                      <option value="invoice">Invoice</option>
+                      <option value="receipt">Receipt</option>
+                      <option value="contract">Contract</option>
+                      <option value="report">Report</option>
+                    </select>
+                  </div>
+                </div>
+                
+                {/* Storage Path - Cannot be enabled (greyed out) */}
+                <div className="flex items-center gap-2 opacity-40">
+                  <input type="checkbox" disabled className="rounded" />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Storage path</label>
+                    <input type="text" placeholder="1. Rabobank Check Account" disabled className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} />
+                  </div>
+                </div>
+                
+                {/* Tags */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags</label>
+                    <div className="flex flex-wrap gap-1 p-2 rounded border" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', minHeight: '32px'}}>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#dc2626', color: 'white'}}>NEW <button className="text-white hover:text-gray-200">×</button></span>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#059669', color: 'white'}}>Check Account <button className="text-white hover:text-gray-200">×</button></span>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#7c2d12', color: 'white'}}>Clothing <button className="text-white hover:text-gray-200">×</button></span>
+                      <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
                     </div>
+                  </div>
+                </div>
+                
+                {/* Document Category */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Category</label>
+                    <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                      <option value="">Select category...</option>
+                      <option value="financial">Financial</option>
+                      <option value="personal">Personal</option>
+                      <option value="business">Business</option>
+                      <option value="legal">Legal</option>
+                    </select>
+                  </div>
+                </div>
+                
+                {/* POCO Score - Cannot be enabled (greyed out) */}
+                <div className="flex items-center gap-2 opacity-40">
+                  <input type="checkbox" disabled className="rounded" />
+                  <div className="flex-1">
+                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score</label>
+                    <input type="number" placeholder="0" min="0" max="100" disabled className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} />
                   </div>
                 </div>
               </div>
