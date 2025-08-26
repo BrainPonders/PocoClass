@@ -352,7 +352,8 @@ scoring:
                     <div className="text-xs p-2 rounded" style={{
                       backgroundColor: totalIdentifiersAndGroups < 3 ? '#fee2e2' : '#fef3c7',
                       color: totalIdentifiersAndGroups < 3 ? '#dc2626' : '#d97706',
-                      border: '1px solid ' + (totalIdentifiersAndGroups < 3 ? '#fecaca' : '#fde68a')
+                      border: '1px solid ' + (totalIdentifiersAndGroups < 3 ? '#fecaca' : '#fde68a'),
+                      marginBottom: '16px'
                     }}>
                       {totalIdentifiersAndGroups < 3 ? 'Minimum 3 identifiers/groups required' : 'Maximum 10 identifiers/groups allowed'}
                     </div>
