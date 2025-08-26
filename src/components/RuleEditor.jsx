@@ -7,6 +7,29 @@ const RuleEditor = ({ document, rule, onBack }) => {
   const [threshold, setThreshold] = useState(rule?.threshold || 70)
   const [identifiers, setIdentifiers] = useState(rule?.identifiers || [])
   const [selectedText, setSelectedText] = useState('')
+  
+  // Classifier field states
+  const [classifierEnabled, setClassifierEnabled] = useState({
+    title: false,
+    archiveSerial: false,
+    dateCreated: false,
+    correspondent: true, // Always enabled
+    documentType: true, // Always enabled
+    storagePath: false, // Cannot be enabled
+    tags: false,
+    documentCategory: false,
+    pocoScore: false // Cannot be enabled
+  })
+  
+  const toggleClassifier = (field) => {
+    if (field === 'correspondent' || field === 'documentType' || field === 'storagePath' || field === 'pocoScore') {
+      return // These fields cannot be toggled
+    }
+    setClassifierEnabled(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
+  }
 
   // Mock OCR text for demonstration
   const mockOcrText = document ? `
@@ -267,47 +290,116 @@ scoring:
                 {/* Title */}
                 <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                    <input 
+                      type="checkbox" 
+                      checked={classifierEnabled.title}
+                      onChange={() => toggleClassifier('title')}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
                     <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
                   </div>
-                  <input type="text" placeholder="Enter title pattern" className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                  <input 
+                    type="text" 
+                    placeholder="Enter title pattern" 
+                    disabled={!classifierEnabled.title}
+                    className="w-full text-sm rounded px-3 py-2" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.title ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.title ? 1 : 0.5
+                    }} 
+                  />
                 </div>
                 
                 {/* Archive Serial Number */}
                 <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                    <input 
+                      type="checkbox" 
+                      checked={classifierEnabled.archiveSerial}
+                      onChange={() => toggleClassifier('archiveSerial')}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
                     <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number</label>
                   </div>
-                  <input type="number" placeholder="123" className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                  <input 
+                    type="number" 
+                    placeholder="123" 
+                    disabled={!classifierEnabled.archiveSerial}
+                    className="w-full text-sm rounded px-3 py-2" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.archiveSerial ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.archiveSerial ? 1 : 0.5
+                    }} 
+                  />
                 </div>
                 
                 {/* Date Created */}
                 <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                    <input 
+                      type="checkbox" 
+                      checked={classifierEnabled.dateCreated}
+                      onChange={() => toggleClassifier('dateCreated')}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
                     <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
                   </div>
-                  <input type="date" placeholder="dd/mm/yyyy" className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
+                  <input 
+                    type="date" 
+                    disabled={!classifierEnabled.dateCreated}
+                    className="w-full text-sm rounded px-3 py-2" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.dateCreated ? 1 : 0.5
+                    }} 
+                  />
                   <div className="text-xs mt-1" style={{color: 'var(--paperless-text-secondary)'}}>Suggestions: 21/02/1979, 01/01/2006</div>
                 </div>
                 
-                {/* Correspondent - Cannot be disabled */}
+                {/* Correspondent - Always enabled (mandatory) */}
                 <div className="mb-2">
-                  <label className="text-sm block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent</label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <input 
+                      type="checkbox" 
+                      checked={true}
+                      disabled={true}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
+                    <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent</label>
+                  </div>
                   <select className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                    <option value="">Electric Company</option>
+                    <option value="">Select correspondent...</option>
                     <option value="bank">Bank of America</option>
                     <option value="utility">Electric Company</option>
                     <option value="insurance">Insurance Co.</option>
+                    <option value="examplebank">ExampleBank</option>
                   </select>
                 </div>
                 
-                {/* Document Type - Cannot be disabled */}
+                {/* Document Type - Always enabled (mandatory) */}
                 <div className="mb-2">
-                  <label className="text-sm block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document type</label>
+                  <div className="flex items-center gap-2 mb-1">
+                    <input 
+                      type="checkbox" 
+                      checked={true}
+                      disabled={true}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
+                    <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Document type</label>
+                  </div>
                   <select className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                    <option value="">Invoice</option>
+                    <option value="">Select document type...</option>
                     <option value="statement">Bank Statement</option>
                     <option value="invoice">Invoice</option>
                     <option value="receipt">Receipt</option>
@@ -316,37 +408,83 @@ scoring:
                   </select>
                 </div>
                 
-                {/* Storage Path - Cannot be enabled (greyed out) */}
-                <div className="mb-2 opacity-50">
+                {/* Storage Path - Cannot be enabled (always greyed out) */}
+                <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" disabled className="w-4 h-4 rounded" />
-                    <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Storage path</label>
+                    <input 
+                      type="checkbox" 
+                      checked={false}
+                      disabled={true}
+                      className="w-4 h-4 rounded opacity-50" 
+                    />
+                    <label className="text-sm opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path</label>
                   </div>
-                  <input type="text" value="1. ExampleBank Check Account" disabled className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} />
+                  <input 
+                    type="text" 
+                    value="1. ExampleBank Check Account" 
+                    disabled 
+                    className="w-full text-sm rounded px-3 py-2 opacity-50" 
+                    style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} 
+                  />
                 </div>
                 
                 {/* Tags */}
                 <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                    <input 
+                      type="checkbox" 
+                      checked={classifierEnabled.tags}
+                      onChange={() => toggleClassifier('tags')}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
                     <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Tags</label>
                   </div>
-                  <div className="flex flex-wrap gap-1 p-2 rounded border" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', minHeight: '35px'}}>
-                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#dc2626', color: 'white'}}>NEW <button className="text-white hover:text-gray-200">×</button></span>
-                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#059669', color: 'white'}}>Check Account <button className="text-white hover:text-gray-200">×</button></span>
-                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#7c2d12', color: 'white'}}>Clothing <button className="text-white hover:text-gray-200">×</button></span>
-                    <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
+                  <div 
+                    className="flex flex-wrap gap-1 p-2 rounded border" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      border: '1px solid var(--paperless-border)', 
+                      minHeight: '35px',
+                      opacity: classifierEnabled.tags ? 1 : 0.5
+                    }}
+                  >
+                    {classifierEnabled.tags ? (
+                      <>
+                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#dc2626', color: 'white'}}>NEW <button className="text-white hover:text-gray-200">×</button></span>
+                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#059669', color: 'white'}}>Check Account <button className="text-white hover:text-gray-200">×</button></span>
+                        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded" style={{backgroundColor: '#7c2d12', color: 'white'}}>Clothing <button className="text-white hover:text-gray-200">×</button></span>
+                        <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
+                      </>
+                    ) : (
+                      <div className="text-xs text-gray-500 px-1 py-1">Tags disabled</div>
+                    )}
                   </div>
                 </div>
                 
                 {/* Document Category */}
                 <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" defaultChecked className="w-4 h-4 rounded" style={{accentColor: 'var(--paperless-accent)'}} />
+                    <input 
+                      type="checkbox" 
+                      checked={classifierEnabled.documentCategory}
+                      onChange={() => toggleClassifier('documentCategory')}
+                      className="w-4 h-4 rounded" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
                     <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Document Category</label>
                   </div>
-                  <select className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
-                    <option value="">Personal</option>
+                  <select 
+                    disabled={!classifierEnabled.documentCategory}
+                    className="w-full text-sm rounded px-3 py-2" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.documentCategory ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.documentCategory ? 1 : 0.5
+                    }}
+                  >
+                    <option value="">Select category...</option>
                     <option value="financial">Financial</option>
                     <option value="personal">Personal</option>
                     <option value="business">Business</option>
@@ -354,13 +492,26 @@ scoring:
                   </select>
                 </div>
                 
-                {/* POCO Score - Cannot be enabled (greyed out) */}
-                <div className="mb-2 opacity-50">
+                {/* POCO Score - Cannot be enabled (always greyed out) */}
+                <div className="mb-2">
                   <div className="flex items-center gap-2 mb-1">
-                    <input type="checkbox" disabled className="w-4 h-4 rounded" />
-                    <label className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score</label>
+                    <input 
+                      type="checkbox" 
+                      checked={false}
+                      disabled={true}
+                      className="w-4 h-4 rounded opacity-50" 
+                    />
+                    <label className="text-sm opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score</label>
                   </div>
-                  <input type="number" value="0" min="0" max="100" disabled className="w-full text-sm rounded px-3 py-2" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} />
+                  <input 
+                    type="number" 
+                    value="0" 
+                    min="0" 
+                    max="100" 
+                    disabled 
+                    className="w-full text-sm rounded px-3 py-2 opacity-50" 
+                    style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)'}} 
+                  />
                 </div>
               </div>
             </div>
