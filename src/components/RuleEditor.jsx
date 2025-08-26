@@ -506,8 +506,24 @@ scoring:
                     </div>
                   ))}
 
-                  {/* Add Buttons */}
-                  <div className="flex gap-3" style={{marginTop: '20px'}}>
+                  {/* Threshold - moved inside OCR section */}
+                  <div className="border-t pt-3 mt-4" style={{borderColor: 'var(--paperless-border)'}}>
+                    <label className="block text-sm mb-2" style={{color: 'var(--paperless-text-secondary)'}}>
+                      Threshold – {threshold}% <span className="text-xs">(How many identifiers/groups must pass)</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="30"
+                      max="100"
+                      value={threshold}
+                      onChange={(e) => setThreshold(e.target.value)}
+                      className="w-full"
+                      style={{accentColor: '#2563eb'}}
+                    />
+                  </div>
+
+                  {/* Add Buttons - moved below threshold */}
+                  <div className="flex gap-4" style={{marginTop: '20px'}}>
                     <button 
                       onClick={addOcrIdentifier}
                       disabled={totalIdentifiersAndGroups >= 10}
@@ -535,22 +551,6 @@ scoring:
                       <Plus size={14} />
                       Add Group
                     </button>
-                  </div>
-
-                  {/* Threshold - moved inside OCR section */}
-                  <div className="border-t pt-3 mt-4" style={{borderColor: 'var(--paperless-border)'}}>
-                    <label className="block text-sm mb-2" style={{color: 'var(--paperless-text-secondary)'}}>
-                      Threshold – {threshold}% <span className="text-xs">(How many identifiers/groups must pass)</span>
-                    </label>
-                    <input
-                      type="range"
-                      min="30"
-                      max="100"
-                      value={threshold}
-                      onChange={(e) => setThreshold(e.target.value)}
-                      className="w-full"
-                      style={{accentColor: '#2563eb'}}
-                    />
                   </div>
                 </div>
               )}
