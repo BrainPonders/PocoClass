@@ -697,10 +697,10 @@ scoring:
                 {collapsedSections.paperlessClassifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
               {!collapsedSections.paperlessClassifiers && (
-              <div className="space-y-3" style={{paddingTop: '10px'}}>
+              <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginTop: '10px', padding: '20px'}}>
+                <div className="space-y-3">
                 {/* Title */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                   <input 
                     type="text" 
@@ -722,12 +722,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* Archive Serial Number */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number:</label>
                   <input 
                     type="number" 
@@ -749,12 +747,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* Date Created */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created:</label>
                   <select 
                     disabled={!classifierEnabled.dateCreated}
@@ -780,12 +776,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* Correspondent - Always enabled (mandatory) */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
                   <select className="col-span-8 text-sm rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select correspondent...</option>
@@ -801,12 +795,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* Document Type - Always enabled (mandatory) */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document type:</label>
                   <select className="col-span-8 text-sm rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select document type...</option>
@@ -827,8 +819,7 @@ scoring:
                 </div>
                 
                 {/* Storage Path - Cannot be enabled (always greyed out) */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path:</label>
                   <input 
                     type="text" 
@@ -843,12 +834,10 @@ scoring:
                     disabled={true}
                     className="col-span-1 w-4 h-4 rounded justify-self-center opacity-50" 
                   />
-                  </div>
                 </div>
                 
                 {/* Tags */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
                   <div 
                     className="col-span-8 flex flex-wrap gap-1 p-2 rounded border" 
@@ -877,12 +866,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* Document Category */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document Category:</label>
                   <select 
                     disabled={!classifierEnabled.documentCategory}
@@ -908,12 +895,10 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center" 
                     style={{accentColor: '#2563eb'}} 
                   />
-                  </div>
                 </div>
                 
                 {/* POCO Score - Cannot be enabled (always greyed out) */}
-                <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
-                  <div className="grid grid-cols-12 gap-3 items-center">
+                <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score:</label>
                   <input 
                     type="number" 
@@ -930,7 +915,6 @@ scoring:
                     disabled={true}
                     className="col-span-1 w-4 h-4 rounded justify-self-center opacity-50" 
                   />
-                  </div>
                 </div>
               </div>
               )}
