@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { FileText, Edit3, Play, Settings, Filter, Plus, Trash2, Eye, Save, ScrollText, HelpCircle, Cog } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { FileText, Edit3, Play, Settings, Filter, Plus, Trash2, Eye, Save, ScrollText, HelpCircle, Cog, ChevronDown, User, LogOut, FileQuestion } from 'lucide-react'
 import DocumentBrowser from './components/DocumentBrowser'
 import RuleEditor from './components/RuleEditor'
 import DryRunResults from './components/DryRunResults'
@@ -9,6 +9,22 @@ function App() {
   const [selectedRule, setSelectedRule] = useState(null)
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [selectedDocuments, setSelectedDocuments] = useState([])
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const userMenuRef = useRef(null)
+  
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleNewRule = (document) => {
     setSelectedDocument(document)
@@ -65,14 +81,45 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
-      {/* Top Header - Paperless Style */}
-      <div className="flex items-center justify-between px-4 py-3" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)', height: '60px'}}>
+      {/* Top Header - Custom Blue Theme */}
+      <div className="flex items-center justify-between px-4 py-3" style={{backgroundColor: '#2563eb', borderBottom: '1px solid var(--paperless-border)', height: '60px'}}>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded" style={{backgroundColor: 'var(--paperless-accent)'}}></div>
-          <span className="font-semibold text-base" style={{color: 'var(--paperless-text)'}}>DocumentAI</span>
+          <div className="w-6 h-6 rounded" style={{backgroundColor: '#3b82f6'}}></div>
+          <span className="font-semibold text-base text-white">DocumentAI</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Robbert Jan</span>
+        <div className="flex items-center" style={{marginRight: '20px'}}>
+          <div className="relative" ref={userMenuRef}>
+            <button 
+              className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+            >
+              <User size={16} className="text-white" />
+              <span className="text-sm text-white">Robbert Jan</span>
+              <ChevronDown size={14} className="text-white" />
+            </button>
+            {showUserMenu && (
+              <div className="absolute top-full right-0 mt-1 w-48 rounded shadow-lg border z-50" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <User size={16} />
+                  My Profile
+                </button>
+                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <Cog size={16} />
+                  Settings
+                </button>
+                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '4px 0'}}></div>
+                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <FileQuestion size={16} />
+                  Documentation
+                </button>
+                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '4px 0'}}></div>
+                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -167,26 +214,6 @@ function App() {
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Content Header */}
-          <div className="px-4 py-3 flex items-center justify-between" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
-            <div className="flex items-center gap-4">
-              <h1 className="text-lg font-semibold" style={{color: 'var(--paperless-text)'}}>
-                {activeTab === 'documents' && 'Dashboard'}
-                {activeTab === 'rule-editor' && 'Rule Editor'}
-                {activeTab === 'dry-run' && 'Test Results'}
-              </h1>
-              {(selectedDocument || selectedRule) && activeTab === 'rule-editor' && (
-                <span className="text-xs px-2 py-1 rounded" style={{backgroundColor: 'var(--paperless-blue)', color: 'white'}}>
-                  {selectedRule ? selectedRule.name : 'New Rule'}
-                </span>
-              )}
-              {selectedDocuments.length > 0 && activeTab === 'dry-run' && (
-                <span className="text-xs px-2 py-1 rounded" style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}>
-                  {selectedDocuments.length} documents
-                </span>
-              )}
-            </div>
-          </div>
 
           {/* Tab Content */}
           <div className="flex-1 overflow-hidden">
