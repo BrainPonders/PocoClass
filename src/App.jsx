@@ -166,7 +166,7 @@ function App() {
           </div>
 
           {/* Rules List */}
-          <div className="flex-1 overflow-y-auto scrollbar-thin">
+          <div className="flex-1 overflow-y-auto scrollbar-thin" style={{marginTop: '5px'}}>
             <div style={{paddingLeft: '12px', paddingRight: '4px'}}>
               {mockRules.map((rule) => (
                 <div
