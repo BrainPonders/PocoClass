@@ -146,7 +146,7 @@ scoring:
           <div className="flex items-center gap-4">
             <div>
               <h2 className="text-lg font-semibold" style={{color: 'var(--paperless-text)', marginLeft: '20px'}}>
-                Rules Editor
+                Rule Editor
               </h2>
             </div>
           </div>
@@ -164,7 +164,7 @@ scoring:
       </div>
 
       {/* Main Content - 3 Panes with spacing */}
-      <div className="flex flex-1 overflow-hidden gap-0 p-4">
+      <div className="flex flex-1 overflow-hidden gap-0">
         {/* Left Pane - OCR Text */}
         <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)', margin: '5px'}}>
           <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
