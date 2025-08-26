@@ -106,11 +106,6 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
 
   return (
     <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
-      {/* Welcome Message */}
-      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
-        <p className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>Hello Robbert Jan, welcome to DocumentAI</p>
-      </div>
-
       {/* Filter Section */}
       <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
