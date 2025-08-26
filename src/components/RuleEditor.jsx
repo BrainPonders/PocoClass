@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ArrowLeft, Save, Eye, FileText, Code, Plus, Trash2, Settings, Edit } from 'lucide-react'
+import { ArrowLeft, Save, Eye, FileText, Code, Plus, Trash2, Settings, Edit, ChevronDown, ChevronRight } from 'lucide-react'
 
 const RuleEditor = ({ document, rule, onBack }) => {
   const [showRawYaml, setShowRawYaml] = useState(false)
@@ -28,6 +28,21 @@ const RuleEditor = ({ document, rule, onBack }) => {
     setClassifierEnabled(prev => ({
       ...prev,
       [field]: !prev[field]
+    }))
+  }
+
+  // Collapsible section states
+  const [collapsedSections, setCollapsedSections] = useState({
+    ocrIdentifiers: false,
+    threshold: false,
+    dynamicData: false,
+    paperlessClassifiers: false
+  })
+
+  const toggleSection = (section) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
     }))
   }
 
@@ -228,72 +243,174 @@ scoring:
             
             {/* OCR Identifiers */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>OCR Identifiers</h4>
-                <button 
-                  className="text-xs px-2 py-1 rounded"
-                  style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
-                >
-                  + Add
-                </button>
-              </div>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {identifiers.map((identifier, index) => (
-                  <div key={identifier.id} className="p-2 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', }}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>{identifier.name}</span>
-                      <button 
-                        onClick={() => setIdentifiers(identifiers.filter(id => id.id !== identifier.id))}
-                        className="text-xs p-1"
-                        style={{color: 'var(--paperless-red)'}}
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                    <div className="text-xs mt-1" style={{color: 'var(--paperless-text-secondary)'}}>\"{identifier.pattern}\"</div>
-                    <div className="text-xs mt-1">
-                      <span className={`px-1.5 py-0.5 rounded text-xs ${identifier.mandatory ? 'bg-red-600 text-white' : 'bg-gray-600 text-white'}`}>
-                        {identifier.mandatory ? 'Mandatory' : 'Optional'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button 
-                className="text-sm px-3 py-2 rounded w-full mt-3"
-                style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+              <div 
+                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
+                onClick={() => toggleSection('ocrIdentifiers')}
               >
-                + Add OCR Identifier Group
-              </button>
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>OCR Identifiers</h4>
+                {collapsedSections.ocrIdentifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+              </div>
+              {!collapsedSections.ocrIdentifiers && (
+                <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
+                  {/* Title */}
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter identifier title" 
+                      className="col-span-8 text-sm rounded px-3" 
+                      style={{
+                        backgroundColor: 'var(--paperless-surface-light)', 
+                        color: 'var(--paperless-text)', 
+                        border: '1px solid var(--paperless-border)',
+                        height: '40px'
+                      }} 
+                    />
+                    <div className="col-span-1"></div>
+                  </div>
+
+                  {/* Pattern */}
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Pattern</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter pattern" 
+                      className="col-span-6 text-sm rounded px-3" 
+                      style={{
+                        backgroundColor: 'var(--paperless-surface-light)', 
+                        color: 'var(--paperless-text)', 
+                        border: '1px solid var(--paperless-border)',
+                        height: '40px'
+                      }} 
+                    />
+                    <button 
+                      className="col-span-2 text-sm px-3 py-2 rounded" 
+                      style={{backgroundColor: 'var(--paperless-accent)', color: '#000', height: '40px'}}
+                    >
+                      Use Selected Text
+                    </button>
+                    <div className="col-span-1"></div>
+                  </div>
+
+                  {/* Range */}
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Range</label>
+                    <div className="col-span-8 flex items-center gap-2">
+                      <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>from</span>
+                      <input 
+                        type="number" 
+                        placeholder="0" 
+                        className="flex-1 text-sm rounded px-3" 
+                        style={{
+                          backgroundColor: 'var(--paperless-surface-light)', 
+                          color: 'var(--paperless-text)', 
+                          border: '1px solid var(--paperless-border)',
+                          height: '40px'
+                        }} 
+                      />
+                      <span className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>to</span>
+                      <input 
+                        type="number" 
+                        placeholder="100" 
+                        className="flex-1 text-sm rounded px-3" 
+                        style={{
+                          backgroundColor: 'var(--paperless-surface-light)', 
+                          color: 'var(--paperless-text)', 
+                          border: '1px solid var(--paperless-border)',
+                          height: '40px'
+                        }} 
+                      />
+                    </div>
+                    <div className="col-span-1"></div>
+                  </div>
+
+                  {/* Logic */}
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Logic</label>
+                    <select 
+                      className="col-span-8 text-sm rounded px-3" 
+                      style={{
+                        backgroundColor: 'var(--paperless-surface-light)', 
+                        color: 'var(--paperless-text)', 
+                        border: '1px solid var(--paperless-border)',
+                        height: '40px'
+                      }}
+                    >
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                    <div className="col-span-1"></div>
+                  </div>
+
+                  {/* Mandatory */}
+                  <div className="grid grid-cols-12 gap-3 items-center">
+                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Mandatory</label>
+                    <div className="col-span-8"></div>
+                    <input 
+                      type="checkbox" 
+                      className="col-span-1 w-4 h-4 rounded justify-self-center" 
+                      style={{accentColor: 'var(--paperless-accent)'}} 
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Threshold */}
             <div className="space-y-3">
-              <div>
-                <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={threshold}
-                  onChange={(e) => setThreshold(e.target.value)}
-                  className="w-full"
-                  style={{accentColor: 'var(--paperless-accent)'}}
-                />
+              <div 
+                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
+                onClick={() => toggleSection('threshold')}
+              >
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Threshold</h4>
+                {collapsedSections.threshold ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
+              {!collapsedSections.threshold && (
+                <div>
+                  <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={threshold}
+                    onChange={(e) => setThreshold(e.target.value)}
+                    className="w-full"
+                    style={{accentColor: 'var(--paperless-accent)'}}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Dynamic Data */}
             <div className="space-y-3">
-              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
-              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
-                Dynamic extractors (dates, amounts) coming soon...
+              <div 
+                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
+                onClick={() => toggleSection('dynamicData')}
+              >
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
+                {collapsedSections.dynamicData ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
               </div>
+              {!collapsedSections.dynamicData && (
+                <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
+                  Dynamic extractors (dates, amounts) coming soon...
+                </div>
+              )}
             </div>
 
             {/* Paperless Classifiers */}
             <div className="space-y-3">
-              <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
+              <div 
+                className="flex items-center justify-between p-3 rounded cursor-pointer"
+                style={{backgroundColor: 'rgba(37, 99, 235, 0.05)', border: '1px solid rgba(37, 99, 235, 0.1)'}}
+                onClick={() => toggleSection('paperlessClassifiers')}
+              >
+                <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
+                {collapsedSections.paperlessClassifiers ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+              </div>
+              {!collapsedSections.paperlessClassifiers && (
               <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
                 {/* Title */}
                 <div className="grid grid-cols-12 gap-3 items-center">
@@ -512,6 +629,7 @@ scoring:
                   />
                 </div>
               </div>
+              )}
             </div>
           </div>
         </div>
