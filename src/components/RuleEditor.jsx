@@ -286,7 +286,7 @@ scoring:
             {/* Paperless Classifiers */}
             <div className="space-y-3">
               <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
-              <div className="space-y-2.5">
+              <div className="space-y-2.5" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
                 {/* Title */}
                 <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title</label>
@@ -338,30 +338,27 @@ scoring:
                 </div>
                 
                 {/* Date Created */}
-                <div>
-                  <div className="grid grid-cols-12 gap-3 items-center">
-                    <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
-                    <input 
-                      type="date" 
-                      disabled={!classifierEnabled.dateCreated}
-                      className="col-span-8 text-sm rounded px-3" 
-                      style={{
-                        backgroundColor: 'var(--paperless-surface-light)', 
-                        color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
-                        border: '1px solid var(--paperless-border)',
-                        opacity: classifierEnabled.dateCreated ? 1 : 0.5,
-                        height: '40px'
-                      }} 
-                    />
-                    <input 
-                      type="checkbox" 
-                      checked={classifierEnabled.dateCreated}
-                      onChange={() => toggleClassifier('dateCreated')}
-                      className="col-span-1 w-4 h-4 rounded justify-self-center" 
-                      style={{accentColor: 'var(--paperless-accent)'}} 
-                    />
-                  </div>
-                  <div className="text-xs mt-1 ml-0" style={{color: 'var(--paperless-text-secondary)', marginLeft: '25%'}}>Suggestions: 21/02/1979, 01/01/2006</div>
+                <div className="grid grid-cols-12 gap-3 items-center">
+                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
+                  <input 
+                    type="date" 
+                    disabled={!classifierEnabled.dateCreated}
+                    className="col-span-8 text-sm rounded px-3" 
+                    style={{
+                      backgroundColor: 'var(--paperless-surface-light)', 
+                      color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                      border: '1px solid var(--paperless-border)',
+                      opacity: classifierEnabled.dateCreated ? 1 : 0.5,
+                      height: '40px'
+                    }} 
+                  />
+                  <input 
+                    type="checkbox" 
+                    checked={classifierEnabled.dateCreated}
+                    onChange={() => toggleClassifier('dateCreated')}
+                    className="col-span-1 w-4 h-4 rounded justify-self-center" 
+                    style={{accentColor: 'var(--paperless-accent)'}} 
+                  />
                 </div>
                 
                 {/* Correspondent - Always enabled (mandatory) */}
