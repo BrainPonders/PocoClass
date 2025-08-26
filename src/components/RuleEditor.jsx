@@ -372,7 +372,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                         <input 
                           type="text" 
@@ -389,7 +389,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
@@ -417,7 +417,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
                         <input 
                           type="number" 
@@ -449,7 +449,7 @@ scoring:
                         <div className="col-span-1"></div>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
                         <select 
                           value={identifier.logic}
@@ -583,7 +583,7 @@ scoring:
                         </button>
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
                         <input 
                           type="text" 
@@ -600,7 +600,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
                         <input 
                           type="text" 
@@ -617,7 +617,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
@@ -634,7 +634,7 @@ scoring:
                         />
                       </div>
                       
-                      <div className="grid grid-cols-12 gap-3 items-center">
+                      <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
                         <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Target:</label>
                         <select 
                           value={extractor.targetField}
