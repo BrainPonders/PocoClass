@@ -132,7 +132,7 @@ body {
 
 /* Sidebar styling */
 .sidebar {
-  width: 192px;
+  width: 230px;
   background: var(--paperless-surface);
   border-right: 1px solid var(--paperless-border);
   display: flex;
