@@ -203,23 +203,6 @@ scoring:
           </div>
           <div className="flex-1 overflow-y-auto scrollbar-thin space-y-6 min-h-0" style={{padding: '5px', borderRight: '3px solid black'}}>
             
-            {/* Basic Settings */}
-            <div className="space-y-3">
-              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Basic Settings</h4>
-              <div>
-                <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={threshold}
-                  onChange={(e) => setThreshold(e.target.value)}
-                  className="w-full"
-                  style={{accentColor: 'var(--paperless-accent)'}}
-                />
-              </div>
-            </div>
-
             {/* OCR Identifiers */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -253,31 +236,67 @@ scoring:
                   </div>
                 ))}
               </div>
+              <button 
+                className="text-sm px-3 py-2 rounded w-full mt-3"
+                style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+              >
+                + Add OCR Identifier Group
+              </button>
+            </div>
+
+            {/* Threshold */}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Threshold ({threshold}%)</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={threshold}
+                  onChange={(e) => setThreshold(e.target.value)}
+                  className="w-full"
+                  style={{accentColor: 'var(--paperless-accent)'}}
+                />
+              </div>
             </div>
 
             {/* Paperless Classifiers */}
             <div className="space-y-3">
               <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
-                  </div>
-                  <div>
-                    <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Type:</label>
-                    <input type="text" placeholder="Auto-detected" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
-                  </div>
+                <div>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
+                  <input type="text" placeholder="Enter title pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
                 </div>
                 
                 <div>
-                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags (comma-separated):</label>
-                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
+                  <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                    <option value="">Select correspondent...</option>
+                    <option value="bank">Bank of America</option>
+                    <option value="utility">Electric Company</option>
+                    <option value="insurance">Insurance Co.</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Document Type:</label>
+                  <select className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}}>
+                    <option value="">Select document type...</option>
+                    <option value="statement">Statement</option>
+                    <option value="invoice">Invoice</option>
+                    <option value="receipt">Receipt</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
+                  <input type="text" placeholder="banking, statement, processed" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
                 </div>
                 
                 <div>
                   <label className="text-xs block mb-1" style={{color: 'var(--paperless-text-secondary)'}}>Archive Serial:</label>
-                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)',  color: 'var(--paperless-text)'}} />
+                  <input type="text" placeholder="ASN pattern" className="w-full text-xs rounded px-2 py-1" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)'}} />
                 </div>
               </div>
             </div>
@@ -285,7 +304,7 @@ scoring:
             {/* Dynamic Data */}
             <div className="space-y-3">
               <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
-              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', }}>
+              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
                 Dynamic extractors (dates, amounts) coming soon...
               </div>
             </div>
