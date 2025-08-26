@@ -123,8 +123,8 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: '#2563eb', color: 'white', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
                   <div style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
@@ -192,8 +192,8 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: '#2563eb', color: 'white', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
                   <div style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
@@ -258,8 +258,8 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
-                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: '#2563eb', color: 'white', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
+                    <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-surface)', color: 'var(--paperless-text-secondary)', padding: '5px 7px', border: 'none', boxShadow: 'none', outline: 'none'}}>Exclude</button>
                   </div>
                   {/* Search Filter */}
                   <div style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
