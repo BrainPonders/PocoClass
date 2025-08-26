@@ -59,14 +59,16 @@ body {
   color: var(--paperless-text);
   font-weight: 600;
   text-align: left;
-  padding: 12px 16px;
+  padding: 10px 13px;
   border-bottom: 1px solid var(--paperless-border);
+  font-size: 0.8rem;
 }
 
 .paperless-table td {
-  padding: 12px 16px;
+  padding: 10px 13px;
   border-bottom: 1px solid var(--paperless-border);
   color: var(--paperless-text);
+  font-size: 0.8rem;
 }
 
 .paperless-table tr:hover {
@@ -77,16 +79,16 @@ body {
 .filter-pill {
   background: transparent;
   color: var(--paperless-text);
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  padding: 6px 13px;
+  border-radius: 5px;
+  font-size: 0.7rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   border: 1px solid var(--paperless-border);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .filter-pill:hover {
@@ -103,9 +105,9 @@ body {
 .tag-new {
   background: var(--paperless-red);
   color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -113,24 +115,24 @@ body {
 .tag-poco {
   background: #000000;
   color: white;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.6rem;
   font-weight: 500;
 }
 
 .tag-default {
   background: #9ca3af;
   color: #000;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.6rem;
   font-weight: 500;
 }
 
 /* Sidebar styling */
 .sidebar {
-  width: 240px;
+  width: 192px;
   background: var(--paperless-surface);
   border-right: 1px solid var(--paperless-border);
   display: flex;
@@ -140,10 +142,10 @@ body {
 .sidebar-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 13px;
   color: var(--paperless-text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   cursor: pointer;
   border: none;
   background: transparent;
