@@ -137,9 +137,38 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   </div>
                   {/* Tags List */}
                   <div className="overflow-y-auto" style={{maxHeight: '220px'}}>
-                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)', borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
-                      Not assigned
-                    </div>
+                    <button 
+                      className="flex items-center justify-between w-full text-xs cursor-pointer text-left transition-colors"
+                      style={{
+                        backgroundColor: selectedTags.includes('Not assigned') ? 'var(--paperless-surface-light)' : 'transparent',
+                        color: 'var(--paperless-text)',
+                        borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+                        padding: '10px 13px',
+                        border: 'none',
+                        boxShadow: 'none',
+                        outline: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!selectedTags.includes('Not assigned')) {
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!selectedTags.includes('Not assigned')) {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }
+                      }}
+                      onClick={() => {
+                        if (selectedTags.includes('Not assigned')) {
+                          setSelectedTags(selectedTags.filter(t => t !== 'Not assigned'))
+                        } else {
+                          setSelectedTags([...selectedTags, 'Not assigned'])
+                        }
+                      }}
+                    >
+                      <span>{selectedTags.includes('Not assigned') ? '✓ ' : ''}Not assigned</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                    </button>
                     {availableTags.map(tag => (
                       <button 
                         key={tag} 
@@ -206,9 +235,35 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   </div>
                   {/* Correspondents List */}
                   <div className="overflow-y-auto" style={{maxHeight: '220px'}}>
-                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)', borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
-                      Not assigned
-                    </div>
+                    <button 
+                      className="flex items-center justify-between w-full text-xs text-left transition-colors"
+                      style={{
+                        color: 'var(--paperless-text)', 
+                        backgroundColor: selectedCorrespondent === 'Not assigned' ? 'var(--paperless-surface-light)' : 'transparent',
+                        borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+                        padding: '10px 13px',
+                        border: 'none',
+                        boxShadow: 'none',
+                        outline: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedCorrespondent !== 'Not assigned') {
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedCorrespondent !== 'Not assigned') {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }
+                      }}
+                      onClick={() => {
+                        setSelectedCorrespondent(selectedCorrespondent === 'Not assigned' ? null : 'Not assigned')
+                        setShowCorrespondentFilter(false)
+                      }}
+                    >
+                      <span>{selectedCorrespondent === 'Not assigned' ? '✓ ' : ''}Not assigned</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                    </button>
                     {availableCorrespondents.map(correspondent => (
                       <button 
                         key={correspondent} 
@@ -272,9 +327,35 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                   </div>
                   {/* Document Types List */}
                   <div className="overflow-y-auto" style={{maxHeight: '220px'}}>
-                    <div className="text-xs" style={{color: 'var(--paperless-text-secondary)', borderBottom: '0.5px solid rgba(255,255,255,0.08)', padding: '10px 13px'}}>
-                      Not assigned
-                    </div>
+                    <button 
+                      className="flex items-center justify-between w-full text-xs text-left transition-colors"
+                      style={{
+                        color: 'var(--paperless-text)', 
+                        backgroundColor: selectedDocType === 'Not assigned' ? 'var(--paperless-surface-light)' : 'transparent',
+                        borderBottom: '0.5px solid rgba(255,255,255,0.08)',
+                        padding: '10px 13px',
+                        border: 'none',
+                        boxShadow: 'none',
+                        outline: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedDocType !== 'Not assigned') {
+                          e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedDocType !== 'Not assigned') {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }
+                      }}
+                      onClick={() => {
+                        setSelectedDocType(selectedDocType === 'Not assigned' ? null : 'Not assigned')
+                        setShowDocTypeFilter(false)
+                      }}
+                    >
+                      <span>{selectedDocType === 'Not assigned' ? '✓ ' : ''}Not assigned</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>0</span>
+                    </button>
                     {availableDocTypes.map(docType => (
                       <button 
                         key={docType} 
