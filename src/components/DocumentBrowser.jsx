@@ -120,7 +120,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Tags <ChevronDown size={11} />
               </button>
               {showTagsFilter && (
-                <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px'}}>
+                <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
                     <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
@@ -189,7 +189,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Correspondents <ChevronDown size={11} />
               </button>
               {showCorrespondentFilter && (
-                <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px'}}>
+                <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
                     <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
@@ -255,7 +255,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 Document type <ChevronDown size={11} />
               </button>
               {showDocTypeFilter && (
-                <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px'}}>
+                <div className="absolute left-0 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '220px', minHeight: '300px', top: 'calc(100% + 10px)'}}>
                   {/* Include/Exclude Toggle */}
                   <div className="flex" style={{borderBottom: '0.5px solid rgba(255,255,255,0.08)'}}>
                     <button className="flex-1 text-xs font-medium" style={{backgroundColor: 'var(--paperless-accent)', color: '#000', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none'}}>Include</button>
