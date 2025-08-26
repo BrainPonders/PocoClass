@@ -83,7 +83,7 @@ function App() {
     <div className="h-screen flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
       {/* Top Header - Custom Blue Theme */}
       <div className="flex items-center justify-between px-3 py-2" style={{backgroundColor: '#2563eb', borderBottom: '1px solid var(--paperless-border)', height: '48px'}}>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" style={{marginLeft: '20px'}}>
           <div className="w-5 h-5 rounded" style={{backgroundColor: '#3b82f6'}}></div>
           <span className="font-semibold text-sm text-white">POCOclass</span>
         </div>
@@ -98,22 +98,20 @@ function App() {
               <ChevronDown size={11} className="text-white" />
             </button>
             {showUserMenu && (
-              <div className="absolute top-full right-0 mt-1 w-40 rounded shadow-lg border z-50" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
-                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+              <div className="absolute right-0 rounded shadow-lg border z-50" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '180px', top: 'calc(100% + 10px)'}}>
+                <button className="flex items-center gap-2 w-full text-xs text-left transition-colors" style={{color: 'var(--paperless-text)', padding: '10px 13px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', border: 'none', boxShadow: 'none', outline: 'none', backgroundColor: 'transparent'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <User size={13} />
                   My Profile
                 </button>
-                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                <button className="flex items-center gap-2 w-full text-xs text-left transition-colors" style={{color: 'var(--paperless-text)', padding: '10px 13px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', border: 'none', boxShadow: 'none', outline: 'none', backgroundColor: 'transparent'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <Cog size={13} />
                   Settings
                 </button>
-                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '3px 0'}}></div>
-                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                <button className="flex items-center gap-2 w-full text-xs text-left transition-colors" style={{color: 'var(--paperless-text)', padding: '10px 13px', borderBottom: '0.5px solid rgba(255,255,255,0.08)', border: 'none', boxShadow: 'none', outline: 'none', backgroundColor: 'transparent'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <FileQuestion size={13} />
                   Documentation
                 </button>
-                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '3px 0'}}></div>
-                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                <button className="flex items-center gap-2 w-full text-xs text-left transition-colors" style={{color: 'var(--paperless-text)', padding: '10px 13px', border: 'none', boxShadow: 'none', outline: 'none', backgroundColor: 'transparent'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                   <LogOut size={13} />
                   Logout
                 </button>
