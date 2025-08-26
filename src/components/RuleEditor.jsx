@@ -166,7 +166,7 @@ scoring:
       {/* Main Content - 3 Panes with spacing */}
       <div className="flex flex-1 overflow-hidden gap-0">
         {/* Left Pane - OCR Text */}
-        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)', margin: '5px'}}>
+        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
           <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-semibold" style={{color: 'var(--paperless-text)'}}>📄 OCR Content</h3>
@@ -191,7 +191,7 @@ scoring:
         </div>
 
         {/* Middle Pane - Rule Edit Tools */}
-        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)', margin: '5px'}}>
+        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
           <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold" style={{color: 'var(--paperless-text)'}}>🔧 Rule Configuration</h3>
@@ -293,7 +293,7 @@ scoring:
         </div>
 
         {/* Right Pane - Rule Preview */}
-        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)', margin: '5px'}}>
+        <div className="w-1/3 flex flex-col min-h-0 rounded" style={{backgroundColor: 'var(--paperless-surface)', margin: '5px'}}>
           <div className="flex-shrink-0 rounded-t" style={{borderBottom: '1px solid var(--paperless-border)', backgroundColor: 'var(--paperless-surface-light)', padding: '16px', height: '100px'}}>
             <h3 className="text-base font-semibold mb-3" style={{color: 'var(--paperless-text)'}}>📖 Rule Preview</h3>
             <div className="flex items-center gap-2 mb-2">
