@@ -283,6 +283,14 @@ scoring:
               </div>
             </div>
 
+            {/* Dynamic Data */}
+            <div className="space-y-3">
+              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
+              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
+                Dynamic extractors (dates, amounts) coming soon...
+              </div>
+            </div>
+
             {/* Paperless Classifiers */}
             <div className="space-y-3">
               <h4 className="font-medium mb-3" style={{color: 'var(--paperless-text)'}}>Paperless Classifiers</h4>
@@ -340,18 +348,36 @@ scoring:
                 {/* Date Created */}
                 <div className="grid grid-cols-12 gap-3 items-center">
                   <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created</label>
-                  <input 
-                    type="date" 
-                    disabled={!classifierEnabled.dateCreated}
-                    className="col-span-8 text-sm rounded px-3" 
-                    style={{
-                      backgroundColor: 'var(--paperless-surface-light)', 
-                      color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
-                      border: '1px solid var(--paperless-border)',
-                      opacity: classifierEnabled.dateCreated ? 1 : 0.5,
-                      height: '40px'
-                    }} 
-                  />
+                  <div className="col-span-8 flex gap-2">
+                    <input 
+                      type="date" 
+                      disabled={!classifierEnabled.dateCreated}
+                      className="flex-1 text-sm rounded px-3" 
+                      style={{
+                        backgroundColor: 'var(--paperless-surface-light)', 
+                        color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                        border: '1px solid var(--paperless-border)',
+                        opacity: classifierEnabled.dateCreated ? 1 : 0.5,
+                        height: '40px'
+                      }} 
+                    />
+                    <select 
+                      disabled={!classifierEnabled.dateCreated}
+                      className="flex-1 text-sm rounded px-3" 
+                      style={{
+                        backgroundColor: 'var(--paperless-surface-light)', 
+                        color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
+                        border: '1px solid var(--paperless-border)',
+                        opacity: classifierEnabled.dateCreated ? 1 : 0.5,
+                        height: '40px'
+                      }}
+                    >
+                      <option value="">Select dynamic data...</option>
+                      <option value="invoice_date">Invoice Date</option>
+                      <option value="statement_date">Statement Date</option>
+                      <option value="due_date">Due Date</option>
+                    </select>
+                  </div>
                   <input 
                     type="checkbox" 
                     checked={classifierEnabled.dateCreated}
@@ -405,7 +431,7 @@ scoring:
                   <label className="col-span-3 text-sm text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path</label>
                   <input 
                     type="text" 
-                    value="1. Rabobank Check Account" 
+                    value="Disabled" 
                     disabled 
                     className="col-span-8 text-sm rounded px-3 opacity-50" 
                     style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)', height: '40px'}} 
@@ -438,7 +464,7 @@ scoring:
                         <button className="text-xs px-2 py-1 rounded" style={{color: 'var(--paperless-accent)', border: '1px dashed var(--paperless-border)'}}>+</button>
                       </>
                     ) : (
-                      <div className="text-xs text-gray-500 px-1 py-1">Tags disabled</div>
+                      <div className="text-xs text-gray-500 px-1 py-1">Select Tags</div>
                     )}
                   </div>
                   <input 
@@ -498,14 +524,6 @@ scoring:
                     className="col-span-1 w-4 h-4 rounded justify-self-center opacity-50" 
                   />
                 </div>
-              </div>
-            </div>
-
-            {/* Dynamic Data */}
-            <div className="space-y-3">
-              <h4 className="font-medium" style={{color: 'var(--paperless-text)'}}>Dynamic Data</h4>
-              <div className="text-sm p-3 rounded" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
-                Dynamic extractors (dates, amounts) coming soon...
               </div>
             </div>
           </div>
