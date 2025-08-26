@@ -360,8 +360,8 @@ scoring:
 
                   {/* Identifier List */}
                   {ocrIdentifiers.map((identifier) => (
-                    <div key={identifier.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
-                      <div className="flex items-center justify-between" style={{marginBottom: '12px'}}>
+                    <div key={identifier.id} className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
+                      <div className="flex items-center justify-between" style={{marginBottom: '12px', marginTop: '-15px'}}>
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
                         <button 
                           onClick={() => removeOcrIdentifier(identifier.id)}
@@ -478,13 +478,14 @@ scoring:
                         </div>
                         <div className="col-span-2"></div>
                       </div>
+                      <div style={{marginBottom: '5px'}}></div>
                     </div>
                   ))}
 
                   {/* Groups List */}
                   {ocrGroups.map((group) => (
-                    <div key={group.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
-                      <div className="flex items-center justify-between mb-2">
+                    <div key={group.id} className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
+                      <div className="flex items-center justify-between mb-2" style={{marginTop: '-15px'}}>
                         <div className="flex items-center gap-2">
                           <button onClick={() => toggleGroup(group.id)}>
                             {collapsedGroups[group.id] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
@@ -572,8 +573,8 @@ scoring:
                   
                   {/* Extractor List */}
                   {dynamicExtractors.map((extractor) => (
-                    <div key={extractor.id} className="border rounded p-4" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px'}}>
-                      <div className="flex items-center justify-between" style={{marginBottom: '12px'}}>
+                    <div key={extractor.id} className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
+                      <div className="flex items-center justify-between" style={{marginBottom: '12px', marginTop: '-15px'}}>
                         <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
                         <button 
                           onClick={() => removeDynamicExtractor(extractor.id)}
@@ -654,6 +655,7 @@ scoring:
                           <option value="account_number">Account Number</option>
                         </select>
                       </div>
+                      <div style={{marginBottom: '5px'}}></div>
                     </div>
                   ))}
 
