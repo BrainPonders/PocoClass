@@ -179,7 +179,7 @@ scoring:
               📄 {document?.title || 'No document selected'}
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin min-h-0" style={{padding: '5px'}}>
+          <div className="flex-1 overflow-y-auto scrollbar-thin min-h-0" style={{padding: '5px', borderRight: '3px solid var(--paperless-border)'}}>
             <pre
               className="text-xs font-mono leading-relaxed whitespace-pre-wrap cursor-text select-text p-3 rounded"
               style={{backgroundColor: 'var(--paperless-bg)', color: 'var(--paperless-text)'}}
@@ -201,7 +201,7 @@ scoring:
               <Edit size={14} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)'}} />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-6 min-h-0" style={{padding: '5px'}}>
+          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-6 min-h-0" style={{padding: '5px', borderRight: '3px solid var(--paperless-border)'}}>
             
             {/* Basic Settings */}
             <div className="space-y-3">
