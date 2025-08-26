@@ -374,7 +374,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                         <input 
                           type="text" 
                           value={identifier.title}
@@ -391,7 +391,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
                           value={identifier.pattern}
@@ -419,7 +419,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Lines:</label>
                         <input 
                           type="number" 
                           value={identifier.fromLine}
@@ -451,7 +451,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Logic:</label>
                         <select 
                           value={identifier.logic}
                           onChange={(e) => updateOcrIdentifier(identifier.id, 'logic', e.target.value)}
@@ -475,7 +475,7 @@ scoring:
                             className="w-3 h-3 rounded" 
                             style={{accentColor: '#2563eb'}} 
                           />
-                          <label className="text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Required</label>
+                          <label className="text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Required</label>
                         </div>
                         <div className="col-span-2"></div>
                       </div>
@@ -586,7 +586,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 1:</label>
                         <input 
                           type="text" 
                           value={extractor.anchor1}
@@ -603,7 +603,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Anchor 2:</label>
                         <input 
                           type="text" 
                           value={extractor.anchor2}
@@ -620,7 +620,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px', marginBottom: '8px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Pattern:</label>
                         <input 
                           type="text" 
                           value={extractor.pattern}
@@ -637,7 +637,7 @@ scoring:
                       </div>
                       
                       <div className="grid grid-cols-12 items-center" style={{gap: '5px'}}>
-                        <label className="col-span-2 text-xs" style={{color: 'var(--paperless-text-secondary)'}}>Target:</label>
+                        <label className="col-span-2 text-[10px]" style={{color: 'var(--paperless-text-secondary)'}}>Target:</label>
                         <select 
                           value={extractor.targetField}
                           onChange={(e) => updateDynamicExtractor(extractor.id, 'targetField', e.target.value)}
@@ -698,10 +698,10 @@ scoring:
               </div>
               {!collapsedSections.paperlessClassifiers && (
               <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginTop: '10px', padding: '20px'}}>
-                <div className="space-y-1" style={{gap: '5px', display: 'flex', flexDirection: 'column'}}>
+                <div className="space-y-1" style={{gap: '10px', display: 'flex', flexDirection: 'column'}}>
                 {/* Title */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                   <input 
                     type="text" 
                     placeholder="Enter title pattern" 
@@ -726,7 +726,7 @@ scoring:
                 
                 {/* Archive Serial Number */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number:</label>
                   <input 
                     type="number" 
                     placeholder="123" 
@@ -751,7 +751,7 @@ scoring:
                 
                 {/* Date Created */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created:</label>
                   <select 
                     disabled={!classifierEnabled.dateCreated}
                     className="col-span-8 text-xs rounded px-3" 
@@ -780,7 +780,7 @@ scoring:
                 
                 {/* Correspondent - Always enabled (mandatory) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
                   <select className="col-span-8 text-xs rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select correspondent...</option>
                     <option value="bank">Bank of America</option>
@@ -799,7 +799,7 @@ scoring:
                 
                 {/* Document Type - Always enabled (mandatory) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document type:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document type:</label>
                   <select className="col-span-8 text-xs rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select document type...</option>
                     <option value="statement">Bank Statement</option>
@@ -820,7 +820,7 @@ scoring:
                 
                 {/* Storage Path - Cannot be enabled (always greyed out) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path:</label>
+                  <label className="col-span-3 text-[10px] text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path:</label>
                   <input 
                     type="text" 
                     value="Disabled" 
@@ -838,7 +838,7 @@ scoring:
                 
                 {/* Tags */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
                   <div 
                     className="col-span-8 flex flex-wrap gap-1 p-2 rounded border" 
                     style={{
@@ -870,7 +870,7 @@ scoring:
                 
                 {/* Document Category */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document Category:</label>
+                  <label className="col-span-3 text-[10px] text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document Category:</label>
                   <select 
                     disabled={!classifierEnabled.documentCategory}
                     className="col-span-8 text-xs rounded px-3" 
@@ -899,7 +899,7 @@ scoring:
                 
                 {/* POCO Score - Cannot be enabled (always greyed out) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-xs text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score:</label>
+                  <label className="col-span-3 text-[10px] text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score:</label>
                   <input 
                     type="number" 
                     value="0" 
