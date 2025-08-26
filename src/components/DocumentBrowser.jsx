@@ -107,17 +107,17 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
   return (
     <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
       {/* Filter Section */}
-      <div className="px-6 py-4" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
+      <div className="px-5 py-3" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
         {/* Paperless-style Filter Bar */}
-        <div className="flex items-center" style={{marginTop: '40px', marginBottom: '40px'}}>
-          <div className="flex" style={{marginLeft: '20px'}}>
+        <div className="flex items-center" style={{marginTop: '32px', marginBottom: '32px'}}>
+          <div className="flex" style={{marginLeft: '16px'}}>
             {/* Tags Filter */}
-            <div className="relative" style={{marginRight: '20px'}} ref={tagsRef}>
+            <div className="relative" style={{marginRight: '16px'}} ref={tagsRef}>
               <button 
                 className={`filter-pill ${selectedTags.length > 0 ? 'active' : ''}`}
                 onClick={() => setShowTagsFilter(!showTagsFilter)}
               >
-                Tags <ChevronDown size={14} />
+                Tags <ChevronDown size={11} />
               </button>
               {showTagsFilter && (
                 <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '200px', minHeight: '280px'}}>
@@ -177,12 +177,12 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
             </div>
 
             {/* Correspondent Filter */}
-            <div className="relative" style={{marginRight: '20px'}} ref={correspondentRef}>
+            <div className="relative" style={{marginRight: '16px'}} ref={correspondentRef}>
               <button 
                 className={`filter-pill ${selectedCorrespondent ? 'active' : ''}`}
                 onClick={() => setShowCorrespondentFilter(!showCorrespondentFilter)}
               >
-                Correspondents <ChevronDown size={14} />
+                Correspondents <ChevronDown size={11} />
               </button>
               {showCorrespondentFilter && (
                 <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '200px', minHeight: '280px'}}>
@@ -244,7 +244,7 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                 className={`filter-pill ${selectedDocType ? 'active' : ''}`}
                 onClick={() => setShowDocTypeFilter(!showDocTypeFilter)}
               >
-                Document type <ChevronDown size={14} />
+                Document type <ChevronDown size={11} />
               </button>
               {showDocTypeFilter && (
                 <div className="absolute top-full left-0 mt-1 rounded shadow-lg border z-10" style={{backgroundColor: 'var(--paperless-surface)', border: '0.5px solid var(--paperless-border)', width: '200px', minHeight: '280px'}}>
@@ -303,9 +303,9 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
         </div>
 
         {/* Active Filters Display - Always Visible */}
-        <div className="px-6 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '40px', minHeight: '40px', display: 'flex', alignItems: 'center'}}>
+        <div className="px-5 rounded-lg" style={{backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', marginBottom: '32px', minHeight: '32px', display: 'flex', alignItems: 'center'}}>
           <div className="flex items-start flex-wrap">
-            <span className="text-sm font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)', marginLeft: '20px', marginRight: '20px'}}>Active filters:</span>
+            <span className="text-xs font-semibold whitespace-nowrap pt-2" style={{color: 'var(--paperless-text)', marginLeft: '16px', marginRight: '16px'}}>Active filters:</span>
             <div className="flex flex-wrap" style={{marginLeft: '10px', gap: '20px'}}>
               {!selectedCorrespondent && !selectedDocType && selectedTags.length === 0 && (
                 <span className="text-sm pt-2" style={{color: 'var(--paperless-text-secondary)'}}>
