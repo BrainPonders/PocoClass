@@ -156,7 +156,7 @@ function App() {
           <div style={{borderTop: '1px solid var(--paperless-border)', margin: '6px 0'}}></div>
 
           {/* Rules Section Header */}
-          <div className="py-1.5" style={{paddingLeft: '29px', paddingRight: '12px'}}>
+          <div className="py-1.5" style={{paddingLeft: '12px', paddingRight: '12px'}}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase'}}>
                 AVAILABLE RULES
@@ -167,7 +167,7 @@ function App() {
 
           {/* Rules List */}
           <div className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="px-1">
+            <div style={{paddingLeft: '12px', paddingRight: '4px'}}>
               {mockRules.map((rule) => (
                 <div
                   key={rule.id}
