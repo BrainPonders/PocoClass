@@ -158,7 +158,7 @@ function App() {
           {/* Rules Section Header */}
           <div className="px-3 py-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase', fontSize: '10px'}}>
+              <span className="text-sm font-bold" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase'}}>
                 AVAILABLE RULES
               </span>
               <Plus size={10} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)'}} />
@@ -171,12 +171,13 @@ function App() {
               {mockRules.map((rule) => (
                 <div
                   key={rule.id}
-                  className={`p-1.5 mx-1.5 mb-0.5 rounded cursor-pointer transition-colors ${
+                  className={`p-1.5 mx-1.5 rounded cursor-pointer transition-colors ${
                     selectedRule?.id === rule.id
                       ? 'text-white'
                       : 'hover:bg-opacity-10'
                   }`}
                   style={{
+                    marginBottom: '5px',
                     backgroundColor: selectedRule?.id === rule.id ? 'var(--paperless-surface-light)' : 'transparent',
                     color: selectedRule?.id === rule.id ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)'
                   }}
