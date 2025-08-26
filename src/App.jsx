@@ -82,39 +82,39 @@ function App() {
   return (
     <div className="h-screen flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
       {/* Top Header - Custom Blue Theme */}
-      <div className="flex items-center justify-between px-4 py-3" style={{backgroundColor: '#2563eb', borderBottom: '1px solid var(--paperless-border)', height: '60px'}}>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded" style={{backgroundColor: '#3b82f6'}}></div>
-          <span className="font-semibold text-base text-white">DocumentAI</span>
+      <div className="flex items-center justify-between px-3 py-2" style={{backgroundColor: '#2563eb', borderBottom: '1px solid var(--paperless-border)', height: '48px'}}>
+        <div className="flex items-center gap-1">
+          <div className="w-5 h-5 rounded" style={{backgroundColor: '#3b82f6'}}></div>
+          <span className="font-semibold text-sm text-white">DocumentAI</span>
         </div>
-        <div className="flex items-center" style={{marginRight: '20px'}}>
+        <div className="flex items-center" style={{marginRight: '16px'}}>
           <div className="relative" ref={userMenuRef}>
             <button 
-              className="flex items-center gap-2 px-3 py-2 rounded hover:bg-blue-600 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-600 transition-colors"
               onClick={() => setShowUserMenu(!showUserMenu)}
             >
-              <User size={16} className="text-white" />
-              <span className="text-sm text-white">Robbert Jan</span>
-              <ChevronDown size={14} className="text-white" />
+              <User size={13} className="text-white" />
+              <span className="text-xs text-white">Robbert Jan</span>
+              <ChevronDown size={11} className="text-white" />
             </button>
             {showUserMenu && (
-              <div className="absolute top-full right-0 mt-1 w-48 rounded shadow-lg border z-50" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
-                  <User size={16} />
+              <div className="absolute top-full right-0 mt-1 w-40 rounded shadow-lg border z-50" style={{backgroundColor: 'var(--paperless-surface)', border: '1px solid var(--paperless-border)'}}>
+                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <User size={13} />
                   My Profile
                 </button>
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
-                  <Cog size={16} />
+                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <Cog size={13} />
                   Settings
                 </button>
-                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '4px 0'}}></div>
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
-                  <FileQuestion size={16} />
+                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '3px 0'}}></div>
+                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <FileQuestion size={13} />
                   Documentation
                 </button>
-                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '4px 0'}}></div>
-                <button className="flex items-center gap-3 w-full px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
-                  <LogOut size={16} />
+                <div style={{borderTop: '1px solid var(--paperless-border)', margin: '3px 0'}}></div>
+                <button className="flex items-center gap-2 w-full px-2 py-1.5 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 text-left transition-colors" style={{color: 'var(--paperless-text)'}}>
+                  <LogOut size={13} />
                   Logout
                 </button>
               </div>
@@ -128,12 +128,12 @@ function App() {
         <div className="sidebar">
 
           {/* Navigation Tabs */}
-          <div className="flex flex-col" style={{paddingTop: '8px'}}>
+          <div className="flex flex-col" style={{paddingTop: '6px'}}>
             <button
               onClick={() => setActiveTab('documents')}
               className={`sidebar-tab ${activeTab === 'documents' ? 'active' : ''}`}
             >
-              <FileText size={16} />
+              <FileText size={13} />
               Dashboard
             </button>
             <button
@@ -141,7 +141,7 @@ function App() {
               disabled={!selectedDocument && !selectedRule}
               className={`sidebar-tab ${activeTab === 'rule-editor' ? 'active' : ''} ${(!selectedDocument && !selectedRule) ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <Edit3 size={16} />
+              <Edit3 size={13} />
               Rule Editor
             </button>
             <button
@@ -149,31 +149,31 @@ function App() {
               disabled={selectedDocuments.length === 0}
               className={`sidebar-tab ${activeTab === 'dry-run' ? 'active' : ''} ${selectedDocuments.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <Play size={16} />
+              <Play size={13} />
               Test Results
             </button>
           </div>
 
           {/* Divider */}
-          <div style={{borderTop: '1px solid var(--paperless-border)', margin: '8px 0'}}></div>
+          <div style={{borderTop: '1px solid var(--paperless-border)', margin: '6px 0'}}></div>
 
           {/* Rules Section Header */}
-          <div className="px-4 py-2">
+          <div className="px-3 py-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase'}}>
+              <span className="text-xs font-medium" style={{color: 'var(--paperless-text-muted)', textTransform: 'uppercase', fontSize: '10px'}}>
                 AVAILABLE RULES
               </span>
-              <Plus size={12} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)'}} />
+              <Plus size={10} className="cursor-pointer" style={{color: 'var(--paperless-text-secondary)'}} />
             </div>
           </div>
 
           {/* Rules List */}
           <div className="flex-1 overflow-y-auto scrollbar-thin">
-            <div className="px-2">
+            <div className="px-1">
               {mockRules.map((rule) => (
                 <div
                   key={rule.id}
-                  className={`p-2 mx-2 mb-1 rounded cursor-pointer transition-colors ${
+                  className={`p-1.5 mx-1.5 mb-0.5 rounded cursor-pointer transition-colors ${
                     selectedRule?.id === rule.id
                       ? 'text-white'
                       : 'hover:bg-opacity-10'
@@ -185,9 +185,9 @@ function App() {
                   onClick={() => setSelectedRule(rule)}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium truncate">{rule.name}</span>
+                    <span className="text-xs font-medium truncate" style={{fontSize: '11px'}}>{rule.name}</span>
                     {rule.enabled && (
-                      <span className="text-xs" style={{color: 'var(--paperless-accent)'}}>✓</span>
+                      <span className="text-xs" style={{color: 'var(--paperless-accent)', fontSize: '10px'}}>✓</span>
                     )}
                   </div>
                 </div>
@@ -198,15 +198,15 @@ function App() {
           {/* Bottom Section */}
           <div style={{borderTop: '1px solid var(--paperless-border)'}}>
             <button className="sidebar-tab">
-              <ScrollText size={16} />
+              <ScrollText size={13} />
               Logs
             </button>
             <button className="sidebar-tab">
-              <HelpCircle size={16} />
+              <HelpCircle size={13} />
               POCO Score Help
             </button>
             <button className="sidebar-tab">
-              <Cog size={16} />
+              <Cog size={13} />
               Settings
             </button>
           </div>
