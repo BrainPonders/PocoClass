@@ -363,7 +363,7 @@ scoring:
                   {ocrIdentifiers.map((identifier) => (
                     <div key={identifier.id} className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
                       <div className="flex items-center justify-between" style={{marginBottom: '12px', marginTop: '-15px'}}>
-                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
+                        <span className="text-xs font-medium" style={{color: 'var(--paperless-text)'}}>Identifier #{identifier.id}</span>
                         <button 
                           onClick={() => removeOcrIdentifier(identifier.id)}
                           className="text-red-500 hover:text-red-700"
@@ -491,7 +491,7 @@ scoring:
                           <button onClick={() => toggleGroup(group.id)}>
                             {collapsedGroups[group.id] ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
                           </button>
-                          <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Group: {group.title}</span>
+                          <span className="text-xs font-medium" style={{color: 'var(--paperless-text)'}}>Group: {group.title}</span>
                         </div>
                         <button 
                           onClick={() => removeOcrGroup(group.id)}
@@ -576,7 +576,7 @@ scoring:
                   {dynamicExtractors.map((extractor) => (
                     <div key={extractor.id} className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginBottom: '16px', padding: '20px'}}>
                       <div className="flex items-center justify-between" style={{marginBottom: '12px', marginTop: '-15px'}}>
-                        <span className="text-sm font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
+                        <span className="text-xs font-medium" style={{color: 'var(--paperless-text)'}}>Extractor #{extractor.id}</span>
                         <button 
                           onClick={() => removeDynamicExtractor(extractor.id)}
                           className="text-red-500 hover:text-red-700"
@@ -662,7 +662,7 @@ scoring:
 
                   {/* No extractors message */}
                   {dynamicExtractors.length === 0 && (
-                    <div className="text-sm p-3 rounded text-center" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
+                    <div className="text-xs p-3 rounded text-center" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)'}}>
                       No extractors defined. Click "Add Extractor" to create your first dynamic data extractor.
                     </div>
                   )}
@@ -698,15 +698,15 @@ scoring:
               </div>
               {!collapsedSections.paperlessClassifiers && (
               <div className="border rounded" style={{backgroundColor: 'var(--paperless-surface)', border: '2px solid var(--paperless-border)', marginTop: '10px', padding: '20px'}}>
-                <div className="space-y-3">
+                <div className="space-y-1" style={{gap: '5px', display: 'flex', flexDirection: 'column'}}>
                 {/* Title */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Title:</label>
                   <input 
                     type="text" 
                     placeholder="Enter title pattern" 
                     disabled={!classifierEnabled.title}
-                    className="col-span-8 text-sm rounded px-3" 
+                    className="col-span-8 text-xs rounded px-3" 
                     style={{
                       backgroundColor: 'var(--paperless-surface-light)', 
                       color: classifierEnabled.title ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
@@ -726,12 +726,12 @@ scoring:
                 
                 {/* Archive Serial Number */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number:</label>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Archive serial number:</label>
                   <input 
                     type="number" 
                     placeholder="123" 
                     disabled={!classifierEnabled.archiveSerial}
-                    className="col-span-8 text-sm rounded px-3" 
+                    className="col-span-8 text-xs rounded px-3" 
                     style={{
                       backgroundColor: 'var(--paperless-surface-light)', 
                       color: classifierEnabled.archiveSerial ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
@@ -751,10 +751,10 @@ scoring:
                 
                 {/* Date Created */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created:</label>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Date created:</label>
                   <select 
                     disabled={!classifierEnabled.dateCreated}
-                    className="col-span-8 text-sm rounded px-3" 
+                    className="col-span-8 text-xs rounded px-3" 
                     style={{
                       backgroundColor: 'var(--paperless-surface-light)', 
                       color: classifierEnabled.dateCreated ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
@@ -780,8 +780,8 @@ scoring:
                 
                 {/* Correspondent - Always enabled (mandatory) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
-                  <select className="col-span-8 text-sm rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Correspondent:</label>
+                  <select className="col-span-8 text-xs rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select correspondent...</option>
                     <option value="bank">Bank of America</option>
                     <option value="utility">Electric Company</option>
@@ -799,8 +799,8 @@ scoring:
                 
                 {/* Document Type - Always enabled (mandatory) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document type:</label>
-                  <select className="col-span-8 text-sm rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document type:</label>
+                  <select className="col-span-8 text-xs rounded px-3" style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text)', border: '1px solid var(--paperless-border)', height: '30px'}}>
                     <option value="">Select document type...</option>
                     <option value="statement">Bank Statement</option>
                     <option value="invoice">Invoice</option>
@@ -820,12 +820,12 @@ scoring:
                 
                 {/* Storage Path - Cannot be enabled (always greyed out) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path:</label>
+                  <label className="col-span-3 text-xs text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>Storage path:</label>
                   <input 
                     type="text" 
                     value="Disabled" 
                     disabled 
-                    className="col-span-8 text-sm rounded px-3 opacity-50" 
+                    className="col-span-8 text-xs rounded px-3 opacity-50" 
                     style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)', height: '30px'}} 
                   />
                   <input 
@@ -838,7 +838,7 @@ scoring:
                 
                 {/* Tags */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Tags:</label>
                   <div 
                     className="col-span-8 flex flex-wrap gap-1 p-2 rounded border" 
                     style={{
@@ -856,7 +856,7 @@ scoring:
                         <button className="text-xs px-2 py-1 rounded" style={{color: '#2563eb', border: '1px dashed var(--paperless-border)'}}>+</button>
                       </>
                     ) : (
-                      <div className="text-sm px-3 py-2 rounded" style={{color: 'var(--paperless-text-secondary)', backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', height: '30px', display: 'flex', alignItems: 'center'}}>Select Tags</div>
+                      <div className="text-xs px-3 py-2 rounded" style={{color: 'var(--paperless-text-secondary)', backgroundColor: 'var(--paperless-surface-light)', border: '1px solid var(--paperless-border)', height: '30px', display: 'flex', alignItems: 'center'}}>Select Tags</div>
                     )}
                   </div>
                   <input 
@@ -870,10 +870,10 @@ scoring:
                 
                 {/* Document Category */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document Category:</label>
+                  <label className="col-span-3 text-xs text-left" style={{color: 'var(--paperless-text-secondary)'}}>Document Category:</label>
                   <select 
                     disabled={!classifierEnabled.documentCategory}
-                    className="col-span-8 text-sm rounded px-3" 
+                    className="col-span-8 text-xs rounded px-3" 
                     style={{
                       backgroundColor: 'var(--paperless-surface-light)', 
                       color: classifierEnabled.documentCategory ? 'var(--paperless-text)' : 'var(--paperless-text-secondary)', 
@@ -899,14 +899,14 @@ scoring:
                 
                 {/* POCO Score - Cannot be enabled (always greyed out) */}
                 <div className="grid grid-cols-12 gap-3 items-center">
-                  <label className="col-span-3 text-sm text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score:</label>
+                  <label className="col-span-3 text-xs text-left opacity-50" style={{color: 'var(--paperless-text-secondary)'}}>POCO Score:</label>
                   <input 
                     type="number" 
                     value="0" 
                     min="0" 
                     max="100" 
                     disabled 
-                    className="col-span-8 text-sm rounded px-3 opacity-50" 
+                    className="col-span-8 text-xs rounded px-3 opacity-50" 
                     style={{backgroundColor: 'var(--paperless-surface-light)', color: 'var(--paperless-text-secondary)', border: '1px solid var(--paperless-border)', height: '30px'}} 
                   />
                   <input 
