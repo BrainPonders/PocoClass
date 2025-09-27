@@ -265,7 +265,7 @@ poco_weights:
                   style={{
                     width: '64px',
                     height: '4px',
-                    margin: '0 24px',
+                    margin: '0 12px',
                     borderRadius: '2px',
                     backgroundColor: stepStatusValue === 'completed' ? '#10b981' : '#d1d5db'
                   }}
