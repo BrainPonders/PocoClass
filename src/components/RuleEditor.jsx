@@ -916,6 +916,28 @@ poco_weights:
   // Logic Group Editor Component
   const LogicGroupEditor = ({ group, index, onUpdate, onDelete, type }) => {
     const [isExpanded, setIsExpanded] = useState(true)
+    const [conditions, setConditions] = useState(group?.conditions || [
+      { pattern: '', source: 'content', range: '', tag: '' }
+    ])
+
+    const addCondition = () => {
+      const newConditions = [...conditions, { pattern: '', source: 'content', range: '', tag: '' }]
+      setConditions(newConditions)
+      onUpdate({ ...group, conditions: newConditions })
+    }
+
+    const removeCondition = (conditionIndex) => {
+      const newConditions = conditions.filter((_, i) => i !== conditionIndex)
+      setConditions(newConditions)
+      onUpdate({ ...group, conditions: newConditions })
+    }
+
+    const updateCondition = (conditionIndex, field, value) => {
+      const newConditions = [...conditions]
+      newConditions[conditionIndex] = { ...newConditions[conditionIndex], [field]: value }
+      setConditions(newConditions)
+      onUpdate({ ...group, conditions: newConditions })
+    }
 
     return (
       <div className="card border-l-4" style={{borderLeftColor: type === 'core' ? '#2563eb' : '#f59e0b'}}>
@@ -944,7 +966,11 @@ poco_weights:
             <div className="grid grid-cols-2 gap-4">
               <div className="form-group">
                 <label className="form-label">Group Type</label>
-                <select className="form-select">
+                <select 
+                  className="form-select"
+                  defaultValue={group?.type || 'match'}
+                  onBlur={(e) => onUpdate({ ...group, type: e.target.value })}
+                >
                   <option value="match">Match (ALL conditions)</option>
                   <option value="or">OR (ANY condition)</option>
                 </select>
@@ -955,7 +981,8 @@ poco_weights:
                   type="number" 
                   min="1" 
                   max="100" 
-                  defaultValue={type === 'core' ? 20 : 10}
+                  defaultValue={group?.score || (type === 'core' ? 20 : 10)}
+                  onBlur={(e) => onUpdate({ ...group, score: parseInt(e.target.value) })}
                   className="form-input"
                 />
               </div>
@@ -964,36 +991,63 @@ poco_weights:
             <div>
               <label className="form-label">Conditions</label>
               <div className="space-y-2">
-                <div className="grid grid-cols-12 gap-2 items-end">
-                  <div className="col-span-5">
-                    <input 
-                      type="text" 
-                      placeholder="e.g., ExampleBank, Invoice, NL[0-9]{2}?RABO"
-                      className="form-input"
-                    />
+                {conditions.map((condition, conditionIndex) => (
+                  <div key={conditionIndex} className="grid grid-cols-12 gap-2 items-end">
+                    <div className="col-span-5">
+                      <input 
+                        type="text" 
+                        placeholder="e.g., ExampleBank, Invoice, NL[0-9]{2}?RABO"
+                        defaultValue={condition.pattern}
+                        onBlur={(e) => updateCondition(conditionIndex, 'pattern', e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    <div className="col-span-3">
+                      <select 
+                        className="form-select"
+                        value={condition.source}
+                        onChange={(e) => updateCondition(conditionIndex, 'source', e.target.value)}
+                      >
+                        <option value="content">Document Content</option>
+                        <option value="filename">Filename</option>
+                      </select>
+                    </div>
+                    <div className="col-span-2">
+                      <input 
+                        type="text" 
+                        placeholder="0-1600"
+                        defaultValue={condition.range}
+                        onBlur={(e) => updateCondition(conditionIndex, 'range', e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <input 
+                        type="text" 
+                        placeholder="Tag"
+                        defaultValue={condition.tag}
+                        onBlur={(e) => updateCondition(conditionIndex, 'tag', e.target.value)}
+                        className="form-input"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      {conditions.length > 1 && (
+                        <button 
+                          onClick={() => removeCondition(conditionIndex)}
+                          className="btn btn-ghost text-red-500 btn-sm"
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="col-span-3">
-                    <select className="form-select">
-                      <option value="content">Document Content</option>
-                      <option value="filename">Filename</option>
-                    </select>
-                  </div>
-                  <div className="col-span-2">
-                    <input 
-                      type="text" 
-                      placeholder="0-1600"
-                      className="form-input"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <input 
-                      type="text" 
-                      placeholder="e.g., Credit Card"
-                      className="form-input"
-                    />
-                  </div>
-                </div>
-                <button className="btn btn-outline btn-sm">+ Add Condition</button>
+                ))}
+                <button 
+                  onClick={addCondition}
+                  className="btn btn-outline btn-sm"
+                >
+                  + Add Condition
+                </button>
               </div>
             </div>
           </div>

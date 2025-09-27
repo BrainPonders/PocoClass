@@ -269,6 +269,8 @@ body {
   max-width: 1200px;
   margin: 0; /* Removed auto centering to move left */
   padding: 24px 24px 24px 30px; /* 30px space between sidebar and wizard */
+  overflow-y: auto; /* Enable vertical scrolling */
+  height: 100%; /* Ensure it takes available height */
 }
 
 .wizard-header {
