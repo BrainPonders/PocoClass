@@ -9,7 +9,6 @@ const RuleEditor = ({ document, rule, onBack }) => {
   // Form data state for all steps
   const [ruleData, setRuleData] = useState({
     // Step 1: Basic Information
-    configName: rule?.configName || '',
     ruleName: rule?.ruleName || '',
     ruleId: rule?.ruleId || '',
     description: rule?.description || '',
@@ -67,54 +66,82 @@ const RuleEditor = ({ document, rule, onBack }) => {
   // Generate YAML preview
   const generateYaml = () => {
     const yaml = `# =================================================================================================
-# Document Identification Rule Builder
+# Document Identification Rule Builder - Generated Configuration
 # =================================================================================================
 #
-# Filename: .yaml
-# Description:
-# Document identification rule
+# This YAML file was generated using the POCOclass Rule Builder wizard.
+# Each section below corresponds to a step in the 7-step configuration process.
 #
-# version: 2.0
-# Created: ${new Date().toISOString().split('T')[0]}
+# Generated: ${new Date().toISOString().split('T')[0]}
 # =================================================================================================
 
+# =============================
+# STEP 1: BASIC INFORMATION
+# =============================
 rule_name: "${ruleData.ruleName || ''}"
 rule_id: "${ruleData.ruleId || ''}"
-threshold: ${ruleData.threshold}  # Minimum score for being accepted for further processing
+threshold: ${ruleData.threshold}  # Minimum confidence score required (${ruleData.threshold}%)
 
 ${ruleData.coreIdentifiers.length > 0 ? `
+# =============================
+# STEP 2: CORE IDENTIFIERS
+# =============================
+# Essential patterns that must be found for document identification
 core_identifiers:
   logic_groups:
-${ruleData.coreIdentifiers.map(group => `    - type: "${group.type || 'match'}"
-      score: ${group.score || 20}
+${ruleData.coreIdentifiers.map(group => `    - type: "${group.type || 'match'}"     # Logic type: ALL conditions must match
+      score: ${group.score || 20}            # Points awarded if this group matches
       conditions:
-${group.conditions.map(condition => `        - pattern: "${condition.pattern || ''}"
-          source: "${condition.source || 'content'}"
-          range: "${condition.range || '0-1600'}"`).join('\n')}`).join('\n')}
-` : ''}
+${group.conditions.map(condition => `        - pattern: "${condition.pattern || ''}"    # Search pattern
+          source: "${condition.source || 'content'}"      # Search in content or filename
+          range: "${condition.range || '0-1600'}"        # Character range to search`).join('\n')}`).join('\n')}
+` : '# =============================\n# STEP 2: CORE IDENTIFIERS\n# =============================\n# No core identifiers defined yet\n'}
 
 ${ruleData.bonusIdentifiers.length > 0 ? `
+# =============================
+# STEP 3: BONUS IDENTIFIERS
+# =============================
+# Optional patterns that provide extra confidence points
 bonus_identifiers:
   logic_groups:
-${ruleData.bonusIdentifiers.map(group => `    - type: "${group.type || 'match'}"
-      score: ${group.score || 10}
+${ruleData.bonusIdentifiers.map(group => `    - type: "${group.type || 'match'}"     # Logic type: ALL conditions must match
+      score: ${group.score || 10}             # Bonus points if this group matches
       conditions:
-${group.conditions.map(condition => `        - pattern: "${condition.pattern || ''}"
-          source: "${condition.source || 'content'}"
-          range: "${condition.range || '0-1600'}"`).join('\n')}`).join('\n')}
-` : ''}
+${group.conditions.map(condition => `        - pattern: "${condition.pattern || ''}"    # Search pattern
+          source: "${condition.source || 'content'}"      # Search in content or filename
+          range: "${condition.range || '0-1600'}"        # Character range to search`).join('\n')}`).join('\n')}
+` : '# =============================\n# STEP 3: BONUS IDENTIFIERS\n# =============================\n# No bonus identifiers defined\n'}
 
+# =============================
+# STEP 4: STATIC METADATA
+# =============================
+# Fixed information applied to all matching documents
 static_metadata:
-  correspondent: "${ruleData.staticMetadata.correspondent || ''}"
-  document_type: "${ruleData.staticMetadata.documentType || ''}"
-  tags: [${ruleData.staticMetadata.tags.map(tag => `"${tag}"`).join(', ')}]
-  custom_fields:
-${ruleData.staticMetadata.customFields.map(field => `    ${field.name}: "${field.value}"`).join('\n')}
+  correspondent: "${ruleData.staticMetadata.correspondent || ''}"    # Always assign this correspondent
+  document_type: "${ruleData.staticMetadata.documentType || ''}"    # Always assign this document type
+  tags: [${ruleData.staticMetadata.tags.map(tag => `"${tag}"`).join(', ')}]           # Tags to add to matching documents
+  custom_fields:${ruleData.staticMetadata.customFields.length > 0 ? '\n' + ruleData.staticMetadata.customFields.map(field => `    ${field.name}: "${field.value}"    # Custom field assignment`).join('\n') : '\n    # No custom fields defined'}
 
+# =============================
+# STEP 5: DYNAMIC METADATA
+# =============================
+# Patterns for extracting data from document content
+# (Not yet configured in this version)
+
+# =============================
+# STEP 6: FILENAME PATTERNS
+# =============================
+# Patterns for extracting metadata from filenames
+# (Not yet configured in this version)
+
+# =============================
+# STEP 7: POCO SCORING WEIGHTS
+# =============================
+# Configure how different metadata sources contribute to confidence scoring
 poco_weights:
-  filename: ${ruleData.pocoWeights.filename}
-  paperless: ${ruleData.pocoWeights.paperless}
-  content: ${ruleData.pocoWeights.content}`
+  filename: ${ruleData.pocoWeights.filename}     # Weight for filename-based scoring (1-10)
+  paperless: ${ruleData.pocoWeights.paperless}    # Weight for existing Paperless metadata (1-10)
+  content: ${ruleData.pocoWeights.content}      # Weight for content-based scoring (always 10)`
   }
 
   // Step Progress Indicator
@@ -122,20 +149,33 @@ poco_weights:
     <div className="flex items-center justify-center mb-8">
       {[1, 2, 3, 4, 5, 6, 7].map((step) => (
         <div key={step} className="flex items-center">
-          <button
-            onClick={() => goToStep(step)}
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => goToStep(step)}
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 ${
+                step === currentStep
+                  ? 'bg-blue-500 text-white shadow-lg scale-110'
+                  : step < currentStep
+                  ? 'bg-green-500 text-white shadow-md'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              {step < currentStep ? '✓' : step}
+            </button>
+            <span className={`text-xs mt-2 font-medium ${
               step === currentStep
-                ? 'bg-blue-500 text-white'
-                : step < currentStep
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 text-gray-600'
-            }`}
-          >
-            {step < currentStep ? '✓' : step}
-          </button>
+                ? 'text-blue-600'
+                : step < currentStep 
+                ? 'text-green-600'
+                : 'text-gray-500'
+            }`}>
+              Step {step}
+            </span>
+          </div>
           {step < 7 && (
-            <div className={`w-12 h-0.5 mx-2 ${step < currentStep ? 'bg-green-500' : 'bg-gray-200'}`} />
+            <div className={`w-16 h-1 mx-4 rounded ${
+              step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+            }`} />
           )}
         </div>
       ))}
@@ -384,18 +424,7 @@ poco_weights:
 
       <div className="space-y-6">
         <div className="form-group">
-          <label className="form-label">Configuration Name (Internal)</label>
-          <input
-            type="text"
-            value={ruleData.configName}
-            onChange={(e) => updateRuleData('configName', e.target.value)}
-            placeholder="e.g., ExampleBank Year Statement Configuration"
-            className="form-input"
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Rule Name (Official)</label>
+          <label className="form-label">Rule Name</label>
           <input
             type="text"
             value={ruleData.ruleName}
@@ -403,10 +432,11 @@ poco_weights:
             placeholder="e.g., ExampleBank Year Statement"
             className="form-input"
           />
+          <p className="text-xs text-gray-500 mt-1">Human-readable name displayed in the interface</p>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Rule ID (Technical Identifier)</label>
+          <label className="form-label">Rule ID</label>
           <input
             type="text"
             value={ruleData.ruleId}
@@ -414,6 +444,7 @@ poco_weights:
             placeholder="e.g., examplebank_year_statement"
             className="form-input"
           />
+          <p className="text-xs text-gray-500 mt-1">Unique technical identifier (lowercase, underscores only)</p>
         </div>
 
         <div className="form-group">
