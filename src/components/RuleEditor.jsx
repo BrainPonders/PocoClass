@@ -414,7 +414,7 @@ poco_weights:
   )
 
   const Step7ReviewExport = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
         <h2 className="step-title">Step 7 of 7: Review & Export</h2>
         <p className="step-subtitle">Review your configuration and adjust POCO scoring weights</p>
