@@ -105,11 +105,11 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
   const availableDocTypes = ['Bank Statement', 'Invoice', 'Receipt', 'Bill', 'Credit Card Statement']
 
   return (
-    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--paperless-bg)'}}>
+    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--app-bg)'}}>
       {/* Filter Section */}
-      <div className="px-5 py-3" style={{backgroundColor: 'var(--paperless-surface)', borderBottom: '1px solid var(--paperless-border)'}}>
-        {/* Paperless-style Filter Bar */}
-        <div className="flex items-center" style={{marginTop: '32px', marginBottom: '32px'}}>
+      <div className="px-6 py-4" style={{backgroundColor: 'var(--app-surface)', borderBottom: '1px solid var(--app-border)'}}>
+        {/* Modern Filter Bar */}
+        <div className="flex items-center" style={{marginTop: '24px', marginBottom: '24px'}}>
           <div className="flex" style={{marginLeft: '16px'}}>
             {/* Tags Filter */}
             <div className="relative" style={{marginRight: '16px'}} ref={tagsRef}>
@@ -428,10 +428,10 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
         </div>
       </div>
 
-      {/* Paperless-style Document Table */}
+      {/* Modern Document Table */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto scrollbar-thin">
-          <table className="w-full paperless-table">
+          <table className="w-full modern-table">
             <thead>
               <tr>
                 <th className="w-8"></th>
@@ -457,14 +457,14 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                     />
                   </td>
                   <td>
-                    <div className="font-medium text-sm" style={{color: 'var(--paperless-text)'}}>{doc.title}</div>
+                    <div className="font-medium text-sm" style={{color: 'var(--app-text)'}}>{doc.title}</div>
                   </td>
                   <td>
-                    <div className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.id}</div>
+                    <div className="text-sm" style={{color: 'var(--app-text-secondary)'}}>{doc.id}</div>
                   </td>
-                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.createdDate}</td>
-                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.correspondent || '-'}</td>
-                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.documentType}</td>
+                  <td className="text-sm" style={{color: 'var(--app-text-secondary)'}}>{doc.createdDate}</td>
+                  <td className="text-sm" style={{color: 'var(--app-text-secondary)'}}>{doc.correspondent || '-'}</td>
+                  <td className="text-sm" style={{color: 'var(--app-text-secondary)'}}>{doc.documentType}</td>
                   <td>
                     <div className="flex gap-1 flex-wrap">
                       {doc.tags.map((tag) => {
@@ -483,12 +483,11 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
                       })}
                     </div>
                   </td>
-                  <td className="text-sm" style={{color: 'var(--paperless-text-secondary)'}}>{doc.owner}</td>
+                  <td className="text-sm" style={{color: 'var(--app-text-secondary)'}}>{doc.owner}</td>
                   <td>
                     <button
                       onClick={() => onNewRule(doc)}
-                      className="text-xs px-2 py-1 rounded font-medium"
-                      style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+                      className="btn btn-primary text-xs px-3 py-1"
                     >
                       + New Rule
                     </button>
@@ -502,14 +501,13 @@ const DocumentBrowser = ({ onNewRule, onEditRule, onTestRules }) => {
 
       {/* Bottom Action Bar */}
       {selectedDocuments.length > 0 && (
-        <div className="p-4 flex items-center justify-between" style={{backgroundColor: 'var(--paperless-surface)', borderTop: '1px solid var(--paperless-border)'}}>
-          <span className="text-sm" style={{color: 'var(--paperless-text)'}}>
+        <div className="p-4 flex items-center justify-between" style={{backgroundColor: 'var(--app-surface)', borderTop: '1px solid var(--app-border)'}}>
+          <span className="text-sm font-medium" style={{color: 'var(--app-text)'}}>
             {selectedDocuments.length} documents selected
           </span>
           <button
             onClick={() => onTestRules(selectedDocuments.map(id => mockDocuments.find(doc => doc.id === id)))}
-            className="px-4 py-2 rounded font-medium"
-            style={{backgroundColor: 'var(--paperless-accent)', color: '#000'}}
+            className="btn btn-primary"
           >
             Test Rules on Selected
           </button>
