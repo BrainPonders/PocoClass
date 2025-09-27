@@ -63,6 +63,14 @@ const RuleEditor = ({ document, rule, onBack }) => {
     }))
   }, [currentStep])
 
+  // Helper function to mark step as edited
+  const markStepEdited = useCallback(() => {
+    setStepStatus(prev => ({
+      ...prev,
+      [currentStep]: prev[currentStep] === 'untouched' ? 'edited' : prev[currentStep]
+    }))
+  }, [currentStep])
+
   // Auto-generate Rule ID from Rule Name
   const generateRuleId = (ruleName) => {
     return ruleName
@@ -509,11 +517,12 @@ poco_weights:
             value={ruleData.ruleName}
             onChange={(e) => {
               const newName = e.target.value
-              updateRuleData('ruleName', newName)
+              setRuleData(prev => ({ ...prev, ruleName: newName }))
               // Auto-generate Rule ID if it hasn't been manually edited
               if (!ruleData.ruleIdManuallyEdited) {
-                updateRuleData('ruleId', generateRuleId(newName))
+                setRuleData(prev => ({ ...prev, ruleId: generateRuleId(newName) }))
               }
+              markStepEdited()
             }}
             placeholder="e.g., Rabobank Year Statement"
             className="form-input"
@@ -527,8 +536,8 @@ poco_weights:
             type="text"
             value={ruleData.ruleId}
             onChange={(e) => {
-              updateRuleData('ruleId', e.target.value)
-              updateRuleData('ruleIdManuallyEdited', true)
+              setRuleData(prev => ({ ...prev, ruleId: e.target.value, ruleIdManuallyEdited: true }))
+              markStepEdited()
             }}
             placeholder="e.g., rabobank_year_statement"
             className="form-input"
@@ -540,7 +549,10 @@ poco_weights:
           <label className="form-label">Description</label>
           <textarea
             value={ruleData.description}
-            onChange={(e) => updateRuleData('description', e.target.value)}
+            onChange={(e) => {
+              setRuleData(prev => ({ ...prev, description: e.target.value }))
+              markStepEdited()
+            }}
             placeholder="Describe what types of documents this rule identifies and any special characteristics..."
             className="form-textarea"
           />
@@ -554,7 +566,10 @@ poco_weights:
               min="50"
               max="100"
               value={ruleData.threshold}
-              onChange={(e) => updateRuleData('threshold', parseInt(e.target.value))}
+              onChange={(e) => {
+                setRuleData(prev => ({ ...prev, threshold: parseInt(e.target.value) }))
+                markStepEdited()
+              }}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               style={{
                 background: `linear-gradient(to right, #ef4444 0%, #f59e0b ${(ruleData.threshold - 50) * 2}%, #16a34a 100%)`
@@ -993,7 +1008,8 @@ poco_weights:
       ...prev,
       coreIdentifiers: [...prev.coreIdentifiers, newGroup]
     }))
-  }, [])
+    markStepEdited()
+  }, [markStepEdited])
 
   const updateCoreLogicGroup = useCallback((index, updatedGroup) => {
     setRuleData(prev => {
@@ -1001,7 +1017,8 @@ poco_weights:
       newGroups[index] = updatedGroup
       return { ...prev, coreIdentifiers: newGroups }
     })
-  }, [])
+    markStepEdited()
+  }, [markStepEdited])
 
   const removeCoreLogicGroup = useCallback((index) => {
     setRuleData(prev => ({
@@ -1020,7 +1037,8 @@ poco_weights:
       ...prev,
       bonusIdentifiers: [...prev.bonusIdentifiers, newGroup]
     }))
-  }, [])
+    markStepEdited()
+  }, [markStepEdited])
 
   const updateBonusLogicGroup = useCallback((index, updatedGroup) => {
     setRuleData(prev => {
