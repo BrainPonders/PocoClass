@@ -11,6 +11,7 @@ const RuleEditor = ({ document, rule, onBack }) => {
     // Step 1: Basic Information
     ruleName: rule?.ruleName || '',
     ruleId: rule?.ruleId || '',
+    ruleIdManuallyEdited: false,
     description: rule?.description || '',
     threshold: rule?.threshold || 75,
     
@@ -38,11 +39,35 @@ const RuleEditor = ({ document, rule, onBack }) => {
     pocoWeights: rule?.pocoWeights || { filename: 5, paperless: 3, content: 10 }
   })
 
-  // Update rule data
+  // Update rule data and mark step as edited
   const updateRuleData = (section, data) => {
     setRuleData(prev => ({
       ...prev,
-      [section]: { ...prev[section], ...data }
+      [section]: typeof data === 'object' && data !== null ? { ...prev[section], ...data } : data
+    }))
+    
+    // Mark current step as edited
+    setStepStatus(prev => ({
+      ...prev,
+      [currentStep]: prev[currentStep] === 'untouched' ? 'edited' : prev[currentStep]
+    }))
+  }
+
+  // Auto-generate Rule ID from Rule Name
+  const generateRuleId = (ruleName) => {
+    return ruleName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+      .replace(/\s+/g, '_') // Replace spaces with underscores
+      .replace(/_+/g, '_') // Replace multiple underscores with single
+      .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
+  }
+
+  // Toggle info box visibility
+  const toggleInfoBox = (step) => {
+    setShowInfoBoxes(prev => ({
+      ...prev,
+      [step]: !prev[step]
     }))
   }
 
@@ -144,41 +169,62 @@ poco_weights:
   content: ${ruleData.pocoWeights.content}      # Weight for content-based scoring (always 10)`
   }
 
+  // Step completion tracking
+  const [stepStatus, setStepStatus] = useState({
+    1: 'untouched', // untouched, edited, completed
+    2: 'untouched',
+    3: 'untouched', 
+    4: 'untouched',
+    5: 'untouched',
+    6: 'untouched',
+    7: 'untouched'
+  })
+
+  // Info box visibility state
+  const [showInfoBoxes, setShowInfoBoxes] = useState({
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true
+  })
+
   // Step Progress Indicator
   const StepProgress = () => (
     <div className="flex items-center justify-center mb-8">
-      {[1, 2, 3, 4, 5, 6, 7].map((step) => (
-        <div key={step} className="flex items-center">
-          <div className="flex flex-col items-center">
+      {[1, 2, 3, 4, 5, 6, 7].map((step) => {
+        const status = step === currentStep ? 'current' : stepStatus[step]
+        return (
+          <div key={step} className="flex items-center">
             <button
               onClick={() => goToStep(step)}
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200 ${
+              className={`w-20 h-16 rounded-lg flex flex-col items-center justify-center text-xs font-bold transition-all duration-200 ${
                 step === currentStep
-                  ? 'bg-blue-500 text-white shadow-lg scale-110'
-                  : step < currentStep
-                  ? 'bg-green-500 text-white shadow-md'
+                  ? 'bg-blue-500 text-white shadow-lg scale-105 border-2 border-blue-300'
+                  : status === 'completed'
+                  ? 'bg-green-500 text-white shadow-md hover:bg-green-600'
+                  : status === 'edited'
+                  ? 'bg-blue-400 text-white shadow-sm hover:bg-blue-500'
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               }`}
             >
-              {step < currentStep ? '✓' : step}
+              <div className="text-lg mb-1">
+                {status === 'completed' ? '✓' : step}
+              </div>
+              <div className="text-xs">
+                Step {step}
+              </div>
             </button>
-            <span className={`text-xs mt-2 font-medium ${
-              step === currentStep
-                ? 'text-blue-600'
-                : step < currentStep 
-                ? 'text-green-600'
-                : 'text-gray-500'
-            }`}>
-              Step {step}
-            </span>
+            {step < 7 && (
+              <div className={`w-16 h-1 mx-4 rounded ${
+                stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-200'
+              }`} />
+            )}
           </div>
-          {step < 7 && (
-            <div className={`w-16 h-1 mx-4 rounded ${
-              step < currentStep ? 'bg-green-500' : 'bg-gray-200'
-            }`} />
-          )}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 
@@ -408,19 +454,38 @@ poco_weights:
   const Step1BasicInfo = () => (
     <div className="wizard-step">
       <div className="step-header">
-        <h2 className="step-title">Step 1 of 7: Basic Information</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 1 of 7: Basic Information</h2>
+          {!showInfoBoxes[1] && (
+            <button 
+              onClick={() => toggleInfoBox(1)}
+              className="text-blue-500 hover:text-blue-700 text-sm"
+              title="Show help information"
+            >
+              (?)
+            </button>
+          )}
+        </div>
         <p className="step-subtitle">Start by defining the basic rule information and identification settings</p>
       </div>
 
-      <div className="info-box info-box-blue">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">!</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">What you're creating</h4>
-            <p className="text-sm">A document identification rule teaches the system to recognize specific types of documents (like bank statements, invoices, or contracts) by looking for patterns in the text and filename.</p>
+      {showInfoBoxes[1] && (
+        <div className="info-box info-box-blue">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">i</div>
+              <h4 className="font-semibold text-sm">What you're creating</h4>
+            </div>
+            <button 
+              onClick={() => toggleInfoBox(1)}
+              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+            >
+              ×
+            </button>
           </div>
+          <p className="text-sm pl-7">A document identification rule teaches the system to recognize specific types of documents (like bank statements, invoices, or contracts) by looking for patterns in the text and filename.</p>
         </div>
-      </div>
+      )}
 
       <div className="space-y-6">
         <div className="form-group">
@@ -428,7 +493,14 @@ poco_weights:
           <input
             type="text"
             value={ruleData.ruleName}
-            onChange={(e) => updateRuleData('ruleName', e.target.value)}
+            onChange={(e) => {
+              const newName = e.target.value
+              updateRuleData('ruleName', newName)
+              // Auto-generate Rule ID if it hasn't been manually edited
+              if (!ruleData.ruleIdManuallyEdited) {
+                updateRuleData('ruleId', generateRuleId(newName))
+              }
+            }}
             placeholder="e.g., Rabobank Year Statement"
             className="form-input"
           />
@@ -440,11 +512,14 @@ poco_weights:
           <input
             type="text"
             value={ruleData.ruleId}
-            onChange={(e) => updateRuleData('ruleId', e.target.value)}
+            onChange={(e) => {
+              updateRuleData('ruleId', e.target.value)
+              updateRuleData('ruleIdManuallyEdited', true)
+            }}
             placeholder="e.g., rabobank_year_statement"
             className="form-input"
           />
-          <p className="text-xs text-gray-500 mt-1">Unique technical identifier (lowercase, underscores only)</p>
+          <p className="text-xs text-gray-500 mt-1">Auto-generated from Rule Name, but you can edit it manually</p>
         </div>
 
         <div className="form-group">
@@ -486,31 +561,42 @@ poco_weights:
   const Step2CoreIdentifiers = () => (
     <div className="wizard-step">
       <div className="step-header">
-        <h2 className="step-title">Step 2 of 7: Core Identifiers</h2>
-        <p className="step-subtitle">Define the essential patterns that must be found in documents for identification</p>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 2 of 7: Core Identifiers</h2>
+          {!showInfoBoxes[2] && (
+            <button 
+              onClick={() => toggleInfoBox(2)}
+              className="text-blue-500 hover:text-blue-700 text-sm"
+              title="Show help information"
+            >
+              (?)
+            </button>
+          )}
+        </div>
+        <p className="step-subtitle">Define the essential patterns that must be found in documents for identification. These are the "must-have" elements that define your document type. Bonus identifiers can be added in Step 3.</p>
       </div>
 
-      <div className="info-box info-box-blue">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">i</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Core Identifiers</h4>
-            <p className="text-sm">Core identifiers are the essential patterns that must be found for document identification. These are the "must-have" elements that define your document type.</p>
+      {showInfoBoxes[2] && (
+        <div className="info-box info-box-blue">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">i</div>
+              <h4 className="font-semibold text-sm">Core Identifiers</h4>
+            </div>
+            <button 
+              onClick={() => toggleInfoBox(2)}
+              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+            >
+              ×
+            </button>
+          </div>
+          <div className="text-sm pl-7">
+            <p className="mb-2">Core identifiers are the essential patterns that must be found for document identification. These are the "must-have" elements that define your document type.</p>
+            <p><strong>Scoring:</strong> Should total 70-100 points for reliable identification<br/>
+            <strong>Logic Groups:</strong> Each group can contain multiple conditions that work together</p>
           </div>
         </div>
-      </div>
-
-      <div className="info-box info-box-red">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">!</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Core vs Bonus Identifiers</h4>
-            <p className="text-sm"><strong>Core Identifiers:</strong> Essential patterns that define the document type<br/>
-            <strong>Total Score:</strong> 0/100 points (should add up to 70-100 points)<br/>
-            <strong>Logic Groups:</strong> Each group can contain multiple conditions</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {ruleData.coreIdentifiers.length === 0 ? (
         <div className="empty-state">
@@ -518,7 +604,7 @@ poco_weights:
           <h3 className="empty-state-title">No Core Identifiers Yet</h3>
           <p className="empty-state-subtitle">Add your first logic group to define essential document patterns</p>
           <button 
-            onClick={() => addCoreLogicGroup()}
+            onClick={addCoreLogicGroup}
             className="btn btn-primary"
           >
             + Add Logic Group
@@ -537,7 +623,7 @@ poco_weights:
             />
           ))}
           <button 
-            onClick={() => addCoreLogicGroup()}
+            onClick={addCoreLogicGroup}
             className="btn btn-outline w-full"
           >
             + Add Logic Group
@@ -560,29 +646,41 @@ poco_weights:
   const Step3BonusIdentifiers = () => (
     <div className="wizard-step">
       <div className="step-header">
-        <h2 className="step-title">Step 3 of 7: Bonus Identifiers</h2>
-        <p className="step-subtitle">Add additional patterns that provide extra confidence in document identification</p>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 3 of 7: Bonus Identifiers</h2>
+          {!showInfoBoxes[3] && (
+            <button 
+              onClick={() => toggleInfoBox(3)}
+              className="text-blue-500 hover:text-blue-700 text-sm"
+              title="Show help information"
+            >
+              (?)
+            </button>
+          )}
+        </div>
+        <p className="step-subtitle">Add additional patterns that provide extra confidence in document identification. These are optional "nice-to-have" patterns that help push the score over the threshold.</p>
       </div>
 
-      <div className="info-box info-box-yellow">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">⭐</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Bonus Identifiers</h4>
-            <p className="text-sm">Bonus identifiers are optional patterns that increase the confidence score. They help confirm a document's identity when core identifiers are met.</p>
+      {showInfoBoxes[3] && (
+        <div className="info-box info-box-yellow">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold">⭐</div>
+              <h4 className="font-semibold text-sm">Bonus Identifiers</h4>
+            </div>
+            <button 
+              onClick={() => toggleInfoBox(3)}
+              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+            >
+              ×
+            </button>
+          </div>
+          <div className="text-sm pl-7">
+            <p className="mb-2">Bonus identifiers are optional patterns that increase the confidence score. They help confirm a document's identity when core identifiers are met.</p>
+            <p>These are "nice-to-have" patterns that are not essential but provide extra points, helping to push the total score over the threshold.</p>
           </div>
         </div>
-      </div>
-
-      <div className="info-box info-box-yellow">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">💡</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">What are bonus identifiers?</h4>
-            <p className="text-sm">These are "nice-to-have" patterns. They are not essential but provide extra points, helping to push the total score over the threshold.</p>
-          </div>
-        </div>
-      </div>
+      )}
 
       {ruleData.bonusIdentifiers.length === 0 ? (
         <div className="empty-state">
@@ -590,7 +688,7 @@ poco_weights:
           <h3 className="empty-state-title">No Bonus Identifiers</h3>
           <p className="empty-state-subtitle">This step is optional. Add bonus identifiers to increase scoring accuracy.</p>
           <button 
-            onClick={() => addBonusLogicGroup()}
+            onClick={addBonusLogicGroup}
             className="btn btn-primary"
           >
             + Add Bonus Logic Group
@@ -609,7 +707,7 @@ poco_weights:
             />
           ))}
           <button 
-            onClick={() => addBonusLogicGroup()}
+            onClick={addBonusLogicGroup}
             className="btn btn-outline w-full"
           >
             + Add Bonus Logic Group
@@ -622,19 +720,38 @@ poco_weights:
   const Step4StaticMetadata = () => (
     <div className="wizard-step">
       <div className="step-header">
-        <h2 className="step-title">Step 4 of 7: Static Metadata</h2>
-        <p className="step-subtitle">Configure fixed information that applies to all documents matching this rule</p>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 4 of 7: Static Metadata</h2>
+          {!showInfoBoxes[4] && (
+            <button 
+              onClick={() => toggleInfoBox(4)}
+              className="text-blue-500 hover:text-blue-700 text-sm"
+              title="Show help information"
+            >
+              (?)
+            </button>
+          )}
+        </div>
+        <p className="step-subtitle">Configure fixed information that applies to all documents matching this rule. This is constant data assigned once a document is recognized.</p>
       </div>
 
-      <div className="info-box info-box-purple">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">📋</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">What is static metadata?</h4>
-            <p className="text-sm">This is constant data you want to assign to a document once it's recognized. For example, every "Rabobank Year Statement" will always have "Rabobank" as the correspondent.</p>
+      {showInfoBoxes[4] && (
+        <div className="info-box info-box-purple">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">📋</div>
+              <h4 className="font-semibold text-sm">Static Metadata</h4>
+            </div>
+            <button 
+              onClick={() => toggleInfoBox(4)}
+              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+            >
+              ×
+            </button>
           </div>
+          <p className="text-sm pl-7">This is constant data you want to assign to a document once it's recognized. For example, every "Rabobank Year Statement" will always have "Rabobank" as the correspondent.</p>
         </div>
-      </div>
+      )}
 
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
@@ -670,15 +787,28 @@ poco_weights:
               type="text"
               placeholder="Add a tag and press Enter"
               className="form-input flex-1"
-              onKeyPress={(e) => {
+              onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
+                  e.preventDefault()
                   const newTags = [...ruleData.staticMetadata.tags, e.target.value.trim()]
                   updateRuleData('staticMetadata', { tags: newTags })
                   e.target.value = ''
                 }
               }}
             />
-            <button className="btn btn-secondary">Add</button>
+            <button 
+              onClick={(e) => {
+                const input = e.target.parentElement.querySelector('input')
+                if (input.value.trim()) {
+                  const newTags = [...ruleData.staticMetadata.tags, input.value.trim()]
+                  updateRuleData('staticMetadata', { tags: newTags })
+                  input.value = ''
+                }
+              }}
+              className="btn btn-secondary"
+            >
+              Add
+            </button>
           </div>
           <div className="flex flex-wrap gap-2">
             {ruleData.staticMetadata.tags.map((tag, index) => (
@@ -702,7 +832,7 @@ poco_weights:
           <div className="flex justify-between items-center mb-3">
             <label className="form-label">Custom Fields</label>
             <button 
-              onClick={() => addCustomField()}
+              onClick={addCustomField}
               className="btn btn-secondary btn-sm"
             >
               + Add Custom Field
