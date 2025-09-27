@@ -991,22 +991,24 @@ poco_weights:
     if (!isVisible) return null
     
     return (
-      <div className="info-box info-box-yellow mb-6">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">
-            <Lightbulb className="w-3 h-3" />
+      <div className="info-box info-box-yellow mb-6 relative">
+        <div className="flex items-start justify-between">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold">
+              <Lightbulb className="w-3 h-3" />
+            </div>
+            <div>
+              {children}
+            </div>
           </div>
-          <div>
-            {children}
-          </div>
+          <button
+            onClick={() => setShowInfoBoxes(prev => ({ ...prev, [stepNumber]: false }))}
+            className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
+            title="Close info box"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
-        <button
-          onClick={() => setShowInfoBoxes(prev => ({ ...prev, [stepNumber]: false }))}
-          className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1 absolute top-2 right-2"
-          title="Close info box"
-        >
-          <X className="w-4 h-4" />
-        </button>
       </div>
     )
   }
