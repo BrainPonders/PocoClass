@@ -1176,7 +1176,7 @@ poco_weights:
       <div className="wizard-container flex-1">
         <div className="wizard-content">
           {/* Step Content */}
-          <div style={{ width: '50%', minWidth: '600px', maxWidth: '700px' }}>
+          <div className="flex-1">
             <StepProgress />
             {renderCurrentStep()}
             
