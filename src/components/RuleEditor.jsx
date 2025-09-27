@@ -682,7 +682,7 @@ poco_weights:
           </button>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
           {ruleData.coreIdentifiers.map((group, index) => (
             <LogicGroupEditor
               key={index}
@@ -752,7 +752,7 @@ poco_weights:
           </button>
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
           {ruleData.bonusIdentifiers.map((group, index) => (
             <LogicGroupEditor
               key={index}
@@ -962,7 +962,7 @@ poco_weights:
         </div>
 
         {isExpanded && (
-          <div className="space-y-6">
+          <div style={{display: 'flex', flexDirection: 'column', gap: '32px'}}>
             <div className="grid grid-cols-2 gap-4">
               <div className="form-group">
                 <label className="form-label">Group Type</label>
@@ -990,7 +990,7 @@ poco_weights:
 
             <div>
               <label className="form-label">Conditions</label>
-              <div className="space-y-3 mt-4">
+              <div style={{display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px'}}>
                 {conditions.map((condition, conditionIndex) => (
                   <div key={conditionIndex} className="grid grid-cols-12 gap-2 items-end">
                     <div className="col-span-5">
@@ -1042,7 +1042,7 @@ poco_weights:
                     </div>
                   </div>
                 ))}
-                <div className="mt-4">
+                <div style={{marginTop: '16px'}}>
                   <button 
                     onClick={addCondition}
                     className="btn btn-outline btn-sm"
