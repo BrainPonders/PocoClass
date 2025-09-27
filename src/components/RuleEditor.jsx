@@ -537,7 +537,7 @@ poco_weights:
   )
 
   // Step components
-  const Step1BasicInfo = () => (
+  const Step1BasicInfo = useMemo(() => (
     <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
         <div className="flex items-center gap-2">
@@ -566,6 +566,7 @@ poco_weights:
         <div className="form-group">
           <label className="form-label">Rule Name</label>
           <input
+            key="rule-name-input"
             type="text"
             value={ruleData.ruleName}
             onChange={handleRuleNameChange}
@@ -630,7 +631,7 @@ poco_weights:
         </div>
       </div>
     </div>
-  )
+  ), [ruleData.ruleName, ruleData.ruleId, ruleData.description, ruleData.threshold, ruleData.ruleIdManuallyEdited, showInfoBoxes, handleRuleNameChange, markStepEdited])
 
   const Step2CoreIdentifiers = () => (
     <div className="wizard-step" style={{minWidth: '800px'}}>
