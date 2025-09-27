@@ -43,7 +43,7 @@ const RuleEditor = ({ document, rule, onBack }) => {
     },
     
     // Step 6: Filename Patterns
-    filenamePatterns: rule?.filenamePatterns || []
+    filenamePatterns: rule?.filenamePatterns || [],
     
     // Step 7: Review & Export
     pocoWeights: rule?.pocoWeights || { filename: 5, paperless: 3, content: 10 }
@@ -265,9 +265,13 @@ poco_weights:
             <div>
               <label className="form-label text-xs">Date Format</label>
               <select className="form-select">
+                <option value="dd-mm-yyyy">dd-mm-yyyy</option>
+                <option value="yyyy-mm-dd">yyyy-mm-dd</option>
+                <option value="dd-mmm-yyyy">dd-mmm-yyyy</option>
+                <option value="dd mmmm yyyy">dd mmmm yyyy</option>
+                <option value="mm-yyyy">mm-yyyy</option>
+                <option value="yyyy-mm">yyyy-mm</option>
                 <option value="%Y">Year only (%Y)</option>
-                <option value="%Y-%m-%d">YYYY-MM-DD</option>
-                <option value="%d/%m/%Y">DD/MM/YYYY</option>
               </select>
             </div>
           </div>
@@ -457,40 +461,29 @@ poco_weights:
 
   // Step components
   const Step1BasicInfo = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
         <div className="flex items-center gap-2">
           <h2 className="step-title">Step 1 of 7: Basic Information</h2>
           {!showInfoBoxes[1] && (
             <button 
-              onClick={() => toggleInfoBox(1)}
-              className="text-blue-500 hover:text-blue-700 text-sm"
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 1: true }))}
+              className="text-gray-400 hover:text-gray-600 text-sm"
               title="Show help information"
             >
-              (?)
+              <Info className="w-4 h-4" />
             </button>
           )}
         </div>
         <p className="step-subtitle">Start by defining the basic rule information and identification settings</p>
       </div>
 
-      {showInfoBoxes[1] && (
-        <div className="info-box info-box-blue">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">i</div>
-              <h4 className="font-semibold text-sm">What you're creating</h4>
-            </div>
-            <button 
-              onClick={() => toggleInfoBox(1)}
-              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-            >
-              ×
-            </button>
-          </div>
-          <p className="text-sm pl-7">A document identification rule teaches the system to recognize specific types of documents (like bank statements, invoices, or contracts) by looking for patterns in the text and filename.</p>
+      <InfoBox type="info" stepNumber={1}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">What you're creating</h4>
+          <p className="text-sm">A document identification rule teaches the system to recognize specific types of documents (like bank statements, invoices, or contracts) by looking for patterns in the text and filename.</p>
         </div>
-      )}
+      </InfoBox>
 
       <div className="space-y-6">
         <div className="form-group">
@@ -564,44 +557,31 @@ poco_weights:
   )
 
   const Step2CoreIdentifiers = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
         <div className="flex items-center gap-2">
           <h2 className="step-title">Step 2 of 7: Core Identifiers</h2>
           {!showInfoBoxes[2] && (
             <button 
-              onClick={() => toggleInfoBox(2)}
-              className="text-blue-500 hover:text-blue-700 text-sm"
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 2: true }))}
+              className="text-gray-400 hover:text-gray-600 text-sm"
               title="Show help information"
             >
-              (?)
+              <Info className="w-4 h-4" />
             </button>
           )}
         </div>
         <p className="step-subtitle">Define the essential patterns that must be found in documents for identification. These are the "must-have" elements that define your document type. Bonus identifiers can be added in Step 3.</p>
       </div>
 
-      {showInfoBoxes[2] && (
-        <div className="info-box info-box-blue">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">i</div>
-              <h4 className="font-semibold text-sm">Core Identifiers</h4>
-            </div>
-            <button 
-              onClick={() => toggleInfoBox(2)}
-              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-            >
-              ×
-            </button>
-          </div>
-          <div className="text-sm pl-7">
-            <p className="mb-2">Core identifiers are the essential patterns that must be found for document identification. These are the "must-have" elements that define your document type.</p>
-            <p><strong>Scoring:</strong> Should total 70-100 points for reliable identification<br/>
-            <strong>Logic Groups:</strong> Each group can contain multiple conditions that work together</p>
-          </div>
+      <InfoBox type="info" stepNumber={2}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">Core Identifiers</h4>
+          <p className="text-sm mb-2">Core identifiers are the essential patterns that must be found for document identification. These are the "must-have" elements that define your document type.</p>
+          <p className="text-sm"><strong>Scoring:</strong> Should total 70-100 points for reliable identification<br/>
+          <strong>Logic Groups:</strong> Each group can contain multiple conditions that work together</p>
         </div>
-      )}
+      </InfoBox>
 
       {ruleData.coreIdentifiers.length === 0 ? (
         <div className="empty-state">
@@ -649,43 +629,29 @@ poco_weights:
   )
 
   const Step3BonusIdentifiers = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
         <div className="flex items-center gap-2">
           <h2 className="step-title">Step 3 of 7: Bonus Identifiers</h2>
           {!showInfoBoxes[3] && (
             <button 
-              onClick={() => toggleInfoBox(3)}
-              className="text-blue-500 hover:text-blue-700 text-sm"
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 3: true }))}
+              className="text-gray-400 hover:text-gray-600 text-sm"
               title="Show help information"
             >
-              (?)
+              <Info className="w-4 h-4" />
             </button>
           )}
         </div>
         <p className="step-subtitle">Add additional patterns that provide extra confidence in document identification. These are optional "nice-to-have" patterns that help push the score over the threshold.</p>
       </div>
 
-      {showInfoBoxes[3] && (
-        <div className="info-box info-box-yellow">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold">⭐</div>
-              <h4 className="font-semibold text-sm">Bonus Identifiers</h4>
-            </div>
-            <button 
-              onClick={() => toggleInfoBox(3)}
-              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-            >
-              ×
-            </button>
-          </div>
-          <div className="text-sm pl-7">
-            <p className="mb-2">Bonus identifiers are optional patterns that increase the confidence score. They help confirm a document's identity when core identifiers are met.</p>
-            <p>These are "nice-to-have" patterns that are not essential but provide extra points, helping to push the total score over the threshold.</p>
-          </div>
+      <InfoBox type="info" stepNumber={3}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">Bonus Identifiers</h4>
+          <p className="text-sm mb-2">These are "nice-to-have" patterns that are not essential but provide extra points, helping to push the total score over the threshold.</p>
         </div>
-      )}
+      </InfoBox>
 
       {ruleData.bonusIdentifiers.length === 0 ? (
         <div className="empty-state">
