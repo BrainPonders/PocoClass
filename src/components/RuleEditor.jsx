@@ -1007,19 +1007,26 @@ poco_weights:
       score: 20,
       conditions: [{ pattern: '', source: 'content', range: '0-1600', addTag: '' }]
     }
-    updateRuleData('coreIdentifiers', [...ruleData.coreIdentifiers, newGroup])
-  }, [ruleData.coreIdentifiers, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      coreIdentifiers: [...prev.coreIdentifiers, newGroup]
+    }))
+  }, [])
 
   const updateCoreLogicGroup = useCallback((index, updatedGroup) => {
-    const newGroups = [...ruleData.coreIdentifiers]
-    newGroups[index] = updatedGroup
-    updateRuleData('coreIdentifiers', newGroups)
-  }, [ruleData.coreIdentifiers, updateRuleData])
+    setRuleData(prev => {
+      const newGroups = [...prev.coreIdentifiers]
+      newGroups[index] = updatedGroup
+      return { ...prev, coreIdentifiers: newGroups }
+    })
+  }, [])
 
   const removeCoreLogicGroup = useCallback((index) => {
-    const newGroups = ruleData.coreIdentifiers.filter((_, i) => i !== index)
-    updateRuleData('coreIdentifiers', newGroups)
-  }, [ruleData.coreIdentifiers, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      coreIdentifiers: prev.coreIdentifiers.filter((_, i) => i !== index)
+    }))
+  }, [])
 
   const addBonusLogicGroup = useCallback(() => {
     const newGroup = {
@@ -1027,19 +1034,26 @@ poco_weights:
       score: 10,
       conditions: [{ pattern: '', source: 'content', range: '0-1600', addTag: '' }]
     }
-    updateRuleData('bonusIdentifiers', [...ruleData.bonusIdentifiers, newGroup])
-  }, [ruleData.bonusIdentifiers, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      bonusIdentifiers: [...prev.bonusIdentifiers, newGroup]
+    }))
+  }, [])
 
   const updateBonusLogicGroup = useCallback((index, updatedGroup) => {
-    const newGroups = [...ruleData.bonusIdentifiers]
-    newGroups[index] = updatedGroup
-    updateRuleData('bonusIdentifiers', newGroups)
-  }, [ruleData.bonusIdentifiers, updateRuleData])
+    setRuleData(prev => {
+      const newGroups = [...prev.bonusIdentifiers]
+      newGroups[index] = updatedGroup
+      return { ...prev, bonusIdentifiers: newGroups }
+    })
+  }, [])
 
   const removeBonusLogicGroup = useCallback((index) => {
-    const newGroups = ruleData.bonusIdentifiers.filter((_, i) => i !== index)
-    updateRuleData('bonusIdentifiers', newGroups)
-  }, [ruleData.bonusIdentifiers, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      bonusIdentifiers: prev.bonusIdentifiers.filter((_, i) => i !== index)
+    }))
+  }, [])
 
   const calculateCoreScore = () => {
     return ruleData.coreIdentifiers.reduce((total, group) => total + (group.score || 0), 0)
@@ -1047,20 +1061,35 @@ poco_weights:
 
   // Custom field management
   const addCustomField = useCallback(() => {
-    const newFields = [...ruleData.staticMetadata.customFields, { name: '', value: '' }]
-    updateRuleData('staticMetadata', { customFields: newFields })
-  }, [ruleData.staticMetadata.customFields, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      staticMetadata: {
+        ...prev.staticMetadata,
+        customFields: [...prev.staticMetadata.customFields, { name: '', value: '' }]
+      }
+    }))
+  }, [])
 
   const updateCustomField = useCallback((index, field, value) => {
-    const newFields = [...ruleData.staticMetadata.customFields]
-    newFields[index] = { ...newFields[index], [field]: value }
-    updateRuleData('staticMetadata', { customFields: newFields })
-  }, [ruleData.staticMetadata.customFields, updateRuleData])
+    setRuleData(prev => {
+      const newFields = [...prev.staticMetadata.customFields]
+      newFields[index] = { ...newFields[index], [field]: value }
+      return {
+        ...prev,
+        staticMetadata: { ...prev.staticMetadata, customFields: newFields }
+      }
+    })
+  }, [])
 
   const removeCustomField = useCallback((index) => {
-    const newFields = ruleData.staticMetadata.customFields.filter((_, i) => i !== index)
-    updateRuleData('staticMetadata', { customFields: newFields })
-  }, [ruleData.staticMetadata.customFields, updateRuleData])
+    setRuleData(prev => ({
+      ...prev,
+      staticMetadata: {
+        ...prev.staticMetadata,
+        customFields: prev.staticMetadata.customFields.filter((_, i) => i !== index)
+      }
+    }))
+  }, [])
 
   // Render current step
   const renderCurrentStep = () => {
