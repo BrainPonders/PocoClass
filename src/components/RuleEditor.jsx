@@ -72,14 +72,30 @@ const RuleEditor = ({ document, rule, onBack }) => {
   }, [currentStep])
 
   // Auto-generate Rule ID from Rule Name
-  const generateRuleId = (ruleName) => {
+  const generateRuleId = useCallback((ruleName) => {
     return ruleName
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '') // Remove special characters
       .replace(/\s+/g, '_') // Replace spaces with underscores
       .replace(/_+/g, '_') // Replace multiple underscores with single
       .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
-  }
+  }, [])
+
+  // Stable onChange handler for Rule Name to prevent focus loss
+  const handleRuleNameChange = useCallback((e) => {
+    const newName = e.target.value
+    // Update both ruleName and ruleId in a single state update to prevent focus loss
+    setRuleData(prev => ({
+      ...prev,
+      ruleName: newName,
+      ...(prev.ruleIdManuallyEdited ? {} : { ruleId: generateRuleId(newName) })
+    }))
+    // Mark step as edited using direct state update to avoid circular dependencies
+    setStepStatus(prev => ({
+      ...prev,
+      [currentStep]: prev[currentStep] === 'untouched' ? 'edited' : prev[currentStep]
+    }))
+  }, [generateRuleId, currentStep])
 
   // Toggle info box visibility
   const toggleInfoBox = (step) => {
@@ -552,16 +568,7 @@ poco_weights:
           <input
             type="text"
             value={ruleData.ruleName}
-            onChange={(e) => {
-              const newName = e.target.value
-              // Update both ruleName and ruleId in a single state update to prevent focus loss
-              setRuleData(prev => ({
-                ...prev,
-                ruleName: newName,
-                ...(prev.ruleIdManuallyEdited ? {} : { ruleId: generateRuleId(newName) })
-              }))
-              markStepEdited()
-            }}
+            onChange={handleRuleNameChange}
             placeholder="e.g., ExampleBank Year Statement"
             className="form-input"
           />
