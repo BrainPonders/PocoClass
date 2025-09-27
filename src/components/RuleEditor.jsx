@@ -992,9 +992,9 @@ poco_weights:
     
     return (
       <div className="info-box info-box-yellow mb-6">
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold">
+            <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500 text-white shrink-0">
               <Lightbulb className="w-3 h-3" />
             </div>
             <div>
