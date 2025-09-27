@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { ArrowLeft, Save, Eye, FileText, Copy, Download, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import React, { useState, useCallback } from 'react'
+import { ArrowLeft, Save, Eye, FileText, Copy, Download, Plus, Trash2, ChevronDown, ChevronUp, X, Info, Lightbulb, AlertTriangle } from 'lucide-react'
 
 const RuleEditor = ({ document, rule, onBack }) => {
   // Wizard state management
@@ -30,17 +30,27 @@ const RuleEditor = ({ document, rule, onBack }) => {
     },
     
     // Step 5: Dynamic Metadata
-    dynamicMetadata: rule?.dynamicMetadata || {},
+    dynamicMetadata: {
+      datePatterns: rule?.dynamicMetadata?.datePatterns || [
+        { name: 'dd-mm-yyyy', pattern: '\\d{2}-\\d{2}-\\d{4}' },
+        { name: 'yyyy-mm-dd', pattern: '\\d{4}-\\d{2}-\\d{2}' },
+        { name: 'dd-mmm-yyyy', pattern: '\\d{2}-[A-Za-z]{3}-\\d{4}' },
+        { name: 'dd mmmm yyyy', pattern: '\\d{2} [A-Za-z]+ \\d{4}' },
+        { name: 'mm-yyyy', pattern: '\\d{2}-\\d{4}' },
+        { name: 'yyyy-mm', pattern: '\\d{4}-\\d{2}' }
+      ],
+      ...rule?.dynamicMetadata
+    },
     
     // Step 6: Filename Patterns
-    filenamePatterns: rule?.filenamePatterns || [],
+    filenamePatterns: rule?.filenamePatterns || []
     
     // Step 7: Review & Export
     pocoWeights: rule?.pocoWeights || { filename: 5, paperless: 3, content: 10 }
   })
 
   // Update rule data and mark step as edited
-  const updateRuleData = (section, data) => {
+  const updateRuleData = useCallback((section, data) => {
     setRuleData(prev => ({
       ...prev,
       [section]: typeof data === 'object' && data !== null ? { ...prev[section], ...data } : data
@@ -51,7 +61,7 @@ const RuleEditor = ({ document, rule, onBack }) => {
       ...prev,
       [currentStep]: prev[currentStep] === 'untouched' ? 'edited' : prev[currentStep]
     }))
-  }
+  }, [currentStep])
 
   // Auto-generate Rule ID from Rule Name
   const generateRuleId = (ruleName) => {
@@ -200,26 +210,21 @@ poco_weights:
           <div key={step} className="flex items-center">
             <button
               onClick={() => goToStep(step)}
-              className={`w-20 h-16 rounded-lg flex flex-col items-center justify-center text-xs font-bold transition-all duration-200 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 step === currentStep
-                  ? 'bg-blue-500 text-white shadow-lg scale-105 border-2 border-blue-300'
+                  ? 'bg-blue-500 text-white shadow-md'
                   : status === 'completed'
-                  ? 'bg-green-500 text-white shadow-md hover:bg-green-600'
+                  ? 'bg-green-500 text-white shadow-sm hover:bg-green-600'
                   : status === 'edited'
                   ? 'bg-blue-400 text-white shadow-sm hover:bg-blue-500'
-                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  : 'bg-gray-400 text-white hover:bg-gray-500'
               }`}
             >
-              <div className="text-lg mb-1">
-                {status === 'completed' ? '✓' : step}
-              </div>
-              <div className="text-xs">
-                Step {step}
-              </div>
+              Step {step}
             </button>
             {step < 7 && (
-              <div className={`w-16 h-1 mx-4 rounded ${
-                stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-200'
+              <div className={`w-8 h-1 mx-2 rounded ${
+                stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-300'
               }`} />
             )}
           </div>
@@ -956,6 +961,40 @@ poco_weights:
     )
   }
 
+  // Info Box Component
+  const InfoBox = ({ type = 'info', title, children, onClose, stepNumber }) => {
+    const isVisible = showInfoBoxes[stepNumber]
+    
+    if (!isVisible) return null
+    
+    return (
+      <div className={`info-box mb-6 p-4 rounded-lg border ${
+        type === 'info' 
+          ? 'bg-yellow-50 border-yellow-200' 
+          : 'bg-red-50 border-red-200'
+      }`}>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            {type === 'info' ? (
+              <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+            ) : (
+              <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            )}
+            <div className={`text-sm ${type === 'info' ? 'text-yellow-800' : 'text-red-800'}`}>
+              {children}
+            </div>
+          </div>
+          <button
+            onClick={() => setShowInfoBoxes(prev => ({ ...prev, [stepNumber]: false }))}
+            className={`text-xs ${type === 'info' ? 'text-yellow-600 hover:text-yellow-800' : 'text-red-600 hover:text-red-800'}`}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // YAML Preview Panel
   const YamlPreview = () => (
     <div className="yaml-preview">
@@ -1025,21 +1064,21 @@ poco_weights:
   }
 
   // Custom field management
-  const addCustomField = () => {
+  const addCustomField = useCallback(() => {
     const newFields = [...ruleData.staticMetadata.customFields, { name: '', value: '' }]
     updateRuleData('staticMetadata', { customFields: newFields })
-  }
+  }, [ruleData.staticMetadata.customFields, updateRuleData])
 
-  const updateCustomField = (index, field, value) => {
+  const updateCustomField = useCallback((index, field, value) => {
     const newFields = [...ruleData.staticMetadata.customFields]
     newFields[index] = { ...newFields[index], [field]: value }
     updateRuleData('staticMetadata', { customFields: newFields })
-  }
+  }, [ruleData.staticMetadata.customFields, updateRuleData])
 
-  const removeCustomField = (index) => {
+  const removeCustomField = useCallback((index) => {
     const newFields = ruleData.staticMetadata.customFields.filter((_, i) => i !== index)
     updateRuleData('staticMetadata', { customFields: newFields })
-  }
+  }, [ruleData.staticMetadata.customFields, updateRuleData])
 
   // Render current step
   const renderCurrentStep = () => {
