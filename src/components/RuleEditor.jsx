@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 import { ArrowLeft, Save, Eye, FileText, Copy, Download, Plus, Trash2, ChevronDown, ChevronUp, X, Info, Lightbulb, AlertTriangle } from 'lucide-react'
 
 const RuleEditor = ({ document, rule, onBack }) => {
@@ -567,8 +567,8 @@ poco_weights:
           <label className="form-label">Rule Name</label>
           <input
             type="text"
-            value={ruleData.ruleName}
-            onChange={(e) => {
+            defaultValue={ruleData.ruleName}
+            onBlur={(e) => {
               setRuleData(prev => ({ ...prev, ruleName: e.target.value }))
             }}
             placeholder="e.g., ExampleBank Year Statement"
