@@ -267,7 +267,7 @@ body {
 /* Wizard styling */
 .wizard-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0; /* Removed auto centering to move left */
   padding: 24px 24px 24px 8px; /* Reduced left padding from 24px to 8px */
 }
 
