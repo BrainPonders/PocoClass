@@ -554,11 +554,12 @@ poco_weights:
             value={ruleData.ruleName}
             onChange={(e) => {
               const newName = e.target.value
-              setRuleData(prev => ({ ...prev, ruleName: newName }))
-              // Auto-generate Rule ID if it hasn't been manually edited
-              if (!ruleData.ruleIdManuallyEdited) {
-                setRuleData(prev => ({ ...prev, ruleId: generateRuleId(newName) }))
-              }
+              // Update both ruleName and ruleId in a single state update to prevent focus loss
+              setRuleData(prev => ({
+                ...prev,
+                ruleName: newName,
+                ...(prev.ruleIdManuallyEdited ? {} : { ruleId: generateRuleId(newName) })
+              }))
               markStepEdited()
             }}
             placeholder="e.g., ExampleBank Year Statement"
