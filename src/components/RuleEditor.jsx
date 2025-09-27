@@ -210,20 +210,20 @@ poco_weights:
           <div key={step} className="flex items-center">
             <button
               onClick={() => goToStep(step)}
-              className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`px-8 py-4 rounded-full text-sm font-medium transition-all duration-200 min-w-[120px] ${
                 step === currentStep
-                  ? 'bg-blue-500 text-white shadow-md'
+                  ? 'bg-blue-600 text-white shadow-md border-2 border-blue-700'
                   : status === 'completed'
-                  ? 'bg-green-500 text-white shadow-sm hover:bg-green-600'
+                  ? 'bg-green-600 text-white shadow-sm hover:bg-green-700 border-2 border-green-700'
                   : status === 'edited'
-                  ? 'bg-blue-400 text-white shadow-sm hover:bg-blue-500'
-                  : 'bg-gray-400 text-white hover:bg-gray-500'
+                  ? 'bg-blue-400 text-white shadow-sm hover:bg-blue-500 border-2 border-blue-500'
+                  : 'bg-gray-400 text-white hover:bg-gray-500 border-2 border-gray-500'
               }`}
             >
               Step {step}
             </button>
             {step < 7 && (
-              <div className={`w-12 h-1 mx-4 rounded ${
+              <div className={`w-16 h-1 mx-6 rounded ${
                 stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-300'
               }`} />
             )}
