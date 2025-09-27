@@ -210,7 +210,7 @@ poco_weights:
           <div key={step} className="flex items-center">
             <button
               onClick={() => goToStep(step)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-200 ${
                 step === currentStep
                   ? 'bg-blue-500 text-white shadow-md'
                   : status === 'completed'
@@ -223,7 +223,7 @@ poco_weights:
               Step {step}
             </button>
             {step < 7 && (
-              <div className={`w-8 h-1 mx-2 rounded ${
+              <div className={`w-12 h-1 mx-4 rounded ${
                 stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-300'
               }`} />
             )}
@@ -234,21 +234,29 @@ poco_weights:
   )
 
   const Step5DynamicMetadata = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px'}}>
       <div className="step-header">
-        <h2 className="step-title">Step 5 of 7: Dynamic Metadata</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 5 of 7: Dynamic Metadata</h2>
+          {!showInfoBoxes[5] && (
+            <button 
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 5: true }))}
+              className="text-gray-400 hover:text-gray-600 text-sm"
+              title="Show help information"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          )}
+        </div>
         <p className="step-subtitle">Extract specific data from document content using patterns</p>
       </div>
 
-      <div className="info-box info-box-blue">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">🔍</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Dynamic Metadata</h4>
-            <p className="text-sm">Extract specific information from documents using regex patterns. For example, extract the year from "Jaaroverzicht 2023" or account numbers from content.</p>
-          </div>
+      <InfoBox type="info" stepNumber={5}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">Dynamic Metadata</h4>
+          <p className="text-sm">Extract specific information from documents using regex patterns. For example, extract the year from "Jaaroverzicht 2023" or account numbers from content.</p>
         </div>
-      </div>
+      </InfoBox>
 
       <div className="space-y-6">
         <div className="form-group">
@@ -295,21 +303,29 @@ poco_weights:
   )
 
   const Step6FilenamePatterns = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px', width: '800px'}}>
       <div className="step-header">
-        <h2 className="step-title">Step 6 of 7: Filename Patterns</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="step-title">Step 6 of 7: Filename Patterns</h2>
+          {!showInfoBoxes[6] && (
+            <button 
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 6: true }))}
+              className="text-gray-400 hover:text-gray-600 text-sm"
+              title="Show help information"
+            >
+              <Info className="w-4 h-4" />
+            </button>
+          )}
+        </div>
         <p className="step-subtitle">Define patterns for filename-based metadata extraction</p>
       </div>
 
-      <div className="info-box info-box-purple">
-        <div className="flex items-start gap-3">
-          <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">📁</div>
-          <div>
-            <h4 className="font-semibold text-sm mb-1">Filename Patterns</h4>
-            <p className="text-sm">Extract metadata from filenames when documents follow specific naming conventions. This provides backup extraction when content-based methods fail.</p>
-          </div>
+      <InfoBox type="info" stepNumber={6}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">Filename Patterns</h4>
+          <p className="text-sm">Extract metadata from filenames when documents follow specific naming conventions. This provides backup extraction when content-based methods fail.</p>
         </div>
-      </div>
+      </InfoBox>
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
@@ -985,45 +1001,45 @@ poco_weights:
   )
 
   // Helper functions for logic groups
-  const addCoreLogicGroup = () => {
+  const addCoreLogicGroup = useCallback(() => {
     const newGroup = {
       type: 'match',
       score: 20,
       conditions: [{ pattern: '', source: 'content', range: '0-1600', addTag: '' }]
     }
     updateRuleData('coreIdentifiers', [...ruleData.coreIdentifiers, newGroup])
-  }
+  }, [ruleData.coreIdentifiers, updateRuleData])
 
-  const updateCoreLogicGroup = (index, updatedGroup) => {
+  const updateCoreLogicGroup = useCallback((index, updatedGroup) => {
     const newGroups = [...ruleData.coreIdentifiers]
     newGroups[index] = updatedGroup
     updateRuleData('coreIdentifiers', newGroups)
-  }
+  }, [ruleData.coreIdentifiers, updateRuleData])
 
-  const removeCoreLogicGroup = (index) => {
+  const removeCoreLogicGroup = useCallback((index) => {
     const newGroups = ruleData.coreIdentifiers.filter((_, i) => i !== index)
     updateRuleData('coreIdentifiers', newGroups)
-  }
+  }, [ruleData.coreIdentifiers, updateRuleData])
 
-  const addBonusLogicGroup = () => {
+  const addBonusLogicGroup = useCallback(() => {
     const newGroup = {
       type: 'match',
       score: 10,
       conditions: [{ pattern: '', source: 'content', range: '0-1600', addTag: '' }]
     }
     updateRuleData('bonusIdentifiers', [...ruleData.bonusIdentifiers, newGroup])
-  }
+  }, [ruleData.bonusIdentifiers, updateRuleData])
 
-  const updateBonusLogicGroup = (index, updatedGroup) => {
+  const updateBonusLogicGroup = useCallback((index, updatedGroup) => {
     const newGroups = [...ruleData.bonusIdentifiers]
     newGroups[index] = updatedGroup
     updateRuleData('bonusIdentifiers', newGroups)
-  }
+  }, [ruleData.bonusIdentifiers, updateRuleData])
 
-  const removeBonusLogicGroup = (index) => {
+  const removeBonusLogicGroup = useCallback((index) => {
     const newGroups = ruleData.bonusIdentifiers.filter((_, i) => i !== index)
     updateRuleData('bonusIdentifiers', newGroups)
-  }
+  }, [ruleData.bonusIdentifiers, updateRuleData])
 
   const calculateCoreScore = () => {
     return ruleData.coreIdentifiers.reduce((total, group) => total + (group.score || 0), 0)
