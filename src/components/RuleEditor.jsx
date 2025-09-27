@@ -569,7 +569,15 @@ poco_weights:
             type="text"
             defaultValue={ruleData.ruleName}
             onBlur={(e) => {
-              setRuleData(prev => ({ ...prev, ruleName: e.target.value }))
+              const newRuleName = e.target.value
+              setRuleData(prev => {
+                const updates = { ruleName: newRuleName }
+                // Auto-generate Rule ID if it hasn't been manually edited
+                if (!prev.ruleIdManuallyEdited) {
+                  updates.ruleId = newRuleName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')
+                }
+                return { ...prev, ...updates }
+              })
             }}
             placeholder="e.g., ExampleBank Year Statement"
             className="form-input"
@@ -595,8 +603,8 @@ poco_weights:
         <div className="form-group">
           <label className="form-label">Description</label>
           <textarea
-            value={ruleData.description}
-            onChange={(e) => {
+            defaultValue={ruleData.description}
+            onBlur={(e) => {
               setRuleData(prev => ({ ...prev, description: e.target.value }))
               markStepEdited()
             }}
