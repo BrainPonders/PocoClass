@@ -212,7 +212,7 @@ poco_weights:
   // Step Progress Indicator
   const StepProgress = () => {
     return (
-      <div className="flex items-center justify-center mb-8">
+      <div className="flex items-center justify-start mb-8">
         {[1, 2, 3, 4, 5, 6, 7].map((step) => {
           const isCurrentStep = step === currentStep
           const stepStatusValue = stepStatus[step]
@@ -1176,7 +1176,7 @@ poco_weights:
       <div className="wizard-container flex-1">
         <div className="wizard-content">
           {/* Step Content */}
-          <div className="flex-1">
+          <div style={{ width: '50%', minWidth: '600px', maxWidth: '700px' }}>
             <StepProgress />
             {renderCurrentStep()}
             
