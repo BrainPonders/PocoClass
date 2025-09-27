@@ -212,7 +212,7 @@ poco_weights:
   // Step Progress Indicator
   const StepProgress = () => {
     return (
-      <div className="flex items-center justify-start mb-8">
+      <div className="flex items-center justify-start" style={{marginBottom: '20px'}}>
         {[1, 2, 3, 4, 5, 6, 7].map((step) => {
           const isCurrentStep = step === currentStep
           const stepStatusValue = stepStatus[step]
@@ -1174,10 +1174,12 @@ poco_weights:
 
       {/* Main Content */}
       <div className="wizard-container flex-1">
+        {/* Step Progress - Above the grid */}
+        <StepProgress />
+        
         <div className="wizard-content">
           {/* Step Content */}
           <div className="flex-1">
-            <StepProgress />
             {renderCurrentStep()}
             
             {/* Navigation */}
@@ -1199,7 +1201,7 @@ poco_weights:
             </div>
           </div>
 
-          {/* YAML Preview */}
+          {/* YAML Preview - Now aligned with wizard card */}
           {showYamlPreview && <YamlPreview />}
         </div>
       </div>

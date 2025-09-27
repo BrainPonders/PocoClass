@@ -268,7 +268,7 @@ body {
 .wizard-container {
   max-width: 1200px;
   margin: 0; /* Removed auto centering to move left */
-  padding: 24px 24px 24px 8px; /* Reduced left padding from 24px to 8px */
+  padding: 24px 24px 24px 30px; /* 30px space between sidebar and wizard */
 }
 
 .wizard-header {
@@ -298,8 +298,8 @@ body {
 
 .wizard-content {
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 24px; /* Reduced gap from 32px to 24px */
+  grid-template-columns: 1fr 600px; /* Made YAML preview 50% wider: 400px → 600px */
+  gap: 30px; /* 30px space between wizard and YAML preview */
 }
 
 .wizard-step {
