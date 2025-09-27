@@ -219,12 +219,12 @@ poco_weights:
           
           // Use inline styles to override any CSS issues
           let buttonStyle = {
-            padding: '16px 32px',
+            padding: '12px 16px',
             borderRadius: '9999px',
-            fontSize: '14px',
+            fontSize: '12px',
             fontWeight: '500',
             transition: 'all 0.2s',
-            minWidth: '120px',
+            minWidth: '60px',
             color: 'white',
             border: '2px solid',
             cursor: 'pointer'
@@ -263,9 +263,9 @@ poco_weights:
               {step < 7 && (
                 <div 
                   style={{
-                    width: '64px',
+                    width: '32px',
                     height: '4px',
-                    margin: '0 12px',
+                    margin: '0 8px',
                     borderRadius: '2px',
                     backgroundColor: stepStatusValue === 'completed' ? '#10b981' : '#d1d5db'
                   }}
