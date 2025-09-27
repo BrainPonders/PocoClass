@@ -266,7 +266,7 @@ body {
 
 /* Wizard styling */
 .wizard-container {
-  max-width: 1200px;
+  max-width: 1500px; /* Increased to accommodate 800px wizard + 30px gap + 600px YAML preview */
   margin: 0; /* Removed auto centering to move left */
   padding: 24px 24px 24px 30px; /* 30px space between sidebar and wizard */
   overflow-y: auto; /* Enable vertical scrolling */
