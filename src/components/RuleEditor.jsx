@@ -210,36 +210,48 @@ poco_weights:
   })
 
   // Step Progress Indicator
-  const StepProgress = () => (
-    <div className="flex items-center justify-center mb-8">
-      {[1, 2, 3, 4, 5, 6, 7].map((step) => {
-        const status = step === currentStep ? 'current' : stepStatus[step]
-        return (
-          <div key={step} className="flex items-center">
-            <button
-              onClick={() => goToStep(step)}
-              className={`px-8 py-4 rounded-full text-sm font-medium transition-all duration-200 min-w-[120px] ${
-                step === currentStep
-                  ? 'bg-blue-600 text-white shadow-md border-2 border-blue-700'
-                  : status === 'completed'
-                  ? 'bg-green-600 text-white shadow-sm hover:bg-green-700 border-2 border-green-700'
-                  : status === 'edited'
-                  ? 'bg-blue-400 text-white shadow-sm hover:bg-blue-500 border-2 border-blue-500'
-                  : 'bg-gray-400 text-white hover:bg-gray-500 border-2 border-gray-500'
-              }`}
-            >
-              Step {step}
-            </button>
-            {step < 7 && (
-              <div className={`w-16 h-1 mx-6 rounded ${
-                stepStatus[step] === 'completed' ? 'bg-green-500' : 'bg-gray-300'
-              }`} />
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
+  const StepProgress = () => {
+    return (
+      <div className="flex items-center justify-center mb-8">
+        {[1, 2, 3, 4, 5, 6, 7].map((step) => {
+          const isCurrentStep = step === currentStep
+          const stepStatusValue = stepStatus[step]
+          
+          let buttonClasses = 'px-8 py-4 rounded-full text-sm font-medium transition-all duration-200 min-w-[120px] '
+          
+          if (isCurrentStep) {
+            // Current step - always blue
+            buttonClasses += 'bg-blue-600 text-white shadow-md border-2 border-blue-700'
+          } else if (stepStatusValue === 'completed') {
+            // Completed steps - green
+            buttonClasses += 'bg-green-600 text-white shadow-sm hover:bg-green-700 border-2 border-green-700'
+          } else if (stepStatusValue === 'edited') {
+            // Edited steps - light blue
+            buttonClasses += 'bg-blue-400 text-white shadow-sm hover:bg-blue-500 border-2 border-blue-500'
+          } else {
+            // Untouched steps - gray
+            buttonClasses += 'bg-gray-400 text-white hover:bg-gray-500 border-2 border-gray-500'
+          }
+          
+          return (
+            <div key={step} className="flex items-center">
+              <button
+                onClick={() => goToStep(step)}
+                className={buttonClasses}
+              >
+                Step {step}
+              </button>
+              {step < 7 && (
+                <div className={`w-16 h-1 mx-6 rounded ${
+                  stepStatusValue === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                }`} />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   const Step5DynamicMetadata = () => (
     <div className="wizard-step" style={{minWidth: '800px'}}>
