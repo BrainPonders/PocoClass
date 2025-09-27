@@ -241,7 +241,7 @@ poco_weights:
           {!showInfoBoxes[5] && (
             <button 
               onClick={() => setShowInfoBoxes(prev => ({ ...prev, 5: true }))}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
               <Info className="w-4 h-4" />
@@ -310,7 +310,7 @@ poco_weights:
           {!showInfoBoxes[6] && (
             <button 
               onClick={() => setShowInfoBoxes(prev => ({ ...prev, 6: true }))}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
               <Info className="w-4 h-4" />
@@ -484,7 +484,7 @@ poco_weights:
           {!showInfoBoxes[1] && (
             <button 
               onClick={() => setShowInfoBoxes(prev => ({ ...prev, 1: true }))}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
               <Info className="w-4 h-4" />
@@ -580,7 +580,7 @@ poco_weights:
           {!showInfoBoxes[2] && (
             <button 
               onClick={() => setShowInfoBoxes(prev => ({ ...prev, 2: true }))}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
               <Info className="w-4 h-4" />
@@ -652,7 +652,7 @@ poco_weights:
           {!showInfoBoxes[3] && (
             <button 
               onClick={() => setShowInfoBoxes(prev => ({ ...prev, 3: true }))}
-              className="text-gray-400 hover:text-gray-600 text-sm"
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
               <Info className="w-4 h-4" />
@@ -705,40 +705,29 @@ poco_weights:
   )
 
   const Step4StaticMetadata = () => (
-    <div className="wizard-step">
+    <div className="wizard-step" style={{minWidth: '800px', width: '800px'}}>
       <div className="step-header">
         <div className="flex items-center gap-2">
           <h2 className="step-title">Step 4 of 7: Static Metadata</h2>
           {!showInfoBoxes[4] && (
             <button 
-              onClick={() => toggleInfoBox(4)}
-              className="text-blue-500 hover:text-blue-700 text-sm"
+              onClick={() => setShowInfoBoxes(prev => ({ ...prev, 4: true }))}
+              className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
               title="Show help information"
             >
-              (?)
+              <Info className="w-4 h-4" />
             </button>
           )}
         </div>
         <p className="step-subtitle">Configure fixed information that applies to all documents matching this rule. This is constant data assigned once a document is recognized.</p>
       </div>
 
-      {showInfoBoxes[4] && (
-        <div className="info-box info-box-purple">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-bold">📋</div>
-              <h4 className="font-semibold text-sm">Static Metadata</h4>
-            </div>
-            <button 
-              onClick={() => toggleInfoBox(4)}
-              className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-            >
-              ×
-            </button>
-          </div>
-          <p className="text-sm pl-7">This is constant data you want to assign to a document once it's recognized. For example, every "Rabobank Year Statement" will always have "Rabobank" as the correspondent.</p>
+      <InfoBox type="info" stepNumber={4}>
+        <div>
+          <h4 className="font-semibold text-sm mb-1">Static Metadata</h4>
+          <p className="text-sm">This is constant data you want to assign to a document once it's recognized. For example, every "Rabobank Year Statement" will always have "Rabobank" as the correspondent.</p>
         </div>
-      )}
+      </InfoBox>
 
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
@@ -950,25 +939,18 @@ poco_weights:
     if (!isVisible) return null
     
     return (
-      <div className={`info-box mb-6 p-4 rounded-lg border ${
-        type === 'info' 
-          ? 'bg-yellow-50 border-yellow-200' 
-          : 'bg-red-50 border-red-200'
-      }`}>
+      <div className="info-box mb-6 p-4 rounded-lg border bg-yellow-50 border-yellow-200">
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
-            {type === 'info' ? (
-              <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-            ) : (
-              <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
-            )}
-            <div className={`text-sm ${type === 'info' ? 'text-yellow-800' : 'text-red-800'}`}>
+          <div className="flex items-start gap-3">
+            <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-yellow-800">
               {children}
             </div>
           </div>
           <button
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, [stepNumber]: false }))}
-            className={`text-xs ${type === 'info' ? 'text-yellow-600 hover:text-yellow-800' : 'text-red-600 hover:text-red-800'}`}
+            className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
+            title="Close info box"
           >
             <X className="w-4 h-4" />
           </button>
