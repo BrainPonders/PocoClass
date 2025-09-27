@@ -991,11 +991,13 @@ poco_weights:
     if (!isVisible) return null
     
     return (
-      <div className="info-box mb-6 p-4 rounded-lg border bg-yellow-50 border-yellow-200">
+      <div className="info-box info-box-yellow mb-6">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-yellow-800">
+            <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-white text-xs font-bold mt-0.5">
+              <Lightbulb className="w-3 h-3" />
+            </div>
+            <div>
               {children}
             </div>
           </div>
