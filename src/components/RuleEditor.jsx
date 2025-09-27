@@ -217,34 +217,59 @@ poco_weights:
           const isCurrentStep = step === currentStep
           const stepStatusValue = stepStatus[step]
           
-          let buttonClasses = 'px-8 py-4 rounded-full text-sm font-medium transition-all duration-200 min-w-[120px] '
+          // Use inline styles to override any CSS issues
+          let buttonStyle = {
+            padding: '16px 32px',
+            borderRadius: '9999px',
+            fontSize: '14px',
+            fontWeight: '500',
+            transition: 'all 0.2s',
+            minWidth: '120px',
+            color: 'white',
+            border: '2px solid',
+            cursor: 'pointer'
+          }
           
           if (isCurrentStep) {
-            // Current step - always blue
-            buttonClasses += 'bg-blue-600 text-white shadow-md border-2 border-blue-700'
+            // Current step - blue
+            buttonStyle.backgroundColor = '#2563eb' // blue-600
+            buttonStyle.borderColor = '#1d4ed8' // blue-700
+            buttonStyle.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           } else if (stepStatusValue === 'completed') {
             // Completed steps - green
-            buttonClasses += 'bg-green-600 text-white shadow-sm hover:bg-green-700 border-2 border-green-700'
+            buttonStyle.backgroundColor = '#16a34a' // green-600
+            buttonStyle.borderColor = '#15803d' // green-700
+            buttonStyle.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
           } else if (stepStatusValue === 'edited') {
             // Edited steps - light blue
-            buttonClasses += 'bg-blue-400 text-white shadow-sm hover:bg-blue-500 border-2 border-blue-500'
+            buttonStyle.backgroundColor = '#60a5fa' // blue-400
+            buttonStyle.borderColor = '#3b82f6' // blue-500
+            buttonStyle.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
           } else {
             // Untouched steps - gray
-            buttonClasses += 'bg-gray-400 text-white hover:bg-gray-500 border-2 border-gray-500'
+            buttonStyle.backgroundColor = '#9ca3af' // gray-400
+            buttonStyle.borderColor = '#6b7280' // gray-500
           }
           
           return (
             <div key={step} className="flex items-center">
               <button
                 onClick={() => goToStep(step)}
-                className={buttonClasses}
+                style={buttonStyle}
+                title={`Step ${step}: ${isCurrentStep ? 'CURRENT' : stepStatusValue}`}
               >
                 Step {step}
               </button>
               {step < 7 && (
-                <div className={`w-16 h-1 mx-6 rounded ${
-                  stepStatusValue === 'completed' ? 'bg-green-500' : 'bg-gray-300'
-                }`} />
+                <div 
+                  style={{
+                    width: '64px',
+                    height: '4px',
+                    margin: '0 24px',
+                    borderRadius: '2px',
+                    backgroundColor: stepStatusValue === 'completed' ? '#10b981' : '#d1d5db'
+                  }}
+                />
               )}
             </div>
           )
