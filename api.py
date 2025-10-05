@@ -302,4 +302,6 @@ def convert_backend_to_frontend(backend_data, rule_id):
     return frontend
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # In development, run with debug mode
+    # In production, frontend is built and served from dist folder
+    app.run(host='0.0.0.0', port=5000, debug=True)
