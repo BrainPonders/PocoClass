@@ -318,3 +318,133 @@ class PatternMatcher:
         except re.error as e:
             self.logger.error(f"Invalid regex pattern '{pattern}': {e}")
             return None
+    
+    def evaluate_rule_v2(self, rule: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
+        """
+        Evaluate rule using POCO Scoring v2 mechanism
+        
+        Returns match counts for OCR patterns and filename patterns
+        """
+        rule_id = rule.get('rule_id', 'Unknown')
+        rule_name = rule.get('rule_name', 'Unknown')
+        
+        # Count OCR pattern matches
+        ocr_result = self.count_ocr_matches(rule.get('logic_groups', []), content, filename)
+        
+        # Count filename pattern matches
+        filename_result = self.count_filename_matches(rule.get('filename_patterns', []), filename)
+        
+        return {
+            'rule_id': rule_id,
+            'rule_name': rule_name,
+            'ocr': {
+                'matched': ocr_result['matched_count'],
+                'total': ocr_result['total_count'],
+                'matches': ocr_result['matches']
+            },
+            'filename': {
+                'matched': filename_result['matched_count'],
+                'total': filename_result['total_count'],
+                'matches': filename_result['matches']
+            }
+        }
+    
+    def count_ocr_matches(self, logic_groups: List[Dict[str, Any]], content: str, filename: str) -> Dict[str, Any]:
+        """Count how many OCR patterns match"""
+        total_count = 0
+        matched_count = 0
+        all_matches = []
+        
+        for i, group in enumerate(logic_groups):
+            group_type = group.get('type', 'match')
+            patterns = group.get('patterns', [])
+            is_mandatory = group.get('mandatory', False)
+            
+            # Count patterns in this group
+            pattern_count = len(patterns)
+            total_count += pattern_count
+            
+            # Evaluate patterns
+            group_matches = []
+            if group_type == 'match':
+                # ALL patterns must match
+                all_match = True
+                for pattern_config in patterns:
+                    if self.check_pattern_match(pattern_config, content, filename):
+                        group_matches.append(pattern_config.get('text', 'unknown'))
+                    else:
+                        all_match = False
+                
+                if all_match:
+                    matched_count += pattern_count
+                    all_matches.extend(group_matches)
+            
+            elif group_type == 'or':
+                # At least ONE pattern must match
+                any_match = False
+                for pattern_config in patterns:
+                    if self.check_pattern_match(pattern_config, content, filename):
+                        group_matches.append(pattern_config.get('text', 'unknown'))
+                        any_match = True
+                
+                if any_match:
+                    # For OR groups, count as 1 match (the group as a whole)
+                    # But still count all patterns in total
+                    matched_count += 1  # Count the group as matched
+                    all_matches.extend(group_matches)
+        
+        return {
+            'total_count': total_count,
+            'matched_count': matched_count,
+            'matches': all_matches
+        }
+    
+    def check_pattern_match(self, pattern_config: Dict[str, Any], content: str, filename: str) -> bool:
+        """Check if a single pattern matches"""
+        pattern_text = pattern_config.get('text', '')
+        range_str = pattern_config.get('range', '')
+        
+        # Determine search text
+        if range_str and '-' in range_str:
+            # Extract range
+            try:
+                start, end = map(int, range_str.split('-'))
+                search_text = content[start:end]
+            except:
+                search_text = content
+        else:
+            search_text = content
+        
+        # Check for match
+        try:
+            match = re.search(pattern_text, search_text, re.IGNORECASE | re.MULTILINE)
+            return match is not None
+        except re.error:
+            return False
+    
+    def count_filename_matches(self, filename_patterns: List[str], filename: str) -> Dict[str, Any]:
+        """Count how many filename patterns match"""
+        if not filename_patterns:
+            return {
+                'total_count': 0,
+                'matched_count': 0,
+                'matches': []
+            }
+        
+        total_count = len(filename_patterns)
+        matched_count = 0
+        matches = []
+        
+        for pattern in filename_patterns:
+            try:
+                if re.search(pattern, filename, re.IGNORECASE):
+                    matched_count += 1
+                    matches.append(pattern)
+            except re.error:
+                continue
+        
+        return {
+            'total_count': total_count,
+            'matched_count': matched_count,
+            'matches': matches
+        }
