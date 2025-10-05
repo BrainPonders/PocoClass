@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FileStack, Filter, Download, RefreshCw } from 'lucide-react';
 import { Log } from '@/api/entities';
 import { useTranslation } from '@/components/translations';
-import moment from 'moment';
 
 export default function Logs() {
   const { t } = useTranslation();
@@ -40,13 +39,16 @@ export default function Logs() {
     }
 
     if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom);
       filtered = filtered.filter(log => 
-        moment(log.timestamp).isSameOrAfter(moment(filters.dateFrom), 'day')
+        new Date(log.timestamp) >= fromDate
       );
     }
     if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo);
+      toDate.setHours(23, 59, 59, 999); // End of day
       filtered = filtered.filter(log => 
-        moment(log.timestamp).isSameOrBefore(moment(filters.dateTo), 'day')
+        new Date(log.timestamp) <= toDate
       );
     }
 

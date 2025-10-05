@@ -1,5 +1,10 @@
 import { WEIGHTS } from '../constants';
 
+// Re-export commonly used constants for convenience
+export const OCR_DEFAULT_MULTIPLIER = WEIGHTS.OCR_MULTIPLIER_DEFAULT;
+export const FILENAME_DEFAULT_MULTIPLIER = WEIGHTS.FILENAME_MULTIPLIER_DEFAULT;
+export const VERIFICATION_DEFAULT_MULTIPLIER = WEIGHTS.VERIFICATION_MULTIPLIER_DEFAULT;
+
 /**
  * Calculate maximum possible weight for a scoring category
  * @param {number} itemCount - Number of items (patterns, fields, etc.)
