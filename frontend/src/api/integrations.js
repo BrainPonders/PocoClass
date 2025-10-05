@@ -1,26 +1,20 @@
-import { base44 } from './base44Client';
+// Integration stubs - not needed for POCOmeta
+// These were Base44-specific integrations
 
+export const Core = {
+  InvokeLLM: null,
+  SendEmail: null,
+  UploadFile: null,
+  GenerateImage: null,
+  ExtractDataFromUploadedFile: null,
+  CreateFileSignedUrl: null,
+  UploadPrivateFile: null
+};
 
-
-
-export const Core = base44.integrations.Core;
-
-export const InvokeLLM = base44.integrations.Core.InvokeLLM;
-
-export const SendEmail = base44.integrations.Core.SendEmail;
-
-export const UploadFile = base44.integrations.Core.UploadFile;
-
-export const GenerateImage = base44.integrations.Core.GenerateImage;
-
-export const ExtractDataFromUploadedFile = base44.integrations.Core.ExtractDataFromUploadedFile;
-
-export const CreateFileSignedUrl = base44.integrations.Core.CreateFileSignedUrl;
-
-export const UploadPrivateFile = base44.integrations.Core.UploadPrivateFile;
-
-
-
-
-
-
+export const InvokeLLM = null;
+export const SendEmail = null;
+export const UploadFile = null;
+export const GenerateImage = null;
+export const ExtractDataFromUploadedFile = null;
+export const CreateFileSignedUrl = null;
+export const UploadPrivateFile = null;
