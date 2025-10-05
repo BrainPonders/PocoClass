@@ -1,0 +1,202 @@
+
+import React, { useState, useEffect } from 'react';
+import { X, Plus } from 'lucide-react';
+
+export default function FieldSelector({ type, value, onChange, placeholder = "Select...", allowCustom = true }) {
+  const [availableOptions, setAvailableOptions] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    loadOptions();
+  }, [type]);
+
+  const loadOptions = async () => {
+    // TODO: Fetch from Paperless API based on type
+    // For now, using mock data
+    if (type === 'correspondent') {
+      setAvailableOptions([
+        'ExampleBank',
+        'ING',
+        'ABN AMRO',
+        'Tax Office',
+        'Insurance Company',
+        'Utility Provider'
+      ]);
+    } else if (type === 'documentType') {
+      setAvailableOptions([
+        'Bank Statement',
+        'Invoice',
+        'Receipt',
+        'Contract',
+        'Tax Document',
+        'Insurance Policy',
+        'Utility Bill'
+      ]);
+    } else if (type === 'dateFormat') {
+      // Define a default set of common date formats
+      const defaultCommonFormats = [
+        'DD-MM-YYYY', 'DD-MMM-YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD',
+        'DD.MM.YYYY', 'DDDD DD MMMM YYYY', 'DD MMMM YYYY', 'MMMM DD, YYYY'
+      ];
+      let commonFormats = defaultCommonFormats; // Initialize with defaults
+
+      // Load from settings
+      try {
+        const settings = localStorage.getItem('pococlass_settings');
+        if (settings) {
+          const parsed = JSON.parse(settings);
+          // If commonDateFormats exist in settings and is an array, use it
+          if (parsed.commonDateFormats && Array.isArray(parsed.commonDateFormats)) {
+            commonFormats = parsed.commonDateFormats;
+          }
+        }
+      } catch (e) {
+        console.error('Error loading date formats from localStorage:', e);
+        // If an error occurs during parsing or loading, commonFormats will remain the defaultCommonFormats
+      }
+          
+      // Map to objects with examples
+      const formatExamples = {
+        'DD-MM-YYYY': '15-04-2024',
+        'DD-MMM-YYYY': '15-Apr-2024',
+        'DD/MM/YYYY': '15/04/2024',
+        'MM/DD/YYYY': '04/15/2024',
+        'YYYY-MM-DD': '2024-04-15',
+        'YYYY/MM/DD': '2024/04/15',
+        'DD.MM.YYYY': '15.04.2024',
+        'MM.DD.YYYY': '04.15.2024',
+        'DDDD DD MMMM YYYY': 'Monday 15 April 2024',
+        'DD MMMM YYYY': '15 April 2024',
+        'MMMM DD, YYYY': 'April 15, 2024',
+        'MMM DD, YYYY': 'Apr 15, 2024',
+        'DD MMM YYYY': '15 Apr 2024',
+        'YYYY MMM DD': '2024 Apr 15',
+        'DD-MM-YY': '15-04-24',
+        'MM-DD-YY': '04-15-24',
+        'YY-MM-DD': '24-04-15',
+        'D/M/YYYY': '5/4/2024',
+        'M/D/YYYY': '4/5/2024',
+        'YYYYMMDD': '20240415'
+      };
+      
+      const formattedOptions = commonFormats.map(format => ({
+        value: format,
+        example: formatExamples[format] || format // Fallback to format itself if example not found
+      }));
+      
+      setAvailableOptions(formattedOptions);
+    }
+  };
+
+  const filteredOptions = type === 'dateFormat' 
+    ? availableOptions.filter(option => 
+        option.value.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        option.example.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : availableOptions.filter(option => 
+        option.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+  const selectOption = (option) => {
+    const optionValue = typeof option === 'object' ? option.value : option;
+    onChange(optionValue);
+    setSearchTerm('');
+    setShowDropdown(false);
+  };
+
+  const addCustomOption = () => {
+    if (searchTerm && allowCustom) {
+      onChange(searchTerm);
+      setSearchTerm('');
+      setShowDropdown(false);
+    }
+  };
+
+  const clearSelection = () => {
+    onChange('');
+  };
+
+  return (
+    <div className="relative flex-1">
+      {value ? (
+        <div className="form-input flex items-center justify-between">
+          <span>{value}</span>
+          <button
+            onClick={clearSelection}
+            className="text-gray-400 hover:text-gray-600"
+            type="button"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            placeholder={placeholder}
+            className="form-input"
+          />
+
+          {showDropdown && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setShowDropdown(false)}
+              />
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-20">
+                {allowCustom && searchTerm && !availableOptions.some(opt => 
+                  typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
+                ) && (
+                  <button
+                    onClick={addCustomOption}
+                    className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-blue-600"
+                    type="button"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add "{searchTerm}"
+                  </button>
+                )}
+                {filteredOptions.map((option, idx) => {
+                  if (typeof option === 'object') {
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => selectOption(option)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
+                        type="button"
+                      >
+                        <div className="font-medium">{option.value}</div>
+                        <div className="text-xs text-gray-500">Example: {option.example}</div>
+                      </button>
+                    );
+                  } else {
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => selectOption(option)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
+                        type="button"
+                      >
+                        {option}
+                      </button>
+                    );
+                  }
+                })}
+                {filteredOptions.length === 0 && !searchTerm && (
+                  <div className="px-4 py-2 text-gray-500 text-sm">No options available</div>
+                )}
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
