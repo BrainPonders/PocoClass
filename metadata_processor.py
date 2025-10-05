@@ -69,9 +69,10 @@ class MetadataProcessor:
                         extracted[field_name] = value
             
             # New format: beforeAnchor and afterAnchor (v2)
-            elif isinstance(field_config, dict) and ('pattern_before' in field_config or 'pattern_after' in field_config):
-                pattern_before = field_config.get('pattern_before', '')
-                pattern_after = field_config.get('pattern_after', '')
+            elif isinstance(field_config, dict) and ('beforeAnchor' in field_config or 'afterAnchor' in field_config or 'pattern_before' in field_config or 'pattern_after' in field_config):
+                # Support both v2 (beforeAnchor/afterAnchor) and legacy (pattern_before/pattern_after) keys
+                pattern_before = field_config.get('beforeAnchor', field_config.get('pattern_before', ''))
+                pattern_after = field_config.get('afterAnchor', field_config.get('pattern_after', ''))
                 value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
                 
                 if value:
@@ -88,20 +89,23 @@ class MetadataProcessor:
     def extract_value_between_anchors(self, text: str, before_pattern: str, after_pattern: str) -> Optional[str]:
         """Extract value between two anchor patterns (v2 format)"""
         try:
-            # Build combined pattern
+            # Build combined pattern based on which anchors are provided
             if before_pattern and after_pattern:
                 # Both anchors: extract between them
+                # Pattern: {before}...VALUE...{after}
                 pattern = f"{before_pattern}\\s*(.+?)\\s*{after_pattern}"
             elif after_pattern:
-                # Only after anchor: extract after it
-                pattern = f"{after_pattern}\\s*(.+?)(?:\\s|$)"
+                # Only after anchor: extract value after it
+                # Pattern: {after}...VALUE (capture until newline or reasonable boundary)
+                pattern = f"{after_pattern}\\s*([^\\n]+)"
             elif before_pattern:
-                # Only before anchor: extract before it
-                pattern = f"(.+?)\\s*{before_pattern}"
+                # Only before anchor: extract value before it  
+                # Pattern: VALUE...{before} (capture reasonable content before anchor)
+                pattern = f"([^\\n]+?)\\s*{before_pattern}"
             else:
                 return None
             
-            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
             if match:
                 groups = match.groups()
                 if groups:

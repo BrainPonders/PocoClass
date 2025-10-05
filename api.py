@@ -15,6 +15,7 @@ import logging
 from rule_loader import RuleLoader
 from api_client import PaperlessAPIClient
 from config import Config
+from test_engine import TestEngine
 
 app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
 CORS(app)
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 config = Config()
 rule_loader = RuleLoader('rules')
 paperless_api = PaperlessAPIClient(config)
+test_engine = TestEngine()
 
 # Serve React App
 @app.route('/')
@@ -300,6 +302,78 @@ def convert_backend_to_frontend(backend_data, rule_id):
         frontend['filenamePatterns']['patterns'] = backend_data['filename_patterns']
     
     return frontend
+
+# Test/Execute Endpoints
+@app.route('/api/rules/test', methods=['POST'])
+def test_rule_endpoint():
+    """Test a rule against document content"""
+    try:
+        data = request.json
+        rule_data = data.get('rule')
+        document_content = data.get('documentContent', '')
+        document_filename = data.get('documentFilename', 'test.pdf')
+        paperless_metadata = data.get('paperlessMetadata', None)
+        
+        if not rule_data:
+            return jsonify({'error': 'Rule data is required'}), 400
+        
+        # Convert frontend format to backend format if needed
+        backend_rule = convert_frontend_to_backend(rule_data)
+        
+        # Test the rule
+        result = test_engine.test_rule(
+            backend_rule,
+            document_content,
+            document_filename,
+            paperless_metadata
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error testing rule: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/rules/<rule_id>/execute', methods=['POST'])
+def execute_rule_endpoint(rule_id):
+    """Execute a rule against a Paperless document"""
+    try:
+        data = request.json
+        document_id = data.get('documentId')
+        dry_run = data.get('dryRun', True)
+        
+        if not document_id:
+            return jsonify({'error': 'Document ID is required'}), 400
+        
+        # Load rule
+        rule_file = Path('rules') / f'{rule_id}.yaml'
+        rule_data = rule_loader.load_rule_file(rule_file)
+        if not rule_data:
+            return jsonify({'error': 'Rule not found'}), 404
+        
+        # Get document from Paperless
+        document = paperless_api.get_document(document_id)
+        if not document:
+            return jsonify({'error': 'Document not found in Paperless'}), 404
+        
+        # Get document content
+        content = paperless_api.get_document_content(document_id)
+        if not content:
+            return jsonify({'error': 'Could not retrieve document content'}), 500
+        
+        # Execute rule
+        result = test_engine.execute_rule(
+            rule_data,
+            document_id,
+            content,
+            document.get('original_file_name', 'unknown.pdf'),
+            document,
+            dry_run
+        )
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error executing rule: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     # In development, run with debug mode
