@@ -376,6 +376,6 @@ def execute_rule_endpoint(rule_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # In development, run with debug mode
-    # In production, frontend is built and served from dist folder
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # In development, run with debug mode on port 8000
+    # Frontend Vite runs on port 5000 and proxies API requests to 8000
+    app.run(host='0.0.0.0', port=8000, debug=True)
