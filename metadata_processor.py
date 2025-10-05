@@ -54,6 +54,7 @@ class MetadataProcessor:
         extracted = {}
         
         for field_name, field_config in dynamic_metadata.items():
+            # Legacy format: pattern_after only
             if isinstance(field_config, dict) and 'pattern_after' in field_config:
                 pattern = field_config['pattern_after']
                 value = self.extract_value_from_pattern(content, pattern)
@@ -66,8 +67,49 @@ class MetadataProcessor:
                             extracted[field_name] = formatted_value
                     else:
                         extracted[field_name] = value
+            
+            # New format: beforeAnchor and afterAnchor (v2)
+            elif isinstance(field_config, dict) and ('pattern_before' in field_config or 'pattern_after' in field_config):
+                pattern_before = field_config.get('pattern_before', '')
+                pattern_after = field_config.get('pattern_after', '')
+                value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
+                
+                if value:
+                    # Apply formatting if specified
+                    if field_name == 'date_created' and 'format' in field_config:
+                        formatted_value = self.parse_date(value, field_config['format'])
+                        if formatted_value:
+                            extracted[field_name] = formatted_value
+                    else:
+                        extracted[field_name] = value
         
         return extracted
+    
+    def extract_value_between_anchors(self, text: str, before_pattern: str, after_pattern: str) -> Optional[str]:
+        """Extract value between two anchor patterns (v2 format)"""
+        try:
+            # Build combined pattern
+            if before_pattern and after_pattern:
+                # Both anchors: extract between them
+                pattern = f"{before_pattern}\\s*(.+?)\\s*{after_pattern}"
+            elif after_pattern:
+                # Only after anchor: extract after it
+                pattern = f"{after_pattern}\\s*(.+?)(?:\\s|$)"
+            elif before_pattern:
+                # Only before anchor: extract before it
+                pattern = f"(.+?)\\s*{before_pattern}"
+            else:
+                return None
+            
+            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE | re.DOTALL)
+            if match:
+                groups = match.groups()
+                if groups:
+                    return groups[0].strip()
+            return None
+        except Exception as e:
+            self.logger.error(f"Error extracting value between anchors: {e}")
+            return None
     
     def extract_filename_metadata(self, rule: Dict[str, Any], filename: str) -> Dict[str, Any]:
         """Extract metadata from filename using rule patterns"""
