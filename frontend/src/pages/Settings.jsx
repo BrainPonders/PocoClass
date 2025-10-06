@@ -57,7 +57,7 @@ export default function Settings() {
   const loadSyncHistory = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=5`, {
+      const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=4`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       const data = await response.json();
@@ -708,7 +708,7 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    {placeholders.filter(p => !p.is_internal).map(placeholder => (
+                    {placeholders.filter(p => !p.is_internal || (p.is_internal && p.is_custom_field)).map(placeholder => (
                       <div key={placeholder.id} className={`p-3 border rounded-lg ${
                         placeholder.is_locked
                           ? 'border-gray-300 bg-gray-100'
@@ -737,7 +737,7 @@ export default function Settings() {
                             </div>
                           </div>
                           
-                          {!placeholder.is_locked && (
+                          {!placeholder.is_locked && !placeholder.is_internal ? (
                             <div className="flex gap-1">
                               {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
                                 <button
@@ -756,37 +756,14 @@ export default function Settings() {
                                 </button>
                               ))}
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-8 border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-3">Internal Fields (Always Active)</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      These fields are automatically created and managed by POCOclass
-                    </p>
-                    
-                    <div className="space-y-2">
-                      {placeholders.filter(p => p.is_internal).map(placeholder => (
-                        <div key={placeholder.id} className="p-3 border border-blue-300 bg-blue-50 rounded-lg">
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">
-                                {placeholder.placeholder_name}
-                              </div>
-                              <div className="text-xs text-blue-700 mt-0.5">
-                                <span>Always enabled - Required for classification</span>
-                              </div>
-                            </div>
+                          ) : placeholder.is_internal ? (
                             <div className="text-xs font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded">
                               Mandatory
                             </div>
-                          </div>
+                          ) : null}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="mt-8 border-t pt-6">
