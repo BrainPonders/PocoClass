@@ -29,10 +29,10 @@ logger = logging.getLogger(__name__)
 
 # Initialize components
 config = Config()
-rule_loader = RuleLoader('rules')
-paperless_api = PaperlessAPIClient(config)
-test_engine = TestEngine()
 db = Database()
+rule_loader = RuleLoader('rules')
+paperless_api = PaperlessAPIClient(config, db)
+test_engine = TestEngine()
 sync_service = SyncService(db)
 
 # Authentication decorator
