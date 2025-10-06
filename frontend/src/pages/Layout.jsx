@@ -249,22 +249,33 @@ export default function Layout({ children }) {
                 font-size: 0.8125rem;
               }
               
+              .form-group {
+                margin-bottom: 20px;
+              }
+
               .form-input, .form-textarea, .form-select {
                 width: 100%;
-                padding: 10px 12px;
-                border: 1px solid var(--app-border);
-                border-radius: 6px;
-                font-size: 0.875rem;
-                background: var(--app-surface);
+                padding: 12px 14px;
+                border: 1.5px solid var(--app-border);
+                border-radius: 8px;
+                font-size: 0.9375rem;
+                background: white;
                 color: var(--app-text);
+                transition: border-color 0.2s, box-shadow 0.2s;
+              }
+              
+              .form-input:focus, .form-textarea:focus, .form-select:focus {
+                outline: none;
+                border-color: var(--app-primary);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
               }
               
               .form-label {
                 display: block;
-                font-size: 0.875rem;
-                font-weight: 500;
+                font-size: 0.9375rem;
+                font-weight: 600;
                 color: var(--app-text);
-                margin-bottom: 6px;
+                margin-bottom: 10px;
               }
               
               .card {
