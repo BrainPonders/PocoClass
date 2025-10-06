@@ -447,7 +447,7 @@ export default function Layout({ children }) {
                       <FileText className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="font-semibold text-gray-900">PocoClass</h2>
+                      <h2 className="font-semibold text-gray-900">PocoClass v2.0</h2>
                       <p className="text-xs text-gray-500">Document Classification</p>
                     </div>
                   </div>
