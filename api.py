@@ -17,6 +17,7 @@ from api_client import PaperlessAPIClient
 from config import Config
 from test_engine import TestEngine
 from database import Database
+from sync_service import SyncService
 import requests
 from functools import wraps
 
@@ -32,6 +33,7 @@ rule_loader = RuleLoader('rules')
 paperless_api = PaperlessAPIClient(config)
 test_engine = TestEngine()
 db = Database()
+sync_service = SyncService(db)
 
 # Authentication decorator
 def require_auth(f):
@@ -285,6 +287,121 @@ def update_user_role_endpoint(user_id):
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating user role: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Sync Endpoints
+@app.route('/api/sync', methods=['POST'])
+@require_admin
+def trigger_sync():
+    """Trigger a full sync of Paperless data (admin only)"""
+    try:
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        results = sync_service.sync_all(session['paperless_token'], paperless_url)
+        
+        return jsonify({
+            'success': True,
+            'results': results
+        })
+    except Exception as e:
+        logger.error(f"Sync error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/sync/status', methods=['GET'])
+@require_auth
+def get_sync_status():
+    """Get current sync status"""
+    try:
+        status = sync_service.get_sync_status()
+        return jsonify(status)
+    except Exception as e:
+        logger.error(f"Error getting sync status: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/sync/history', methods=['GET'])
+@require_admin
+def get_sync_history():
+    """Get sync history (admin only)"""
+    try:
+        limit = request.args.get('limit', 10, type=int)
+        history = db.get_sync_history(limit)
+        return jsonify(history)
+    except Exception as e:
+        logger.error(f"Error getting sync history: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/paperless/correspondents', methods=['GET'])
+@require_auth
+def get_cached_correspondents():
+    """Get cached correspondents"""
+    try:
+        correspondents = db.get_all_correspondents()
+        return jsonify(correspondents)
+    except Exception as e:
+        logger.error(f"Error getting correspondents: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/paperless/tags', methods=['GET'])
+@require_auth
+def get_cached_tags():
+    """Get cached tags"""
+    try:
+        tags = db.get_all_tags()
+        return jsonify(tags)
+    except Exception as e:
+        logger.error(f"Error getting tags: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/paperless/document-types', methods=['GET'])
+@require_auth
+def get_cached_document_types():
+    """Get cached document types"""
+    try:
+        doc_types = db.get_all_document_types()
+        return jsonify(doc_types)
+    except Exception as e:
+        logger.error(f"Error getting document types: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/paperless/custom-fields', methods=['GET'])
+@require_auth
+def get_cached_custom_fields():
+    """Get cached custom fields"""
+    try:
+        custom_fields = db.get_all_custom_fields()
+        return jsonify(custom_fields)
+    except Exception as e:
+        logger.error(f"Error getting custom fields: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Settings Endpoints
+@app.route('/api/settings', methods=['GET'])
+@require_auth
+def get_settings():
+    """Get all settings"""
+    try:
+        category = request.args.get('category')
+        settings = db.get_all_settings(category)
+        return jsonify(settings)
+    except Exception as e:
+        logger.error(f"Error getting settings: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/<key>', methods=['PUT'])
+@require_admin
+def update_setting(key):
+    """Update a setting (admin only)"""
+    try:
+        data = request.json
+        value = data.get('value')
+        category = data.get('category', 'general')
+        description = data.get('description', '')
+        
+        db.set_setting(key, value, category, description)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating setting: {e}")
         return jsonify({'error': str(e)}), 500
 
 # Serve React App
