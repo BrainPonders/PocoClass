@@ -683,7 +683,7 @@ def get_settings_batch():
         
         # Placeholders
         try:
-            placeholders = db.get_all_placeholders()
+            placeholders = db.get_all_placeholder_settings()
             response['placeholders'] = placeholders
         except Exception as e:
             logger.error(f"Error loading placeholders: {e}")
