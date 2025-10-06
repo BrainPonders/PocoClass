@@ -44,10 +44,18 @@ class Database:
                 paperless_username TEXT UNIQUE NOT NULL,
                 paperless_user_id INTEGER UNIQUE NOT NULL,
                 pococlass_role TEXT NOT NULL DEFAULT 'user',
+                is_enabled INTEGER NOT NULL DEFAULT 1,
                 created_at TEXT NOT NULL,
                 last_login TEXT
             )
         """)
+        
+        # Migration: Add is_enabled column if it doesn't exist
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN is_enabled INTEGER NOT NULL DEFAULT 1")
+            logger.info("Added is_enabled column to users table")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
         
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
@@ -213,6 +221,24 @@ class Database:
         conn.commit()
         conn.close()
         logger.info(f"Updated user {user_id} role to: {role}")
+    
+    def enable_user(self, paperless_user_id: int):
+        """Enable a user (allow POCOclass access)"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET is_enabled = 1 WHERE paperless_user_id = ?", (paperless_user_id,))
+        conn.commit()
+        conn.close()
+        logger.info(f"Enabled user with Paperless ID: {paperless_user_id}")
+    
+    def disable_user(self, paperless_user_id: int):
+        """Disable a user (block POCOclass access)"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET is_enabled = 0 WHERE paperless_user_id = ?", (paperless_user_id,))
+        conn.commit()
+        conn.close()
+        logger.info(f"Disabled user with Paperless ID: {paperless_user_id}")
     
     def update_last_login(self, user_id: int):
         """Update user's last login time"""
