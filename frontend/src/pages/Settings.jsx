@@ -70,7 +70,7 @@ export default function Settings() {
   const loadUsers = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/users/all-paperless`, {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       if (response.ok) {
@@ -344,23 +344,25 @@ export default function Settings() {
     setTestingConnection(true);
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${paperlessConfig.paperless_url}/api/documents/?page=1&page_size=1`, {
-        headers: { 'Authorization': `Token ${sessionToken}` }
+      const response = await fetch(`${API_BASE_URL}/api/sync/status`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
 
       if (response.ok) {
+        const data = await response.json();
+        const totalItems = (data.correspondents?.count || 0) + (data.tags?.count || 0) + (data.document_types?.count || 0);
         toast({
           title: 'Connection Successful',
-          description: 'Successfully connected to Paperless-ngx',
+          description: `Connected to Paperless-ngx. Found ${totalItems} cached items.`,
           duration: 3000,
         });
       } else {
-        throw new Error(`Connection failed: ${response.status}`);
+        throw new Error(`Connection test failed: ${response.status}`);
       }
     } catch (error) {
       toast({
         title: 'Connection Failed',
-        description: error.message || 'Could not connect to Paperless-ngx',
+        description: error.message || 'Could not verify Paperless connection',
         variant: 'destructive',
         duration: 5000,
       });
@@ -371,7 +373,7 @@ export default function Settings() {
 
   const tabs = [
     { id: 'system', label: 'System', icon: Database, adminOnly: true },
-    { id: 'preferences', label: 'Preferences', icon: Palette, adminOnly: false },
+    { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
     { id: 'dateFormats', label: 'Date Formats', icon: Calendar, adminOnly: false },
     { id: 'fieldVisibility', label: 'Field Visibility', icon: FileText, adminOnly: false },
   ];
@@ -423,8 +425,110 @@ export default function Settings() {
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
                     <p className="text-sm text-gray-600 mb-6">
-                      Manage data synchronization, users, and Paperless connection
+                      Manage Paperless connection, users, and data synchronization
                     </p>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Paperless Instance</h3>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Paperless URL
+                      </label>
+                      <div className="flex gap-3 mb-3">
+                        <input
+                          type="url"
+                          value={paperlessConfig.paperless_url || ''}
+                          onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
+                          placeholder="https://paperless.example.com"
+                          className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          disabled={!isAdmin}
+                        />
+                        <Button
+                          onClick={handlePaperlessUrlUpdate}
+                          disabled={!isAdmin}
+                        >
+                          Update
+                        </Button>
+                      </div>
+                      <Button
+                        onClick={testPaperlessConnection}
+                        disabled={testingConnection || !paperlessConfig.paperless_url}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                      >
+                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
+                        {testingConnection ? 'Testing...' : 'Test Connection'}
+                      </Button>
+                      {!isAdmin && (
+                        <p className="mt-2 text-xs text-gray-500">
+                          Only administrators can update the Paperless URL
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
+                    
+                    {users.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Username
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {users.map(user => (
+                              <tr key={user.id}>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {user.username}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {user.email || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    user.is_admin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {user.is_admin ? 'Admin' : 'User'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {user.id !== currentUser?.id && (
+                                    <select
+                                      value={user.is_admin ? 'admin' : 'user'}
+                                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                                    >
+                                      <option value="user">User</option>
+                                      <option value="admin">Admin</option>
+                                    </select>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No users found
+                      </div>
+                    )}
                   </div>
 
                   <div className="border-t pt-6">
@@ -544,55 +648,15 @@ export default function Settings() {
                       </div>
                     )}
                   </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Paperless Configuration</h3>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Paperless URL
-                      </label>
-                      <div className="flex gap-3 mb-3">
-                        <input
-                          type="url"
-                          value={paperlessConfig.paperless_url || ''}
-                          onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
-                          placeholder="https://paperless.example.com"
-                          className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          disabled={!isAdmin}
-                        />
-                        <Button
-                          onClick={handlePaperlessUrlUpdate}
-                          disabled={!isAdmin}
-                        >
-                          Update
-                        </Button>
-                      </div>
-                      <Button
-                        onClick={testPaperlessConnection}
-                        disabled={testingConnection || !paperlessConfig.paperless_url}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
-                        {testingConnection ? 'Testing...' : 'Test Connection'}
-                      </Button>
-                      {!isAdmin && (
-                        <p className="mt-2 text-xs text-gray-500">
-                          Only administrators can update the Paperless URL
-                        </p>
-                      )}
-                    </div>
-                  </div>
                 </div>
               )}
 
-              {activeTab === 'preferences' && (
+              {activeTab === 'appearance' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Interface Preferences</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Appearance Settings</h2>
                     <p className="text-sm text-gray-600 mb-4">
-                      Customize your interface preferences
+                      Customize the look and feel of your interface
                     </p>
                   </div>
 
