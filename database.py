@@ -128,9 +128,48 @@ class Database:
             )
         """)
         
+        # App Settings table for UI preferences
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS app_settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key TEXT UNIQUE NOT NULL,
+                value TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        """)
+        
+        # Date formats table for quick-select presets
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS date_formats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                format_pattern TEXT UNIQUE NOT NULL,
+                format_category TEXT NOT NULL,
+                example TEXT,
+                is_selected INTEGER DEFAULT 0,
+                display_order INTEGER DEFAULT 0
+            )
+        """)
+        
+        # Placeholder settings for wizard visibility control
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS placeholder_settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                placeholder_name TEXT UNIQUE NOT NULL,
+                placeholder_type TEXT NOT NULL,
+                visibility_mode TEXT NOT NULL DEFAULT 'both',
+                is_custom_field INTEGER DEFAULT 0,
+                is_internal INTEGER DEFAULT 0,
+                updated_at TEXT NOT NULL
+            )
+        """)
+        
         conn.commit()
         conn.close()
         logger.info("Database initialized")
+        
+        # Initialize settings with defaults
+        self.init_date_formats()
+        self.init_placeholder_settings()
     
     def is_setup_completed(self) -> bool:
         """Check if initial setup is completed"""
@@ -545,3 +584,188 @@ class Database:
         row = cursor.fetchone()
         conn.close()
         return row['synced_at'] if row else None
+    
+    # App Settings Methods
+    def get_app_setting(self, key: str, default: str = None) -> Optional[str]:
+        """Get app setting by key"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM app_settings WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['value'] if row else default
+    
+    def set_app_setting(self, key: str, value: str):
+        """Set app setting"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        cursor.execute("""
+            INSERT OR REPLACE INTO app_settings (key, value, updated_at)
+            VALUES (?, ?, ?)
+        """, (key, value, now))
+        conn.commit()
+        conn.close()
+    
+    def get_all_app_settings(self) -> Dict:
+        """Get all app settings as dict"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT key, value FROM app_settings")
+        rows = cursor.fetchall()
+        conn.close()
+        return {row['key']: row['value'] for row in rows}
+    
+    # Date Formats Methods
+    def init_date_formats(self):
+        """Initialize date formats with predefined list"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Check if already initialized
+        cursor.execute("SELECT COUNT(*) as count FROM date_formats")
+        if cursor.fetchone()['count'] > 0:
+            conn.close()
+            return
+        
+        formats = [
+            ("DD-MM-YYYY", "Dash (-)", "e.g., 15-04-2024", 0, 1),
+            ("DD-MMM-YYYY", "Dash (-)", "e.g., 15-Apr-2024", 0, 2),
+            ("MM-DD-YYYY", "Dash (-)", "e.g., 04-15-2024", 0, 3),
+            ("YYYY-MM-DD", "Dash (-)", "e.g., 2024-04-15", 0, 4),
+            ("DD-MM-YY", "Dash (-)", "e.g., 15-04-24", 0, 5),
+            ("MM-DD-YY", "Dash (-)", "e.g., 04-15-24", 0, 6),
+            ("DD/MM/YYYY", "Slash (/)", "e.g., 15/04/2024", 0, 7),
+            ("MM/DD/YYYY", "Slash (/)", "e.g., 04/15/2024", 0, 8),
+            ("YYYY/MM/DD", "Slash (/)", "e.g., 2024/04/15", 0, 9),
+            ("D/M/YYYY", "Slash (/)", "e.g., 5/4/2024", 0, 10),
+            ("DD.MM.YYYY", "Dot (.)", "e.g., 15.04.2024", 0, 11),
+            ("MM.DD.YYYY", "Dot (.)", "e.g., 04.15.2024", 0, 12),
+            ("YYYY.MM.DD", "Dot (.)", "e.g., 2024.04.15", 0, 13),
+            ("DD MMM YYYY", "Space / Text", "e.g., 15 Apr 2024", 0, 14),
+            ("MMM DD, YYYY", "Space / Text", "e.g., April 15, 2024", 0, 15),
+            ("MMMM DD, YYYY", "Space / Text", "e.g., April 15, 2024", 0, 16),
+            ("DD MMMM YYYY", "Space / Text", "e.g., 15 April 2024", 0, 17),
+            ("YYYY MMM DD", "Space / Text", "e.g., 2024 Apr 15", 0, 18),
+            ("DDDD DD MMMM YYYY", "Space / Text", "e.g., Monday 15 April 2024", 0, 19),
+            ("M/D/YYYY", "Slash (/)", "e.g., 4/5/2024", 0, 20),
+            ("N/D/YYYY", "Slash (/)", "e.g., 4/5/2024", 0, 21),
+        ]
+        
+        cursor.executemany("""
+            INSERT INTO date_formats (format_pattern, format_category, example, is_selected, display_order)
+            VALUES (?, ?, ?, ?, ?)
+        """, formats)
+        
+        conn.commit()
+        conn.close()
+        logger.info("Initialized date formats")
+    
+    def get_all_date_formats(self) -> List[Dict]:
+        """Get all date formats"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM date_formats ORDER BY display_order")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def get_selected_date_formats(self) -> List[Dict]:
+        """Get selected date formats"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM date_formats WHERE is_selected = 1 ORDER BY display_order")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def set_date_format_selection(self, format_pattern: str, is_selected: bool):
+        """Set date format selection status"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE date_formats SET is_selected = ? WHERE format_pattern = ?
+        """, (1 if is_selected else 0, format_pattern))
+        conn.commit()
+        conn.close()
+    
+    # Placeholder Settings Methods
+    def init_placeholder_settings(self):
+        """Initialize placeholder settings with defaults"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        
+        # Check if already initialized
+        cursor.execute("SELECT COUNT(*) as count FROM placeholder_settings")
+        if cursor.fetchone()['count'] > 0:
+            conn.close()
+            return
+        
+        # Built-in placeholders
+        placeholders = [
+            ("Title", "builtin", "both", 0, 0),
+            ("Archive Serial Number", "builtin", "both", 0, 0),
+            ("Date Created", "builtin", "both", 0, 0),
+            ("Correspondent", "builtin", "both", 0, 0),
+            ("Document Type", "builtin", "both", 0, 0),
+            ("Storage Path", "builtin", "both", 0, 0),
+            ("Tags", "builtin", "both", 0, 0),
+            ("Document Category", "builtin", "both", 0, 0),
+            ("POCO Score", "internal", "disabled", 0, 1),
+            ("POCO OCR", "internal", "disabled", 0, 1),
+        ]
+        
+        for name, ptype, mode, is_custom, is_internal in placeholders:
+            cursor.execute("""
+                INSERT INTO placeholder_settings 
+                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (name, ptype, mode, is_custom, is_internal, now))
+        
+        conn.commit()
+        conn.close()
+        logger.info("Initialized placeholder settings")
+    
+    def get_all_placeholder_settings(self) -> List[Dict]:
+        """Get all placeholder settings"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM placeholder_settings 
+            ORDER BY is_internal, placeholder_name
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def set_placeholder_visibility(self, placeholder_name: str, visibility_mode: str):
+        """Set placeholder visibility mode"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        cursor.execute("""
+            UPDATE placeholder_settings 
+            SET visibility_mode = ?, updated_at = ?
+            WHERE placeholder_name = ?
+        """, (visibility_mode, now, placeholder_name))
+        conn.commit()
+        conn.close()
+    
+    def sync_custom_field_placeholders(self):
+        """Sync custom fields from cache into placeholder settings"""
+        custom_fields = self.get_all_custom_fields()
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        
+        for cf in custom_fields:
+            placeholder_name = f"Custom Field: {cf['name']}"
+            cursor.execute("""
+                INSERT OR IGNORE INTO placeholder_settings 
+                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (placeholder_name, "custom", "both", 1, 0, now))
+        
+        conn.commit()
+        conn.close()
