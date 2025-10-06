@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileText, Server, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import API_BASE_URL from '@/config/api';
 
 export default function SetupWizard() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function SetupWizard() {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:8000/api/auth/setup', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/setup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

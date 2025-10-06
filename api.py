@@ -35,6 +35,35 @@ paperless_api = PaperlessAPIClient(config, db)
 test_engine = TestEngine()
 sync_service = SyncService(db)
 
+# Helper function to check if sync is needed
+def should_sync(entity_type='all', max_age_minutes=60):
+    """Check if sync is needed based on last sync time"""
+    try:
+        if entity_type == 'all':
+            # Check if any entity type needs sync
+            for entity in ['correspondents', 'tags', 'document_types', 'custom_fields']:
+                last_sync = db.get_last_sync_time(entity)
+                if not last_sync:
+                    return True  # Never synced
+                
+                from datetime import datetime, timedelta
+                age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
+                if age_minutes > max_age_minutes:
+                    return True  # Data is stale
+            return False  # All fresh
+        else:
+            # Check specific entity type
+            last_sync = db.get_last_sync_time(entity_type)
+            if not last_sync:
+                return True
+            
+            from datetime import datetime
+            age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
+            return age_minutes > max_age_minutes
+    except Exception as e:
+        logger.error(f"Error checking sync status: {e}")
+        return True  # Sync if uncertain
+
 # Authentication decorator
 def require_auth(f):
     @wraps(f)
@@ -138,6 +167,14 @@ def setup():
             # Create session
             session_token = db.create_session(user_id, paperless_token)
             
+            # Initial sync on setup
+            try:
+                logger.info(f"Performing initial sync of Paperless data...")
+                sync_service.sync_all(paperless_url, paperless_token)
+                logger.info(f"Initial sync completed successfully")
+            except Exception as e:
+                logger.warning(f"Initial sync failed (non-critical): {e}")
+            
             logger.info(f"Setup completed by user: {username}")
             
             return jsonify({
@@ -212,6 +249,16 @@ def login():
             
             # Create session
             session_token = db.create_session(user_id, paperless_token)
+            
+            # Auto-sync on login if data is stale (>60 minutes old)
+            try:
+                if should_sync():
+                    logger.info(f"Auto-syncing Paperless data on login for user: {username}")
+                    sync_service.sync_all(paperless_url, paperless_token)
+                else:
+                    logger.info(f"Skipping auto-sync - data is fresh (user: {username})")
+            except Exception as e:
+                logger.warning(f"Auto-sync on login failed (non-critical): {e}")
             
             logger.info(f"User logged in: {username}")
             
