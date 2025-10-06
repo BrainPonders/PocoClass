@@ -431,6 +431,7 @@ def get_all_paperless_users():
             'Authorization': f'Token {session["paperless_token"]}',
             'Content-Type': 'application/json'
         }
+        # Fetch users from Paperless
         response = requests.get(f"{paperless_url}/api/users/", headers=headers)
         response.raise_for_status()
         paperless_data = response.json()
@@ -444,6 +445,18 @@ def get_all_paperless_users():
             logger.error(f"Unexpected Paperless API response format: {type(paperless_data)}")
             return jsonify({'error': 'Unexpected API response format'}), 500
         
+        # Fetch groups from Paperless to map IDs to names
+        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers)
+        groups_response.raise_for_status()
+        groups_data = groups_response.json()
+        
+        # Build group ID -> name mapping
+        group_map = {}
+        if isinstance(groups_data, list):
+            group_map = {g['id']: g['name'] for g in groups_data}
+        elif isinstance(groups_data, dict) and 'results' in groups_data:
+            group_map = {g['id']: g['name'] for g in groups_data['results']}
+        
         # Get POCOclass users
         pococlass_users = db.list_users()
         pococlass_map = {u['paperless_user_id']: u for u in pococlass_users}
@@ -453,12 +466,20 @@ def get_all_paperless_users():
         for paperless_user in paperless_users:
             pococlass_user = pococlass_map.get(paperless_user['id'])
             
-            # Get groups (Paperless groups array or empty)
-            # Groups come as array of objects: [{id: 1, name: "verje"}, ...]
+            # Get groups - Paperless may return IDs or objects
             groups = paperless_user.get('groups', [])
-            logger.info(f"User {paperless_user['username']}: raw groups = {groups}")
-            group_names = [g['name'] if isinstance(g, dict) else str(g) for g in groups]
-            logger.info(f"User {paperless_user['username']}: extracted group_names = {group_names}")
+            
+            # Convert group IDs to names using the group_map
+            group_names = []
+            for g in groups:
+                if isinstance(g, dict):
+                    # Full object with name
+                    group_names.append(g['name'])
+                elif isinstance(g, int):
+                    # Just ID, look up name
+                    group_names.append(group_map.get(g, f"Group {g}"))
+                else:
+                    group_names.append(str(g))
             
             result.append({
                 'paperless_id': paperless_user['id'],
