@@ -69,7 +69,14 @@ export default function Settings() {
           'Authorization': `Bearer ${sessionToken}`
         }
       });
+      
+      if (!response.ok) {
+        console.error('Failed to load users:', response.status, response.statusText);
+        return;
+      }
+      
       const data = await response.json();
+      console.log('Loaded users:', data);
       setUsers(data);
     } catch (error) {
       console.error('Error loading users:', error);
