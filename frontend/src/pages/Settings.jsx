@@ -437,7 +437,7 @@ export default function Settings() {
                         className={`px-3 py-1 rounded-full text-sm font-medium ${
                           user.pococlass_role === 'admin'
                             ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-100 text-gray-700'
+                            : 'bg-blue-100 text-blue-700'
                         }`}
                       >
                         {user.pococlass_role}
@@ -460,13 +460,13 @@ export default function Settings() {
                     {user.is_enabled ? (
                       <button
                         onClick={() => handleDisableUser(user.paperless_id)}
-                        disabled={user.pococlass_role === 'admin'}
+                        disabled={user.paperless_username.toLowerCase() === 'admin'}
                         className={`px-4 py-1.5 rounded text-white text-sm font-medium transition-colors ${
-                          user.pococlass_role === 'admin'
+                          user.paperless_username.toLowerCase() === 'admin'
                             ? 'bg-gray-400 cursor-not-allowed'
                             : 'bg-red-600 hover:bg-red-700'
                         }`}
-                        title={user.pococlass_role === 'admin' ? 'Cannot disable admin user' : 'Disable user'}
+                        title={user.paperless_username.toLowerCase() === 'admin' ? 'Cannot disable Admin user' : 'Disable user'}
                       >
                         Disable
                       </button>

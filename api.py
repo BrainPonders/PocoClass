@@ -534,13 +534,20 @@ def disable_user_endpoint(paperless_user_id):
         if not pococlass_user:
             return jsonify({'error': 'User not registered in POCOclass'}), 404
         
-        # Prevent disabling admin if they're the only admin
-        if pococlass_user['pococlass_role'] == 'admin':
-            all_users = db.list_users()
-            enabled_admins = [u for u in all_users if u['pococlass_role'] == 'admin' and u['is_enabled'] == 1]
-            
-            if len(enabled_admins) <= 1:
-                return jsonify({'error': 'Cannot disable the last admin user'}), 400
+        # Prevent disabling the specific user named "Admin"
+        # Fetch the Paperless username to check
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        headers = {
+            'Authorization': f'Token {session["paperless_token"]}',
+            'Content-Type': 'application/json'
+        }
+        response = requests.get(f"{paperless_url}/api/users/{paperless_user_id}/", headers=headers)
+        response.raise_for_status()
+        paperless_user = response.json()
+        
+        if paperless_user['username'].lower() == 'admin':
+            return jsonify({'error': 'Cannot disable the Admin user'}), 400
         
         db.disable_user(paperless_user_id)
         return jsonify({'success': True})
