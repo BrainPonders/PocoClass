@@ -16,6 +16,9 @@ from rule_loader import RuleLoader
 from api_client import PaperlessAPIClient
 from config import Config
 from test_engine import TestEngine
+from database import Database
+import requests
+from functools import wraps
 
 app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
 CORS(app)
@@ -28,6 +31,261 @@ config = Config()
 rule_loader = RuleLoader('rules')
 paperless_api = PaperlessAPIClient(config)
 test_engine = TestEngine()
+db = Database()
+
+# Authentication decorator
+def require_auth(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not session_token:
+            return jsonify({'error': 'No session token provided'}), 401
+        
+        session = db.get_session(session_token)
+        if not session:
+            return jsonify({'error': 'Invalid or expired session'}), 401
+        
+        request.current_user = session
+        return f(*args, **kwargs)
+    return decorated_function
+
+def require_admin(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not session_token:
+            return jsonify({'error': 'No session token provided'}), 401
+        
+        session = db.get_session(session_token)
+        if not session or session['pococlass_role'] != 'admin':
+            return jsonify({'error': 'Admin access required'}), 403
+        
+        request.current_user = session
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Authentication Endpoints
+@app.route('/api/auth/status', methods=['GET'])
+def auth_status():
+    """Check if setup is completed and get system status"""
+    try:
+        is_setup = db.is_setup_completed()
+        paperless_url = db.get_config('paperless_url') if is_setup else None
+        
+        return jsonify({
+            'setupCompleted': is_setup,
+            'paperlessUrl': paperless_url
+        })
+    except Exception as e:
+        logger.error(f"Error checking auth status: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/setup', methods=['POST'])
+def setup():
+    """Initial setup - connect to Paperless and create first admin"""
+    try:
+        data = request.json
+        paperless_url = data.get('paperlessUrl')
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not all([paperless_url, username, password]):
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        if db.is_setup_completed():
+            return jsonify({'error': 'Setup already completed'}), 400
+        
+        # Remove trailing slash from URL
+        if paperless_url.endswith('/'):
+            paperless_url = paperless_url[:-1]
+        
+        # Authenticate with Paperless to get user info and token
+        try:
+            auth_response = requests.post(
+                f'{paperless_url}/api/token/',
+                json={'username': username, 'password': password},
+                timeout=10
+            )
+            
+            if auth_response.status_code != 200:
+                return jsonify({'error': 'Invalid Paperless credentials'}), 401
+            
+            paperless_token = auth_response.json().get('token')
+            
+            # Get user info from Paperless
+            user_response = requests.get(
+                f'{paperless_url}/api/users/me/',
+                headers={'Authorization': f'Token {paperless_token}'},
+                timeout=10
+            )
+            
+            if user_response.status_code != 200:
+                return jsonify({'error': 'Failed to get user info from Paperless'}), 500
+            
+            user_info = user_response.json()
+            paperless_user_id = user_info.get('id')
+            is_superuser = user_info.get('is_superuser', False)
+            
+            # Create first admin user
+            role = 'admin' if is_superuser else 'user'
+            user_id = db.create_user(username, paperless_user_id, role)
+            
+            # Complete setup
+            db.complete_setup(paperless_url)
+            
+            # Create session
+            session_token = db.create_session(user_id, paperless_token)
+            
+            logger.info(f"Setup completed by user: {username}")
+            
+            return jsonify({
+                'success': True,
+                'sessionToken': session_token,
+                'user': {
+                    'id': user_id,
+                    'username': username,
+                    'role': role
+                }
+            })
+            
+        except requests.RequestException as e:
+            logger.error(f"Error connecting to Paperless: {e}")
+            return jsonify({'error': f'Failed to connect to Paperless: {str(e)}'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error during setup: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """Login with Paperless credentials"""
+    try:
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not all([username, password]):
+            return jsonify({'error': 'Missing username or password'}), 400
+        
+        if not db.is_setup_completed():
+            return jsonify({'error': 'Setup not completed'}), 400
+        
+        paperless_url = db.get_config('paperless_url')
+        
+        # Authenticate with Paperless
+        try:
+            auth_response = requests.post(
+                f'{paperless_url}/api/token/',
+                json={'username': username, 'password': password},
+                timeout=10
+            )
+            
+            if auth_response.status_code != 200:
+                return jsonify({'error': 'Invalid credentials'}), 401
+            
+            paperless_token = auth_response.json().get('token')
+            
+            # Get user info
+            user_response = requests.get(
+                f'{paperless_url}/api/users/me/',
+                headers={'Authorization': f'Token {paperless_token}'},
+                timeout=10
+            )
+            
+            if user_response.status_code != 200:
+                return jsonify({'error': 'Failed to get user info'}), 500
+            
+            user_info = user_response.json()
+            paperless_user_id = user_info.get('id')
+            
+            # Get or create user in POCOclass
+            user = db.get_user_by_paperless_id(paperless_user_id)
+            if not user:
+                # Create new user with default 'user' role
+                user_id = db.create_user(username, paperless_user_id, 'user')
+                user = db.get_user_by_id(user_id)
+            else:
+                user_id = user['id']
+                db.update_last_login(user_id)
+            
+            # Create session
+            session_token = db.create_session(user_id, paperless_token)
+            
+            logger.info(f"User logged in: {username}")
+            
+            return jsonify({
+                'success': True,
+                'sessionToken': session_token,
+                'user': {
+                    'id': user_id,
+                    'username': username,
+                    'role': user['pococlass_role']
+                }
+            })
+            
+        except requests.RequestException as e:
+            logger.error(f"Error authenticating with Paperless: {e}")
+            return jsonify({'error': 'Failed to authenticate with Paperless'}), 500
+            
+    except Exception as e:
+        logger.error(f"Error during login: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/logout', methods=['POST'])
+@require_auth
+def logout():
+    """Logout and destroy session"""
+    try:
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        db.delete_session(session_token)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error during logout: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/me', methods=['GET'])
+@require_auth
+def get_current_user():
+    """Get current user session"""
+    try:
+        user = request.current_user
+        return jsonify({
+            'id': user['user_id'],
+            'username': user['paperless_username'],
+            'role': user['pococlass_role'],
+            'paperlessUserId': user['paperless_user_id']
+        })
+    except Exception as e:
+        logger.error(f"Error getting current user: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users', methods=['GET'])
+@require_admin
+def list_all_users():
+    """List all users (admin only)"""
+    try:
+        users = db.list_users()
+        return jsonify(users)
+    except Exception as e:
+        logger.error(f"Error listing users: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/<int:user_id>/role', methods=['PUT'])
+@require_admin
+def update_user_role_endpoint(user_id):
+    """Update user role (admin only)"""
+    try:
+        data = request.json
+        role = data.get('role')
+        
+        if role not in ['admin', 'user']:
+            return jsonify({'error': 'Invalid role'}), 400
+        
+        db.update_user_role(user_id, role)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating user role: {e}")
+        return jsonify({'error': str(e)}), 500
 
 # Serve React App
 @app.route('/')
