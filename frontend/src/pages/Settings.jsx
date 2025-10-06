@@ -195,7 +195,8 @@ export default function Settings() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to disable user');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to disable user');
       }
 
       toast({
@@ -389,6 +390,11 @@ export default function Settings() {
                         <span className="font-medium" style={{ color: 'var(--app-text)' }}>
                           {user.paperless_username}
                         </span>
+                        {user.is_superuser && (
+                          <span className="text-xs px-2 py-0.5 rounded bg-purple-200 text-purple-700">
+                            Superuser
+                          </span>
+                        )}
                         {!user.is_registered && (
                           <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
                             Not Registered
@@ -402,6 +408,11 @@ export default function Settings() {
                       </div>
                       <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                         {user.last_login ? `Last login: ${formatDate(user.last_login)}` : 'Never logged in'}
+                        {user.paperless_groups && user.paperless_groups.length > 0 && (
+                          <span className="ml-2">
+                            • Groups: {user.paperless_groups.join(', ')}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -435,7 +446,13 @@ export default function Settings() {
                     {user.is_enabled ? (
                       <button
                         onClick={() => handleDisableUser(user.paperless_id)}
-                        className="px-4 py-1.5 rounded bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors"
+                        disabled={user.pococlass_role === 'admin'}
+                        className={`px-4 py-1.5 rounded text-white text-sm font-medium transition-colors ${
+                          user.pococlass_role === 'admin'
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-red-600 hover:bg-red-700'
+                        }`}
+                        title={user.pococlass_role === 'admin' ? 'Cannot disable admin user' : 'Disable user'}
                       >
                         Disable
                       </button>
