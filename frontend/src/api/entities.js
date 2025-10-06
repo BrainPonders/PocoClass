@@ -63,13 +63,30 @@ export const DeletedRule = {
   }
 };
 
-// Auth (stub for now, can be implemented later)
+// User/Auth Entity
 export const User = {
   async me() {
-    return { 
-      full_name: 'Admin User', 
-      email: 'admin@pococlass.local',
-      role: 'admin'
+    const sessionToken = localStorage.getItem('pococlass_session');
+    if (!sessionToken) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await fetch('http://localhost:8000/api/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get user info');
+    }
+
+    const user = await response.json();
+    return {
+      full_name: user.username,
+      email: `${user.username}@paperless`,
+      role: user.role,
+      id: user.id
     };
   },
   
@@ -78,6 +95,22 @@ export const User = {
   },
   
   async logout() {
-    console.log('Logout requested');
+    const sessionToken = localStorage.getItem('pococlass_session');
+    if (sessionToken) {
+      try {
+        await fetch('http://localhost:8000/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${sessionToken}`
+          }
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+    
+    localStorage.removeItem('pococlass_session');
+    localStorage.removeItem('pococlass_user');
+    window.location.href = '/login';
   }
 };
