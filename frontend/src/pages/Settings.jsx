@@ -850,9 +850,35 @@ export default function Settings() {
                               ))}
                             </div>
                           ) : placeholder.is_internal ? (
-                            <div className="text-xs font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded">
-                              Mandatory
-                            </div>
+                            placeholder.placeholder_name === 'POCO Score' ? (
+                              <button
+                                onClick={() => pocoScoreExists ? null : console.log('Create POCO Score')}
+                                disabled={pocoScoreExists}
+                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                  pocoScoreExists
+                                    ? 'bg-green-100 text-green-700 cursor-default'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                                }`}
+                              >
+                                {pocoScoreExists ? 'Existing' : 'Create'}
+                              </button>
+                            ) : placeholder.placeholder_name === 'POCO OCR' ? (
+                              <button
+                                onClick={() => pocoOcrExists ? null : console.log('Create POCO OCR')}
+                                disabled={pocoOcrExists}
+                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                  pocoOcrExists
+                                    ? 'bg-green-100 text-green-700 cursor-default'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                                }`}
+                              >
+                                {pocoOcrExists ? 'Existing' : 'Create'}
+                              </button>
+                            ) : (
+                              <div className="text-xs font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded">
+                                Mandatory
+                              </div>
+                            )
                           ) : null}
                         </div>
                       </div>
