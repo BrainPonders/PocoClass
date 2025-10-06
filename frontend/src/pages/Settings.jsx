@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
 import API_BASE_URL from '@/config/api';
+import { usePOCOFields } from '@/contexts/POCOFieldsContext';
 
 export default function Settings() {
   const { toast } = useToast();
@@ -11,6 +12,7 @@ export default function Settings() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
+  const { hasMissingFields, pocoScoreExists, pocoOcrExists } = usePOCOFields();
   
   const [syncStatus, setSyncStatus] = useState(null);
   const [syncHistory, setSyncHistory] = useState([]);
@@ -777,7 +779,12 @@ export default function Settings() {
               {activeTab === 'fieldVisibility' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Field Visibility Settings</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                      Field Visibility Settings
+                      {hasMissingFields && (
+                        <AlertTriangle className="w-5 h-5 text-amber-500" title="POCO fields missing" />
+                      )}
+                    </h2>
                     <p className="text-sm text-gray-600 mb-4">
                       Control which fields appear in the wizard and how they behave
                     </p>
