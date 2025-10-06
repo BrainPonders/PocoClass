@@ -810,6 +810,64 @@ def get_cached_custom_fields():
         logger.error(f"Error getting custom fields: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/paperless/custom-fields', methods=['POST'])
+@require_admin
+def create_custom_field():
+    """Create a custom field in Paperless (admin only, POCO fields only)"""
+    try:
+        data = request.json
+        field_name = data.get('name')
+        data_type = data.get('data_type', 'integer')
+        
+        # Security: Only allow creating POCO fields
+        if field_name not in ['POCO Score', 'POCO OCR']:
+            return jsonify({'error': 'Only POCO Score and POCO OCR fields can be created via this endpoint'}), 403
+        
+        # Validate data type
+        if data_type != 'integer':
+            return jsonify({'error': 'POCO fields must be integer type'}), 400
+        
+        # Get Paperless credentials
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        # Create field in Paperless via API
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config)
+        
+        # Prepare payload
+        payload = {
+            'name': field_name,
+            'data_type': data_type
+        }
+        
+        # Make API call to create custom field
+        response = api_client.session.post(
+            f"{paperless_url}/api/custom_fields/",
+            json=payload
+        )
+        
+        if response.status_code == 201:
+            # Field created successfully, trigger sync
+            results = sync_service.sync_all(session['paperless_token'], paperless_url)
+            
+            return jsonify({
+                'success': True,
+                'field': response.json(),
+                'poco_fields_status': results.get('poco_fields_status', {})
+            }), 201
+        elif response.status_code == 400:
+            error_data = response.json()
+            return jsonify({'error': error_data.get('name', ['Field already exists'])[0]}), 400
+        else:
+            response.raise_for_status()
+            
+    except Exception as e:
+        logger.error(f"Error creating custom field: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Settings Endpoints
 @app.route('/api/settings', methods=['GET'])
 @require_auth
