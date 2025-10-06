@@ -456,7 +456,9 @@ def get_all_paperless_users():
             # Get groups (Paperless groups array or empty)
             # Groups come as array of objects: [{id: 1, name: "verje"}, ...]
             groups = paperless_user.get('groups', [])
+            logger.info(f"User {paperless_user['username']}: raw groups = {groups}")
             group_names = [g['name'] if isinstance(g, dict) else str(g) for g in groups]
+            logger.info(f"User {paperless_user['username']}: extracted group_names = {group_names}")
             
             result.append({
                 'paperless_id': paperless_user['id'],
