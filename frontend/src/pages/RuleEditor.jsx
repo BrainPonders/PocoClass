@@ -178,7 +178,7 @@ export default function RuleEditor() {
     return () => {
       isMounted = false;
     };
-  }, [ruleId, t, showToast]); // Added t and showToast as dependencies for error reporting
+  }, [ruleId]); // Only depend on ruleId to prevent infinite loops
 
   const updateRuleData = useCallback((section, data) => {
     setRuleData(prev => {
