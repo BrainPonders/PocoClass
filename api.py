@@ -453,10 +453,59 @@ def get_current_user():
 @app.route('/api/users', methods=['GET'])
 @require_admin
 def list_all_users():
-    """List all users (admin only)"""
+    """List all users with Paperless groups (admin only)"""
     try:
-        users = db.list_users()
-        return jsonify(users)
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        headers = {
+            'Authorization': f'Token {session["paperless_token"]}',
+            'Content-Type': 'application/json'
+        }
+        
+        # Fetch Paperless users and groups
+        users_response = requests.get(f"{paperless_url}/api/users/", headers=headers)
+        users_response.raise_for_status()
+        paperless_data = users_response.json()
+        
+        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers)
+        groups_response.raise_for_status()
+        groups_data = groups_response.json()
+        
+        # Build group ID -> name mapping
+        group_map = {}
+        if isinstance(groups_data, list):
+            group_map = {g['id']: g['name'] for g in groups_data}
+        elif isinstance(groups_data, dict) and 'results' in groups_data:
+            group_map = {g['id']: g['name'] for g in groups_data['results']}
+        
+        # Handle both list and paginated response formats
+        if isinstance(paperless_data, list):
+            paperless_users = paperless_data
+        elif isinstance(paperless_data, dict) and 'results' in paperless_data:
+            paperless_users = paperless_data['results']
+        else:
+            paperless_users = []
+        
+        # Get POCOclass users
+        pococlass_users = db.list_users()
+        paperless_id_map = {u['paperless_user_id']: u for u in pococlass_users}
+        
+        # Merge data with Paperless groups
+        for user in pococlass_users:
+            paperless_user = next((p for p in paperless_users if p['id'] == user['paperless_user_id']), None)
+            if paperless_user:
+                groups = paperless_user.get('groups', [])
+                group_names = []
+                for g in groups:
+                    if isinstance(g, dict):
+                        group_names.append(g['name'])
+                    elif isinstance(g, int):
+                        group_names.append(group_map.get(g, f"Group {g}"))
+                user['groups'] = group_names if group_names else []
+            else:
+                user['groups'] = []
+        
+        return jsonify(pococlass_users)
     except Exception as e:
         logger.error(f"Error listing users: {e}")
         return jsonify({'error': str(e)}), 500
@@ -598,6 +647,81 @@ def get_all_paperless_users():
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error fetching Paperless users: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Settings Batch Endpoint
+@app.route('/api/settings/batch', methods=['GET'])
+@require_auth
+def get_settings_batch():
+    """Get all settings data in one request to reduce lag"""
+    try:
+        is_admin = request.current_user['pococlass_role'] == 'admin'
+        
+        # Build response with all data
+        response = {
+            'appSettings': {},
+            'dateFormats': [],
+            'placeholders': [],
+            'paperlessConfig': {},
+            'syncStatus': {},
+            'syncHistory': []
+        }
+        
+        # App settings
+        try:
+            app_settings = db.get_all_app_settings()
+            response['appSettings'] = app_settings
+        except Exception as e:
+            logger.error(f"Error loading app settings: {e}")
+        
+        # Date formats
+        try:
+            date_formats = db.get_all_date_formats()
+            response['dateFormats'] = date_formats
+        except Exception as e:
+            logger.error(f"Error loading date formats: {e}")
+        
+        # Placeholders
+        try:
+            placeholders = db.get_all_placeholders()
+            response['placeholders'] = placeholders
+        except Exception as e:
+            logger.error(f"Error loading placeholders: {e}")
+        
+        # Paperless config
+        try:
+            paperless_url = db.get_config('paperless_url')
+            response['paperlessConfig'] = {'url': paperless_url}
+        except Exception as e:
+            logger.error(f"Error loading paperless config: {e}")
+        
+        # Sync status and history (admin only)
+        if is_admin:
+            try:
+                response['syncStatus'] = sync_service.get_sync_status()
+            except Exception as e:
+                logger.error(f"Error loading sync status: {e}")
+            
+            try:
+                limit = int(request.args.get('history_limit', 4))
+                history = db.get_sync_history(limit)
+                response['syncHistory'] = history
+            except Exception as e:
+                logger.error(f"Error loading sync history: {e}")
+            
+            try:
+                users = list_all_users()
+                if isinstance(users, tuple):
+                    response['users'] = []
+                else:
+                    response['users'] = users.get_json()
+            except Exception as e:
+                logger.error(f"Error loading users: {e}")
+                response['users'] = []
+        
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Error in settings batch: {e}")
         return jsonify({'error': str(e)}), 500
 
 # Sync Endpoints
