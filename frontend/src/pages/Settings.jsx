@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
@@ -586,68 +586,6 @@ export default function Settings() {
                       </div>
                     )}
                   </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
-                    
-                    {users.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Username
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {users.map(user => (
-                              <tr key={user.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {user.username}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {user.email || '-'}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    user.is_admin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                                  }`}>
-                                    {user.is_admin ? 'Admin' : 'User'}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {user.id !== currentUser?.id && (
-                                    <select
-                                      value={user.is_admin ? 'admin' : 'user'}
-                                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
-                                    >
-                                      <option value="user">User</option>
-                                      <option value="admin">Admin</option>
-                                    </select>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        No users found
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
 
@@ -772,17 +710,24 @@ export default function Settings() {
                   <div className="space-y-2">
                     {placeholders.filter(p => !p.is_internal).map(placeholder => (
                       <div key={placeholder.id} className={`p-3 border rounded-lg ${
-                        placeholder.is_custom_field 
+                        placeholder.is_locked
+                          ? 'border-gray-300 bg-gray-100'
+                          : placeholder.is_custom_field 
                           ? 'border-purple-300 bg-purple-50' 
                           : 'border-gray-200 bg-white'
                       }`}>
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900">
-                              {placeholder.placeholder_name}
+                            <div className="flex items-center gap-2">
+                              {placeholder.is_locked && <Lock className="w-4 h-4 text-gray-500" />}
+                              <div className="text-sm font-medium text-gray-900">
+                                {placeholder.placeholder_name}
+                              </div>
                             </div>
                             <div className="text-xs text-gray-500 mt-0.5">
-                              {placeholder.is_custom_field ? (
+                              {placeholder.is_locked ? (
+                                <span className="text-gray-500 italic">Not available in this version of POCOclass</span>
+                              ) : placeholder.is_custom_field ? (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                                   Custom Field
                                 </span>
@@ -792,27 +737,56 @@ export default function Settings() {
                             </div>
                           </div>
                           
-                          <div className="flex gap-1">
-                            {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
-                              <button
-                                key={mode}
-                                onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
-                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                  placeholder.visibility_mode === mode
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                              >
-                                {mode === 'disabled' && 'Disabled'}
-                                {mode === 'predefined' && 'Predefined'}
-                                {mode === 'dynamic' && 'Dynamic'}
-                                {mode === 'both' && 'Both'}
-                              </button>
-                            ))}
-                          </div>
+                          {!placeholder.is_locked && (
+                            <div className="flex gap-1">
+                              {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
+                                <button
+                                  key={mode}
+                                  onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
+                                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                    placeholder.visibility_mode === mode
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }`}
+                                >
+                                  {mode === 'disabled' && 'Disabled'}
+                                  {mode === 'predefined' && 'Predefined'}
+                                  {mode === 'dynamic' && 'Dynamic'}
+                                  {mode === 'both' && 'Both'}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  <div className="mt-8 border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Internal Fields (Always Active)</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      These fields are automatically created and managed by POCOclass
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {placeholders.filter(p => p.is_internal).map(placeholder => (
+                        <div key={placeholder.id} className="p-3 border border-blue-300 bg-blue-50 rounded-lg">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">
+                                {placeholder.placeholder_name}
+                              </div>
+                              <div className="text-xs text-blue-700 mt-0.5">
+                                <span>Always enabled - Required for classification</span>
+                              </div>
+                            </div>
+                            <div className="text-xs font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded">
+                              Mandatory
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="mt-8 border-t pt-6">
