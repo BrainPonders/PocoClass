@@ -64,7 +64,7 @@ export default function Settings() {
   const loadUsers = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/all-paperless`, {
         headers: {
           'Authorization': `Bearer ${sessionToken}`
         }
@@ -76,7 +76,7 @@ export default function Settings() {
       }
       
       const data = await response.json();
-      console.log('Loaded users:', data);
+      console.log('Loaded Paperless users:', data);
       setUsers(data);
     } catch (error) {
       console.error('Error loading users:', error);
@@ -149,6 +149,68 @@ export default function Settings() {
         description: error.message,
         variant: 'destructive',
         duration: 5000,
+      });
+    }
+  };
+
+  const handleEnableUser = async (paperlessUserId) => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/users/${paperlessUserId}/enable`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to enable user');
+      }
+
+      toast({
+        title: 'User Enabled',
+        description: 'User has been granted POCOclass access',
+        duration: 3000,
+      });
+
+      loadUsers();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleDisableUser = async (paperlessUserId) => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/users/${paperlessUserId}/disable`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to disable user');
+      }
+
+      toast({
+        title: 'User Disabled',
+        description: 'User access to POCOclass has been revoked',
+        duration: 3000,
+      });
+
+      loadUsers();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+        duration: 3000,
       });
     }
   };
@@ -314,44 +376,76 @@ export default function Settings() {
             <div className="space-y-3">
               {users.map((user) => (
                 <div
-                  key={user.id}
+                  key={user.paperless_id}
                   className="flex items-center justify-between p-4 rounded-lg"
                   style={{ backgroundColor: 'var(--app-surface-light)' }}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${user.is_enabled ? 'bg-blue-600' : 'bg-gray-400'}`}>
                       {user.paperless_username.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <div className="font-medium" style={{ color: 'var(--app-text)' }}>
-                        {user.paperless_username}
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium" style={{ color: 'var(--app-text)' }}>
+                          {user.paperless_username}
+                        </span>
+                        {!user.is_registered && (
+                          <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
+                            Not Registered
+                          </span>
+                        )}
+                        {user.is_registered && !user.is_enabled && (
+                          <span className="text-xs px-2 py-0.5 rounded bg-red-200 text-red-700">
+                            Disabled
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                        Last login: {formatDate(user.last_login)}
+                        {user.last_login ? `Last login: ${formatDate(user.last_login)}` : 'Never logged in'}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        user.pococlass_role === 'admin'
-                          ? 'bg-purple-100 text-purple-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      {user.pococlass_role}
-                    </span>
+                    {user.is_registered && user.pococlass_role && (
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          user.pococlass_role === 'admin'
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        {user.pococlass_role}
+                      </span>
+                    )}
                     
-                    {user.id !== currentUser?.id && (
+                    {user.is_registered && user.pococlass_id !== currentUser?.id && (
                       <select
                         value={user.pococlass_role}
-                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                        onChange={(e) => handleRoleChange(user.pococlass_id, e.target.value)}
+                        disabled={!user.is_enabled}
                         className="px-3 py-1 rounded-lg border border-gray-300 text-sm"
+                        style={{ opacity: user.is_enabled ? 1 : 0.5 }}
                       >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                       </select>
+                    )}
+
+                    {user.is_enabled ? (
+                      <button
+                        onClick={() => handleDisableUser(user.paperless_id)}
+                        className="px-4 py-1.5 rounded bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors"
+                      >
+                        Disable
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEnableUser(user.paperless_id)}
+                        className="px-4 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors"
+                      >
+                        Enable
+                      </button>
                     )}
                   </div>
                 </div>

@@ -76,6 +76,11 @@ def require_auth(f):
         if not session:
             return jsonify({'error': 'Invalid or expired session'}), 401
         
+        # Check if user is enabled
+        user = db.get_user_by_id(session['user_id'])
+        if not user or user.get('is_enabled', 1) == 0:
+            return jsonify({'error': 'User account is disabled'}), 403
+        
         request.current_user = session
         return f(*args, **kwargs)
     return decorated_function
@@ -411,6 +416,109 @@ def update_user_role_endpoint(user_id):
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating user role: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/all-paperless', methods=['GET'])
+@require_admin
+def get_all_paperless_users():
+    """Get all Paperless users with their POCOclass status (admin only)"""
+    try:
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        # Fetch all Paperless users
+        headers = {
+            'Authorization': f'Token {session["paperless_token"]}',
+            'Content-Type': 'application/json'
+        }
+        response = requests.get(f"{paperless_url}/api/users/", headers=headers)
+        response.raise_for_status()
+        paperless_data = response.json()
+        
+        # Handle both list and paginated response formats
+        if isinstance(paperless_data, list):
+            paperless_users = paperless_data
+        elif isinstance(paperless_data, dict) and 'results' in paperless_data:
+            paperless_users = paperless_data['results']
+        else:
+            logger.error(f"Unexpected Paperless API response format: {type(paperless_data)}")
+            return jsonify({'error': 'Unexpected API response format'}), 500
+        
+        # Get POCOclass users
+        pococlass_users = db.list_users()
+        pococlass_map = {u['paperless_user_id']: u for u in pococlass_users}
+        
+        # Merge data
+        result = []
+        for paperless_user in paperless_users:
+            pococlass_user = pococlass_map.get(paperless_user['id'])
+            result.append({
+                'paperless_id': paperless_user['id'],
+                'paperless_username': paperless_user['username'],
+                'is_registered': pococlass_user is not None,
+                'is_enabled': pococlass_user['is_enabled'] == 1 if pococlass_user else False,
+                'pococlass_id': pococlass_user['id'] if pococlass_user else None,
+                'pococlass_role': pococlass_user['pococlass_role'] if pococlass_user else None,
+                'last_login': pococlass_user['last_login'] if pococlass_user else None
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error fetching Paperless users: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/<int:paperless_user_id>/enable', methods=['POST'])
+@require_admin
+def enable_user_endpoint(paperless_user_id):
+    """Enable a user (admin only)"""
+    try:
+        # Check if user exists in POCOclass database
+        pococlass_user = db.get_user_by_paperless_id(paperless_user_id)
+        
+        if pococlass_user:
+            # User exists, just enable them
+            db.enable_user(paperless_user_id)
+        else:
+            # User doesn't exist, fetch from Paperless and create
+            session = request.current_user
+            paperless_url = db.get_config('paperless_url')
+            headers = {
+                'Authorization': f'Token {session["paperless_token"]}',
+                'Content-Type': 'application/json'
+            }
+            response = requests.get(f"{paperless_url}/api/users/", headers=headers)
+            response.raise_for_status()
+            paperless_users = response.json()
+            
+            # Find the user
+            target_user = next((u for u in paperless_users if u['id'] == paperless_user_id), None)
+            if not target_user:
+                return jsonify({'error': 'User not found in Paperless'}), 404
+            
+            # Create the user as enabled
+            db.create_user(target_user['username'], paperless_user_id, role='user')
+            db.enable_user(paperless_user_id)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error enabling user: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/<int:paperless_user_id>/disable', methods=['POST'])
+@require_admin
+def disable_user_endpoint(paperless_user_id):
+    """Disable a user (admin only)"""
+    try:
+        # Check if user exists
+        pococlass_user = db.get_user_by_paperless_id(paperless_user_id)
+        
+        if not pococlass_user:
+            return jsonify({'error': 'User not registered in POCOclass'}), 404
+        
+        db.disable_user(paperless_user_id)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error disabling user: {e}")
         return jsonify({'error': str(e)}), 500
 
 # Sync Endpoints
