@@ -291,13 +291,28 @@ class Database:
         conn.close()
     
     def list_users(self) -> List[Dict]:
-        """List all users"""
+        """List all users with mapped field names for frontend"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users ORDER BY created_at")
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows]
+        
+        # Map database fields to frontend expected fields
+        users = []
+        for row in rows:
+            user_dict = dict(row)
+            users.append({
+                'id': user_dict['id'],
+                'username': user_dict['paperless_username'],
+                'email': None,  # Email not stored in our system
+                'role': user_dict['pococlass_role'],
+                'is_admin': user_dict['pococlass_role'] == 'admin',
+                'created_at': user_dict['created_at'],
+                'last_login': user_dict['last_login'],
+                'is_enabled': user_dict['is_enabled']
+            })
+        return users
     
     def create_session(self, user_id: int, paperless_token: str, duration_hours: int = 24) -> str:
         """Create a new session for a user"""
