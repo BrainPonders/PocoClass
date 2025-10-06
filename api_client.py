@@ -8,14 +8,17 @@ import logging
 from typing import Dict, List, Any, Optional
 try:
     from .config import Config
+    from .database import Database
 except ImportError:
     from config import Config
+    from database import Database
 
 class PaperlessAPIClient:
     """Client for interacting with Paperless-ngx API"""
     
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, db: Optional[Database] = None):
         self.config = config
+        self.db = db or Database()
         self.logger = logging.getLogger(__name__)
         self.session = requests.Session()
         
@@ -37,8 +40,17 @@ class PaperlessAPIClient:
             return False
     
     def get_tag_id(self, tag_name: str) -> Optional[int]:
-        """Get tag ID by name, create if doesn't exist"""
+        """Get tag ID by name, create if doesn't exist (uses cache for performance)"""
         try:
+            # Check cache first
+            cached_id = self.db.get_tag_id_by_name(tag_name)
+            if cached_id:
+                self.logger.debug(f"Found tag '{tag_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Tag '{tag_name}' not in cache, checking Paperless...")
+            
             # Get all tags with pagination and search by name
             all_tags = []
             url = f"{self.config.paperless_url}/api/tags/"
@@ -53,6 +65,8 @@ class PaperlessAPIClient:
             # Search for existing tag
             for tag in all_tags:
                 if tag['name'] == tag_name:
+                    # Cache it for next time
+                    self.db.sync_tags([tag])
                     return tag['id']
             
             # Create tag if it doesn't exist
@@ -62,8 +76,13 @@ class PaperlessAPIClient:
             )
             response.raise_for_status()
             
-            tag_id = response.json()['id']
+            tag_data = response.json()
+            tag_id = tag_data['id']
             self.logger.info(f"Created new tag '{tag_name}' with ID {tag_id}")
+            
+            # Cache the new tag
+            self.db.sync_tags([tag_data])
+            
             return tag_id
             
         except requests.RequestException as e:
@@ -71,8 +90,17 @@ class PaperlessAPIClient:
             return None
     
     def get_correspondent_id(self, correspondent_name: str) -> Optional[int]:
-        """Get correspondent ID by name, create if doesn't exist"""
+        """Get correspondent ID by name, create if doesn't exist (uses cache for performance)"""
         try:
+            # Check cache first
+            cached_id = self.db.get_correspondent_id_by_name(correspondent_name)
+            if cached_id:
+                self.logger.debug(f"Found correspondent '{correspondent_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Correspondent '{correspondent_name}' not in cache, checking Paperless...")
+            
             # First try to find existing correspondent
             response = self.session.get(
                 f"{self.config.paperless_url}/api/correspondents/",
@@ -82,6 +110,8 @@ class PaperlessAPIClient:
             
             results = response.json().get('results', [])
             if results:
+                # Cache it for next time
+                self.db.sync_correspondents([results[0]])
                 return results[0]['id']
             
             # Create correspondent if it doesn't exist
@@ -91,8 +121,13 @@ class PaperlessAPIClient:
             )
             response.raise_for_status()
             
-            correspondent_id = response.json()['id']
+            corr_data = response.json()
+            correspondent_id = corr_data['id']
             self.logger.info(f"Created new correspondent '{correspondent_name}' with ID {correspondent_id}")
+            
+            # Cache the new correspondent
+            self.db.sync_correspondents([corr_data])
+            
             return correspondent_id
             
         except requests.RequestException as e:
@@ -100,8 +135,17 @@ class PaperlessAPIClient:
             return None
     
     def get_document_type_id(self, document_type_name: str) -> Optional[int]:
-        """Get document type ID by name, create if doesn't exist"""
+        """Get document type ID by name, create if doesn't exist (uses cache for performance)"""
         try:
+            # Check cache first
+            cached_id = self.db.get_document_type_id_by_name(document_type_name)
+            if cached_id:
+                self.logger.debug(f"Found document type '{document_type_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Document type '{document_type_name}' not in cache, checking Paperless...")
+            
             # First try to find existing document type
             response = self.session.get(
                 f"{self.config.paperless_url}/api/document_types/",
@@ -111,6 +155,8 @@ class PaperlessAPIClient:
             
             results = response.json().get('results', [])
             if results:
+                # Cache it for next time
+                self.db.sync_document_types([results[0]])
                 return results[0]['id']
             
             # Create document type if it doesn't exist
@@ -120,8 +166,13 @@ class PaperlessAPIClient:
             )
             response.raise_for_status()
             
-            document_type_id = response.json()['id']
+            dt_data = response.json()
+            document_type_id = dt_data['id']
             self.logger.info(f"Created new document type '{document_type_name}' with ID {document_type_id}")
+            
+            # Cache the new document type
+            self.db.sync_document_types([dt_data])
+            
             return document_type_id
             
         except requests.RequestException as e:
@@ -129,8 +180,17 @@ class PaperlessAPIClient:
             return None
     
     def get_custom_field_id(self, field_name: str) -> Optional[int]:
-        """Get custom field ID by name, create if doesn't exist"""
+        """Get custom field ID by name, create if doesn't exist (uses cache for performance)"""
         try:
+            # Check cache first
+            cached_id = self.db.get_custom_field_id_by_name(field_name)
+            if cached_id:
+                self.logger.debug(f"Found custom field '{field_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Custom field '{field_name}' not in cache, checking Paperless...")
+            
             # First try to find existing custom field
             response = self.session.get(
                 f"{self.config.paperless_url}/api/custom_fields/",
@@ -140,6 +200,8 @@ class PaperlessAPIClient:
             
             results = response.json().get('results', [])
             if results:
+                # Cache it for next time
+                self.db.sync_custom_fields([results[0]])
                 return results[0]['id']
             
             # Create custom field if it doesn't exist
@@ -152,8 +214,13 @@ class PaperlessAPIClient:
             )
             response.raise_for_status()
             
-            field_id = response.json()['id']
+            cf_data = response.json()
+            field_id = cf_data['id']
             self.logger.info(f"Created new custom field '{field_name}' with ID {field_id}")
+            
+            # Cache the new custom field
+            self.db.sync_custom_fields([cf_data])
+            
             return field_id
             
         except requests.RequestException as e:
