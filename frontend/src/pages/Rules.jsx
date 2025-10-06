@@ -330,7 +330,7 @@ export default function Rules() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="form-select"
+                className="form-select pr-10"
                 aria-label="Filter rules by status"
               >
                 <option value="all">All Status</option>
@@ -346,7 +346,7 @@ export default function Rules() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="form-select pl-10"
+                  className="form-select pl-10 pr-10"
                   aria-label="Sort rules"
                 >
                   <option value="date_newest">Newest First</option>
