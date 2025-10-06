@@ -220,6 +220,66 @@ def setup():
             except Exception as e:
                 logger.warning(f"Initial sync failed (non-critical): {e}")
             
+            # Create POCO Score and POCO OCR custom fields if they don't exist
+            try:
+                logger.info(f"Checking for POCO Score and POCO OCR custom fields...")
+                
+                # Get existing custom fields
+                custom_fields_response = requests.get(
+                    f'{paperless_url}/api/custom_fields/',
+                    headers={'Authorization': f'Token {paperless_token}'},
+                    timeout=10
+                )
+                
+                if custom_fields_response.status_code == 200:
+                    custom_fields_data = custom_fields_response.json()
+                    custom_fields = custom_fields_data.get('results', []) if isinstance(custom_fields_data, dict) else custom_fields_data
+                    existing_names = [cf.get('name') for cf in custom_fields]
+                    
+                    fields_to_create = []
+                    if 'POCO Score' not in existing_names:
+                        fields_to_create.append({
+                            'name': 'POCO Score',
+                            'data_type': 'integer'
+                        })
+                    if 'POCO OCR' not in existing_names:
+                        fields_to_create.append({
+                            'name': 'POCO OCR',
+                            'data_type': 'integer'
+                        })
+                    
+                    # Create missing fields
+                    for field in fields_to_create:
+                        try:
+                            create_response = requests.post(
+                                f'{paperless_url}/api/custom_fields/',
+                                headers={
+                                    'Authorization': f'Token {paperless_token}',
+                                    'Content-Type': 'application/json'
+                                },
+                                json=field,
+                                timeout=10
+                            )
+                            
+                            if create_response.status_code in [200, 201]:
+                                logger.info(f"Created custom field: {field['name']}")
+                            else:
+                                logger.warning(f"Failed to create custom field {field['name']}: {create_response.status_code}")
+                        except Exception as e:
+                            logger.warning(f"Error creating custom field {field['name']}: {e}")
+                    
+                    # Re-sync custom fields if we created any
+                    if fields_to_create:
+                        try:
+                            sync_service.sync_all(paperless_token, paperless_url)
+                            logger.info(f"Re-synced after creating custom fields")
+                        except Exception as e:
+                            logger.warning(f"Re-sync failed (non-critical): {e}")
+                else:
+                    logger.warning(f"Could not fetch custom fields: {custom_fields_response.status_code}")
+            except Exception as e:
+                logger.warning(f"Error checking/creating POCO custom fields (non-critical): {e}")
+            
             logger.info(f"Setup completed by user: {username}")
             
             return jsonify({
