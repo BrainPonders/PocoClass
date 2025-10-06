@@ -302,15 +302,17 @@ class Database:
         users = []
         for row in rows:
             user_dict = dict(row)
+            role = user_dict['pococlass_role']
             users.append({
                 'id': user_dict['id'],
                 'username': user_dict['paperless_username'],
-                'email': None,  # Email not stored in our system
-                'role': user_dict['pococlass_role'],
-                'is_admin': user_dict['pococlass_role'] == 'admin',
+                'paperless_user_id': user_dict['paperless_user_id'],
+                'groups': [role.capitalize()],  # Groups is just role for now
+                'role': role,
+                'is_admin': role == 'admin',
                 'created_at': user_dict['created_at'],
                 'last_login': user_dict['last_login'],
-                'is_enabled': user_dict['is_enabled']
+                'is_enabled': bool(user_dict['is_enabled'])
             })
         return users
     
