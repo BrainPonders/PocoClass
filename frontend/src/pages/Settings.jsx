@@ -177,6 +177,7 @@ export default function Settings() {
       loadSyncStatus();
       loadSyncHistory();
       loadPlaceholders();
+      refreshPocoFields();
     } catch (error) {
       toast({
         title: 'Sync Failed',
