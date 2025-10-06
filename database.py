@@ -211,7 +211,7 @@ class Database:
         conn.commit()
         conn.close()
     
-    def create_user(self, paperless_username: str, paperless_user_id: int, role: str = 'user') -> int:
+    def create_user(self, paperless_username: str, paperless_user_id: int, role: str = 'user') -> Optional[int]:
         """Create a new user"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -613,7 +613,7 @@ class Database:
         return row['synced_at'] if row else None
     
     # App Settings Methods
-    def get_app_setting(self, key: str, default: str = None) -> Optional[str]:
+    def get_app_setting(self, key: str, default: Optional[str] = None) -> Optional[str]:
         """Get app setting by key"""
         conn = self.get_connection()
         cursor = conn.cursor()

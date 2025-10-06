@@ -21,23 +21,45 @@ export default function Settings() {
   const [paperlessConfig, setPaperlessConfig] = useState({});
 
   useEffect(() => {
-    loadCurrentUser();
-    loadSyncStatus();
-    loadSyncHistory();
-    loadUsers();
-    loadAppSettings();
-    loadDateFormats();
-    loadPlaceholders();
-    loadPaperlessConfig();
+    loadAllSettings();
   }, []);
 
-  const loadCurrentUser = async () => {
+  const loadAllSettings = async () => {
     try {
+      setLoading(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      
+      // Load user first (needed for admin check)
       const user = await User.me();
       setCurrentUser(user);
+      
+      // Load all settings in one batch request
+      const response = await fetch(`${API_BASE_URL}/api/settings/batch?history_limit=4`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update all state at once
+        setAppSettings(data.appSettings || {});
+        setDateFormats(data.dateFormats || []);
+        setPlaceholders(data.placeholders || []);
+        setPaperlessConfig(data.paperlessConfig || {});
+        setSyncStatus(data.syncStatus || null);
+        setSyncHistory(data.syncHistory || []);
+        setUsers(data.users || []);
+      }
     } catch (error) {
-      console.error('Error loading user:', error);
-      return null;
+      console.error('Error loading settings:', error);
+      toast({
+        title: 'Loading Error',
+        description: 'Failed to load settings. Please refresh the page.',
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,21 +101,6 @@ export default function Settings() {
       }
     } catch (error) {
       console.error('Error loading users:', error);
-    }
-  };
-
-  const loadAppSettings = async () => {
-    try {
-      const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/settings/app`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAppSettings(data);
-      }
-    } catch (error) {
-      console.error('Error loading app settings:', error);
     }
   };
 
