@@ -386,15 +386,29 @@ export default function Settings() {
                       {user.paperless_username.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-medium" style={{ color: 'var(--app-text)' }}>
                           {user.paperless_username}
                         </span>
+                        
+                        {/* Paperless Permission Levels */}
                         {user.is_superuser && (
                           <span className="text-xs px-2 py-0.5 rounded bg-purple-200 text-purple-700">
                             Superuser
                           </span>
                         )}
+                        {user.is_staff && !user.is_superuser && (
+                          <span className="text-xs px-2 py-0.5 rounded bg-blue-200 text-blue-700">
+                            Admin
+                          </span>
+                        )}
+                        {!user.is_active && (
+                          <span className="text-xs px-2 py-0.5 rounded bg-orange-200 text-orange-700">
+                            Inactive
+                          </span>
+                        )}
+                        
+                        {/* POCOclass Status */}
                         {!user.is_registered && (
                           <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
                             Not Registered

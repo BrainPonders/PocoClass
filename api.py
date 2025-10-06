@@ -454,12 +454,16 @@ def get_all_paperless_users():
             pococlass_user = pococlass_map.get(paperless_user['id'])
             
             # Get groups (Paperless groups array or empty)
+            # Groups come as array of objects: [{id: 1, name: "verje"}, ...]
             groups = paperless_user.get('groups', [])
+            group_names = [g['name'] if isinstance(g, dict) else str(g) for g in groups]
             
             result.append({
                 'paperless_id': paperless_user['id'],
                 'paperless_username': paperless_user['username'],
-                'paperless_groups': groups,
+                'paperless_groups': group_names,
+                'is_active': paperless_user.get('is_active', False),
+                'is_staff': paperless_user.get('is_staff', False),
                 'is_superuser': paperless_user.get('is_superuser', False),
                 'is_registered': pococlass_user is not None,
                 'is_enabled': pococlass_user['is_enabled'] == 1 if pococlass_user else False,
