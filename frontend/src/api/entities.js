@@ -1,4 +1,5 @@
 import { apiClient } from './apiClient';
+import API_BASE_URL from '../config/api';
 
 // Rule Entity
 export const Rule = {
@@ -71,7 +72,7 @@ export const User = {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch('http://localhost:8000/api/auth/me', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: {
         'Authorization': `Bearer ${sessionToken}`
       }
@@ -98,7 +99,7 @@ export const User = {
     const sessionToken = localStorage.getItem('pococlass_session');
     if (sessionToken) {
       try {
-        await fetch('http://localhost:8000/api/auth/logout', {
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${sessionToken}`

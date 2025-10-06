@@ -3,6 +3,7 @@ import { RefreshCw, Users, Settings as SettingsIcon, Database, Clock, CheckCircl
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
+import API_BASE_URL from '@/config/api';
 
 export default function Settings() {
   const { toast } = useToast();
@@ -33,7 +34,7 @@ export default function Settings() {
   const loadSyncStatus = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch('http://localhost:8000/api/sync/status', {
+      const response = await fetch(`${API_BASE_URL}/api/sync/status`, {
         headers: {
           'Authorization': `Bearer ${sessionToken}`
         }
@@ -48,7 +49,7 @@ export default function Settings() {
   const loadSyncHistory = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch('http://localhost:8000/api/sync/history?limit=5', {
+      const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=5`, {
         headers: {
           'Authorization': `Bearer ${sessionToken}`
         }
@@ -63,7 +64,7 @@ export default function Settings() {
   const loadUsers = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch('http://localhost:8000/api/users', {
+      const response = await fetch(`${API_BASE_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${sessionToken}`
         }
@@ -79,7 +80,7 @@ export default function Settings() {
     setLoading(true);
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch('http://localhost:8000/api/sync', {
+      const response = await fetch(`${API_BASE_URL}/api/sync`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${sessionToken}`
@@ -113,7 +114,7 @@ export default function Settings() {
   const handleRoleChange = async (userId, newRole) => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`http://localhost:8000/api/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/role`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${sessionToken}`,

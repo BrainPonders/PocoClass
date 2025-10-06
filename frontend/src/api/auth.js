@@ -2,7 +2,8 @@
  * Authentication utilities for POCOclass
  */
 
-const API_BASE_URL = 'http://localhost:8000/api';
+import API_BASE_URL from '../config/api';
+const API_AUTH_URL = `${API_BASE_URL}/api`;
 
 export const auth = {
   /**
@@ -10,7 +11,7 @@ export const auth = {
    */
   async checkSetupStatus() {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/status`);
+      const response = await fetch(`${API_AUTH_URL}/auth/status`);
       const data = await response.json();
       return data;
     } catch (error) {
@@ -57,7 +58,7 @@ export const auth = {
     if (!token) return false;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      const response = await fetch(`${API_AUTH_URL}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -86,7 +87,7 @@ export const auth = {
     
     if (token) {
       try {
-        await fetch(`${API_BASE_URL}/auth/logout`, {
+        await fetch(`${API_AUTH_URL}/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
