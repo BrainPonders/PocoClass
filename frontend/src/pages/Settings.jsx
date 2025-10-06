@@ -96,6 +96,7 @@ export default function Settings() {
       toast({
         title: 'Sync Complete',
         description: `Synced: ${data.results.correspondents} correspondents, ${data.results.tags} tags, ${data.results.document_types} document types, ${data.results.custom_fields} custom fields`,
+        duration: 5000,
       });
 
       loadSyncStatus();
@@ -105,6 +106,7 @@ export default function Settings() {
         title: 'Sync Failed',
         description: error.message,
         variant: 'destructive',
+        duration: 5000,
       });
     } finally {
       setLoading(false);
@@ -130,6 +132,7 @@ export default function Settings() {
       toast({
         title: 'Role Updated',
         description: `User role changed to ${newRole}`,
+        duration: 3000,
       });
 
       loadUsers();
@@ -138,6 +141,7 @@ export default function Settings() {
         title: 'Error',
         description: error.message,
         variant: 'destructive',
+        duration: 5000,
       });
     }
   };
