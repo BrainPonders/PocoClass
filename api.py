@@ -210,7 +210,7 @@ def setup():
             # Initial sync on setup
             try:
                 logger.info(f"Performing initial sync of Paperless data...")
-                sync_service.sync_all(paperless_url, paperless_token)
+                sync_service.sync_all(paperless_token, paperless_url)
                 logger.info(f"Initial sync completed successfully")
             except Exception as e:
                 logger.warning(f"Initial sync failed (non-critical): {e}")
@@ -294,7 +294,7 @@ def login():
             try:
                 if should_sync():
                     logger.info(f"Auto-syncing Paperless data on login for user: {username}")
-                    sync_service.sync_all(paperless_url, paperless_token)
+                    sync_service.sync_all(paperless_token, paperless_url)
                 else:
                     logger.info(f"Skipping auto-sync - data is fresh (user: {username})")
             except Exception as e:
