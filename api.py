@@ -693,6 +693,123 @@ def update_setting(key):
         logger.error(f"Error updating setting: {e}")
         return jsonify({'error': str(e)}), 500
 
+# App Settings Endpoints
+@app.route('/api/settings/app', methods=['GET'])
+@require_auth
+def get_app_settings():
+    """Get all app settings"""
+    try:
+        settings = db.get_all_app_settings()
+        return jsonify(settings)
+    except Exception as e:
+        logger.error(f"Error getting app settings: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/app', methods=['POST'])
+@require_auth
+def update_app_settings():
+    """Update app settings"""
+    try:
+        data = request.json
+        for key, value in data.items():
+            db.set_app_setting(key, value)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating app settings: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Date Formats Endpoints
+@app.route('/api/settings/date-formats', methods=['GET'])
+@require_auth
+def get_date_formats():
+    """Get all date formats"""
+    try:
+        formats = db.get_all_date_formats()
+        return jsonify(formats)
+    except Exception as e:
+        logger.error(f"Error getting date formats: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/date-formats/selected', methods=['GET'])
+@require_auth
+def get_selected_date_formats():
+    """Get selected date formats"""
+    try:
+        formats = db.get_selected_date_formats()
+        return jsonify(formats)
+    except Exception as e:
+        logger.error(f"Error getting selected date formats: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/date-formats/<path:format_pattern>', methods=['PUT'])
+@require_auth
+def update_date_format_selection(format_pattern):
+    """Update date format selection"""
+    try:
+        data = request.json
+        is_selected = data.get('is_selected', False)
+        db.set_date_format_selection(format_pattern, is_selected)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating date format selection: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Placeholder Settings Endpoints
+@app.route('/api/settings/placeholders', methods=['GET'])
+@require_auth
+def get_placeholder_settings():
+    """Get all placeholder settings"""
+    try:
+        # Sync custom field placeholders first
+        db.sync_custom_field_placeholders()
+        placeholders = db.get_all_placeholder_settings()
+        return jsonify(placeholders)
+    except Exception as e:
+        logger.error(f"Error getting placeholder settings: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/placeholders/<path:placeholder_name>', methods=['PUT'])
+@require_auth
+def update_placeholder_visibility(placeholder_name):
+    """Update placeholder visibility mode"""
+    try:
+        data = request.json
+        visibility_mode = data.get('visibility_mode')
+        if visibility_mode not in ['disabled', 'predefined', 'dynamic', 'both']:
+            return jsonify({'error': 'Invalid visibility mode'}), 400
+        
+        db.set_placeholder_visibility(placeholder_name, visibility_mode)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating placeholder visibility: {e}")
+        return jsonify({'error': str(e)}), 500
+
+# Paperless Configuration Endpoint
+@app.route('/api/settings/paperless-config', methods=['GET'])
+@require_auth
+def get_paperless_config():
+    """Get Paperless configuration"""
+    try:
+        paperless_url = db.get_config('paperless_url')
+        return jsonify({'paperless_url': paperless_url})
+    except Exception as e:
+        logger.error(f"Error getting Paperless config: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/paperless-config', methods=['PUT'])
+@require_admin
+def update_paperless_config():
+    """Update Paperless configuration (admin only)"""
+    try:
+        data = request.json
+        paperless_url = data.get('paperless_url')
+        if paperless_url:
+            db.set_config('paperless_url', paperless_url)
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error updating Paperless config: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Serve React App
 @app.route('/')
 @app.route('/<path:path>')
