@@ -64,6 +64,39 @@ export default function SetupWizard() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--app-bg)' }}>
+      <style>{`
+        .setup-form-group {
+          margin-bottom: 28px;
+        }
+        
+        .setup-form-label {
+          display: block;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #111827;
+          margin-bottom: 14px;
+          letter-spacing: -0.01em;
+        }
+        
+        .setup-form-input {
+          width: 100%;
+          padding: 14px 16px;
+          border: 2px solid #d1d5db;
+          border-radius: 8px;
+          font-size: 1rem;
+          background: #f9fafb;
+          color: #1f2937;
+          transition: all 0.2s ease;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .setup-form-input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+      `}</style>
       <div className="w-full max-w-2xl">
         <div className="wizard-container">
           {/* Step 1: Welcome */}
@@ -145,8 +178,8 @@ export default function SetupWizard() {
               </p>
 
               <div className="space-y-6">
-                <div className="form-group">
-                  <label className="form-label">
+                <div className="setup-form-group">
+                  <label className="setup-form-label">
                     Paperless-ngx URL
                   </label>
                   <input
@@ -155,10 +188,10 @@ export default function SetupWizard() {
                     value={formData.paperlessUrl}
                     onChange={handleInputChange}
                     placeholder="https://paperless.example.com"
-                    className="form-input"
+                    className="setup-form-input"
                     required
                   />
-                  <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
+                  <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
                     The URL where your Paperless-ngx instance is hosted
                   </p>
                 </div>
@@ -176,8 +209,8 @@ export default function SetupWizard() {
                   </div>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
+                <div className="setup-form-group">
+                  <label className="setup-form-label">
                     Your Paperless Username
                   </label>
                   <input
@@ -186,13 +219,13 @@ export default function SetupWizard() {
                     value={formData.username}
                     onChange={handleInputChange}
                     placeholder="admin"
-                    className="form-input"
+                    className="setup-form-input"
                     required
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">
+                <div className="setup-form-group">
+                  <label className="setup-form-label">
                     Your Paperless Password
                   </label>
                   <input
@@ -201,10 +234,10 @@ export default function SetupWizard() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="form-input"
+                    className="setup-form-input"
                     required
                   />
-                  <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
+                  <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
                     Your credentials are only used to authenticate with Paperless
                   </p>
                 </div>
