@@ -330,7 +330,8 @@ export default function Rules() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="form-select pr-10"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 appearance-none bg-white"
+                style={{ paddingRight: '2.5rem' }}
                 aria-label="Filter rules by status"
               >
                 <option value="all">All Status</option>
@@ -342,11 +343,12 @@ export default function Rules() {
 
             <div>
               <div className="relative">
-                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" aria-hidden="true" />
+                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" aria-hidden="true" />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="form-select pl-10 pr-10"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10 appearance-none bg-white"
+                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                   aria-label="Sort rules"
                 >
                   <option value="date_newest">Newest First</option>
