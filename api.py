@@ -478,6 +478,46 @@ def update_user_role_endpoint(user_id):
         logger.error(f"Error updating user role: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/users/<int:user_id>/enable', methods=['PUT'])
+@require_admin
+def enable_user_endpoint(user_id):
+    """Enable user account (admin only)"""
+    try:
+        # Get user to check paperless_user_id
+        users = db.list_users()
+        user = next((u for u in users if u['id'] == user_id), None)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Enable using paperless_user_id
+        db.enable_user(user['paperless_user_id'])
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error enabling user: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/users/<int:user_id>/disable', methods=['PUT'])
+@require_admin
+def disable_user_endpoint(user_id):
+    """Disable user account (admin only)"""
+    try:
+        # Prevent disabling yourself
+        if user_id == request.current_user['user_id']:
+            return jsonify({'error': 'Cannot disable your own account'}), 400
+        
+        # Get user to check paperless_user_id
+        users = db.list_users()
+        user = next((u for u in users if u['id'] == user_id), None)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Disable using paperless_user_id
+        db.disable_user(user['paperless_user_id'])
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error disabling user: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/users/all-paperless', methods=['GET'])
 @require_admin
 def get_all_paperless_users():

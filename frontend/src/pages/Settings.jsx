@@ -206,6 +206,39 @@ export default function Settings() {
     }
   };
 
+  const handleToggleUserStatus = async (userId, isEnabled) => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const action = isEnabled ? 'disable' : 'enable';
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/${action}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Status update failed');
+      }
+
+      toast({
+        title: isEnabled ? 'Account Disabled' : 'Account Enabled',
+        description: `User account has been ${isEnabled ? 'disabled' : 'enabled'} successfully`,
+        duration: 3000,
+      });
+
+      loadUsers();
+    } catch (error) {
+      toast({
+        title: 'Update Failed',
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    }
+  };
+
   const handleAppSettingChange = async (key, value) => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
@@ -481,7 +514,7 @@ export default function Settings() {
                                 Username
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
+                                Group(s)
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Role
@@ -493,12 +526,15 @@ export default function Settings() {
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {users.map(user => (
-                              <tr key={user.id}>
+                              <tr key={user.id} className={!user.is_enabled ? 'bg-gray-50 opacity-60' : ''}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                   {user.username}
+                                  {!user.is_enabled && (
+                                    <span className="ml-2 text-xs text-red-600">(Disabled)</span>
+                                  )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {user.email || '-'}
+                                  {user.groups?.join(', ') || '-'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -509,14 +545,27 @@ export default function Settings() {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                   {user.id !== currentUser?.id && (
-                                    <select
-                                      value={user.is_admin ? 'admin' : 'user'}
-                                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
-                                    >
-                                      <option value="user">User</option>
-                                      <option value="admin">Admin</option>
-                                    </select>
+                                    <div className="flex gap-2">
+                                      <select
+                                        value={user.is_admin ? 'admin' : 'user'}
+                                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                        className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                                        disabled={!user.is_enabled}
+                                      >
+                                        <option value="user">User</option>
+                                        <option value="admin">Admin</option>
+                                      </select>
+                                      <button
+                                        onClick={() => handleToggleUserStatus(user.id, user.is_enabled)}
+                                        className={`px-3 py-1 text-xs font-medium rounded ${
+                                          user.is_enabled
+                                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        }`}
+                                      >
+                                        {user.is_enabled ? 'Disable' : 'Enable'}
+                                      </button>
+                                    </div>
                                   )}
                                 </td>
                               </tr>
