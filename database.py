@@ -159,6 +159,7 @@ class Database:
                 visibility_mode TEXT NOT NULL DEFAULT 'both',
                 is_custom_field INTEGER DEFAULT 0,
                 is_internal INTEGER DEFAULT 0,
+                is_locked INTEGER DEFAULT 0,
                 order_index INTEGER DEFAULT 999,
                 updated_at TEXT NOT NULL
             )
@@ -704,25 +705,25 @@ class Database:
             return
         
         # Built-in placeholders with explicit order
+        # Format: (name, type, mode, is_custom, is_internal, is_locked, order_idx)
         placeholders = [
-            ("Title", "builtin", "both", 0, 0, 1),
-            ("Archive Serial Number", "builtin", "both", 0, 0, 2),
-            ("Date Created", "builtin", "both", 0, 0, 3),
-            ("Correspondent", "builtin", "both", 0, 0, 4),
-            ("Document Type", "builtin", "both", 0, 0, 5),
-            ("Storage Path", "builtin", "both", 0, 0, 6),
-            ("Tags", "builtin", "both", 0, 0, 7),
-            ("Document Category", "builtin", "both", 0, 0, 8),
-            ("POCO Score", "internal", "disabled", 0, 1, 100),
-            ("POCO OCR", "internal", "disabled", 0, 1, 101),
+            ("Title", "builtin", "disabled", 0, 0, 1, 1),
+            ("Archive Serial Number", "builtin", "disabled", 0, 0, 1, 2),
+            ("Storage Path", "builtin", "disabled", 0, 0, 1, 3),
+            ("Date Created", "builtin", "both", 0, 0, 0, 4),
+            ("Correspondent", "builtin", "both", 0, 0, 0, 5),
+            ("Document Type", "builtin", "both", 0, 0, 0, 6),
+            ("Tags", "builtin", "both", 0, 0, 0, 7),
+            ("POCO Score", "internal", "disabled", 0, 1, 0, 100),
+            ("POCO OCR", "internal", "disabled", 0, 1, 0, 101),
         ]
         
-        for name, ptype, mode, is_custom, is_internal, order_idx in placeholders:
+        for name, ptype, mode, is_custom, is_internal, is_locked, order_idx in placeholders:
             cursor.execute("""
                 INSERT INTO placeholder_settings 
-                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, order_index, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (name, ptype, mode, is_custom, is_internal, order_idx, now))
+                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, is_locked, order_index, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (name, ptype, mode, is_custom, is_internal, is_locked, order_idx, now))
         
         conn.commit()
         conn.close()
@@ -760,15 +761,15 @@ class Database:
         cursor = conn.cursor()
         now = datetime.now().isoformat()
         
-        # Custom fields get order_index 9, 10, 11, etc. (between built-in 1-8 and internal 100+)
+        # Custom fields get order_index 8, 9, 10, etc. (after built-in 1-7 and before internal 100+)
         for idx, cf in enumerate(custom_fields):
             placeholder_name = cf['name']
-            order_idx = 9 + idx
+            order_idx = 8 + idx
             cursor.execute("""
                 INSERT OR IGNORE INTO placeholder_settings 
-                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, order_index, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (placeholder_name, "custom", "both", 1, 0, order_idx, now))
+                (placeholder_name, placeholder_type, visibility_mode, is_custom_field, is_internal, is_locked, order_index, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (placeholder_name, "custom", "both", 1, 0, 0, order_idx, now))
         
         conn.commit()
         conn.close()
