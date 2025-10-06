@@ -405,19 +405,19 @@ export default function Settings() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="bg-blue-50 p-4 rounded-lg">
                         <div className="text-sm text-blue-600 font-medium">Correspondents</div>
-                        <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents || 0}</div>
+                        <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
                       </div>
                       <div className="bg-green-50 p-4 rounded-lg">
                         <div className="text-sm text-green-600 font-medium">Tags</div>
-                        <div className="text-2xl font-bold text-green-900">{syncStatus.tags || 0}</div>
+                        <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
                       </div>
                       <div className="bg-purple-50 p-4 rounded-lg">
                         <div className="text-sm text-purple-600 font-medium">Document Types</div>
-                        <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types || 0}</div>
+                        <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
                       </div>
                       <div className="bg-orange-50 p-4 rounded-lg">
                         <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
-                        <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields || 0}</div>
+                        <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
                       </div>
                     </div>
                   )}
