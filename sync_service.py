@@ -58,9 +58,26 @@ class SyncService:
                 api_client, f"{paperless_url}/api/custom_fields/"
             )
             results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+            
+            # Check for POCO Score and POCO OCR fields
+            poco_status = self.check_poco_fields(custom_fields_data)
+            results['poco_fields_status'] = poco_status
+            
+            if not poco_status['poco_score_exists'] or not poco_status['poco_ocr_exists']:
+                missing = []
+                if not poco_status['poco_score_exists']:
+                    missing.append('POCO Score')
+                if not poco_status['poco_ocr_exists']:
+                    missing.append('POCO OCR')
+                logger.warning(f"Missing required custom fields: {', '.join(missing)}")
         except Exception as e:
             logger.error(f"Failed to sync custom fields: {e}")
             results['custom_fields'] = 0
+            results['poco_fields_status'] = {
+                'poco_score_exists': False,
+                'poco_ocr_exists': False,
+                'error': str(e)
+            }
         
         logger.info(f"Sync completed: {results}")
         return results
@@ -78,6 +95,16 @@ class SyncService:
             url = data.get('next')
         
         return all_items
+    
+    def check_poco_fields(self, custom_fields_data: List[Dict]) -> Dict:
+        """Check if POCO Score and POCO OCR custom fields exist"""
+        field_names = [cf.get('name') for cf in custom_fields_data]
+        
+        return {
+            'poco_score_exists': 'POCO Score' in field_names,
+            'poco_ocr_exists': 'POCO OCR' in field_names,
+            'checked': True
+        }
     
     def get_sync_status(self) -> Dict:
         """Get the current sync status"""
@@ -99,4 +126,10 @@ class SyncService:
                 'count': len(self.db.get_all_custom_fields())
             }
         }
+        
+        # Add POCO fields validation
+        custom_fields = self.db.get_all_custom_fields()
+        poco_status = self.check_poco_fields(custom_fields)
+        status['poco_fields'] = poco_status
+        
         return status
