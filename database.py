@@ -550,6 +550,21 @@ class Database:
         now = datetime.now().isoformat()
         synced = 0
         
+        # Get list of current paperless_ids from the sync
+        paperless_ids = [cf['id'] for cf in custom_fields]
+        
+        # Delete any fields that no longer exist in Paperless
+        if paperless_ids:
+            placeholders = ','.join('?' * len(paperless_ids))
+            cursor.execute(f"""
+                DELETE FROM paperless_custom_fields 
+                WHERE paperless_id NOT IN ({placeholders})
+            """, paperless_ids)
+        else:
+            # If no fields in Paperless, delete all
+            cursor.execute("DELETE FROM paperless_custom_fields")
+        
+        # Insert or update current fields
         for cf in custom_fields:
             cursor.execute("""
                 INSERT OR REPLACE INTO paperless_custom_fields (paperless_id, name, data_type, last_synced)
