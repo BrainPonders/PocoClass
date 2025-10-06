@@ -494,6 +494,7 @@ export default function Settings() {
                 {tabs.map(tab => {
                   const Icon = tab.icon;
                   const isDisabled = tab.adminOnly && !isAdmin;
+                  const showWarning = tab.id === 'fieldVisibility' && hasMissingFields;
 
                   return (
                     <button
@@ -510,6 +511,9 @@ export default function Settings() {
                     >
                       <Icon className="w-5 h-5" />
                       {tab.label}
+                      {showWarning && (
+                        <AlertTriangle className="w-4 h-4 text-amber-500 ml-auto" title="POCO fields missing" />
+                      )}
                     </button>
                   );
                 })}
@@ -826,9 +830,15 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-2">
-                    {placeholders.filter(p => !p.is_internal || (p.is_internal && p.is_custom_field)).map(placeholder => (
-                      <div key={placeholder.id} className={`p-3 border rounded-lg ${
-                        placeholder.is_locked
+                    {placeholders.filter(p => !p.is_internal || (p.is_internal && p.is_custom_field)).map(placeholder => {
+                      const isMissingPoco = (placeholder.placeholder_name === 'POCO Score' && !pocoScoreExists) || 
+                                           (placeholder.placeholder_name === 'POCO OCR' && !pocoOcrExists);
+                      
+                      return (
+                      <div key={placeholder.id} className={`p-3 border-2 rounded-lg ${
+                        isMissingPoco
+                          ? 'border-red-500 bg-red-50'
+                          : placeholder.is_locked
                           ? 'border-gray-300 bg-gray-100'
                           : placeholder.is_custom_field 
                           ? 'border-purple-300 bg-purple-50' 
@@ -907,7 +917,8 @@ export default function Settings() {
                           ) : null}
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="mt-8 border-t pt-6">
