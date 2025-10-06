@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User as UserIcon, X } from "lucide-react";
+import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User as UserIcon, X, AlertTriangle } from "lucide-react";
 import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { usePOCOFields } from "@/contexts/POCOFieldsContext";
 import {
   Sidebar,
   SidebarContent,
@@ -55,6 +56,7 @@ export default function Layout({ children }) {
   const [showGuide, setShowGuide] = useState(false);
   const [showQuickGuide, setShowQuickGuide] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const { hasMissingFields } = usePOCOFields();
 
   useEffect(() => {
     loadUser();
@@ -479,6 +481,9 @@ export default function Layout({ children }) {
                                 <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
                                   <item.icon className="w-4 h-4" />
                                   <span className="font-medium">{item.title}</span>
+                                  {item.title === 'Settings' && hasMissingFields && (
+                                    <AlertTriangle className="w-4 h-4 text-amber-500 ml-auto" title="POCO fields missing" />
+                                  )}
                                 </Link>
                               </SidebarMenuButton>
                             </SidebarMenuItem>
