@@ -654,7 +654,7 @@ export default function Settings() {
                     </p>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {Object.entries(
                       dateFormats.reduce((acc, fmt) => {
                         if (!acc[fmt.format_category]) acc[fmt.format_category] = [];
@@ -664,9 +664,9 @@ export default function Settings() {
                     ).map(([category, formats]) => (
                       <div key={category}>
                         <h3 className="text-sm font-semibold text-gray-700 mb-3">{category}</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="space-y-2">
                           {formats.map(fmt => (
-                            <label key={fmt.id} className="flex items-start gap-2 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-200">
+                            <label key={fmt.id} className="flex items-start gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer border border-gray-200">
                               <input
                                 type="checkbox"
                                 checked={fmt.is_selected === 1}
@@ -674,7 +674,7 @@ export default function Settings() {
                                 className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                               />
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-900">{fmt.format_pattern}</div>
+                                <div className="text-xs font-medium text-gray-900">{fmt.format_pattern}</div>
                                 <div className="text-xs text-gray-500 truncate">{fmt.example}</div>
                               </div>
                             </label>
@@ -705,19 +705,19 @@ export default function Settings() {
                     </ul>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {placeholders.filter(p => !p.is_internal).map(placeholder => (
-                      <div key={placeholder.id} className={`p-4 border rounded-lg ${
+                      <div key={placeholder.id} className={`p-3 border rounded-lg ${
                         placeholder.is_custom_field 
                           ? 'border-purple-300 bg-purple-50' 
                           : 'border-gray-200 bg-white'
                       }`}>
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-1">
                             <div className="text-sm font-medium text-gray-900">
                               {placeholder.placeholder_name}
                             </div>
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-gray-500 mt-0.5">
                               {placeholder.is_custom_field ? (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                                   Custom Field
@@ -727,25 +727,25 @@ export default function Settings() {
                               )}
                             </div>
                           </div>
-                        </div>
-                        
-                        <div className="flex gap-2">
-                          {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
-                            <button
-                              key={mode}
-                              onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
-                              className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-colors ${
-                                placeholder.visibility_mode === mode
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              }`}
-                            >
-                              {mode === 'disabled' && 'Disabled'}
-                              {mode === 'predefined' && 'Predefined'}
-                              {mode === 'dynamic' && 'Dynamic'}
-                              {mode === 'both' && 'Both'}
-                            </button>
-                          ))}
+                          
+                          <div className="flex gap-1">
+                            {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
+                              <button
+                                key={mode}
+                                onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
+                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                  placeholder.visibility_mode === mode
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                {mode === 'disabled' && 'Disabled'}
+                                {mode === 'predefined' && 'Predefined'}
+                                {mode === 'dynamic' && 'Dynamic'}
+                                {mode === 'both' && 'Both'}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     ))}
