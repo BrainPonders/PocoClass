@@ -452,9 +452,15 @@ def get_all_paperless_users():
         result = []
         for paperless_user in paperless_users:
             pococlass_user = pococlass_map.get(paperless_user['id'])
+            
+            # Get groups (Paperless groups array or empty)
+            groups = paperless_user.get('groups', [])
+            
             result.append({
                 'paperless_id': paperless_user['id'],
                 'paperless_username': paperless_user['username'],
+                'paperless_groups': groups,
+                'is_superuser': paperless_user.get('is_superuser', False),
                 'is_registered': pococlass_user is not None,
                 'is_enabled': pococlass_user['is_enabled'] == 1 if pococlass_user else False,
                 'pococlass_id': pococlass_user['id'] if pococlass_user else None,
@@ -488,7 +494,16 @@ def enable_user_endpoint(paperless_user_id):
             }
             response = requests.get(f"{paperless_url}/api/users/", headers=headers)
             response.raise_for_status()
-            paperless_users = response.json()
+            paperless_data = response.json()
+            
+            # Handle both list and paginated response formats
+            if isinstance(paperless_data, list):
+                paperless_users = paperless_data
+            elif isinstance(paperless_data, dict) and 'results' in paperless_data:
+                paperless_users = paperless_data['results']
+            else:
+                logger.error(f"Unexpected Paperless API response format: {type(paperless_data)}")
+                return jsonify({'error': 'Unexpected API response format'}), 500
             
             # Find the user
             target_user = next((u for u in paperless_users if u['id'] == paperless_user_id), None)
@@ -514,6 +529,14 @@ def disable_user_endpoint(paperless_user_id):
         
         if not pococlass_user:
             return jsonify({'error': 'User not registered in POCOclass'}), 404
+        
+        # Prevent disabling admin if they're the only admin
+        if pococlass_user['pococlass_role'] == 'admin':
+            all_users = db.list_users()
+            enabled_admins = [u for u in all_users if u['pococlass_role'] == 'admin' and u['is_enabled'] == 1]
+            
+            if len(enabled_admins) <= 1:
+                return jsonify({'error': 'Cannot disable the last admin user'}), 400
         
         db.disable_user(paperless_user_id)
         return jsonify({'success': True})

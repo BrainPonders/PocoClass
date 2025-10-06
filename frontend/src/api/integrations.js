@@ -1,5 +1,5 @@
-// Integration stubs - not needed for POCOmeta
-// These were Base44-specific integrations
+// Integration stubs - not needed for POCOclass
+// These files are not used in POCOclass
 
 export const Core = {
   InvokeLLM: null,
