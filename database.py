@@ -43,6 +43,7 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 paperless_username TEXT UNIQUE NOT NULL,
                 paperless_user_id INTEGER UNIQUE NOT NULL,
+                paperless_groups TEXT,
                 pococlass_role TEXT NOT NULL DEFAULT 'user',
                 is_enabled INTEGER NOT NULL DEFAULT 1,
                 created_at TEXT NOT NULL,
@@ -54,6 +55,13 @@ class Database:
         try:
             cursor.execute("ALTER TABLE users ADD COLUMN is_enabled INTEGER NOT NULL DEFAULT 1")
             logger.info("Added is_enabled column to users table")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+        
+        # Migration: Add paperless_groups column if it doesn't exist
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN paperless_groups TEXT")
+            logger.info("Added paperless_groups column to users table")
         except sqlite3.OperationalError:
             pass  # Column already exists
         
@@ -307,7 +315,7 @@ class Database:
                 'id': user_dict['id'],
                 'username': user_dict['paperless_username'],
                 'paperless_user_id': user_dict['paperless_user_id'],
-                'groups': [role.capitalize()],  # Groups is just role for now
+                'groups': [],  # Will be populated from Paperless API
                 'role': role,
                 'is_admin': role == 'admin',
                 'created_at': user_dict['created_at'],
