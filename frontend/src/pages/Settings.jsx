@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Clock, CheckCircle, XCircle, Globe, Palette, Calendar, FileText, ClipboardCheck } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
@@ -7,9 +7,10 @@ import API_BASE_URL from '@/config/api';
 
 export default function Settings() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('sync');
+  const [activeTab, setActiveTab] = useState('system');
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [testingConnection, setTestingConnection] = useState(false);
   
   const [syncStatus, setSyncStatus] = useState(null);
   const [syncHistory, setSyncHistory] = useState([]);
@@ -281,7 +282,7 @@ export default function Settings() {
 
       toast({
         title: 'Visibility Updated',
-        description: 'Placeholder visibility has been updated',
+        description: 'Field visibility has been updated',
         duration: 2000,
       });
 
@@ -301,7 +302,7 @@ export default function Settings() {
   };
 
   const handlePaperlessUrlUpdate = async () => {
-    if (!currentUser?.is_admin) {
+    if (currentUser?.role !== 'admin') {
       toast({
         title: 'Permission Denied',
         description: 'Only administrators can update Paperless URL',
@@ -339,17 +340,43 @@ export default function Settings() {
     }
   };
 
+  const testPaperlessConnection = async () => {
+    setTestingConnection(true);
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${paperlessConfig.paperless_url}/api/documents/?page=1&page_size=1`, {
+        headers: { 'Authorization': `Token ${sessionToken}` }
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Connection Successful',
+          description: 'Successfully connected to Paperless-ngx',
+          duration: 3000,
+        });
+      } else {
+        throw new Error(`Connection failed: ${response.status}`);
+      }
+    } catch (error) {
+      toast({
+        title: 'Connection Failed',
+        description: error.message || 'Could not connect to Paperless-ngx',
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
   const tabs = [
-    { id: 'sync', label: 'Data Sync', icon: Database },
-    { id: 'users', label: 'User Management', icon: Users },
-    { id: 'paperless', label: 'Paperless Configuration', icon: Globe },
-    { id: 'general', label: 'General Settings', icon: SettingsIcon },
-    { id: 'dateFormats', label: 'Common Date Formats', icon: Calendar },
-    { id: 'classifications', label: 'Step 3: Document Classifications', icon: FileText },
-    { id: 'verification', label: 'Step 5: Verification', icon: ClipboardCheck },
+    { id: 'system', label: 'System', icon: Database, adminOnly: true },
+    { id: 'preferences', label: 'Preferences', icon: Palette, adminOnly: false },
+    { id: 'dateFormats', label: 'Date Formats', icon: Calendar, adminOnly: false },
+    { id: 'fieldVisibility', label: 'Field Visibility', icon: FileText, adminOnly: false },
   ];
 
-  const isAdmin = currentUser?.is_admin;
+  const isAdmin = currentUser?.role === 'admin';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -367,8 +394,7 @@ export default function Settings() {
               <nav className="p-4 space-y-1">
                 {tabs.map(tab => {
                   const Icon = tab.icon;
-                  const isAdminOnly = ['sync', 'users'].includes(tab.id);
-                  const isDisabled = isAdminOnly && !isAdmin;
+                  const isDisabled = tab.adminOnly && !isAdmin;
 
                   return (
                     <button
@@ -392,182 +418,179 @@ export default function Settings() {
             </div>
 
             <div className="flex-1 p-6">
-              {activeTab === 'sync' && (
-                <div className="space-y-6">
+              {activeTab === 'system' && (
+                <div className="space-y-8">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Data Synchronization</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Sync data from Paperless-ngx to local cache for faster performance
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
+                    <p className="text-sm text-gray-600 mb-6">
+                      Manage data synchronization, users, and Paperless connection
                     </p>
                   </div>
 
-                  {syncStatus && (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="text-sm text-blue-600 font-medium">Correspondents</div>
-                        <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Synchronization</h3>
+                    
+                    {syncStatus && (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
+                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
+                        </div>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <div className="text-sm text-green-600 font-medium">Tags</div>
+                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
+                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
+                        </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
+                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
+                        </div>
                       </div>
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <div className="text-sm text-green-600 font-medium">Tags</div>
-                        <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
-                      </div>
-                      <div className="bg-purple-50 p-4 rounded-lg">
-                        <div className="text-sm text-purple-600 font-medium">Document Types</div>
-                        <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
-                      </div>
-                      <div className="bg-orange-50 p-4 rounded-lg">
-                        <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
-                        <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  <div>
                     <Button
                       onClick={handleSync}
                       disabled={loading}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 mb-6"
                     >
                       <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                       {loading ? 'Syncing...' : 'Sync Now'}
                     </Button>
-                  </div>
 
-                  {syncHistory.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-3">Recent Sync History</h3>
-                      <div className="space-y-2">
-                        {syncHistory.map((entry, idx) => (
-                          <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
-                            {entry.status === 'success' ? (
-                              <CheckCircle className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <XCircle className="w-4 h-4 text-red-600" />
-                            )}
-                            <span className="font-medium text-gray-700">{entry.entity_type}</span>
-                            <span className="text-gray-500">{entry.items_synced} items</span>
-                            <span className="text-gray-400 ml-auto">
-                              {new Date(entry.synced_at).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'users' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">User Management</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Manage user roles and permissions
-                    </p>
-                  </div>
-
-                  {users.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Username
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Email
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Role
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Actions
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {users.map(user => (
-                            <tr key={user.id}>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {user.username}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {user.email || '-'}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  user.is_admin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                                }`}>
-                                  {user.is_admin ? 'Admin' : 'User'}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {user.id !== currentUser?.id && (
-                                  <select
-                                    value={user.is_admin ? 'admin' : 'user'}
-                                    onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                    className="border border-gray-300 rounded-md px-2 py-1 text-sm"
-                                  >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                  </select>
-                                )}
-                              </td>
-                            </tr>
+                    {syncHistory.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Recent Sync History</h4>
+                        <div className="space-y-2">
+                          {syncHistory.map((entry, idx) => (
+                            <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
+                              {entry.status === 'success' ? (
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <XCircle className="w-4 h-4 text-red-600" />
+                              )}
+                              <span className="font-medium text-gray-700">{entry.entity_type}</span>
+                              <span className="text-gray-500">{entry.items_synced} items</span>
+                              <span className="text-gray-400 ml-auto">
+                                {new Date(entry.synced_at).toLocaleString()}
+                              </span>
+                            </div>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No users found
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'paperless' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Paperless Configuration</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Manage Paperless-ngx connection settings
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Paperless URL
-                    </label>
-                    <div className="flex gap-3">
-                      <input
-                        type="url"
-                        value={paperlessConfig.paperless_url || ''}
-                        onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
-                        placeholder="https://paperless.example.com"
-                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        disabled={!isAdmin}
-                      />
-                      <Button
-                        onClick={handlePaperlessUrlUpdate}
-                        disabled={!isAdmin}
-                      >
-                        Update
-                      </Button>
-                    </div>
-                    {!isAdmin && (
-                      <p className="mt-2 text-xs text-gray-500">
-                        Only administrators can update the Paperless URL
-                      </p>
+                        </div>
+                      </div>
                     )}
                   </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
+                    
+                    {users.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Username
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Role
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {users.map(user => (
+                              <tr key={user.id}>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {user.username}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {user.email || '-'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    user.is_admin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {user.is_admin ? 'Admin' : 'User'}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {user.id !== currentUser?.id && (
+                                    <select
+                                      value={user.is_admin ? 'admin' : 'user'}
+                                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                      className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                                    >
+                                      <option value="user">User</option>
+                                      <option value="admin">Admin</option>
+                                    </select>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        No users found
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Paperless Configuration</h3>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Paperless URL
+                      </label>
+                      <div className="flex gap-3 mb-3">
+                        <input
+                          type="url"
+                          value={paperlessConfig.paperless_url || ''}
+                          onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
+                          placeholder="https://paperless.example.com"
+                          className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          disabled={!isAdmin}
+                        />
+                        <Button
+                          onClick={handlePaperlessUrlUpdate}
+                          disabled={!isAdmin}
+                        >
+                          Update
+                        </Button>
+                      </div>
+                      <Button
+                        onClick={testPaperlessConnection}
+                        disabled={testingConnection || !paperlessConfig.paperless_url}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                      >
+                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
+                        {testingConnection ? 'Testing...' : 'Test Connection'}
+                      </Button>
+                      {!isAdmin && (
+                        <p className="mt-2 text-xs text-gray-500">
+                          Only administrators can update the Paperless URL
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {activeTab === 'general' && (
+              {activeTab === 'preferences' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">General Settings</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Interface Preferences</h2>
                     <p className="text-sm text-gray-600 mb-4">
                       Customize your interface preferences
                     </p>
@@ -625,13 +648,13 @@ export default function Settings() {
               {activeTab === 'dateFormats' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Common Date Formats</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Date Format Presets</h2>
                     <p className="text-sm text-gray-600 mb-4">
                       Select date formats to appear in the wizard quick-select dropdown
                     </p>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {Object.entries(
                       dateFormats.reduce((acc, fmt) => {
                         if (!acc[fmt.format_category]) acc[fmt.format_category] = [];
@@ -640,19 +663,19 @@ export default function Settings() {
                       }, {})
                     ).map(([category, formats]) => (
                       <div key={category}>
-                        <h3 className="text-sm font-semibold text-gray-700 mb-2">{category}</h3>
-                        <div className="space-y-2">
+                        <h3 className="text-sm font-semibold text-gray-700 mb-3">{category}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                           {formats.map(fmt => (
-                            <label key={fmt.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                            <label key={fmt.id} className="flex items-start gap-2 p-3 hover:bg-gray-50 rounded-lg cursor-pointer border border-gray-200">
                               <input
                                 type="checkbox"
                                 checked={fmt.is_selected === 1}
                                 onChange={(e) => handleDateFormatToggle(fmt.format_pattern, e.target.checked)}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                               />
-                              <div className="flex-1">
+                              <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium text-gray-900">{fmt.format_pattern}</div>
-                                <div className="text-xs text-gray-500">{fmt.example}</div>
+                                <div className="text-xs text-gray-500 truncate">{fmt.example}</div>
                               </div>
                             </label>
                           ))}
@@ -663,87 +686,100 @@ export default function Settings() {
                 </div>
               )}
 
-              {activeTab === 'classifications' && (
+              {activeTab === 'fieldVisibility' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Step 3: Document Classifications</h2>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Field Visibility Settings</h2>
                     <p className="text-sm text-gray-600 mb-4">
-                      Control which placeholders appear in the Document Classifications step
+                      Control which fields appear in the wizard and how they behave
                     </p>
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <h3 className="text-sm font-semibold text-blue-900 mb-2">Visibility Modes</h3>
                     <ul className="text-xs text-blue-800 space-y-1">
-                      <li><strong>Disabled:</strong> Hidden from wizard</li>
-                      <li><strong>Predefined Only:</strong> Dropdown selection only</li>
-                      <li><strong>Dynamic Only:</strong> Extract from document only</li>
-                      <li><strong>Both:</strong> Dropdown + dynamic extraction</li>
+                      <li><strong>Disabled:</strong> Field is hidden from the wizard</li>
+                      <li><strong>Predefined Only:</strong> Show dropdown with existing values (used in verification)</li>
+                      <li><strong>Dynamic Only:</strong> Extract value from document content only</li>
+                      <li><strong>Both:</strong> Show dropdown + extract from document (recommended)</li>
                     </ul>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {placeholders.filter(p => !p.is_internal).map(placeholder => (
-                      <div key={placeholder.id} className="flex items-center gap-4 p-3 border border-gray-200 rounded-lg">
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">{placeholder.placeholder_name}</div>
-                          <div className="text-xs text-gray-500">
-                            {placeholder.is_custom_field ? 'Custom Field' : 'Built-in'}
-                          </div>
-                        </div>
-                        <select
-                          value={placeholder.visibility_mode}
-                          onChange={(e) => handlePlaceholderVisibilityChange(placeholder.placeholder_name, e.target.value)}
-                          className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="disabled">Disabled</option>
-                          <option value="predefined">Predefined Only</option>
-                          <option value="dynamic">Dynamic Only</option>
-                          <option value="both">Both</option>
-                        </select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'verification' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Step 5: Verification</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      View which placeholders are available for verification (read-only)
-                    </p>
-                  </div>
-
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                    <p className="text-xs text-amber-800">
-                      The Verification step displays all placeholders with visibility mode "Predefined Only" or "Both". 
-                      These are used to cross-check extracted data against existing Paperless metadata.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    {placeholders
-                      .filter(p => ['predefined', 'both'].includes(p.visibility_mode))
-                      .map(placeholder => (
-                        <div key={placeholder.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                          <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900">{placeholder.placeholder_name}</div>
-                            <div className="text-xs text-gray-500">
-                              Mode: {placeholder.visibility_mode}
+                      <div key={placeholder.id} className={`p-4 border rounded-lg ${
+                        placeholder.is_custom_field 
+                          ? 'border-purple-300 bg-purple-50' 
+                          : 'border-gray-200 bg-white'
+                      }`}>
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {placeholder.placeholder_name}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {placeholder.is_custom_field ? (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                  Custom Field
+                                </span>
+                              ) : (
+                                <span className="text-gray-500">Built-in Field</span>
+                              )}
                             </div>
                           </div>
                         </div>
-                      ))}
+                        
+                        <div className="flex gap-2">
+                          {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
+                            <button
+                              key={mode}
+                              onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
+                              className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition-colors ${
+                                placeholder.visibility_mode === mode
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }`}
+                            >
+                              {mode === 'disabled' && 'Disabled'}
+                              {mode === 'predefined' && 'Predefined'}
+                              {mode === 'dynamic' && 'Dynamic'}
+                              {mode === 'both' && 'Both'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
-                  {placeholders.filter(p => ['predefined', 'both'].includes(p.visibility_mode)).length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      No placeholders configured for verification
+                  <div className="mt-8 border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-3">Fields Used in Verification</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      These fields are displayed in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata
+                    </p>
+                    
+                    <div className="space-y-2">
+                      {placeholders
+                        .filter(p => ['predefined', 'both'].includes(p.visibility_mode) && !p.is_internal)
+                        .map(placeholder => (
+                          <div key={placeholder.id} className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">{placeholder.placeholder_name}</div>
+                              <div className="text-xs text-gray-500">Mode: {placeholder.visibility_mode}</div>
+                            </div>
+                          </div>
+                        ))}
                     </div>
-                  )}
+
+                    {placeholders.filter(p => ['predefined', 'both'].includes(p.visibility_mode) && !p.is_internal).length === 0 && (
+                      <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
+                        <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">
+                          No fields configured for verification. Set fields to "Predefined" or "Both" mode to enable verification.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
