@@ -250,32 +250,35 @@ export default function Layout({ children }) {
               }
               
               .form-group {
-                margin-bottom: 20px;
+                margin-bottom: 28px;
               }
 
               .form-input, .form-textarea, .form-select {
                 width: 100%;
-                padding: 12px 14px;
-                border: 1.5px solid var(--app-border);
+                padding: 14px 16px;
+                border: 2px solid #d1d5db;
                 border-radius: 8px;
-                font-size: 0.9375rem;
-                background: white;
-                color: var(--app-text);
-                transition: border-color 0.2s, box-shadow 0.2s;
+                font-size: 1rem;
+                background: #f9fafb;
+                color: #1f2937;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
               }
               
               .form-input:focus, .form-textarea:focus, .form-select:focus {
                 outline: none;
-                border-color: var(--app-primary);
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                border-color: #3b82f6;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
               }
               
               .form-label {
                 display: block;
-                font-size: 0.9375rem;
+                font-size: 1rem;
                 font-weight: 600;
-                color: var(--app-text);
-                margin-bottom: 10px;
+                color: #111827;
+                margin-bottom: 14px;
+                letter-spacing: -0.01em;
               }
               
               .card {
