@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
 import API_BASE_URL from '@/config/api';
 import { usePOCOFields } from '@/contexts/POCOFieldsContext';
+import CreatePocoFieldDialog from '@/components/CreatePocoFieldDialog';
 
 export default function Settings() {
   const { toast } = useToast();
@@ -12,7 +13,7 @@ export default function Settings() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
-  const { hasMissingFields, pocoScoreExists, pocoOcrExists } = usePOCOFields();
+  const { hasMissingFields, pocoScoreExists, pocoOcrExists, refresh: refreshPocoFields } = usePOCOFields();
   
   const [syncStatus, setSyncStatus] = useState(null);
   const [syncHistory, setSyncHistory] = useState([]);
@@ -21,6 +22,10 @@ export default function Settings() {
   const [dateFormats, setDateFormats] = useState([]);
   const [placeholders, setPlaceholders] = useState([]);
   const [paperlessConfig, setPaperlessConfig] = useState({});
+  
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [fieldToCreate, setFieldToCreate] = useState(null);
+  const [isCreatingField, setIsCreatingField] = useState(false);
 
   useEffect(() => {
     loadAllSettings();
@@ -340,6 +345,55 @@ export default function Settings() {
         variant: 'destructive',
         duration: 3000,
       });
+    }
+  };
+
+  const handleCreateFieldClick = (fieldName) => {
+    setFieldToCreate(fieldName);
+    setCreateDialogOpen(true);
+  };
+
+  const handleCreateFieldConfirm = async () => {
+    setIsCreatingField(true);
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/paperless/custom-fields`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        },
+        body: JSON.stringify({ 
+          name: fieldToCreate,
+          data_type: 'integer'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create field');
+      }
+
+      toast({
+        title: 'Field Created',
+        description: `${fieldToCreate} has been created successfully in Paperless`,
+        duration: 3000,
+      });
+
+      setCreateDialogOpen(false);
+      setFieldToCreate(null);
+      
+      refreshPocoFields();
+      loadSyncStatus();
+    } catch (error) {
+      toast({
+        title: 'Creation Failed',
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setIsCreatingField(false);
     }
   };
 
@@ -852,7 +906,7 @@ export default function Settings() {
                           ) : placeholder.is_internal ? (
                             placeholder.placeholder_name === 'POCO Score' ? (
                               <button
-                                onClick={() => pocoScoreExists ? null : console.log('Create POCO Score')}
+                                onClick={() => !pocoScoreExists && handleCreateFieldClick('POCO Score')}
                                 disabled={pocoScoreExists}
                                 className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                                   pocoScoreExists
@@ -864,7 +918,7 @@ export default function Settings() {
                               </button>
                             ) : placeholder.placeholder_name === 'POCO OCR' ? (
                               <button
-                                onClick={() => pocoOcrExists ? null : console.log('Create POCO OCR')}
+                                onClick={() => !pocoOcrExists && handleCreateFieldClick('POCO OCR')}
                                 disabled={pocoOcrExists}
                                 className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
                                   pocoOcrExists
@@ -920,6 +974,14 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      <CreatePocoFieldDialog
+        isOpen={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        fieldName={fieldToCreate}
+        onConfirm={handleCreateFieldConfirm}
+        isCreating={isCreatingField}
+      />
     </div>
   );
 }
