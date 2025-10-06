@@ -65,11 +65,19 @@ export const DeletedRule = {
 
 // Auth (stub for now, can be implemented later)
 export const User = {
+  async me() {
+    return { 
+      full_name: 'Admin User', 
+      email: 'admin@pococlass.local',
+      role: 'admin'
+    };
+  },
+  
   async getCurrentUser() {
-    return { name: 'User', email: 'user@example.com' };
+    return this.me();
   },
   
   async logout() {
-    window.location.href = '/logout';
+    console.log('Logout requested');
   }
 };
