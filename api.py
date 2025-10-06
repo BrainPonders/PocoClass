@@ -264,18 +264,55 @@ def login():
             
             paperless_token = auth_response.json().get('token')
             
-            # Get user info
-            user_response = requests.get(
-                f'{paperless_url}/api/users/me/',
-                headers={'Authorization': f'Token {paperless_token}'},
-                timeout=10
-            )
+            # Get user info from Paperless (try multiple endpoints for compatibility)
+            user_info = None
+            paperless_user_id = None
             
-            if user_response.status_code != 200:
-                return jsonify({'error': 'Failed to get user info'}), 500
+            # Try /api/users/me/ first (Paperless-ngx modern)
+            try:
+                user_response = requests.get(
+                    f'{paperless_url}/api/users/me/',
+                    headers={'Authorization': f'Token {paperless_token}'},
+                    timeout=10
+                )
+                
+                if user_response.status_code == 200:
+                    user_info = user_response.json()
+                    paperless_user_id = user_info.get('id')
+                else:
+                    logger.warning(f"/api/users/me/ returned {user_response.status_code}, trying alternative endpoints")
+            except Exception as e:
+                logger.warning(f"Error calling /api/users/me/: {e}")
             
-            user_info = user_response.json()
-            paperless_user_id = user_info.get('id')
+            # Fallback: try to get user list and find current user
+            if not user_info:
+                try:
+                    users_response = requests.get(
+                        f'{paperless_url}/api/users/',
+                        headers={'Authorization': f'Token {paperless_token}'},
+                        timeout=10
+                    )
+                    
+                    if users_response.status_code == 200:
+                        users_data = users_response.json()
+                        users = users_data.get('results', []) if isinstance(users_data, dict) else users_data
+                        
+                        # Find user by username
+                        for user in users:
+                            if user.get('username') == username:
+                                user_info = user
+                                paperless_user_id = user.get('id')
+                                logger.info(f"Found user via /api/users/ endpoint")
+                                break
+                except Exception as e:
+                    logger.warning(f"Error calling /api/users/: {e}")
+            
+            # If we still don't have user info, use a fallback approach
+            if not paperless_user_id:
+                logger.warning(f"Could not get user ID from Paperless, using username hash as fallback")
+                # Use a hash of username as paperless_user_id for internal tracking
+                import hashlib
+                paperless_user_id = int(hashlib.md5(username.encode()).hexdigest()[:8], 16)
             
             # Get or create user in POCOclass
             user = db.get_user_by_paperless_id(paperless_user_id)
