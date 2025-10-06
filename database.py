@@ -61,6 +61,65 @@ class Database:
             )
         """)
         
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT,
+                category TEXT,
+                description TEXT,
+                updated_at TEXT
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS paperless_correspondents (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paperless_id INTEGER UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                last_synced TEXT NOT NULL
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS paperless_tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paperless_id INTEGER UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                color TEXT,
+                last_synced TEXT NOT NULL
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS paperless_document_types (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paperless_id INTEGER UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                last_synced TEXT NOT NULL
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS paperless_custom_fields (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paperless_id INTEGER UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                data_type TEXT,
+                last_synced TEXT NOT NULL
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS sync_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                entity_type TEXT NOT NULL,
+                synced_at TEXT NOT NULL,
+                items_synced INTEGER,
+                status TEXT,
+                error_message TEXT
+            )
+        """)
+        
         conn.commit()
         conn.close()
         logger.info("Database initialized")
@@ -233,3 +292,230 @@ class Database:
         conn.close()
         if deleted > 0:
             logger.info(f"Cleaned up {deleted} expired sessions")
+    
+    def get_setting(self, key: str) -> Optional[str]:
+        """Get a setting value"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM settings WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['value'] if row else None
+    
+    def set_setting(self, key: str, value: str, category: str = 'general', description: str = ''):
+        """Set a setting value"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT OR REPLACE INTO settings (key, value, category, description, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (key, value, category, description, datetime.now().isoformat()))
+        conn.commit()
+        conn.close()
+    
+    def get_all_settings(self, category: Optional[str] = None) -> List[Dict]:
+        """Get all settings, optionally filtered by category"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        if category:
+            cursor.execute("SELECT * FROM settings WHERE category = ? ORDER BY key", (category,))
+        else:
+            cursor.execute("SELECT * FROM settings ORDER BY category, key")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def sync_correspondents(self, correspondents: List[Dict]) -> int:
+        """Sync correspondents from Paperless"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        synced = 0
+        
+        for corr in correspondents:
+            cursor.execute("""
+                INSERT OR REPLACE INTO paperless_correspondents (paperless_id, name, last_synced)
+                VALUES (?, ?, ?)
+            """, (corr['id'], corr['name'], now))
+            synced += 1
+        
+        conn.commit()
+        cursor.execute("""
+            INSERT INTO sync_history (entity_type, synced_at, items_synced, status)
+            VALUES (?, ?, ?, ?)
+        """, ('correspondents', now, synced, 'success'))
+        conn.commit()
+        conn.close()
+        logger.info(f"Synced {synced} correspondents")
+        return synced
+    
+    def get_correspondent_id_by_name(self, name: str) -> Optional[int]:
+        """Get Paperless correspondent ID by name from cache"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT paperless_id FROM paperless_correspondents WHERE name = ?", (name,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['paperless_id'] if row else None
+    
+    def get_all_correspondents(self) -> List[Dict]:
+        """Get all cached correspondents"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_correspondents ORDER BY name")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def sync_tags(self, tags: List[Dict]) -> int:
+        """Sync tags from Paperless"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        synced = 0
+        
+        for tag in tags:
+            cursor.execute("""
+                INSERT OR REPLACE INTO paperless_tags (paperless_id, name, color, last_synced)
+                VALUES (?, ?, ?, ?)
+            """, (tag['id'], tag['name'], tag.get('color', '#000000'), now))
+            synced += 1
+        
+        conn.commit()
+        cursor.execute("""
+            INSERT INTO sync_history (entity_type, synced_at, items_synced, status)
+            VALUES (?, ?, ?, ?)
+        """, ('tags', now, synced, 'success'))
+        conn.commit()
+        conn.close()
+        logger.info(f"Synced {synced} tags")
+        return synced
+    
+    def get_tag_id_by_name(self, name: str) -> Optional[int]:
+        """Get Paperless tag ID by name from cache"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT paperless_id FROM paperless_tags WHERE name = ?", (name,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['paperless_id'] if row else None
+    
+    def get_all_tags(self) -> List[Dict]:
+        """Get all cached tags"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_tags ORDER BY name")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def sync_document_types(self, document_types: List[Dict]) -> int:
+        """Sync document types from Paperless"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        synced = 0
+        
+        for dt in document_types:
+            cursor.execute("""
+                INSERT OR REPLACE INTO paperless_document_types (paperless_id, name, last_synced)
+                VALUES (?, ?, ?)
+            """, (dt['id'], dt['name'], now))
+            synced += 1
+        
+        conn.commit()
+        cursor.execute("""
+            INSERT INTO sync_history (entity_type, synced_at, items_synced, status)
+            VALUES (?, ?, ?, ?)
+        """, ('document_types', now, synced, 'success'))
+        conn.commit()
+        conn.close()
+        logger.info(f"Synced {synced} document types")
+        return synced
+    
+    def get_document_type_id_by_name(self, name: str) -> Optional[int]:
+        """Get Paperless document type ID by name from cache"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT paperless_id FROM paperless_document_types WHERE name = ?", (name,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['paperless_id'] if row else None
+    
+    def get_all_document_types(self) -> List[Dict]:
+        """Get all cached document types"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_document_types ORDER BY name")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def sync_custom_fields(self, custom_fields: List[Dict]) -> int:
+        """Sync custom fields from Paperless"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        synced = 0
+        
+        for cf in custom_fields:
+            cursor.execute("""
+                INSERT OR REPLACE INTO paperless_custom_fields (paperless_id, name, data_type, last_synced)
+                VALUES (?, ?, ?, ?)
+            """, (cf['id'], cf['name'], cf.get('data_type', 'string'), now))
+            synced += 1
+        
+        conn.commit()
+        cursor.execute("""
+            INSERT INTO sync_history (entity_type, synced_at, items_synced, status)
+            VALUES (?, ?, ?, ?)
+        """, ('custom_fields', now, synced, 'success'))
+        conn.commit()
+        conn.close()
+        logger.info(f"Synced {synced} custom fields")
+        return synced
+    
+    def get_custom_field_id_by_name(self, name: str) -> Optional[int]:
+        """Get Paperless custom field ID by name from cache"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT paperless_id FROM paperless_custom_fields WHERE name = ?", (name,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['paperless_id'] if row else None
+    
+    def get_all_custom_fields(self) -> List[Dict]:
+        """Get all cached custom fields"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_custom_fields ORDER BY name")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def get_sync_history(self, limit: int = 10) -> List[Dict]:
+        """Get recent sync history"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM sync_history 
+            ORDER BY synced_at DESC 
+            LIMIT ?
+        """, (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def get_last_sync_time(self, entity_type: str) -> Optional[str]:
+        """Get the last sync time for an entity type"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT synced_at FROM sync_history 
+            WHERE entity_type = ? AND status = 'success'
+            ORDER BY synced_at DESC 
+            LIMIT 1
+        """, (entity_type,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['synced_at'] if row else None
