@@ -41,7 +41,7 @@ def should_sync(entity_type='all', max_age_minutes=60):
     try:
         if entity_type == 'all':
             # Check if any entity type needs sync
-            for entity in ['correspondents', 'tags', 'document_types', 'custom_fields']:
+            for entity in ['correspondents', 'tags', 'document_types', 'custom_fields', 'users']:
                 last_sync = db.get_last_sync_time(entity)
                 if not last_sync:
                     return True  # Never synced
@@ -1217,19 +1217,22 @@ def list_documents():
                     if tag:
                         tag_names.append(tag['name'])
             
-            # Get owner username (from Paperless user ID, not our DB user ID)
+            # Get owner username from cache (from Paperless user ID, not our DB user ID)
             owner_name = None
             if doc.get('owner'):
-                # Try to fetch the owner's username from Paperless
-                try:
-                    owner_response = api_client.session.get(f"{paperless_url}/api/users/{doc['owner']}/")
-                    if owner_response.ok:
-                        owner_data = owner_response.json()
-                        owner_name = owner_data.get('username', f"User {doc['owner']}")
-                    else:
+                # Try to get from cache first
+                owner_name = db.get_user_by_paperless_id(doc['owner'])
+                if not owner_name:
+                    # Fallback to API if not in cache
+                    try:
+                        owner_response = api_client.session.get(f"{paperless_url}/api/users/{doc['owner']}/")
+                        if owner_response.ok:
+                            owner_data = owner_response.json()
+                            owner_name = owner_data.get('username', f"User {doc['owner']}")
+                        else:
+                            owner_name = f"User {doc['owner']}"
+                    except:
                         owner_name = f"User {doc['owner']}"
-                except:
-                    owner_name = f"User {doc['owner']}"
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"

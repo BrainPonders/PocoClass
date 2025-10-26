@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Rule } from "@/api/entities";
+import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Eye, FileText } from 'lucide-react';
+import { ArrowLeft, Eye, FileText, X } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import { useToast } from '@/components/ToastContainer';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -43,6 +44,7 @@ export default function RuleEditor() {
   const { showToast } = useToast();
   const ruleId = searchParams.get('id');
   const selectedFile = searchParams.get('selectedFile');
+  const selectedDocumentId = searchParams.get('docId');
   
   const [currentStep, setCurrentStep] = useState(1);
   const [showYamlPreview, setShowYamlPreview] = useState(true);
@@ -51,8 +53,11 @@ export default function RuleEditor() {
   const [stepEdited, setStepEdited] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [showOcrModal, setShowOcrModal] = useState(false);
+  const [ocrContent, setOcrContent] = useState('');
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [selectedDocId, setSelectedDocId] = useState(null);
   
   const [ruleData, setRuleData] = useState({
     ruleName: '',
@@ -298,6 +303,19 @@ export default function RuleEditor() {
     setIsSaving(false);
   };
 
+  const handleViewOcr = async () => {
+    if (!selectedDocumentId) return;
+    
+    try {
+      const response = await apiClient.get(`/api/documents/${selectedDocumentId}/content`);
+      setOcrContent(response.data.content || 'No OCR content available');
+      setShowOcrModal(true);
+    } catch (error) {
+      showToast('Failed to load OCR content', 'error');
+      console.error('Error loading OCR content:', error);
+    }
+  };
+
   const handleNavigation = (destination) => {
     if (hasUnsavedChanges) {
       setPendingNavigation(destination);
@@ -475,21 +493,22 @@ export default function RuleEditor() {
             </div>
           </div>
           <div className="flex gap-3">
-            {selectedFile && (
+            {selectedDocumentId && (
               <>
                 <button 
                   className="btn btn-secondary"
-                  disabled={!selectedFile}
+                  onClick={handleViewOcr}
+                  disabled={!selectedDocumentId}
                 >
-                  <Eye size={16} />
+                  <FileText size={16} />
                   {t('editor_view_ocr')}
                 </button>
                 <button 
                   className="btn btn-secondary"
                   onClick={() => setShowPdfViewer(true)}
-                  disabled={!selectedFile}
+                  disabled={!selectedDocumentId}
                 >
-                  <FileText size={16} />
+                  <Eye size={16} />
                   {t('editor_view_pdf')}
                 </button>
               </>
@@ -567,9 +586,38 @@ export default function RuleEditor() {
       <PdfViewerModal
         isOpen={showPdfViewer}
         onClose={() => setShowPdfViewer(false)}
-        documentUrl={selectedFile ? `/api/documents/${selectedFile}` : ''}
+        documentUrl={selectedDocumentId ? `/api/documents/${selectedDocumentId}/preview` : ''}
         documentName={selectedFile}
       />
+
+      {/* OCR Content Modal */}
+      {showOcrModal && (
+        <div className="modal-overlay" onClick={() => setShowOcrModal(false)}>
+          <div 
+            className="modal-content max-w-4xl max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">OCR Content</h2>
+                <p className="text-sm text-gray-500">{selectedFile || 'Document'}</p>
+              </div>
+              <button 
+                onClick={() => setShowOcrModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6">
+              <pre className="whitespace-pre-wrap text-sm font-mono bg-gray-50 p-4 rounded">
+                {ocrContent}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Unsaved Changes Warning */}
       <ConfirmDialog
