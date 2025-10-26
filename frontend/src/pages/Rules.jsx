@@ -212,17 +212,32 @@ export default function Rules() {
       });
     } else if (action === 'activate' || action === 'deactivate') {
       const newStatus = action === 'activate' ? 'active' : 'inactive';
-      const confirmMessage = action === 'activate' 
+      
+      // Check if activating draft rules
+      let confirmMessage = action === 'activate' 
         ? `Activate ${selectedRules.length} rule(s)?`
         : `Deactivate ${selectedRules.length} rule(s)?`;
+      
+      let warningMessage = `${selectedRules.length} rule(s) will be ${newStatus}`;
+      
+      if (action === 'activate') {
+        const draftRules = selectedRules.filter(id => {
+          const rule = rules.find(r => r.id === id);
+          return rule && rule.status === 'draft';
+        });
+        
+        if (draftRules.length > 0) {
+          warningMessage = `⚠️ Warning: ${draftRules.length} of ${selectedRules.length} selected rule(s) are in draft status. Are you sure you want to activate them?`;
+        }
+      }
 
       setConfirmDialog({
         isOpen: true,
         title: confirmMessage,
-        message: `${selectedRules.length} rule(s) will be ${newStatus}`,
+        message: warningMessage,
         variant: 'info',
         onConfirm: async () => {
-          try {
+          try{
             await Promise.all(
               selectedRules.map(id => {
                 const rule = rules.find(r => r.id === id);
@@ -463,18 +478,13 @@ export default function Rules() {
                       <code className="text-xs bg-gray-100 px-2 py-1 rounded">{rule.ruleId}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          rule.status === 'active' ? 'bg-green-100 text-green-800' :
-                          rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {t(`status_${rule.status}`)}
-                        </span>
-                        {rule.status === 'active' && (
-                          <Power className="w-4 h-4 text-green-600" title="Active" />
-                        )}
-                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        rule.status === 'active' ? 'bg-green-100 text-green-800' :
+                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {t(`status_${rule.status}`)}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
                       {rule.threshold}%
