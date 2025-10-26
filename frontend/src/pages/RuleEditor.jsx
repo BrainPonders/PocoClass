@@ -307,8 +307,8 @@ export default function RuleEditor() {
     if (!selectedDocumentId) return;
     
     try {
-      const response = await apiClient.get(`/api/documents/${selectedDocumentId}/content`);
-      setOcrContent(response.data.content || 'No OCR content available');
+      const response = await apiClient.get(`/documents/${selectedDocumentId}/content`);
+      setOcrContent(response.content || 'No OCR content available');
       setShowOcrModal(true);
     } catch (error) {
       showToast('Failed to load OCR content', 'error');

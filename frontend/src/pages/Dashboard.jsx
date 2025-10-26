@@ -77,7 +77,7 @@ export default function Dashboard() {
 
   const handleViewOCR = async (doc) => {
     try {
-      const response = await apiClient.get(`/api/documents/${doc.id}/content`);
+      const response = await apiClient.get(`/documents/${doc.id}/content`);
       setOcrDocumentTitle(doc.title);
       setOcrContent(response.content || 'No OCR content available');
       setOcrModalOpen(true);
