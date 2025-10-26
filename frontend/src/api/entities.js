@@ -64,6 +64,22 @@ export const DeletedRule = {
   }
 };
 
+// Document Entity
+export const Document = {
+  async list(options = {}) {
+    const params = new URLSearchParams();
+    if (options.limit) params.append('limit', options.limit);
+    if (options.ignoreTags !== undefined) params.append('ignore_tags', options.ignoreTags);
+    
+    const queryString = params.toString();
+    return await apiClient.get(`/documents${queryString ? '?' + queryString : ''}`);
+  },
+
+  async get(id) {
+    return await apiClient.get(`/documents/${id}`);
+  }
+};
+
 // User/Auth Entity
 export const User = {
   async me() {
