@@ -1220,9 +1220,20 @@ def list_documents():
             # Get owner username (from Paperless user ID, not our DB user ID)
             owner_name = None
             if doc.get('owner'):
-                # For now, just use the Paperless owner ID
-                # We could map this to our users later
-                owner_name = f"User {doc['owner']}"
+                # Try to fetch the owner's username from Paperless
+                try:
+                    owner_response = api_client.session.get(f"{paperless_url}/api/users/{doc['owner']}/")
+                    if owner_response.ok:
+                        owner_data = owner_response.json()
+                        owner_name = owner_data.get('username', f"User {doc['owner']}")
+                    else:
+                        owner_name = f"User {doc['owner']}"
+                except:
+                    owner_name = f"User {doc['owner']}"
+            
+            # Build URLs for document viewing
+            pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
+            download_url = f"{paperless_url}/api/documents/{doc['id']}/download/"
             
             formatted_docs.append({
                 'id': doc['id'],
@@ -1232,7 +1243,10 @@ def list_documents():
                 'documentType': doc_type_name,
                 'tags': tag_names,
                 'owner': owner_name,
-                'originalFileName': doc.get('original_file_name', '')
+                'originalFileName': doc.get('original_file_name', ''),
+                'pdfUrl': pdf_url,
+                'downloadUrl': download_url,
+                'content': doc.get('content', '')  # OCR text content
             })
         
         return jsonify(formatted_docs)
