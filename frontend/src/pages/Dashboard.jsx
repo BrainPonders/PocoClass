@@ -89,8 +89,10 @@ export default function Dashboard() {
   };
 
   const handleViewPDF = (doc) => {
-    // Use the proxy endpoint that handles authentication
-    window.open(`/api/documents/${doc.id}/preview`, '_blank');
+    // Get session token and pass it as query parameter for new tab
+    const sessionToken = localStorage.getItem('pococlass_session');
+    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    window.open(url, '_blank');
   };
 
   return (
