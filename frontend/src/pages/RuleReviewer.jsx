@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Rule, Document } from "@/api/entities";
+import { apiClient } from "@/api/apiClient";
 import { FileText, Filter, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,16 +70,25 @@ export default function RuleReviewer() {
     setHasRun(true);
   };
 
-  const handleViewOCR = (doc) => {
-    setOcrDocumentTitle(doc.title);
-    setOcrContent(doc.content || 'No OCR content available');
-    setOcrModalOpen(true);
+  const handleViewOCR = async (doc) => {
+    try {
+      const response = await apiClient.get(`/documents/${doc.id}/content`);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(response.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    } catch (error) {
+      console.error('Error loading OCR:', error);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(doc.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    }
   };
 
   const handleViewPDF = (doc) => {
-    if (doc.pdfUrl) {
-      window.open(doc.pdfUrl, '_blank');
-    }
+    // Get session token and pass it as query parameter for new tab
+    const sessionToken = localStorage.getItem('pococlass_session');
+    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    window.open(url, '_blank');
   };
 
   // Mock performance data
@@ -246,16 +256,6 @@ export default function RuleReviewer() {
           <div>
             <CardTitle className="mb-4">Test Documents</CardTitle>
             <div className="flex gap-2 items-center flex-wrap">
-              <select
-                value={selectedRule}
-                onChange={(e) => setSelectedRule(e.target.value)}
-                className="form-select w-64"
-              >
-                <option value="">Select a rule...</option>
-                {rules.map(rule => (
-                  <option key={rule.id} value={rule.id}>{rule.ruleName}</option>
-                ))}
-              </select>
               <button className="btn btn-outline btn-sm">
                 <Filter className="w-4 h-4 mr-1" />
                 Tags
@@ -357,8 +357,18 @@ export default function RuleReviewer() {
               </table>
             </div>
           )}
-          {/* Run Button at bottom */}
-          <div className="flex justify-center mt-6">
+          {/* Rule Selector and Run Button at bottom */}
+          <div className="flex justify-end items-center gap-3 mt-6">
+            <select
+              value={selectedRule}
+              onChange={(e) => setSelectedRule(e.target.value)}
+              className="form-select w-64"
+            >
+              <option value="">Select a rule...</option>
+              {rules.map(rule => (
+                <option key={rule.id} value={rule.id}>{rule.ruleName}</option>
+              ))}
+            </select>
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0}
