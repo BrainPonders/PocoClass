@@ -159,27 +159,21 @@ export default function Logs() {
       </div>
 
       <div className="card mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h3 className="font-semibold text-lg">{t('common_filter')}</h3>
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
-            <label className="form-label">{t('common_search')}</label>
             <input
               type="text"
               value={filters.search}
               onChange={(e) => setFilters({...filters, search: e.target.value})}
               placeholder="Search logs..."
-              className="form-input"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
           <div>
-            <label className="form-label">Type</label>
             <select
               value={filters.type}
               onChange={(e) => setFilters({...filters, type: e.target.value})}
-              className="form-select"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
             >
               <option value="all">{t('logs_filter_all')}</option>
               <option value="rule_execution">{t('logs_filter_rule_execution')}</option>
@@ -190,11 +184,10 @@ export default function Logs() {
             </select>
           </div>
           <div>
-            <label className="form-label">Level</label>
             <select
               value={filters.level}
               onChange={(e) => setFilters({...filters, level: e.target.value})}
-              className="form-select"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
             >
               <option value="all">All Levels</option>
               <option value="info">{t('logs_level_info')}</option>
@@ -204,21 +197,21 @@ export default function Logs() {
             </select>
           </div>
           <div>
-            <label className="form-label">Date From</label>
             <input
               type="date"
               value={filters.dateFrom}
               onChange={(e) => setFilters({...filters, dateFrom: e.target.value})}
-              className="form-input"
+              placeholder="Date From"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
           <div>
-            <label className="form-label">Date To</label>
             <input
               type="date"
               value={filters.dateTo}
               onChange={(e) => setFilters({...filters, dateTo: e.target.value})}
-              className="form-input"
+              placeholder="Date To"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             />
           </div>
         </div>
