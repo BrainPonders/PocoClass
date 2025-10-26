@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Rule, Document } from "@/api/entities";
+import { apiClient } from "@/api/apiClient";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { FileText, Plus, Settings, BarChart3, Filter, Eye, FileDown, X } from "lucide-react";
@@ -59,8 +60,8 @@ export default function Dashboard() {
   };
 
   const handleCreateRuleForDocument = (doc) => {
-    // Navigate to RuleEditor with selected document
-    window.location.href = createPageUrl(`RuleEditor?documentId=${doc.id}`);
+    // Navigate to RuleEditor with document ID and filename for preview buttons
+    window.location.href = createPageUrl(`RuleEditor?docId=${doc.id}&selectedFile=${encodeURIComponent(doc.title || doc.originalFileName || 'Document')}`);
   };
 
   const formatDate = (dateString) => {
@@ -73,16 +74,23 @@ export default function Dashboard() {
     }
   };
 
-  const handleViewOCR = (doc) => {
-    setOcrDocumentTitle(doc.title);
-    setOcrContent(doc.content || 'No OCR content available');
-    setOcrModalOpen(true);
+  const handleViewOCR = async (doc) => {
+    try {
+      const response = await apiClient.get(`/api/documents/${doc.id}/content`);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(response.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    } catch (error) {
+      console.error('Error loading OCR:', error);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(doc.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    }
   };
 
   const handleViewPDF = (doc) => {
-    if (doc.pdfUrl) {
-      window.open(doc.pdfUrl, '_blank');
-    }
+    // Use the proxy endpoint that handles authentication
+    window.open(`/api/documents/${doc.id}/preview`, '_blank');
   };
 
   return (
