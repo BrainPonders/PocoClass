@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, FileText, Eye } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import LogicGroupEditor from '../LogicGroupEditor';
 import Tooltip from '@/components/Tooltip';
@@ -8,7 +8,11 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default function OcrIdentifiersStep({ 
   ruleData, 
-  updateRuleData
+  updateRuleData,
+  selectedDocumentId,
+  selectedDocumentName,
+  onViewOcr,
+  onViewPdf
 }) {
   const { t } = useTranslation();
   const isInitialized = useRef(false);
@@ -155,11 +159,38 @@ export default function OcrIdentifiersStep({
   return (
     <div className="wizard-container">
       <div className="mb-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
-          <Tooltip content={t('ocr_identifiers_tooltip')} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
+            <Tooltip content={t('ocr_identifiers_tooltip')} />
+          </div>
+          {selectedDocumentId && (
+            <div className="flex gap-2">
+              <button 
+                className="btn btn-secondary btn-sm"
+                onClick={onViewOcr}
+                title="View OCR content"
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                View OCR
+              </button>
+              <button 
+                className="btn btn-secondary btn-sm"
+                onClick={onViewPdf}
+                title="View PDF"
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                View PDF
+              </button>
+            </div>
+          )}
         </div>
         <p className="text-gray-600 mt-2">{t('ocr_identifiers_description')}</p>
+        {selectedDocumentId && selectedDocumentName && (
+          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            📄 Working with: <span className="font-medium">{selectedDocumentName}</span>
+          </div>
+        )}
         {filledGroups < 3 && (
           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
             {t('ocr_identifiers_warning', { filledGroups })}
