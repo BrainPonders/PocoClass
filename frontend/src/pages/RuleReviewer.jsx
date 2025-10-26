@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Rule, Document } from "@/api/entities";
-import { FileText, Filter, Play, CheckSquare, Square, Info } from "lucide-react"; // Added Info icon
+import { FileText, Filter, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
@@ -15,6 +15,9 @@ export default function RuleReviewer() {
   const [allSelected, setAllSelected] = useState(false);
   const [hasRun, setHasRun] = useState(false);
   const [showQuickGuide, setShowQuickGuide] = useState(false); // New state for quick guide
+  const [ocrModalOpen, setOcrModalOpen] = useState(false);
+  const [ocrContent, setOcrContent] = useState('');
+  const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
 
   useEffect(() => {
     loadRules();
@@ -64,6 +67,18 @@ export default function RuleReviewer() {
       return;
     }
     setHasRun(true);
+  };
+
+  const handleViewOCR = (doc) => {
+    setOcrDocumentTitle(doc.title);
+    setOcrContent(doc.content || 'No OCR content available');
+    setOcrModalOpen(true);
+  };
+
+  const handleViewPDF = (doc) => {
+    if (doc.pdfUrl) {
+      window.open(doc.pdfUrl, '_blank');
+    }
   };
 
   // Mock performance data
@@ -228,8 +243,8 @@ export default function RuleReviewer() {
       {/* Document Browser */}
       <Card className="mb-6">
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Test Documents</CardTitle>
+          <div>
+            <CardTitle className="mb-4">Test Documents</CardTitle>
             <div className="flex gap-2 items-center flex-wrap">
               <select
                 value={selectedRule}
@@ -252,14 +267,6 @@ export default function RuleReviewer() {
               <button className="btn btn-outline btn-sm whitespace-nowrap">
                 <Filter className="w-4 h-4 mr-1" />
                 Doc type
-              </button>
-              <button
-                onClick={handleRun}
-                disabled={!selectedRule || selectedDocuments.length === 0}
-                className="btn btn-primary"
-              >
-                <Play className="w-4 h-4 mr-1" />
-                Run
               </button>
             </div>
           </div>
@@ -291,6 +298,7 @@ export default function RuleReviewer() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -319,12 +327,47 @@ export default function RuleReviewer() {
                           <span className="text-gray-400 text-xs">-</span>
                         )}
                       </td>
+                      <td className="px-2 py-1 whitespace-nowrap">
+                        <div className="flex gap-1">
+                          <button 
+                            className="btn btn-ghost btn-sm p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewPDF(doc);
+                            }}
+                            title="View PDF"
+                          >
+                            <Eye className="w-3 h-3" />
+                          </button>
+                          <button 
+                            className="btn btn-ghost btn-sm p-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewOCR(doc);
+                            }}
+                            title="View OCR Content"
+                          >
+                            <FileText className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+          {/* Run Button at bottom */}
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleRun}
+              disabled={!selectedRule || selectedDocuments.length === 0}
+              className="btn btn-primary"
+            >
+              <Play className="w-5 h-5 mr-2" />
+              Run Evaluation
+            </button>
+          </div>
         </CardContent>
       </Card>
 
@@ -527,6 +570,30 @@ export default function RuleReviewer() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* OCR Content Modal */}
+      {ocrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <pre className="whitespace-pre-wrap text-sm font-mono bg-gray-50 p-4 rounded border">
+                {ocrContent}
+              </pre>
+            </div>
+            <div className="flex justify-end gap-2 p-6 border-t">
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-secondary">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
