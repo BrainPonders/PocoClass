@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Rule } from "@/api/entities";
+import { Rule, Document } from "@/api/entities";
 import { FileText, Filter, Play, CheckSquare, Square, Info } from "lucide-react"; // Added Info icon
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
   const [selectedRule, setSelectedRule] = useState('');
   const [selectedDocuments, setSelectedDocuments] = useState([]);
   const [allSelected, setAllSelected] = useState(false);
@@ -16,6 +18,7 @@ export default function RuleReviewer() {
 
   useEffect(() => {
     loadRules();
+    loadDocuments();
   }, []);
 
   const loadRules = async () => {
@@ -27,34 +30,16 @@ export default function RuleReviewer() {
     }
   };
 
-  // Mock documents data - 25 files
-  const documents = [
-    { id: '0198_25061913_3639_001', title: 'bank_statement_january_2024.pdf', created: '15 Jun 1999', correspondent: 'My Bank', documentType: 'Bank Statement', tags: ['NEW'] },
-    { id: '0183_25061912_2905_001', title: 'invoice_supplier_abc_202401.pdf', created: '1 Jun 1997', correspondent: 'Supplier ABC', documentType: 'Invoice', tags: ['NEW'] },
-    { id: '0185_25061912_3737_001', title: 'receipt_office_supplies.pdf', created: '1 Jun 1997', correspondent: 'Office Store', documentType: 'Receipt', tags: ['NEW'] },
-    { id: 'anwb_visa_0132_2503', title: 'utility_bill_electric_jan2024.pdf', created: '28 May 2000', correspondent: 'Electric Company', documentType: 'Bill', tags: ['NEW'] },
-    { id: '2000-10-30-ExampleBank_Credit', title: 'examplebank_credit_statement.pdf', created: '30 Oct 2000', correspondent: 'ExampleBank', documentType: 'Statement', tags: ['NEW'] },
-    { id: '0199_25061913_4521_001', title: 'contract_service_agreement.pdf', created: '20 Jun 1999', correspondent: 'Service Co', documentType: 'Contract', tags: ['NEW'] },
-    { id: '0184_25061912_3120_001', title: 'invoice_utilities_feb2024.pdf', created: '5 Jun 1997', correspondent: 'Utilities Inc', documentType: 'Invoice', tags: ['NEW'] },
-    { id: '0186_25061912_4832_001', title: 'receipt_restaurant_dinner.pdf', created: '10 Jun 1997', correspondent: 'Restaurant', documentType: 'Receipt', tags: ['NEW'] },
-    { id: 'ins_policy_0145_2504', title: 'insurance_policy_renewal.pdf', created: '15 Apr 2000', correspondent: 'Insurance Co', documentType: 'Policy', tags: ['NEW'] },
-    { id: '2001-03-15-Bank_Statement', title: 'monthly_bank_statement_march.pdf', created: '15 Mar 2001', correspondent: 'My Bank', documentType: 'Bank Statement', tags: ['NEW'] },
-    { id: '0200_25061913_5634_001', title: 'tax_return_2023.pdf', created: '25 Jun 1999', correspondent: 'Tax Office', documentType: 'Tax Document', tags: ['NEW'] },
-    { id: '0187_25061912_6745_001', title: 'invoice_internet_service.pdf', created: '15 Jun 1997', correspondent: 'ISP Provider', documentType: 'Invoice', tags: ['NEW'] },
-    { id: '0188_25061912_7856_001', title: 'receipt_gas_station.pdf', created: '20 Jun 1997', correspondent: 'Gas Station', documentType: 'Receipt', tags: ['NEW'] },
-    { id: 'med_bill_0156_2505', title: 'medical_bill_consultation.pdf', created: '20 May 2000', correspondent: 'Hospital', documentType: 'Medical Bill', tags: ['NEW'] },
-    { id: '2001-04-20-Credit_Card', title: 'credit_card_statement_april.pdf', created: '20 Apr 2001', correspondent: 'Credit Card Co', documentType: 'Statement', tags: ['NEW'] },
-    { id: '0201_25061913_8967_001', title: 'lease_agreement_apartment.pdf', created: '30 Jun 1999', correspondent: 'Landlord', documentType: 'Lease', tags: ['NEW'] },
-    { id: '0189_25061912_9078_001', title: 'invoice_mobile_phone.pdf', created: '25 Jun 1997', correspondent: 'Telecom', documentType: 'Invoice', tags: ['NEW'] },
-    { id: '0190_25061912_0189_001', title: 'receipt_supermarket.pdf', created: '28 Jun 1997', correspondent: 'Supermarket', documentType: 'Receipt', tags: ['NEW'] },
-    { id: 'loan_doc_0167_2506', title: 'loan_agreement_personal.pdf', created: '25 Jun 2000', correspondent: 'Bank', documentType: 'Loan', tags: ['NEW'] },
-    { id: '2001-05-25-Utility_Bill', title: 'water_bill_may_2001.pdf', created: '25 May 2001', correspondent: 'Water Company', documentType: 'Bill', tags: ['NEW'] },
-    { id: '0202_25061913_1290_001', title: 'payslip_june_2024.pdf', created: '5 Jul 1999', correspondent: 'Employer', documentType: 'Payslip', tags: ['NEW'] },
-    { id: '0191_25061912_2301_001', title: 'invoice_parking_ticket.pdf', created: '2 Jul 1997', correspondent: 'City Council', documentType: 'Invoice', tags: ['NEW'] },
-    { id: '0192_25061912_3412_001', title: 'receipt_pharmacy.pdf', created: '8 Jul 1997', correspondent: 'Pharmacy', documentType: 'Receipt', tags: ['NEW'] },
-    { id: 'sub_doc_0178_2507', title: 'subscription_renewal_magazine.pdf', created: '30 Jul 2000', correspondent: 'Publisher', documentType: 'Subscription', tags: ['NEW'] },
-    { id: '2001-06-30-Bank_Transfer', title: 'bank_transfer_confirmation.pdf', created: '30 Jun 2001', correspondent: 'My Bank', documentType: 'Confirmation', tags: ['NEW'] }
-  ];
+  const loadDocuments = async () => {
+    setIsLoadingDocuments(true);
+    try {
+      const fetchedDocuments = await Document.list({ limit: 50 });
+      setDocuments(fetchedDocuments);
+    } catch (error) {
+      console.error("Error loading documents:", error);
+    }
+    setIsLoadingDocuments(false);
+  };
 
   const toggleDocumentSelection = (docId) => {
     setSelectedDocuments(prev =>
@@ -280,50 +265,66 @@ export default function RuleReviewer() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-2 py-1 text-left">
-                    <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
-                      {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                    </button>
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {documents.map((doc) => (
-                  <tr
-                    key={doc.id}
-                    className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}
-                    onClick={() => toggleDocumentSelection(doc.id)}
-                  >
-                    <td className="px-2 py-1">
-                      <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
-                        {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+          {isLoadingDocuments ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="text-center py-8">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
+              <p className="text-gray-500">No documents found for testing rules.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-2 py-1 text-left">
+                      <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
+                        {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                       </button>
-                    </td>
-                    <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                    <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                    <td className="px-2 py-1 text-xs text-gray-500">{doc.created}</td>
-                    <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent}</td>
-                    <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType}</td>
-                    <td className="px-2 py-1 whitespace-nowrap">
-                      {doc.tags.map((tag, i) => (
-                        <Badge key={i} className="bg-red-500 text-white text-xs mr-1">{tag}</Badge>
-                      ))}
-                    </td>
+                    </th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {documents.map((doc) => (
+                    <tr
+                      key={doc.id}
+                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}
+                      onClick={() => toggleDocumentSelection(doc.id)}
+                    >
+                      <td className="px-2 py-1">
+                        <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
+                          {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+                        </button>
+                      </td>
+                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.created}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
+                      <td className="px-2 py-1 whitespace-nowrap">
+                        {doc.tags && doc.tags.length > 0 ? (
+                          doc.tags.map((tag, i) => (
+                            <Badge key={i} className="bg-blue-500 text-white text-xs mr-1">{tag}</Badge>
+                          ))
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
