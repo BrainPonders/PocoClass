@@ -1165,6 +1165,81 @@ def list_logs():
         logger.error(f"Error listing logs: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/documents', methods=['GET'])
+@require_auth
+def list_documents():
+    """List documents from Paperless-ngx"""
+    try:
+        limit = request.args.get('limit', type=int)
+        ignore_tags = request.args.get('ignore_tags', 'false').lower() == 'true'
+        
+        # Get Paperless credentials from session
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        # Initialize Paperless API client
+        from api_client import PaperlessAPIClient
+        from config import Config
+        
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config)
+        
+        # Fetch documents
+        documents = api_client.get_documents(limit=limit, ignore_tags=ignore_tags)
+        
+        # Get cached data for lookups
+        correspondents = {c['id']: c for c in db.get_all_correspondents()}
+        doc_types = {dt['id']: dt for dt in db.get_all_document_types()}
+        tags = {t['id']: t for t in db.get_all_tags()}
+        
+        # Convert to frontend format
+        formatted_docs = []
+        for doc in documents:
+            # Get correspondent name
+            correspondent_name = None
+            if doc.get('correspondent'):
+                corr = correspondents.get(doc['correspondent'])
+                correspondent_name = corr['name'] if corr else None
+            
+            # Get document type name
+            doc_type_name = None
+            if doc.get('document_type'):
+                dt = doc_types.get(doc['document_type'])
+                doc_type_name = dt['name'] if dt else None
+            
+            # Get tag names
+            tag_names = []
+            if doc.get('tags'):
+                for tag_id in doc['tags']:
+                    tag = tags.get(tag_id)
+                    if tag:
+                        tag_names.append(tag['name'])
+            
+            # Get owner username (from Paperless user ID, not our DB user ID)
+            owner_name = None
+            if doc.get('owner'):
+                # For now, just use the Paperless owner ID
+                # We could map this to our users later
+                owner_name = f"User {doc['owner']}"
+            
+            formatted_docs.append({
+                'id': doc['id'],
+                'title': doc.get('title', doc.get('original_file_name', 'Untitled')),
+                'created': doc.get('created', ''),
+                'correspondent': correspondent_name,
+                'documentType': doc_type_name,
+                'tags': tag_names,
+                'owner': owner_name,
+                'originalFileName': doc.get('original_file_name', '')
+            })
+        
+        return jsonify(formatted_docs)
+    except Exception as e:
+        logger.error(f"Error listing documents: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
 def convert_frontend_to_backend(frontend_data):
     """Convert frontend rule format to backend YAML format"""
     backend = {
