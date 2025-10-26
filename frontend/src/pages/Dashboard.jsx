@@ -61,7 +61,8 @@ export default function Dashboard() {
 
   const handleCreateRuleForDocument = (doc) => {
     // Navigate to RuleEditor with document ID and filename for preview buttons
-    window.location.href = createPageUrl(`RuleEditor?docId=${doc.id}&selectedFile=${encodeURIComponent(doc.title || doc.originalFileName || 'Document')}`);
+    const fileName = encodeURIComponent(doc.title || doc.originalFileName || 'Document');
+    window.location.href = createPageUrl('RuleEditor') + `?docId=${doc.id}&selectedFile=${fileName}`;
   };
 
   const formatDate = (dateString) => {
