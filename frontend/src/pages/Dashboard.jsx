@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Rule } from "@/api/entities";
+import { Rule, Document } from "@/api/entities";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { FileText, Plus, Settings, BarChart3, Filter } from "lucide-react";
@@ -9,11 +9,14 @@ import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const [rules, setRules] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
   const [selectedDocument, setSelectedDocument] = useState(null);
 
   useEffect(() => {
     loadRules();
+    loadDocuments();
   }, []);
 
   const loadRules = async () => {
@@ -27,46 +30,36 @@ export default function Dashboard() {
     setIsLoading(false);
   };
 
+  const loadDocuments = async () => {
+    setIsLoadingDocuments(true);
+    try {
+      const fetchedDocuments = await Document.list({ limit: 10 });
+      setDocuments(fetchedDocuments);
+    } catch (error) {
+      console.error("Error loading documents:", error);
+    }
+    setIsLoadingDocuments(false);
+  };
+
   const stats = {
     totalRules: rules.length,
     activeRules: rules.filter(r => r.status === 'active').length,
     draftRules: rules.filter(r => r.status === 'draft').length,
   };
 
-  // Mock data for documents to review
-  const documentsToReview = [
-    {
-      id: '0198_25061913_3639_001',
-      title: 'bank_statement_january_2024.pdf',
-      created: '15 Jun 1999',
-      correspondent: 'My Bank',
-      documentType: 'Bank Statement',
-      tags: ['NEW'],
-      owner: 'Robbert Jan'
-    },
-    {
-      id: '0183_25061912_2905_001',
-      title: 'invoice_supplier_abc_202401.pdf',
-      created: '1 Jun 1997',
-      correspondent: 'Supplier ABC',
-      documentType: 'Invoice',
-      tags: ['NEW'],
-      owner: 'Robbert Jan'
-    },
-    {
-      id: '0185_25061912_3737_001',
-      title: 'receipt_office_supplies.pdf',
-      created: '1 Jun 1997',
-      correspondent: 'Office Store',
-      documentType: 'Receipt',
-      tags: ['NEW'],
-      owner: 'Robbert Jan'
-    }
-  ];
-
   const handleCreateRuleForDocument = (doc) => {
     // Navigate to RuleEditor with selected document
-    window.location.href = createPageUrl(`RuleEditor?selectedFile=${encodeURIComponent(doc.title)}`);
+    window.location.href = createPageUrl(`RuleEditor?documentId=${doc.id}`);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateString;
+    }
   };
 
   return (
@@ -187,54 +180,72 @@ export default function Dashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correspondent</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {documentsToReview.map((doc) => (
-                  <tr 
-                    key={doc.id} 
-                    className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
-                    onClick={() => setSelectedDocument(doc)}
-                  >
-                    <td className="px-4 py-4 text-sm text-gray-900">{doc.title}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500">{doc.id}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500">{doc.created}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500">{doc.correspondent}</td>
-                    <td className="px-4 py-4 text-sm text-gray-500">{doc.documentType}</td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      {doc.tags.map((tag, i) => (
-                        <Badge key={i} className="bg-red-500 text-white">{tag}</Badge>
-                      ))}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-500">{doc.owner}</td>
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <button 
-                        className="btn btn-primary btn-sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCreateRuleForDocument(doc);
-                        }}
-                      >
-                        + New Rule
-                      </button>
-                    </td>
+          {isLoadingDocuments ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="text-center py-8">
+              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Found</h3>
+              <p className="text-gray-500">No documents available for classification at the moment.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correspondent</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document type</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {documents.map((doc) => (
+                    <tr 
+                      key={doc.id} 
+                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
+                      onClick={() => setSelectedDocument(doc)}
+                    >
+                      <td className="px-4 py-4 text-sm text-gray-900">{doc.title}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{doc.id}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{formatDate(doc.created)}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{doc.correspondent || '-'}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{doc.documentType || '-'}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="flex gap-1 flex-wrap">
+                          {doc.tags && doc.tags.length > 0 ? (
+                            doc.tags.map((tag, i) => (
+                              <Badge key={i} className="bg-blue-500 text-white">{tag}</Badge>
+                            ))
+                          ) : (
+                            <span className="text-gray-400 text-xs">No tags</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{doc.owner || '-'}</td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <button 
+                          className="btn btn-primary btn-sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCreateRuleForDocument(doc);
+                          }}
+                        >
+                          + New Rule
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
