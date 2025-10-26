@@ -363,42 +363,44 @@ export default function Rules() {
           </div>
         </div>
 
-        {/* Bulk Actions */}
-        {selectedRules.length > 0 && (
-          <div className="card mb-6 bg-blue-50 border-blue-200">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-blue-900">
-                {selectedRules.length} rule(s) selected
-              </span>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => handleBulkAction('activate')} 
-                  className="btn btn-secondary btn-sm"
-                  aria-label="Activate selected rules"
-                >
-                  <Power className="w-4 h-4" />
-                  Activate
-                </button>
-                <button 
-                  onClick={() => handleBulkAction('deactivate')} 
-                  className="btn btn-secondary btn-sm"
-                  aria-label="Deactivate selected rules"
-                >
-                  <PowerOff className="w-4 h-4" />
-                  Deactivate
-                </button>
-                <button 
-                  onClick={() => handleBulkAction('delete')} 
-                  className="btn btn-secondary btn-sm text-red-600"
-                  aria-label="Delete selected rules"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </button>
+        {/* Bulk Actions - Fixed height to prevent layout jumping */}
+        <div className="mb-6" style={{ minHeight: selectedRules.length > 0 ? 'auto' : '0' }}>
+          {selectedRules.length > 0 && (
+            <div className="card bg-blue-50 border-blue-200">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-blue-900">
+                  {selectedRules.length} rule(s) selected
+                </span>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => handleBulkAction('activate')} 
+                    className="btn btn-secondary btn-sm"
+                    aria-label="Activate selected rules"
+                  >
+                    <Power className="w-4 h-4" />
+                    Activate
+                  </button>
+                  <button 
+                    onClick={() => handleBulkAction('deactivate')} 
+                    className="btn btn-secondary btn-sm"
+                    aria-label="Deactivate selected rules"
+                  >
+                    <PowerOff className="w-4 h-4" />
+                    Deactivate
+                  </button>
+                  <button 
+                    onClick={() => handleBulkAction('delete')} 
+                    className="btn btn-secondary btn-sm text-red-600"
+                    aria-label="Delete selected rules"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Rules Table */}
@@ -435,6 +437,7 @@ export default function Rules() {
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule ID</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">{t('common_status')}</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Threshold</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Created</th>
                   <th className="px-4 py-3 text-right font-semibold text-gray-700" scope="col">{t('common_actions')}</th>
                 </tr>
               </thead>
@@ -460,16 +463,28 @@ export default function Rules() {
                       <code className="text-xs bg-gray-100 px-2 py-1 rounded">{rule.ruleId}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        rule.status === 'active' ? 'bg-green-100 text-green-800' :
-                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {t(`status_${rule.status}`)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          rule.status === 'active' ? 'bg-green-100 text-green-800' :
+                          rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {t(`status_${rule.status}`)}
+                        </span>
+                        {rule.status === 'active' && (
+                          <Power className="w-4 h-4 text-green-600" title="Active" />
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
                       {rule.threshold}%
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {rule.created_date ? new Date(rule.created_date).toLocaleDateString('en-GB', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      }) : '-'}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
