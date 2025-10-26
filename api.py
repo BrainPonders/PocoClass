@@ -1258,11 +1258,26 @@ def list_documents():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/documents/<int:doc_id>/preview', methods=['GET'])
-@require_auth
 def proxy_document_preview(doc_id):
     """Proxy document PDF preview with authentication"""
     try:
-        session = request.current_user
+        # Get token from header or query parameter (for new tab opens)
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not session_token:
+            session_token = request.args.get('token')
+        
+        if not session_token:
+            return jsonify({'error': 'No session token provided'}), 401
+        
+        session = db.get_session(session_token)
+        if not session:
+            return jsonify({'error': 'Invalid or expired session'}), 401
+        
+        # Check if user is enabled
+        user = db.get_user_by_id(session['user_id'])
+        if not user or user.get('is_enabled', 1) == 0:
+            return jsonify({'error': 'User account is disabled'}), 403
+        
         paperless_url = db.get_config('paperless_url')
         
         # Create API client with user's token
