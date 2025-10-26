@@ -1257,6 +1257,66 @@ def list_documents():
         logger.error(f"Error listing documents: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/documents/<int:doc_id>/preview', methods=['GET'])
+@require_auth
+def proxy_document_preview(doc_id):
+    """Proxy document PDF preview with authentication"""
+    try:
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        # Create API client with user's token
+        config_temp = Config()
+        config_temp.paperless_url = paperless_url
+        config_temp.paperless_token = session['paperless_token']
+        api_client = PaperlessAPIClient(config_temp, db)
+        
+        # Fetch PDF from Paperless
+        pdf_response = api_client.session.get(
+            f"{paperless_url}/api/documents/{doc_id}/preview/",
+            stream=True
+        )
+        
+        if not pdf_response.ok:
+            return jsonify({'error': 'Failed to fetch PDF from Paperless'}), pdf_response.status_code
+        
+        # Stream the PDF back to the client
+        from flask import Response
+        return Response(
+            pdf_response.iter_content(chunk_size=8192),
+            content_type=pdf_response.headers.get('Content-Type', 'application/pdf'),
+            headers={
+                'Content-Disposition': pdf_response.headers.get('Content-Disposition', 'inline')
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error proxying PDF preview: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/documents/<int:doc_id>/content', methods=['GET'])
+@require_auth
+def get_document_ocr_content(doc_id):
+    """Get OCR content for a document"""
+    try:
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        
+        # Create API client with user's token
+        config_temp = Config()
+        config_temp.paperless_url = paperless_url
+        config_temp.paperless_token = session['paperless_token']
+        api_client = PaperlessAPIClient(config_temp, db)
+        
+        # Get document content
+        content = api_client.get_document_content(doc_id)
+        if content is None:
+            return jsonify({'error': 'Could not retrieve document content'}), 500
+        
+        return jsonify({'content': content})
+    except Exception as e:
+        logger.error(f"Error getting document content: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
 def convert_frontend_to_backend(frontend_data):
     """Convert frontend rule format to backend YAML format"""
     backend = {

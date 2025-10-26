@@ -436,7 +436,11 @@ export default function RuleEditor() {
       updateRuleData,
       showInfoBoxes,
       setShowInfoBoxes,
-      currentStep
+      currentStep,
+      selectedDocumentId,
+      selectedDocumentName: selectedFile,
+      onViewOcr: handleViewOcr,
+      onViewPdf: () => setShowPdfViewer(true)
     };
 
     switch (currentStep) {
