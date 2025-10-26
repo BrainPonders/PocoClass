@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Rule, Document } from "@/api/entities";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FileText, Plus, Settings, BarChart3, Filter } from "lucide-react";
+import { FileText, Plus, Settings, BarChart3, Filter, Eye, FileDown, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -13,6 +13,17 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
   const [selectedDocument, setSelectedDocument] = useState(null);
+  const [ocrModalOpen, setOcrModalOpen] = useState(false);
+  const [ocrContent, setOcrContent] = useState('');
+  const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
+  
+  // Filter states
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCorrespondents, setSelectedCorrespondents] = useState([]);
+  const [selectedDocTypes, setSelectedDocTypes] = useState([]);
+  const [showTagFilter, setShowTagFilter] = useState(false);
+  const [showCorrespondentFilter, setShowCorrespondentFilter] = useState(false);
+  const [showDocTypeFilter, setShowDocTypeFilter] = useState(false);
 
   useEffect(() => {
     loadRules();
@@ -59,6 +70,18 @@ export default function Dashboard() {
       return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
       return dateString;
+    }
+  };
+
+  const handleViewOCR = (doc) => {
+    setOcrDocumentTitle(doc.title);
+    setOcrContent(doc.content || 'No OCR content available');
+    setOcrModalOpen(true);
+  };
+
+  const handleViewPDF = (doc) => {
+    if (doc.pdfUrl) {
+      window.open(doc.pdfUrl, '_blank');
     }
   };
 
@@ -230,15 +253,37 @@ export default function Dashboard() {
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">{doc.owner || '-'}</td>
                       <td className="px-4 py-4 whitespace-nowrap">
-                        <button 
-                          className="btn btn-primary btn-sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCreateRuleForDocument(doc);
-                          }}
-                        >
-                          + New Rule
-                        </button>
+                        <div className="flex gap-2">
+                          <button 
+                            className="btn btn-ghost btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewPDF(doc);
+                            }}
+                            title="View PDF"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            className="btn btn-ghost btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewOCR(doc);
+                            }}
+                            title="View OCR Content"
+                          >
+                            <FileText className="w-4 h-4" />
+                          </button>
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCreateRuleForDocument(doc);
+                            }}
+                          >
+                            + New Rule
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -248,6 +293,30 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* OCR Content Modal */}
+      {ocrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <pre className="whitespace-pre-wrap text-sm font-mono bg-gray-50 p-4 rounded border">
+                {ocrContent}
+              </pre>
+            </div>
+            <div className="flex justify-end gap-2 p-6 border-t">
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-secondary">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
