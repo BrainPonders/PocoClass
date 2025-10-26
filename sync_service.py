@@ -79,6 +79,15 @@ class SyncService:
                 'error': str(e)
             }
         
+        try:
+            users_data = self._fetch_all_with_pagination(
+                api_client, f"{paperless_url}/api/users/"
+            )
+            results['users'] = self.db.sync_users(users_data)
+        except Exception as e:
+            logger.error(f"Failed to sync users: {e}")
+            results['users'] = 0
+        
         logger.info(f"Sync completed: {results}")
         return results
     
@@ -124,6 +133,10 @@ class SyncService:
             'custom_fields': {
                 'last_sync': self.db.get_last_sync_time('custom_fields'),
                 'count': len(self.db.get_all_custom_fields())
+            },
+            'users': {
+                'last_sync': self.db.get_last_sync_time('users'),
+                'count': len(self.db.get_all_paperless_users())
             }
         }
         

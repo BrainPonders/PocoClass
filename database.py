@@ -126,6 +126,15 @@ class Database:
         """)
         
         cursor.execute("""
+            CREATE TABLE IF NOT EXISTS paperless_users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                paperless_id INTEGER UNIQUE NOT NULL,
+                username TEXT NOT NULL,
+                last_synced TEXT NOT NULL
+            )
+        """)
+        
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS sync_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 entity_type TEXT NOT NULL,
@@ -596,6 +605,48 @@ class Database:
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM paperless_custom_fields ORDER BY name")
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def sync_users(self, users: List[Dict]) -> int:
+        """Sync Paperless users from API"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        synced = 0
+        
+        for user in users:
+            cursor.execute("""
+                INSERT OR REPLACE INTO paperless_users (paperless_id, username, last_synced)
+                VALUES (?, ?, ?)
+            """, (user['id'], user['username'], now))
+            synced += 1
+        
+        conn.commit()
+        cursor.execute("""
+            INSERT INTO sync_history (entity_type, synced_at, items_synced, status)
+            VALUES (?, ?, ?, ?)
+        """, ('users', now, synced, 'success'))
+        conn.commit()
+        conn.close()
+        logger.info(f"Synced {synced} Paperless users")
+        return synced
+    
+    def get_user_by_paperless_id(self, paperless_id: int) -> Optional[str]:
+        """Get cached username by Paperless user ID"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT username FROM paperless_users WHERE paperless_id = ?", (paperless_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return row['username'] if row else None
+    
+    def get_all_paperless_users(self) -> List[Dict]:
+        """Get all cached Paperless users"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_users ORDER BY username")
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
