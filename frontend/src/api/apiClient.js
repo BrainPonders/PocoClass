@@ -1,4 +1,4 @@
-// API Client for POCOclass Python Backend
+// API Client for PocoClass Python Backend
 const API_BASE_URL = '/api';
 
 class APIClient {

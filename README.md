@@ -1,10 +1,10 @@
-# POCOclass - Document Classification System for Paperless-ngx
+# PocoClass - Document Classification System for Paperless-ngx
 
 Automated document classification and enrichment system for Paperless-ngx with POCO Scoring v2, featuring a modern React wizard interface and intelligent pattern matching.
 
 ## Overview
 
-POCOclass is a web-based document classification system that helps you automatically classify and enrich documents in Paperless-ngx. It features:
+PocoClass is a web-based document classification system that helps you automatically classify and enrich documents in Paperless-ngx. It features:
 
 - **Modern Web Interface**: React-based 6-step wizard for creating classification rules
 - **POCO Scoring v2**: Dual-score evaluation system (OCR Score + POCO Score) for accurate classification
@@ -30,7 +30,7 @@ POCOclass is a web-based document classification system that helps you automatic
 
 ## POCO Scoring v2
 
-POCOclass uses a dual-score evaluation system:
+PocoClass uses a dual-score evaluation system:
 
 1. **POCO OCR Score (Transparency Score)**: `(OCR_matched / OCR_total) × 100` (threshold: 75%)
 2. **POCO Score (Actionable Score)**: Weighted combination of OCR, filename, and Paperless metadata (threshold: 80%)
@@ -188,4 +188,4 @@ See `LICENSE` file for details.
 
 ## Acknowledgments
 
-POCOclass builds upon the POCO (Post-Consumption Classification) scoring methodology developed for automated document classification in Paperless-ngx environments.
+PocoClass builds upon the POCO (Post-Consumption Classification) scoring methodology developed for automated document classification in Paperless-ngx environments.

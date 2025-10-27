@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# POCOclass v2.0 - Startup Script
+# PocoClass v2.0 - Startup Script
 # Ensures both backend and frontend start reliably
 
 set -e
 
-echo "Starting POCOclass v2.0..."
+echo "Starting PocoClass v2.0..."
 
 # Start backend API in background
 echo "Starting backend API on port 8000..."

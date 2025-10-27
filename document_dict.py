@@ -1,5 +1,5 @@
 """
-POCOclass - Document Dictionary Structure
+PocoClass - Document Dictionary Structure
 Defines the complete data structure for document processing workflow
 """
 

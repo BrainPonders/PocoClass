@@ -1,5 +1,5 @@
 """
-POCOclass - YAML Rule Loader
+PocoClass - YAML Rule Loader
 Handles loading and validation of YAML rule files for document classification
 """
 
