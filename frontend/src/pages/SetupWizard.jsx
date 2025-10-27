@@ -57,6 +57,7 @@ export default function SetupWizard() {
         title: 'Setup Failed',
         description: error.message || 'Failed to connect to Paperless. Please check your credentials and URL.',
         variant: 'destructive',
+        duration: 5000,
       });
     } finally {
       setLoading(false);
