@@ -360,10 +360,13 @@ def login():
                     
                     if users_response.status_code == 200:
                         users_data = users_response.json()
+                        logger.info(f"Users API response type: {type(users_data)}, data: {users_data}")
                         users = users_data.get('results', []) if isinstance(users_data, dict) else users_data
+                        logger.info(f"Users list type: {type(users)}, length: {len(users) if isinstance(users, list) else 'N/A'}")
                         
                         # Find user by username
                         for user in users:
+                            logger.info(f"Checking user: type={type(user)}, value={user}")
                             if user.get('username') == username:
                                 user_info = user
                                 paperless_user_id = user.get('id')
