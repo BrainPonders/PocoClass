@@ -81,7 +81,7 @@ export default function SetupWizard() {
         
         .setup-form-input {
           width: 100%;
-          padding: 14px 16px;
+          padding: 10px 12px;
           border: 2px solid #d1d5db;
           border-radius: 8px;
           font-size: 1rem;

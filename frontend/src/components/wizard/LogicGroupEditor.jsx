@@ -120,10 +120,10 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
       </div>
 
       <div className="space-y-3 mb-4">
-        <div className="flex flex-wrap items-center gap-4 text-sm">
-          <span className="font-medium text-gray-700">Search lines:</span>
+        <div className="flex items-center gap-4 text-sm overflow-x-auto">
+          <span className="font-medium text-gray-700 whitespace-nowrap">Search lines:</span>
           
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 whitespace-nowrap">
             <input
               type="radio"
               name={`searchMode-${index}`}
@@ -152,9 +152,9 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
             />
           </label>
 
-          <div style={{ width: '2px', height: '24px', backgroundColor: '#d1d5db', margin: '0 8px' }}></div>
+          <div style={{ width: '2px', height: '24px', backgroundColor: '#d1d5db', margin: '0 8px' }} className="flex-shrink-0"></div>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 whitespace-nowrap">
             <input
               type="radio"
               name={`searchMode-${index}`}
@@ -174,9 +174,9 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
             />
           </label>
 
-          <div style={{ width: '2px', height: '24px', backgroundColor: '#d1d5db', margin: '0 8px' }}></div>
+          <div style={{ width: '2px', height: '24px', backgroundColor: '#d1d5db', margin: '0 8px' }} className="flex-shrink-0"></div>
 
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 whitespace-nowrap">
             <input
               type="radio"
               name={`searchMode-${index}`}
