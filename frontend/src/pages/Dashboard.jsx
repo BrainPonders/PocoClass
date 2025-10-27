@@ -25,6 +25,16 @@ export default function Dashboard() {
   const [showTagFilter, setShowTagFilter] = useState(false);
   const [showCorrespondentFilter, setShowCorrespondentFilter] = useState(false);
   const [showDocTypeFilter, setShowDocTypeFilter] = useState(false);
+  
+  // Filter mode states (include/exclude)
+  const [tagFilterMode, setTagFilterMode] = useState('include');
+  const [correspondentFilterMode, setCorrespondentFilterMode] = useState('include');
+  const [docTypeFilterMode, setDocTypeFilterMode] = useState('include');
+  
+  // Search states for filters
+  const [tagSearch, setTagSearch] = useState('');
+  const [correspondentSearch, setCorrespondentSearch] = useState('');
+  const [docTypeSearch, setDocTypeSearch] = useState('');
 
   useEffect(() => {
     loadRules();
@@ -96,17 +106,29 @@ export default function Dashboard() {
     window.open(url, '_blank');
   };
 
-  // Filter documents based on selected filters
+  // Filter documents based on selected filters with include/exclude support
   const filteredDocuments = documents.filter(doc => {
-    if (selectedTags.length > 0 && !selectedTags.some(tag => doc.tags?.includes(tag))) {
-      return false;
+    // Tags filter
+    if (selectedTags.length > 0) {
+      const hasTag = selectedTags.some(tag => doc.tags?.includes(tag));
+      if (tagFilterMode === 'include' && !hasTag) return false;
+      if (tagFilterMode === 'exclude' && hasTag) return false;
     }
-    if (selectedCorrespondents.length > 0 && !selectedCorrespondents.includes(doc.correspondent)) {
-      return false;
+    
+    // Correspondents filter
+    if (selectedCorrespondents.length > 0) {
+      const hasCorrespondent = selectedCorrespondents.includes(doc.correspondent);
+      if (correspondentFilterMode === 'include' && !hasCorrespondent) return false;
+      if (correspondentFilterMode === 'exclude' && hasCorrespondent) return false;
     }
-    if (selectedDocTypes.length > 0 && !selectedDocTypes.includes(doc.documentType)) {
-      return false;
+    
+    // Document Types filter
+    if (selectedDocTypes.length > 0) {
+      const hasDocType = selectedDocTypes.includes(doc.documentType);
+      if (docTypeFilterMode === 'include' && !hasDocType) return false;
+      if (docTypeFilterMode === 'exclude' && hasDocType) return false;
     }
+    
     return true;
   });
 
@@ -237,73 +259,156 @@ export default function Dashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Filter Dropdowns */}
-          {(showTagFilter || showCorrespondentFilter || showDocTypeFilter) && (
-            <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
-              {showTagFilter && (
-                <div className="mb-3">
-                  <h4 className="text-sm font-medium mb-2">Filter by Tags</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {Array.from(new Set(documents.flatMap(d => d.tags || []))).sort().map(tag => (
-                      <button
+          {/* Paperless-style Filter Dropdowns */}
+          {showTagFilter && (
+            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+              <div className="p-3 border-b border-gray-700">
+                <div className="flex gap-1 mb-3">
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setTagFilterMode('include')}
+                  >
+                    Include
+                  </button>
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setTagFilterMode('exclude')}
+                  >
+                    Exclude
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Filter tags"
+                  value={tagSearch}
+                  onChange={(e) => setTagSearch(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                />
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {Array.from(new Set(documents.flatMap(d => d.tags || [])))
+                  .sort()
+                  .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
+                  .map(tag => {
+                    const count = documents.filter(d => d.tags?.includes(tag)).length;
+                    return (
+                      <div
                         key={tag}
-                        className={`px-3 py-1 text-sm rounded ${selectedTags.includes(tag) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedTags.includes(tag) ? 'bg-gray-700' : ''}`}
                         onClick={() => setSelectedTags(prev => 
                           prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
                         )}
                       >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
+                        <span className="text-sm">{tag}</span>
+                        <span className="text-xs text-gray-400">{count}</span>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+          
+          {showCorrespondentFilter && (
+            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+              <div className="p-3 border-b border-gray-700">
+                <div className="flex gap-1 mb-3">
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setCorrespondentFilterMode('include')}
+                  >
+                    Include
+                  </button>
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setCorrespondentFilterMode('exclude')}
+                  >
+                    Exclude
+                  </button>
                 </div>
-              )}
-              {showCorrespondentFilter && (
-                <div className="mb-3">
-                  <h4 className="text-sm font-medium mb-2">Filter by Correspondents</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {Array.from(new Set(documents.map(d => d.correspondent).filter(Boolean))).sort().map(corr => (
-                      <button
+                <input
+                  type="text"
+                  placeholder="Filter correspondents"
+                  value={correspondentSearch}
+                  onChange={(e) => setCorrespondentSearch(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                />
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                <div
+                  className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${selectedCorrespondents.includes(null) ? 'bg-gray-700' : ''}`}
+                  onClick={() => setSelectedCorrespondents(prev => 
+                    prev.includes(null) ? prev.filter(c => c !== null) : [...prev, null]
+                  )}
+                >
+                  <span className="text-sm italic">Not assigned</span>
+                </div>
+                {Array.from(new Set(documents.map(d => d.correspondent).filter(Boolean)))
+                  .sort()
+                  .filter(corr => corr.toLowerCase().includes(correspondentSearch.toLowerCase()))
+                  .map(corr => {
+                    const count = documents.filter(d => d.correspondent === corr).length;
+                    return (
+                      <div
                         key={corr}
-                        className={`px-3 py-1 text-sm rounded ${selectedCorrespondents.includes(corr) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedCorrespondents.includes(corr) ? 'bg-gray-700' : ''}`}
                         onClick={() => setSelectedCorrespondents(prev => 
                           prev.includes(corr) ? prev.filter(c => c !== corr) : [...prev, corr]
                         )}
                       >
-                        {corr}
-                      </button>
-                    ))}
-                  </div>
+                        <span className="text-sm">{corr}</span>
+                        <span className="text-xs text-gray-400">{count}</span>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+          
+          {showDocTypeFilter && (
+            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+              <div className="p-3 border-b border-gray-700">
+                <div className="flex gap-1 mb-3">
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setDocTypeFilterMode('include')}
+                  >
+                    Include
+                  </button>
+                  <button 
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    onClick={() => setDocTypeFilterMode('exclude')}
+                  >
+                    Exclude
+                  </button>
                 </div>
-              )}
-              {showDocTypeFilter && (
-                <div className="mb-3">
-                  <h4 className="text-sm font-medium mb-2">Filter by Document Type</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {Array.from(new Set(documents.map(d => d.documentType).filter(Boolean))).sort().map(type => (
-                      <button
+                <input
+                  type="text"
+                  placeholder="Filter document types"
+                  value={docTypeSearch}
+                  onChange={(e) => setDocTypeSearch(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                />
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {Array.from(new Set(documents.map(d => d.documentType).filter(Boolean)))
+                  .sort()
+                  .filter(type => type.toLowerCase().includes(docTypeSearch.toLowerCase()))
+                  .map(type => {
+                    const count = documents.filter(d => d.documentType === type).length;
+                    return (
+                      <div
                         key={type}
-                        className={`px-3 py-1 text-sm rounded ${selectedDocTypes.includes(type) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedDocTypes.includes(type) ? 'bg-gray-700' : ''}`}
                         onClick={() => setSelectedDocTypes(prev => 
                           prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
                         )}
                       >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <button 
-                className="btn btn-sm btn-outline"
-                onClick={() => {
-                  setSelectedTags([]);
-                  setSelectedCorrespondents([]);
-                  setSelectedDocTypes([]);
-                }}
-              >
-                Clear All Filters
-              </button>
+                        <span className="text-sm">{type}</span>
+                        <span className="text-xs text-gray-400">{count}</span>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           )}
           {isLoadingDocuments ? (
