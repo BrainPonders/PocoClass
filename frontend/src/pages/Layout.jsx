@@ -1,13 +1,15 @@
 
 
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User as UserIcon, X, AlertTriangle } from "lucide-react";
 import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { usePOCOFields } from "@/contexts/POCOFieldsContext";
+import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
+import GuardedLink from "@/components/GuardedLink";
 import {
   Sidebar,
   SidebarContent,
@@ -96,7 +98,8 @@ export default function Layout({ children }) {
     <ErrorBoundary>
       <ThemeProvider>
         <ToastProvider>
-          <SidebarProvider>
+          <UnsavedChangesProvider>
+            <SidebarProvider>
             <style>{`
               :root.light {
                 --app-bg: #f8fafc;
@@ -478,13 +481,13 @@ export default function Layout({ children }) {
                                   location.pathname === item.url ? 'bg-blue-50 text-blue-700' : ''
                                 }`}
                               >
-                                <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                                <GuardedLink to={item.url} className="flex items-center gap-3 px-3 py-2">
                                   <item.icon className="w-4 h-4" />
                                   <span className="font-medium">{item.title}</span>
                                   {item.title === 'Settings' && hasMissingFields && (
                                     <AlertTriangle className="w-4 h-4 text-amber-500 ml-auto" title="POCO fields missing" />
                                   )}
-                                </Link>
+                                </GuardedLink>
                               </SidebarMenuButton>
                             </SidebarMenuItem>
                           );
@@ -628,6 +631,7 @@ export default function Layout({ children }) {
               </div>
             )}
           </SidebarProvider>
+          </UnsavedChangesProvider>
         </ToastProvider>
       </ThemeProvider>
     </ErrorBoundary>
