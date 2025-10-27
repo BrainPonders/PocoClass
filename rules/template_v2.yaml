@@ -1,0 +1,128 @@
+# -------------------------------------------------------------------------------------------------
+# Filename: template_v2.yaml
+#
+# Description:
+# POCOclass YAML template v2 - New scoring mechanism with OCR-based identification
+# This template demonstrates the complete v2 structure for the dual-score POCO system
+#
+# Version: 2.0
+# Created: 2025-10-05
+# -------------------------------------------------------------------------------------------------
+
+# Basic Rule Information
+rule_name: "Template Rule v2"
+rule_id: "template_v2"
+description: "Template demonstrating the new POCO Scoring v2 structure"
+status: "draft"  # draft, active, inactive
+
+# Thresholds
+threshold: 80           # Minimum POCO Score for classification (default: 80%)
+ocr_threshold: 75       # Minimum OCR Score for identification (default: 75%)
+
+# Trust Multipliers
+ocr_multiplier: 3.0           # OCR reliability multiplier (default: 3.0, range: 1-10)
+filename_multiplier: 1.0      # Filename reliability multiplier (default: 1.0, range: 1-10)
+verification_multiplier: 0.5  # Paperless verification multiplier (default: 0.5, auto-calculated: 1/field_count)
+
+# Core Identifiers (Primary OCR Source)
+# These are the main patterns that identify the document
+# Recommended: 3-10 identifiers for proper scoring (total score should be 100)
+core_identifiers:
+  logic_groups:
+    # Match type: ALL conditions must match
+    - type: "match"
+      score: 40
+      conditions:
+        - pattern: "Company Name Inc"
+          source: "content"
+          range: "0-500"
+        - pattern: "Invoice|Bill"
+          source: "content"
+          range: "0-300"
+    
+    # OR type: At least ONE condition must match
+    - type: "or"
+      score: 30
+      conditions:
+        - pattern: "Account.*Number"
+          source: "content"
+          range: "0-600"
+        - pattern: "Reference.*ID"
+          source: "content"
+          range: "0-600"
+    
+    # Additional pattern group
+    - type: "match"
+      score: 30
+      conditions:
+        - pattern: "\\d{4}-\\d{2}-\\d{2}"  # Date pattern
+          source: "content"
+          range: "0-1000"
+
+# Static Metadata (Applied when OCR threshold is reached)
+static_metadata:
+  correspondent: "Company Name Inc"
+  document_type: "Invoice"
+  tags: ["Business", "Finance"]
+  custom_fields:
+    Document Category: "Financial Documents"
+
+# Dynamic Metadata (Extracted from document content)
+dynamic_metadata:
+  # Date extraction
+  date_created:
+    beforeAnchor: ""                      # Optional: pattern before the date
+    afterAnchor: "Invoice Date:\\s*"      # Pattern after which the date appears
+    format: "%d-%m-%Y"                    # Date format for parsing
+  
+  # Tag extraction (can have multiple)
+  extracted_tags:
+    - pattern: "Department:\\s*(\\w+)"
+      value: "{1}"  # Use captured group 1 as tag value
+    
+    - pattern: "Year (\\d{4})"
+      prefix: "FY"  # Prefix for the tag, creates "FY2024" etc
+      value: "{1}"
+
+# Filename Patterns (Secondary Verification)
+# These patterns verify the identification through filename
+filename_patterns:
+  - "invoice"
+  - "company.*\\d{4}"
+  - "INV-\\d+"
+
+# Paperless Data Verification (Cross-check)
+# Select which Paperless metadata fields to verify against extracted data
+verification_fields:
+  - correspondent
+  - document_type
+  - date_created
+  - tags
+
+# Metadata (for tracking)
+created_date: "2025-10-05"
+updated_date: "2025-10-05"
+author: "System"
+notes: "Template for v2 scoring mechanism"
+
+# -------------------------------------------------------------------------------------------------
+# POCO Scoring v2 Calculation:
+#
+# 1. OCR Weighted = (matched_patterns / total_patterns) × total_patterns × ocr_multiplier
+#    Simplifies to: matched_patterns × ocr_multiplier
+#
+# 2. Filename Weighted = matched_filename_patterns × filename_multiplier
+#
+# 3. Paperless Weighted = matched_fields × (1 / total_fields)
+#    This neutralizes field count to max 1 point
+#
+# 4. POCO OCR Score = (OCR Weighted / OCR Max Weight) × 100
+#    This is the transparent pattern matching score
+#
+# 5. POCO Score = (OCR + Filename + Paperless) / (Max OCR + Max Filename + 1) × 100
+#    This is the final actionable score
+#
+# Classification happens when:
+#   - POCO OCR Score >= ocr_threshold (default 75%)
+#   - POCO Score >= threshold (default 80%)
+# -------------------------------------------------------------------------------------------------
