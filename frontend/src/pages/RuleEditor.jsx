@@ -185,7 +185,7 @@ export default function RuleEditor() {
     };
   }, [ruleId]); // Only depend on ruleId to prevent infinite loops
 
-  const updateRuleData = useCallback((section, data) => {
+  const updateRuleData = useCallback((section, data, isUserChange = true) => {
     setRuleData(prev => {
         const newData = section === '' 
           ? { ...prev, ...data }
@@ -199,13 +199,15 @@ export default function RuleEditor() {
         return newData;
     });
     
-    // Only mark as edited if the data actually changed
-    setStepEdited(true);
-    setHasUnsavedChanges(true);
-    setStepStatus(prev => ({
-      ...prev,
-      [currentStep]: prev[currentStep] === 'completed' ? 'completed' : 'edited'
-    }));
+    // Only mark as edited if this is a user change (not initialization)
+    if (isUserChange) {
+      setStepEdited(true);
+      setHasUnsavedChanges(true);
+      setStepStatus(prev => ({
+        ...prev,
+        [currentStep]: prev[currentStep] === 'completed' ? 'completed' : 'edited'
+      }));
+    }
   }, [currentStep]);
 
   const hasStepData = useCallback((step) => {
