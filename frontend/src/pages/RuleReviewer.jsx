@@ -19,6 +19,14 @@ export default function RuleReviewer() {
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
   const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
+  
+  // Filter states
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedCorrespondents, setSelectedCorrespondents] = useState([]);
+  const [selectedDocTypes, setSelectedDocTypes] = useState([]);
+  const [showTagFilter, setShowTagFilter] = useState(false);
+  const [showCorrespondentFilter, setShowCorrespondentFilter] = useState(false);
+  const [showDocTypeFilter, setShowDocTypeFilter] = useState(false);
 
   useEffect(() => {
     loadRules();
@@ -90,6 +98,20 @@ export default function RuleReviewer() {
     const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
     window.open(url, '_blank');
   };
+
+  // Filter documents based on selected filters
+  const filteredDocuments = documents.filter(doc => {
+    if (selectedTags.length > 0 && !selectedTags.some(tag => doc.tags?.includes(tag))) {
+      return false;
+    }
+    if (selectedCorrespondents.length > 0 && !selectedCorrespondents.includes(doc.correspondent)) {
+      return false;
+    }
+    if (selectedDocTypes.length > 0 && !selectedDocTypes.includes(doc.documentType)) {
+      return false;
+    }
+    return true;
+  });
 
   // Mock performance data
   const getPerformanceData = () => {
@@ -256,31 +278,111 @@ export default function RuleReviewer() {
           <div>
             <CardTitle className="mb-4">Test Documents</CardTitle>
             <div className="flex gap-2 items-center flex-wrap">
-              <button className="btn btn-outline btn-sm">
+              <button 
+                className={`btn btn-outline btn-sm ${selectedTags.length > 0 ? 'bg-blue-100' : ''}`}
+                onClick={() => setShowTagFilter(!showTagFilter)}
+              >
                 <Filter className="w-4 h-4 mr-1" />
-                Tags
+                Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
               </button>
-              <button className="btn btn-outline btn-sm">
+              <button 
+                className={`btn btn-outline btn-sm ${selectedCorrespondents.length > 0 ? 'bg-blue-100' : ''}`}
+                onClick={() => setShowCorrespondentFilter(!showCorrespondentFilter)}
+              >
                 <Filter className="w-4 h-4 mr-1" />
-                Correspondents
+                Correspondents {selectedCorrespondents.length > 0 && `(${selectedCorrespondents.length})`}
               </button>
-              <button className="btn btn-outline btn-sm whitespace-nowrap">
+              <button 
+                className={`btn btn-outline btn-sm whitespace-nowrap ${selectedDocTypes.length > 0 ? 'bg-blue-100' : ''}`}
+                onClick={() => setShowDocTypeFilter(!showDocTypeFilter)}
+              >
                 <Filter className="w-4 h-4 mr-1" />
-                Document Type
+                Document Type {selectedDocTypes.length > 0 && `(${selectedDocTypes.length})`}
               </button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
+          {/* Filter Dropdowns */}
+          {(showTagFilter || showCorrespondentFilter || showDocTypeFilter) && (
+            <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
+              {showTagFilter && (
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium mb-2">Filter by Tags</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from(new Set(documents.flatMap(d => d.tags || []))).sort().map(tag => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 text-sm rounded ${selectedTags.includes(tag) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        onClick={() => setSelectedTags(prev => 
+                          prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+                        )}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {showCorrespondentFilter && (
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium mb-2">Filter by Correspondents</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from(new Set(documents.map(d => d.correspondent).filter(Boolean))).sort().map(corr => (
+                      <button
+                        key={corr}
+                        className={`px-3 py-1 text-sm rounded ${selectedCorrespondents.includes(corr) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        onClick={() => setSelectedCorrespondents(prev => 
+                          prev.includes(corr) ? prev.filter(c => c !== corr) : [...prev, corr]
+                        )}
+                      >
+                        {corr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {showDocTypeFilter && (
+                <div className="mb-3">
+                  <h4 className="text-sm font-medium mb-2">Filter by Document Type</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.from(new Set(documents.map(d => d.documentType).filter(Boolean))).sort().map(type => (
+                      <button
+                        key={type}
+                        className={`px-3 py-1 text-sm rounded ${selectedDocTypes.includes(type) ? 'bg-blue-500 text-white' : 'bg-white border'}`}
+                        onClick={() => setSelectedDocTypes(prev => 
+                          prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+                        )}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <button 
+                className="btn btn-sm btn-outline"
+                onClick={() => {
+                  setSelectedTags([]);
+                  setSelectedCorrespondents([]);
+                  setSelectedDocTypes([]);
+                }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          )}
           {isLoadingDocuments ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
-          ) : documents.length === 0 ? (
+          ) : filteredDocuments.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
-              <p className="text-gray-500">No documents found for testing rules.</p>
+              <p className="text-gray-500">
+                {documents.length === 0 ? 'No documents found for testing rules.' : 'No documents match the selected filters.'}
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -302,7 +404,7 @@ export default function RuleReviewer() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {documents.map((doc) => (
+                  {filteredDocuments.map((doc) => (
                     <tr
                       key={doc.id}
                       className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}
