@@ -306,95 +306,17 @@ export default function PaperlessFilterBar({
           </button>
         </div>
 
-        {/* Custom Fields Filter */}
+        {/* Custom Fields Filter - Disabled pending full implementation */}
         <div className="relative">
           <button
-            onClick={() => toggleFilter('customFields')}
-            className={getFilterButtonClass('customFields')}
+            disabled
+            className="px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 bg-gray-600 text-gray-400 cursor-not-allowed opacity-50"
+            title="Custom fields filtering requires backend support for field definitions and select options"
           >
             <Filter className="w-4 h-4" />
             Custom fields
-            {filters.customFields.length > 0 && ` (${filters.customFields.length})`}
             <ChevronDown className="w-3 h-3" />
           </button>
-          {renderFilterDropdown('customFields', (
-            <div className="p-3 min-w-[400px]">
-              <div className="mb-2 text-xs text-yellow-400 bg-yellow-900 bg-opacity-20 border border-yellow-700 rounded p-2">
-                ⚠️ Custom fields filtering requires backend support
-              </div>
-              <div className="mb-3">
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    placeholder="Field name"
-                    value={filters.customFieldName || ''}
-                    onChange={(e) => onFilterChange({ ...filters, customFieldName: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Value"
-                    value={filters.customFieldValue || ''}
-                    onChange={(e) => onFilterChange({ ...filters, customFieldValue: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && filters.customFieldName && filters.customFieldValue) {
-                        const newFields = [...filters.customFields, {
-                          name: filters.customFieldName,
-                          value: filters.customFieldValue
-                        }];
-                        onFilterChange({
-                          ...filters,
-                          customFields: newFields,
-                          customFieldName: '',
-                          customFieldValue: ''
-                        });
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      if (filters.customFieldName && filters.customFieldValue) {
-                        const newFields = [...filters.customFields, {
-                          name: filters.customFieldName,
-                          value: filters.customFieldValue
-                        }];
-                        onFilterChange({
-                          ...filters,
-                          customFields: newFields,
-                          customFieldName: '',
-                          customFieldValue: ''
-                        });
-                      }
-                    }}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-              {filters.customFields.length > 0 && (
-                <div className="border-t border-gray-700 pt-2">
-                  {filters.customFields.map((field, idx) => (
-                    <div key={idx} className="flex items-center justify-between px-2 py-1 hover:bg-gray-700 rounded">
-                      <span className="text-sm">
-                        <span className="font-medium">{field.name}:</span> {field.value}
-                      </span>
-                      <button
-                        onClick={() => {
-                          const newFields = filters.customFields.filter((_, i) => i !== idx);
-                          onFilterChange({ ...filters, customFields: newFields });
-                        }}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
         </div>
 
         {/* Dates Filter */}
