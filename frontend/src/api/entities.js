@@ -96,6 +96,10 @@ export const Paperless = {
 
   async getDocumentTypes() {
     return await apiClient.get('/paperless/document-types');
+  },
+
+  async getCustomFields() {
+    return await apiClient.get('/paperless/custom-fields');
   }
 };
 
