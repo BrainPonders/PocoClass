@@ -186,7 +186,14 @@ class Database:
         conn.close()
         logger.info("Database initialized")
         
-        # Initialize settings with defaults
+        # Initialize default settings
+        self._init_default_settings()
+    
+    def _init_default_settings(self):
+        """Initialize default app settings if they don't exist"""
+        # Set default session timeout to 24 hours if not already set
+        if self.get_app_setting('session_timeout_hours') is None:
+            self.set_app_setting('session_timeout_hours', '24')
         self.init_date_formats()
         self.init_placeholder_settings()
     
@@ -333,8 +340,12 @@ class Database:
             })
         return users
     
-    def create_session(self, user_id: int, paperless_token: str, duration_hours: int = 24) -> str:
+    def create_session(self, user_id: int, paperless_token: str, duration_hours: Optional[int] = None) -> str:
         """Create a new session for a user"""
+        # Get session timeout from settings, default to 24 hours
+        if duration_hours is None:
+            duration_hours = int(self.get_app_setting('session_timeout_hours', '24'))
+        
         session_token = secrets.token_urlsafe(32)
         expires_at = datetime.now() + timedelta(hours=duration_hours)
         
@@ -351,7 +362,7 @@ class Database:
         return session_token
     
     def get_session(self, session_token: str) -> Optional[Dict]:
-        """Get session by token"""
+        """Get session by token and refresh expiry on activity"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -368,11 +379,31 @@ class Database:
         
         session = dict(row)
         
+        # Check if session expired
         if datetime.fromisoformat(session['expires_at']) < datetime.now():
             self.delete_session(session_token)
             return None
         
+        # Refresh session expiry on activity (activity-based timeout)
+        self.refresh_session(session_token)
+        
         return session
+    
+    def refresh_session(self, session_token: str):
+        """Refresh session expiry time (extend timeout on activity)"""
+        # Get session timeout from settings
+        duration_hours = int(self.get_app_setting('session_timeout_hours', '24'))
+        new_expires_at = datetime.now() + timedelta(hours=duration_hours)
+        
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE sessions 
+            SET expires_at = ? 
+            WHERE session_token = ?
+        """, (new_expires_at.isoformat(), session_token))
+        conn.commit()
+        conn.close()
     
     def delete_session(self, session_token: str):
         """Delete a session"""
