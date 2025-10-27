@@ -137,7 +137,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={(e) => handleValueChange('from', e.target.value)}
               disabled={searchMode !== 'between'}
               className="form-input"
-              style={{ width: '80px', padding: '4px 8px' }}
+              style={{ width: '60px', padding: '4px 8px' }}
               placeholder="from"
             />
             <span>to</span>
@@ -147,7 +147,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={(e) => handleValueChange('to', e.target.value)}
               disabled={searchMode !== 'between'}
               className="form-input"
-              style={{ width: '80px', padding: '4px 8px' }}
+              style={{ width: '60px', padding: '4px 8px' }}
               placeholder="to"
             />
           </label>
@@ -169,7 +169,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={(e) => handleValueChange('first', e.target.value)}
               disabled={searchMode !== 'first'}
               className="form-input"
-              style={{ width: '80px', padding: '4px 8px' }}
+              style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
           </label>
@@ -191,7 +191,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={(e) => handleValueChange('last', e.target.value)}
               disabled={searchMode !== 'last'}
               className="form-input"
-              style={{ width: '80px', padding: '4px 8px' }}
+              style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
           </label>
