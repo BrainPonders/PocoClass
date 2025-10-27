@@ -66,7 +66,7 @@ export default function OcrIdentifiersStep({
         { type: 'match', mandatory: false, conditions: [{ pattern: '', range: '0-1600' }] },
         { type: 'match', mandatory: false, conditions: [{ pattern: '', range: '0-1600' }] }
       ];
-      updateRuleData('ocrIdentifiers', initialGroups);
+      updateRuleData('ocrIdentifiers', initialGroups, false); // false = initialization, not a user change
       isInitialized.current = true;
     }
   }, [ruleData.ocrIdentifiers, updateRuleData]);
