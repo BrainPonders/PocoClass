@@ -1,5 +1,5 @@
 """
-POCOclass Sync Service
+PocoClass Sync Service
 Handles synchronization of Paperless data to local cache
 """
 

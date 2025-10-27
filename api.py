@@ -379,7 +379,7 @@ def login():
                 import hashlib
                 paperless_user_id = int(hashlib.md5(username.encode()).hexdigest()[:8], 16)
             
-            # Get or create user in POCOclass
+            # Get or create user in PocoClass
             user = db.get_user_by_paperless_id(paperless_user_id)
             if not user:
                 # Create new user with default 'user' role
@@ -486,7 +486,7 @@ def list_all_users():
         else:
             paperless_users = []
         
-        # Get POCOclass users
+        # Get PocoClass users
         pococlass_users = db.list_users()
         paperless_id_map = {u['paperless_user_id']: u for u in pococlass_users}
         
@@ -570,7 +570,7 @@ def disable_user_endpoint(user_id):
 @app.route('/api/users/all-paperless', methods=['GET'])
 @require_admin
 def get_all_paperless_users():
-    """Get all Paperless users with their POCOclass status (admin only)"""
+    """Get all Paperless users with their PocoClass status (admin only)"""
     try:
         session = request.current_user
         paperless_url = db.get_config('paperless_url')
@@ -606,7 +606,7 @@ def get_all_paperless_users():
         elif isinstance(groups_data, dict) and 'results' in groups_data:
             group_map = {g['id']: g['name'] for g in groups_data['results']}
         
-        # Get POCOclass users
+        # Get PocoClass users
         pococlass_users = db.list_users()
         pococlass_map = {u['paperless_user_id']: u for u in pococlass_users}
         

@@ -1,5 +1,5 @@
 """
-POCOclass Database
+PocoClass Database
 Simple SQLite database for user management and configuration
 """
 
@@ -288,7 +288,7 @@ class Database:
         logger.info(f"Updated user {user_id} role to: {role}")
     
     def enable_user(self, paperless_user_id: int):
-        """Enable a user (allow POCOclass access)"""
+        """Enable a user (allow PocoClass access)"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("UPDATE users SET is_enabled = 1 WHERE paperless_user_id = ?", (paperless_user_id,))
@@ -297,7 +297,7 @@ class Database:
         logger.info(f"Enabled user with Paperless ID: {paperless_user_id}")
     
     def disable_user(self, paperless_user_id: int):
-        """Disable a user (block POCOclass access)"""
+        """Disable a user (block PocoClass access)"""
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("UPDATE users SET is_enabled = 0 WHERE paperless_user_id = ?", (paperless_user_id,))
