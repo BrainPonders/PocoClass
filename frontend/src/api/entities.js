@@ -30,6 +30,10 @@ export const Rule = {
 
   async execute(id, documentIds) {
     return await apiClient.post(`/rules/${id}/execute`, { documentIds });
+  },
+
+  async executeOnDocument(id, documentId, dryRun = true) {
+    return await apiClient.post(`/rules/${id}/execute`, { documentId, dryRun });
   }
 };
 

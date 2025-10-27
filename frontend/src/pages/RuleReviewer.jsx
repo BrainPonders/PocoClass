@@ -16,6 +16,8 @@ export default function RuleReviewer() {
   const [allSelected, setAllSelected] = useState(false);
   const [hasRun, setHasRun] = useState(false);
   const [showQuickGuide, setShowQuickGuide] = useState(false); // New state for quick guide
+  const [testResults, setTestResults] = useState({}); // Store results by document ID
+  const [isRunning, setIsRunning] = useState(false);
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
   const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
@@ -65,17 +67,39 @@ export default function RuleReviewer() {
     if (allSelected) {
       setSelectedDocuments([]);
     } else {
-      setSelectedDocuments(documents.map(d => d.id));
+      setSelectedDocuments(filteredDocuments.map(d => d.id));
     }
     setAllSelected(!allSelected);
   };
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (!selectedRule || selectedDocuments.length === 0) {
       alert('Please select a rule and at least one document');
       return;
     }
+
+    setIsRunning(true);
+    setTestResults({});
+    
+    const results = {};
+    
+    // Run tests on all selected documents
+    for (const docId of selectedDocuments) {
+      try {
+        const result = await Rule.executeOnDocument(selectedRule, docId, true);
+        results[docId] = result;
+      } catch (error) {
+        console.error(`Error testing document ${docId}:`, error);
+        results[docId] = {
+          success: false,
+          error: error.message || 'Unknown error occurred'
+        };
+      }
+    }
+    
+    setTestResults(results);
     setHasRun(true);
+    setIsRunning(false);
   };
 
   const handleViewOCR = async (doc) => {
@@ -113,82 +137,115 @@ export default function RuleReviewer() {
     return true;
   });
 
-  // Mock performance data
+  // Get performance data from real test results
   const getPerformanceData = () => {
-    const selectedRuleObj = rules.find(r => r.id === selectedRule);
-    const ocrGroups = selectedRuleObj?.ocrIdentifiers || [];
-    const filenamePatterns = selectedRuleObj?.filenamePatterns?.patterns || [];
-    const verificationFields = Object.entries(selectedRuleObj?.verification?.enabledFields || {}).filter(([k, v]) => v);
-    const dynamicExtractionRules = selectedRuleObj?.dynamicData?.extractionRules || [];
-    const ocrThreshold = 75;
-
     return selectedDocuments.map(docId => {
       const doc = documents.find(d => d.id === docId);
+      const testResult = testResults[docId];
+      
+      // If no test result yet or error, return placeholder
+      if (!testResult || !testResult.success) {
+        return {
+          documentId: docId,
+          documentTitle: doc?.title || `Document ${docId}`,
+          error: testResult?.error || 'No test result',
+          ocrGroupResults: [],
+          ocrMatched: 0,
+          ocrTotal: 0,
+          ocrScore: 0,
+          ocrPercentage: 0,
+          ocrThreshold: 75,
+          filenameResults: [],
+          filenameMatched: 0,
+          filenameTotal: 0,
+          filenameScore: 0,
+          filenamePercentage: 0,
+          verificationResults: [],
+          verificationMatched: 0,
+          verificationTotal: 0,
+          verificationPercentage: 0,
+          dynamicDataResults: [],
+          dynamicDataExtracted: 0,
+          dynamicDataTotal: 0,
+          dynamicDataPercentage: 0,
+          pocoOcrScore: 0,
+          pocoScore: 0,
+          threshold: 75,
+          result: 'Error'
+        };
+      }
 
-      const ocrGroupResults = ocrGroups.map((group, idx) => ({
-        name: `Logic Group ${idx + 1}`,
-        matched: Math.random() > 0.3,
+      // Extract real data from test result
+      const breakdown = testResult.breakdown || {};
+      const scores = testResult.scores || {};
+      
+      // OCR breakdown
+      const ocrBreakdown = breakdown.ocr || {};
+      const ocrGroupResults = (ocrBreakdown.groups || []).map((group, idx) => ({
+        name: group.name || `Logic Group ${idx + 1}`,
+        matched: group.matched || false,
         score: group.score || 0
       }));
-
-      const ocrMatched = ocrGroupResults.filter(g => g.matched).length;
-      const ocrScore = ocrGroupResults.filter(g => g.matched).reduce((sum, g) => sum + g.score, 0);
-      const ocrPercentage = ocrGroups.length > 0 ? Math.round((ocrScore / 100) * 100) : 0;
-
-      const filenameResults = filenamePatterns.map((pattern, idx) => ({
-        name: `Pattern ${idx + 1}`,
-        matched: Math.random() > 0.5,
+      
+      // Filename breakdown
+      const filenameBreakdown = breakdown.filename || {};
+      const filenameResults = (filenameBreakdown.patterns || []).map((pattern, idx) => ({
+        name: pattern.pattern || `Pattern ${idx + 1}`,
+        matched: pattern.matched || false,
         score: pattern.score || 0
       }));
-
-      const filenameMatched = filenameResults.filter(f => f.matched).length;
-      const filenameScore = filenameResults.filter(f => f.matched).reduce((sum, f) => sum + f.score, 0);
-      const filenamePercentage = filenamePatterns.length > 0 ? Math.round((filenameScore / filenamePatterns.reduce((sum, p) => sum + (p.score || 0), 0)) * 100) : 0;
-
-      const verificationResults = verificationFields.map(([fieldName, _]) => ({
-        name: fieldName,
-        matched: Math.random() > 0.4
+      
+      // Verification breakdown
+      const verificationBreakdown = breakdown.verification || {};
+      const verificationResults = (verificationBreakdown.matches || []).map(match => ({
+        name: match.field || 'Unknown',
+        matched: match.match || false
+      }));
+      
+      // Dynamic data (from extracted metadata)
+      const extractedMetadata = testResult.extracted_metadata || {};
+      const dynamicMeta = extractedMetadata.dynamic || {};
+      const dynamicDataResults = Object.entries(dynamicMeta).map(([field, value]) => ({
+        name: field,
+        extracted: value !== null && value !== undefined,
+        value: value
       }));
 
-      const verificationMatched = verificationResults.filter(v => v.matched).length;
-      const verificationPercentage = verificationFields.length > 0 ? Math.round((verificationMatched / verificationFields.length) * 100) : 0;
-
-      const dynamicDataResults = dynamicExtractionRules.map((rule, idx) => ({
-        name: rule.targetField || `Field ${idx + 1}`,
-        extracted: Math.random() > 0.3,
-        value: Math.random() > 0.3 ? '2024-01-15' : null
-      }));
-
-      const dynamicDataExtracted = dynamicDataResults.filter(d => d.extracted).length;
-      const dynamicDataPercentage = dynamicExtractionRules.length > 0 ? Math.round((dynamicDataExtracted / dynamicExtractionRules.length) * 100) : 0;
-
-      const pocoOcrScore = Math.floor(Math.random() * 100);
-      const pocoScore = Math.floor(Math.random() * 100);
-      const threshold = 75;
-      const result = pocoScore >= threshold ? 'Pass' : 'Fail';
+      const pocoOcrScore = Math.round(scores.poco_ocr_score || 0);
+      const pocoScore = Math.round(scores.poco_score || 0);
+      const threshold = testResult.threshold || 75;
+      const result = testResult.classification_allowed ? 'Pass' : 'Fail';
 
       return {
         documentId: docId,
-        documentTitle: doc?.title,
+        documentTitle: doc?.title || `Document ${docId}`,
         ocrGroupResults,
-        ocrMatched,
-        ocrTotal: ocrGroups.length,
-        ocrScore,
-        ocrPercentage,
-        ocrThreshold,
+        ocrMatched: ocrBreakdown.matched || 0,
+        ocrTotal: ocrBreakdown.total || 0,
+        ocrScore: scores.poco_ocr_score || 0,
+        ocrPercentage: ocrBreakdown.matched && ocrBreakdown.total 
+          ? Math.round((ocrBreakdown.matched / ocrBreakdown.total) * 100) 
+          : 0,
+        ocrThreshold: testResult.ocr_threshold || 75,
         filenameResults,
-        filenameMatched,
-        filenameTotal: filenamePatterns.length,
-        filenameScore,
-        filenamePercentage,
+        filenameMatched: filenameBreakdown.matched || 0,
+        filenameTotal: filenameBreakdown.total || 0,
+        filenameScore: filenameBreakdown.score || 0,
+        filenamePercentage: filenameBreakdown.matched && filenameBreakdown.total 
+          ? Math.round((filenameBreakdown.matched / filenameBreakdown.total) * 100) 
+          : 0,
         verificationResults,
-        verificationMatched,
-        verificationTotal: verificationFields.length,
-        verificationPercentage,
+        verificationMatched: verificationBreakdown.matched || 0,
+        verificationTotal: verificationBreakdown.total || 0,
+        verificationPercentage: verificationBreakdown.matched && verificationBreakdown.total 
+          ? Math.round((verificationBreakdown.matched / verificationBreakdown.total) * 100) 
+          : 0,
         dynamicDataResults,
-        dynamicDataExtracted,
-        dynamicDataTotal: dynamicExtractionRules.length,
-        dynamicDataPercentage,
+        dynamicDataExtracted: dynamicDataResults.filter(d => d.extracted).length,
+        dynamicDataTotal: dynamicDataResults.length,
+        dynamicDataPercentage: dynamicDataResults.length > 0 
+          ? Math.round((dynamicDataResults.filter(d => d.extracted).length / dynamicDataResults.length) * 100) 
+          : 0,
         pocoOcrScore,
         pocoScore,
         threshold,
@@ -473,11 +530,20 @@ export default function RuleReviewer() {
             </select>
             <button
               onClick={handleRun}
-              disabled={!selectedRule || selectedDocuments.length === 0}
+              disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
               className="btn btn-primary"
             >
-              <Play className="w-5 h-5 mr-2" />
-              Run Evaluation
+              {isRunning ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Running...
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 mr-2" />
+                  Run Evaluation
+                </>
+              )}
             </button>
           </div>
         </CardContent>
