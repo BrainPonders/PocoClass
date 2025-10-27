@@ -20,10 +20,10 @@ export default function DataVerificationStep({
     if (enabledCount > 0) {
       const dynamicDefault = 1 / enabledCount;
       // Always update to the new dynamic default when field count changes
-      updateRuleData('verificationMultiplier', parseFloat(dynamicDefault.toFixed(3)));
+      updateRuleData('verificationMultiplier', parseFloat(dynamicDefault.toFixed(3)), false);
     } else {
       // Reset to 0.5 when no fields enabled
-      updateRuleData('verificationMultiplier', 0.5);
+      updateRuleData('verificationMultiplier', 0.5, false);
     }
   }, [ruleData.verification?.enabledFields]);
 
