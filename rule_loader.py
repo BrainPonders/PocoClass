@@ -1,5 +1,5 @@
 """
-POCOmeta - YAML Rule Loader
+POCOclass - YAML Rule Loader
 Handles loading and validation of YAML rule files for document classification
 """
 

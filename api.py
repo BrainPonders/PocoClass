@@ -1,5 +1,5 @@
 """
-POCOmeta REST API
+POCOclass REST API
 Provides API endpoints for the POCOclass frontend
 """
 
