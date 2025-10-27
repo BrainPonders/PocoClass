@@ -159,31 +159,9 @@ export default function OcrIdentifiersStep({
   return (
     <div className="wizard-container">
       <div className="mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
-            <Tooltip content={t('ocr_identifiers_tooltip')} />
-          </div>
-          {selectedDocumentId && (
-            <div className="flex gap-2">
-              <button 
-                className="btn btn-secondary btn-sm"
-                onClick={onViewOcr}
-                title="View OCR content"
-              >
-                <FileText className="w-4 h-4 mr-1" />
-                View OCR
-              </button>
-              <button 
-                className="btn btn-secondary btn-sm"
-                onClick={onViewPdf}
-                title="View PDF"
-              >
-                <Eye className="w-4 h-4 mr-1" />
-                View PDF
-              </button>
-            </div>
-          )}
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
+          <Tooltip content={t('ocr_identifiers_tooltip')} />
         </div>
         <p className="text-gray-600 mt-2">{t('ocr_identifiers_description')}</p>
         {selectedDocumentId && selectedDocumentName && (
