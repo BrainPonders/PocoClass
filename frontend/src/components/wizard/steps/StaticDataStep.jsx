@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { HelpCircle, Plus } from 'lucide-react';
 import InfoBox from '../InfoBox';
+import { Paperless } from '@/api/entities';
 
 export default function StaticDataStep({ 
   ruleData, 
@@ -8,16 +9,43 @@ export default function StaticDataStep({
   showInfoBoxes, 
   setShowInfoBoxes 
 }) {
+  const [correspondents, setCorrespondents] = useState([]);
+  const [documentTypes, setDocumentTypes] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadPaperlessData();
+  }, []);
+
+  const loadPaperlessData = async () => {
+    try {
+      const [corr, docTypes, tags] = await Promise.all([
+        Paperless.getCorrespondents(),
+        Paperless.getDocumentTypes(),
+        Paperless.getTags()
+      ]);
+      setCorrespondents(corr.map(c => c.name).sort());
+      setDocumentTypes(docTypes.map(dt => dt.name).sort());
+      setAvailableTags(tags.map(t => t.name).sort());
+    } catch (error) {
+      console.error('Error loading Paperless data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const addTag = (tag) => {
-    if (tag && !ruleData.staticData.tags.includes(tag)) {
-      const newTags = [...ruleData.staticData.tags, tag];
-      updateRuleData('staticData', { tags: newTags });
+    const currentTags = ruleData.predefinedData?.tags || [];
+    if (tag && !currentTags.includes(tag)) {
+      const newTags = [...currentTags, tag];
+      updateRuleData('predefinedData', { tags: newTags });
     }
   };
 
   const removeTag = (index) => {
-    const newTags = ruleData.staticData.tags.filter((_, i) => i !== index);
-    updateRuleData('staticData', { tags: newTags });
+    const currentTags = ruleData.predefinedData?.tags || [];
+    const newTags = currentTags.filter((_, i) => i !== index);
+    updateRuleData('predefinedData', { tags: newTags });
   };
 
   return (
@@ -84,26 +112,44 @@ export default function StaticDataStep({
 
         <div className="form-group">
           <label className="form-label">Correspondent</label>
-          <input
-            type="text"
-            value={ruleData.staticData?.correspondent || ''}
-            onChange={(e) => updateRuleData('staticData', { correspondent: e.target.value })}
-            placeholder="e.g., Rabobank"
-            className="form-input"
-          />
-          <p className="text-xs text-gray-500 mt-1">Ideally, this would be a dropdown from your system.</p>
+          {isLoading ? (
+            <div className="form-input bg-gray-100">Loading...</div>
+          ) : (
+            <select
+              value={ruleData.predefinedData?.correspondent || ''}
+              onChange={(e) => updateRuleData('predefinedData', { correspondent: e.target.value })}
+              className="form-input"
+            >
+              <option value="">-- Select Correspondent --</option>
+              {correspondents.map(corr => (
+                <option key={corr} value={corr}>{corr}</option>
+              ))}
+            </select>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            {correspondents.length > 0 ? `${correspondents.length} correspondents available` : 'No correspondents found. Run sync in Settings.'}
+          </p>
         </div>
 
         <div className="form-group">
           <label className="form-label">Document Type</label>
-          <input
-            type="text"
-            value={ruleData.staticData?.documentType || ''}
-            onChange={(e) => updateRuleData('staticData', { documentType: e.target.value })}
-            placeholder="e.g., Year Statement"
-            className="form-input"
-          />
-          <p className="text-xs text-gray-500 mt-1">Ideally, this would be a dropdown.</p>
+          {isLoading ? (
+            <div className="form-input bg-gray-100">Loading...</div>
+          ) : (
+            <select
+              value={ruleData.predefinedData?.documentType || ''}
+              onChange={(e) => updateRuleData('predefinedData', { documentType: e.target.value })}
+              className="form-input"
+            >
+              <option value="">-- Select Document Type --</option>
+              {documentTypes.map(dt => (
+                <option key={dt} value={dt}>{dt}</option>
+              ))}
+            </select>
+          )}
+          <p className="text-xs text-gray-500 mt-1">
+            {documentTypes.length > 0 ? `${documentTypes.length} document types available` : 'No document types found. Run sync in Settings.'}
+          </p>
         </div>
 
         <div className="form-group">
@@ -144,13 +190,31 @@ export default function StaticDataStep({
               Add
             </button>
           </div>
+          {availableTags.length > 0 && (
+            <div className="mb-2">
+              <p className="text-xs text-gray-500 mb-1">Suggested tags:</p>
+              <div className="flex flex-wrap gap-1">
+                {availableTags.slice(0, 10).map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => addTag(tag)}
+                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    type="button"
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
-            {ruleData.staticData?.tags?.map((tag, index) => (
+            {(ruleData.predefinedData?.tags || []).map((tag, index) => (
               <span key={index} className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
                 {tag}
                 <button 
                   onClick={() => removeTag(index)}
                   className="text-gray-500 hover:text-red-500"
+                  type="button"
                 >
                   ×
                 </button>
@@ -173,8 +237,8 @@ export default function StaticDataStep({
           <label className="form-label">Document Category</label>
           <input
             type="text"
-            value={ruleData.staticData?.documentCategory || ''}
-            onChange={(e) => updateRuleData('staticData', { documentCategory: e.target.value })}
+            value={ruleData.predefinedData?.documentCategory || ''}
+            onChange={(e) => updateRuleData('predefinedData', { documentCategory: e.target.value })}
             placeholder="e.g., Financial"
             className="form-input"
           />
