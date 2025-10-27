@@ -340,7 +340,13 @@ export default function RuleEditor() {
       } else {
         navigate(pendingNavigation);
       }
+      setPendingNavigation(null); // Clear after executing
     }
+  };
+
+  const cancelNavigation = () => {
+    setShowUnsavedWarning(false);
+    setPendingNavigation(null); // Clear the pending navigation
   };
 
   const goToStep = useCallback((step) => {
@@ -639,7 +645,7 @@ export default function RuleEditor() {
       {/* Unsaved Changes Warning */}
       <ConfirmDialog
         isOpen={showUnsavedWarning}
-        onClose={() => setShowUnsavedWarning(false)}
+        onClose={cancelNavigation}
         onConfirm={confirmNavigation}
         title={t('editor_unsaved_warning')}
         message="All unsaved changes will be lost."
