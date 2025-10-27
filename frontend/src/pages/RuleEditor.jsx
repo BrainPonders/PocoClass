@@ -544,7 +544,7 @@ export default function RuleEditor() {
             <StepProgress 
               currentStep={currentStep}
               stepStatus={stepStatus}
-              onStepClick={(step) => handleNavigation(() => goToStep(step))}
+              onStepClick={goToStep}
             />
           </div>
           
