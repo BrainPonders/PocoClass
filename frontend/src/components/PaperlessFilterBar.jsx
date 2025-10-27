@@ -335,7 +335,7 @@ export default function PaperlessFilterBar({
           {renderFilterDropdown('dates', (
             <div className="p-3 min-w-[300px]">
               <div className="mb-3">
-                <label className="block text-xs text-gray-400 mb-1">Created</label>
+                <label className="block text-xs text-gray-400 mb-1">Added</label>
                 <div className="flex gap-2 items-center mb-2">
                   <input
                     type="date"
