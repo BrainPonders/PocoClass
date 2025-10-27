@@ -12,6 +12,17 @@ settings_backup_*.py
 log.txt
 *.log
 
+# Database files (contains personal user data)
+*.db
+*.sqlite
+*.sqlite3
+
+# Build and cache directories
+.config/
+.vite/
+node_modules/
+dist/
+
 # Development and debug files
 debug_*.py
 debug_*.txt
@@ -24,7 +35,7 @@ attached_assets/
 
 # User rules (only distribute templates)
 rules/*
-!rules/template.yaml
+!rules/template_v2.yaml
 
 # Replit development environment (not needed for production)
 .replit
