@@ -24,9 +24,9 @@ export default function YamlPreview({ ruleData }) {
     const userName = currentUser?.full_name || 'Unknown User';
     
     return `# =================================================================================================
-# POCOclass Document Classification Rule
+# PocoClass Document Classification Rule
 # =================================================================================================
-# This YAML file was generated using the POCOclass Rule Builder wizard.
+# This YAML file was generated using the PocoClass Rule Builder wizard.
 # Each section below corresponds to a step in the 6-step configuration process.
 #
 # Created: ${creationDate}
