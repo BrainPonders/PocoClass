@@ -891,22 +891,58 @@ export default function Settings() {
                           
                           {!placeholder.is_locked && !placeholder.is_internal ? (
                             <div className="flex gap-1">
-                              {['disabled', 'predefined', 'dynamic', 'both'].map(mode => (
-                                <button
-                                  key={mode}
-                                  onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, mode)}
-                                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                    placeholder.visibility_mode === mode
-                                      ? 'bg-blue-600 text-white'
-                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                  }`}
-                                >
-                                  {mode === 'disabled' && 'Disabled'}
-                                  {mode === 'predefined' && 'Predefined'}
-                                  {mode === 'dynamic' && 'Dynamic'}
-                                  {mode === 'both' && 'Both'}
-                                </button>
-                              ))}
+                              <button
+                                onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, 'disabled')}
+                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                  placeholder.visibility_mode === 'disabled'
+                                    ? 'bg-gray-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                Disabled
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const currentMode = placeholder.visibility_mode;
+                                  let newMode;
+                                  if (currentMode === 'disabled' || currentMode === 'dynamic') {
+                                    newMode = currentMode === 'disabled' ? 'predefined' : 'both';
+                                  } else if (currentMode === 'predefined') {
+                                    newMode = 'disabled';
+                                  } else {
+                                    newMode = 'dynamic';
+                                  }
+                                  handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
+                                }}
+                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                  placeholder.visibility_mode === 'predefined' || placeholder.visibility_mode === 'both'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                Predefined
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const currentMode = placeholder.visibility_mode;
+                                  let newMode;
+                                  if (currentMode === 'disabled' || currentMode === 'predefined') {
+                                    newMode = currentMode === 'disabled' ? 'dynamic' : 'both';
+                                  } else if (currentMode === 'dynamic') {
+                                    newMode = 'disabled';
+                                  } else {
+                                    newMode = 'predefined';
+                                  }
+                                  handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
+                                }}
+                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                  placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                Dynamic
+                              </button>
                             </div>
                           ) : placeholder.is_internal ? (
                             placeholder.placeholder_name === 'POCO Score' ? (
