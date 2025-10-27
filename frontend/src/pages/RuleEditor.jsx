@@ -615,9 +615,20 @@ export default function RuleEditor() {
             </div>
             
             <div className="flex-1 overflow-auto p-6">
-              <pre className="whitespace-pre-wrap text-sm font-mono bg-gray-50 p-4 rounded">
-                {ocrContent}
-              </pre>
+              <div className="bg-gray-50 p-4 rounded flex">
+                <div className="pr-4 border-r border-gray-300 text-right select-none">
+                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+                    {ocrContent.split('\n').map((_, i) => (
+                      <div key={i}>{i + 1}</div>
+                    ))}
+                  </pre>
+                </div>
+                <div className="flex-1 pl-4">
+                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed">
+                    {ocrContent}
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>
