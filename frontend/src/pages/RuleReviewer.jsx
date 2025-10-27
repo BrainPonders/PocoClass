@@ -404,8 +404,9 @@ export default function RuleReviewer() {
         </CardHeader>
         <CardContent>
           {/* Paperless-style Filter Dropdowns */}
+          <div className="relative">
           {showTagFilter && (
-            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+            <div className="absolute top-0 left-0 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
@@ -452,7 +453,7 @@ export default function RuleReviewer() {
           )}
           
           {showCorrespondentFilter && (
-            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+            <div className="absolute top-0 left-80 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
@@ -507,7 +508,7 @@ export default function RuleReviewer() {
           )}
           
           {showDocTypeFilter && (
-            <div className="mb-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
+            <div className="absolute top-0 right-0 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
@@ -552,6 +553,7 @@ export default function RuleReviewer() {
               </div>
             </div>
           )}
+          </div>
           {isLoadingDocuments ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

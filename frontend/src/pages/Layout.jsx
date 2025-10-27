@@ -257,7 +257,7 @@ export default function Layout({ children }) {
 
               .form-input, .form-textarea, .form-select {
                 width: 100%;
-                padding: 14px 16px;
+                padding: 10px 12px;
                 border: 2px solid #d1d5db;
                 border-radius: 8px;
                 font-size: 1rem;
