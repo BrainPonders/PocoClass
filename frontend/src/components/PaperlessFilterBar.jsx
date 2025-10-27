@@ -81,7 +81,7 @@ export default function PaperlessFilterBar({
       <div className="flex items-center gap-2 flex-wrap mb-2">
         {/* Title Filter - Inline */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-300 whitespace-nowrap">Title:</label>
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Title:</label>
           <div className="relative flex items-center">
             <input
               type="text"

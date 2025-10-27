@@ -1242,6 +1242,7 @@ def list_documents():
                 'id': doc['id'],
                 'title': doc.get('title', doc.get('original_file_name', 'Untitled')),
                 'created': doc.get('created', ''),
+                'added': doc.get('added', ''),
                 'correspondent': correspondent_name,
                 'documentType': doc_type_name,
                 'tags': tag_names,

@@ -158,14 +158,14 @@ export default function Dashboard() {
       if (filters.docTypesMode === 'exclude' && hasDocType) return false;
     }
 
-    // Date filter
+    // Date filter (added date - when document was added to Paperless)
     if (filters.dateFrom) {
-      const docDate = new Date(doc.created);
+      const docDate = new Date(doc.added || doc.created);
       const fromDate = new Date(filters.dateFrom);
       if (docDate < fromDate) return false;
     }
     if (filters.dateTo) {
-      const docDate = new Date(doc.created);
+      const docDate = new Date(doc.added || doc.created);
       const toDate = new Date(filters.dateTo);
       if (docDate > toDate) return false;
     }
@@ -349,7 +349,7 @@ export default function Dashboard() {
                     >
                       <td className="px-4 py-4 text-sm text-gray-900">{doc.title}</td>
                       <td className="px-4 py-4 text-sm text-gray-500">{doc.id}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{formatDate(doc.created)}</td>
+                      <td className="px-4 py-4 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
                       <td className="px-4 py-4 text-sm text-gray-500">{doc.correspondent || '-'}</td>
                       <td className="px-4 py-4 text-sm text-gray-500">{doc.documentType || '-'}</td>
                       <td className="px-4 py-4 whitespace-nowrap">
