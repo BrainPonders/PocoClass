@@ -266,7 +266,7 @@ export default function RuleReviewer() {
               </button>
               <button className="btn btn-outline btn-sm whitespace-nowrap">
                 <Filter className="w-4 h-4 mr-1" />
-                Doc type
+                Document Type
               </button>
             </div>
           </div>
