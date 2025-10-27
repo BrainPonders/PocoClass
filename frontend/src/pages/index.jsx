@@ -19,6 +19,7 @@ import SetupWizard from "./SetupWizard";
 import Login from "./Login";
 
 import AuthGuard from "@/components/AuthGuard";
+import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -82,7 +83,9 @@ function PagesContent() {
 export default function Pages() {
     return (
         <Router>
-            <PagesContent />
+            <UnsavedChangesProvider>
+                <PagesContent />
+            </UnsavedChangesProvider>
         </Router>
     );
 }
