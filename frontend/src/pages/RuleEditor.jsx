@@ -7,6 +7,7 @@ import { createPageUrl } from "@/utils";
 import { ArrowLeft, Eye, FileText, X } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import { useToast } from '@/components/ToastContainer';
+import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import PdfViewerModal from '@/components/PdfViewerModal';
 import LoadingButton from '@/components/LoadingButton';
@@ -42,6 +43,7 @@ export default function RuleEditor() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const { hasUnsavedChanges, setHasUnsavedChanges } = useUnsavedChanges();
   const ruleId = searchParams.get('id');
   const selectedFile = searchParams.get('selectedFile');
   const selectedDocumentId = searchParams.get('docId');
@@ -51,7 +53,6 @@ export default function RuleEditor() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [stepEdited, setStepEdited] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [showOcrModal, setShowOcrModal] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
