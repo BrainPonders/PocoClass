@@ -347,12 +347,12 @@ export default function Dashboard() {
                       className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
                       onClick={() => setSelectedDocument(doc)}
                     >
-                      <td className="px-4 py-4 text-sm text-gray-900">{doc.title}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{doc.id}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2 text-sm text-gray-900">{doc.title}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">{doc.id}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">{doc.correspondent || '-'}</td>
+                      <td className="px-4 py-2 text-sm text-gray-500">{doc.documentType || '-'}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
                         <div className="flex gap-1 flex-wrap">
                           {doc.tags && doc.tags.length > 0 ? (
                             doc.tags.map((tag, i) => (
@@ -363,8 +363,8 @@ export default function Dashboard() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-500">{doc.owner || '-'}</td>
-                      <td className="px-4 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2 text-sm text-gray-500">{doc.owner || '-'}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
                         <div className="flex gap-2">
                           <button 
                             className="btn btn-ghost btn-sm"
