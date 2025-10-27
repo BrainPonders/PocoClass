@@ -84,6 +84,21 @@ export const Document = {
   }
 };
 
+// Paperless Cache Entity
+export const Paperless = {
+  async getTags() {
+    return await apiClient.get('/paperless/tags');
+  },
+
+  async getCorrespondents() {
+    return await apiClient.get('/paperless/correspondents');
+  },
+
+  async getDocumentTypes() {
+    return await apiClient.get('/paperless/document-types');
+  }
+};
+
 // User/Auth Entity
 export const User = {
   async me() {
