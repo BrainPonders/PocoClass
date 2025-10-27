@@ -110,7 +110,7 @@ export default function SetupWizard() {
               </div>
               
               <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
-                Welcome to POCOclass
+                Welcome to PocoClass
               </h1>
               
               <p className="text-lg mb-8" style={{ color: 'var(--app-text-secondary)' }}>
@@ -118,10 +118,10 @@ export default function SetupWizard() {
               </p>
 
               <div className="info-box info-box-yellow mb-8">
-                <h3 className="font-semibold mb-2">What is POCOclass?</h3>
+                <h3 className="font-semibold mb-2">What is PocoClass?</h3>
                 <p className="text-sm">
-                  POCOclass automatically classifies and enriches your documents in Paperless-ngx using 
-                  intelligent pattern matching. Create rules once, and let POCOclass handle the rest!
+                  PocoClass automatically classifies and enriches your documents in Paperless-ngx using 
+                  intelligent pattern matching. Create rules once, and let PocoClass handle the rest!
                 </p>
               </div>
 
@@ -204,7 +204,7 @@ export default function SetupWizard() {
                       <p className="font-semibold mb-1">Admin Account Required</p>
                       <p className="text-sm">
                         Please login with a Paperless admin account for initial setup. 
-                        You'll be the first POCOclass administrator and can add other users later.
+                        You'll be the first PocoClass administrator and can add other users later.
                       </p>
                     </div>
                   </div>
