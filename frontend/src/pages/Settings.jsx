@@ -339,6 +339,9 @@ export default function Settings() {
           ? { ...ph, visibility_mode: visibilityMode }
           : ph
       ));
+
+      // Update localStorage to sync with database
+      updateLocalStorageSettings(placeholderName, visibilityMode);
     } catch (error) {
       toast({
         title: 'Update Failed',
@@ -346,6 +349,39 @@ export default function Settings() {
         variant: 'destructive',
         duration: 3000,
       });
+    }
+  };
+
+  const updateLocalStorageSettings = (placeholderName, visibilityMode) => {
+    try {
+      const settings = localStorage.getItem('pococlass_settings');
+      const parsed = settings ? JSON.parse(settings) : {};
+      
+      if (!parsed.fieldDisplaySettings) {
+        parsed.fieldDisplaySettings = {};
+      }
+
+      // Map placeholder names to field keys
+      const fieldKeyMap = {
+        'Title': 'title',
+        'Archive Serial Number': 'archiveSerialNumber',
+        'Date Created': 'dateCreated',
+        'Correspondent': 'correspondent',
+        'Document Type': 'documentType',
+        'Storage Path': 'storagePath',
+        'Tags': 'tags',
+        'Document Category': 'documentCategory',
+        'Custom Field 1': 'customField1',
+        'Custom Field 2': 'customField2'
+      };
+
+      const fieldKey = fieldKeyMap[placeholderName];
+      if (fieldKey) {
+        parsed.fieldDisplaySettings[fieldKey] = visibilityMode;
+        localStorage.setItem('pococlass_settings', JSON.stringify(parsed));
+      }
+    } catch (e) {
+      console.error('Error updating localStorage:', e);
     }
   };
 
