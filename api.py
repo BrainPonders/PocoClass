@@ -1,6 +1,6 @@
 """
-POCOclass REST API
-Provides API endpoints for the POCOclass frontend
+PocoClass REST API
+Provides API endpoints for the PocoClass frontend
 """
 
 from flask import Flask, request, jsonify, send_from_directory

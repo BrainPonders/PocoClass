@@ -1,6 +1,6 @@
 """
-POCOclass - Configuration Management
-Handles settings from environment variables for the POCOclass web application
+PocoClass - Configuration Management
+Handles settings from environment variables for the PocoClass web application
 """
 
 import os
