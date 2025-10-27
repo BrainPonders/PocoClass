@@ -67,11 +67,11 @@ export default function FilenameIdentificationStep({
   const filenameWeight = 2; // This variable is no longer used in maxFilenameWeight calculation per outline, but kept for context if needed elsewhere.
   const filenameMultiplier = ruleData.filenameMultiplier || 1;
   const patterns = ruleData.filenamePatterns?.patterns || [];
-  const totalPatterns = patterns.filter(p => p && p.trim()).length;
+  const totalPatterns = patterns.filter(p => p && typeof p === 'string' && p.trim()).length;
   const maxFilenameWeight = totalPatterns * totalPatterns * filenameMultiplier;
 
   const isStepEnabled = () => {
-    return patterns.filter(p => p && p.trim()).length > 0;
+    return patterns.filter(p => p && typeof p === 'string' && p.trim()).length > 0;
   };
 
   const isMultiplierDefault = filenameMultiplier === 1;
