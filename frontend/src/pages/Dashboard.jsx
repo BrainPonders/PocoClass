@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Rule, Document } from "@/api/entities";
+import { Rule, Document, Paperless } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -17,6 +17,11 @@ export default function Dashboard() {
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
   const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
+  
+  // Cache data for filters
+  const [allTags, setAllTags] = useState([]);
+  const [allCorrespondents, setAllCorrespondents] = useState([]);
+  const [allDocTypes, setAllDocTypes] = useState([]);
   
   // Filter states
   const [selectedTags, setSelectedTags] = useState([]);
@@ -39,6 +44,7 @@ export default function Dashboard() {
   useEffect(() => {
     loadRules();
     loadDocuments();
+    loadCacheData();
   }, []);
 
   const loadRules = async () => {
@@ -61,6 +67,21 @@ export default function Dashboard() {
       console.error("Error loading documents:", error);
     }
     setIsLoadingDocuments(false);
+  };
+
+  const loadCacheData = async () => {
+    try {
+      const [tags, correspondents, docTypes] = await Promise.all([
+        Paperless.getTags(),
+        Paperless.getCorrespondents(),
+        Paperless.getDocumentTypes()
+      ]);
+      setAllTags(tags.map(t => t.name).sort());
+      setAllCorrespondents(correspondents.map(c => c.name).sort());
+      setAllDocTypes(docTypes.map(dt => dt.name).sort());
+    } catch (error) {
+      console.error("Error loading cache data:", error);
+    }
   };
 
   const stats = {
@@ -265,7 +286,7 @@ export default function Dashboard() {
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
                     onClick={() => setTagFilterMode('include')}
                   >
                     Include
@@ -286,8 +307,7 @@ export default function Dashboard() {
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">
-                {Array.from(new Set(documents.flatMap(d => d.tags || [])))
-                  .sort()
+                {allTags
                   .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
                   .map(tag => {
                     const count = documents.filter(d => d.tags?.includes(tag)).length;
@@ -313,7 +333,7 @@ export default function Dashboard() {
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
                     onClick={() => setCorrespondentFilterMode('include')}
                   >
                     Include
@@ -342,8 +362,7 @@ export default function Dashboard() {
                 >
                   <span className="text-sm italic">Not assigned</span>
                 </div>
-                {Array.from(new Set(documents.map(d => d.correspondent).filter(Boolean)))
-                  .sort()
+                {allCorrespondents
                   .filter(corr => corr.toLowerCase().includes(correspondentSearch.toLowerCase()))
                   .map(corr => {
                     const count = documents.filter(d => d.correspondent === corr).length;
@@ -369,7 +388,7 @@ export default function Dashboard() {
               <div className="p-3 border-b border-gray-700">
                 <div className="flex gap-1 mb-3">
                   <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'include' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
                     onClick={() => setDocTypeFilterMode('include')}
                   >
                     Include
@@ -390,8 +409,7 @@ export default function Dashboard() {
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">
-                {Array.from(new Set(documents.map(d => d.documentType).filter(Boolean)))
-                  .sort()
+                {allDocTypes
                   .filter(type => type.toLowerCase().includes(docTypeSearch.toLowerCase()))
                   .map(type => {
                     const count = documents.filter(d => d.documentType === type).length;
