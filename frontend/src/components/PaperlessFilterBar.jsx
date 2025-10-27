@@ -378,10 +378,14 @@ export default function PaperlessFilterBar({
                 <div
                   key={perm}
                   className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.permissions === perm ? 'bg-gray-700' : ''}`}
-                  onClick={() => onFilterChange({ ...filters, permissions: perm })}
+                  onClick={() => {
+                    onFilterChange({ ...filters, permissions: perm });
+                    setOpenFilter(null);
+                  }}
                 >
                   <span className="text-sm">
-                    {perm === 'all' && '✓ All'}
+                    {filters.permissions === perm && '✓ '}
+                    {perm === 'all' && 'All'}
                     {perm === 'my_documents' && 'My documents'}
                     {perm === 'shared_with_me' && 'Shared with me'}
                     {perm === 'shared_by_me' && 'Shared by me'}
