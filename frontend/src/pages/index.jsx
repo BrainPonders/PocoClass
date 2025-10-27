@@ -82,10 +82,10 @@ function PagesContent() {
 
 export default function Pages() {
     return (
-        <Router>
-            <UnsavedChangesProvider>
+        <UnsavedChangesProvider>
+            <Router>
                 <PagesContent />
-            </UnsavedChangesProvider>
-        </Router>
+            </Router>
+        </UnsavedChangesProvider>
     );
 }
