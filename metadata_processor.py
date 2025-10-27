@@ -1,5 +1,5 @@
 """
-POCOclass - Metadata Processor
+PocoClass - Metadata Processor
 Handles extraction and processing of metadata from various sources including content, filename, and API data
 """
 

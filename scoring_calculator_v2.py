@@ -1,5 +1,5 @@
 """
-POCOclass - POCO Scoring Calculator v2
+PocoClass - POCO Scoring Calculator v2
 Implements the new dual-score evaluation system as per POCO Scoring Mechanism v2
 """
 

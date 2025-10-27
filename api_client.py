@@ -1,5 +1,5 @@
 """
-POCOclass - Paperless-ngx API Client
+PocoClass - Paperless-ngx API Client
 Handles all communication with the Paperless-ngx API for document retrieval and metadata updates
 """
 
