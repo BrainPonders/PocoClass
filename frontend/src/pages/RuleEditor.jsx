@@ -263,7 +263,7 @@ export default function RuleEditor() {
   }, [ruleData]);
 
   const canFinish = () => {
-    return validateStep(1) && validateStep(2);
+    return validateStep(1) && validateStep(2) && validateStep(3);
   };
 
   const handleSave = async () => {

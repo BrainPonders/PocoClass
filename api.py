@@ -1346,21 +1346,22 @@ def convert_frontend_to_backend(frontend_data):
         'status': frontend_data.get('status', 'draft'),
     }
     
-    # OCR Identifiers
+    # OCR Identifiers - Use v2 format with core_identifiers
     if frontend_data.get('ocrIdentifiers'):
-        backend['logic_groups'] = []
+        backend['core_identifiers'] = {'logic_groups': []}
         for group in frontend_data['ocrIdentifiers']:
             backend_group = {
                 'type': group.get('type', 'match'),
                 'mandatory': group.get('mandatory', False),
-                'patterns': []
+                'conditions': []
             }
             for condition in group.get('conditions', []):
-                backend_group['patterns'].append({
-                    'text': condition.get('pattern', ''),
+                backend_group['conditions'].append({
+                    'pattern': condition.get('pattern', ''),
+                    'source': 'content',
                     'range': condition.get('range', '0-1600')
                 })
-            backend['logic_groups'].append(backend_group)
+            backend['core_identifiers']['logic_groups'].append(backend_group)
     
     # Static Metadata
     if frontend_data.get('predefinedData'):
@@ -1425,19 +1426,36 @@ def convert_backend_to_frontend(backend_data, rule_id):
         'verification': {'enabledFields': {}}
     }
     
-    # Convert logic groups to OCR identifiers
-    if backend_data.get('logic_groups'):
-        for group in backend_data['logic_groups']:
+    # Convert logic groups to OCR identifiers - Handle both v1 and v2 formats
+    # v2 format (core_identifiers)
+    logic_groups_data = None
+    if backend_data.get('core_identifiers'):
+        logic_groups_data = backend_data['core_identifiers'].get('logic_groups', [])
+    # v1 format fallback (logic_groups)
+    elif backend_data.get('logic_groups'):
+        logic_groups_data = backend_data['logic_groups']
+    
+    if logic_groups_data:
+        for group in logic_groups_data:
             frontend_group = {
                 'type': group.get('type', 'match'),
                 'mandatory': group.get('mandatory', False),
                 'conditions': []
             }
-            for pattern in group.get('patterns', []):
-                frontend_group['conditions'].append({
-                    'pattern': pattern.get('text', ''),
-                    'range': pattern.get('range', '0-1600')
-                })
+            # v2 format uses 'conditions' with 'pattern'
+            if group.get('conditions'):
+                for condition in group['conditions']:
+                    frontend_group['conditions'].append({
+                        'pattern': condition.get('pattern', ''),
+                        'range': condition.get('range', '0-1600')
+                    })
+            # v1 format uses 'patterns' with 'text'
+            elif group.get('patterns'):
+                for pattern in group['patterns']:
+                    frontend_group['conditions'].append({
+                        'pattern': pattern.get('text', ''),
+                        'range': pattern.get('range', '0-1600')
+                    })
             frontend['ocrIdentifiers'].append(frontend_group)
     
     # Static metadata
