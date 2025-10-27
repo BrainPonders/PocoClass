@@ -571,6 +571,30 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Session Settings</h3>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Session Timeout (hours)
+                      </label>
+                      <div className="flex gap-3 mb-2">
+                        <input
+                          type="number"
+                          min="1"
+                          max="168"
+                          value={appSettings.session_timeout_hours || '24'}
+                          onChange={(e) => handleAppSettingChange('session_timeout_hours', e.target.value)}
+                          className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-500 self-center">hours</span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        How long before inactive sessions expire. Your session automatically refreshes with each activity, so you'll only be logged out after this much time of <strong>inactivity</strong>.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
                     
                     {users.length > 0 ? (
