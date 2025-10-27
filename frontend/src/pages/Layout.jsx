@@ -8,7 +8,6 @@ import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { usePOCOFields } from "@/contexts/POCOFieldsContext";
-import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
 import GuardedLink from "@/components/GuardedLink";
 import {
   Sidebar,
@@ -98,8 +97,7 @@ export default function Layout({ children }) {
     <ErrorBoundary>
       <ThemeProvider>
         <ToastProvider>
-          <UnsavedChangesProvider>
-            <SidebarProvider>
+          <SidebarProvider>
             <style>{`
               :root.light {
                 --app-bg: #f8fafc;
@@ -631,7 +629,6 @@ export default function Layout({ children }) {
               </div>
             )}
           </SidebarProvider>
-          </UnsavedChangesProvider>
         </ToastProvider>
       </ThemeProvider>
     </ErrorBoundary>
