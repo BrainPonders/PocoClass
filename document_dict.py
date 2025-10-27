@@ -1,5 +1,5 @@
 """
-POCOmeta - Document Dictionary Structure
+POCOclass - Document Dictionary Structure
 Defines the complete data structure for document processing workflow
 """
 

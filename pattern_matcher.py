@@ -1,5 +1,5 @@
 """
-POCOmeta - Pattern Matcher
+POCOclass - Pattern Matcher
 Handles logic group evaluation and pattern matching for rule-based document classification
 """
 
