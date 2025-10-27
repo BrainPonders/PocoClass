@@ -107,7 +107,7 @@ export default function Login() {
               </div>
             </div>
             <h1 className="text-3xl font-bold" style={{ color: 'var(--app-text)' }}>
-              POCOclass
+              PocoClass
             </h1>
             <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
               Document Classification System

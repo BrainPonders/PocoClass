@@ -74,7 +74,7 @@ export default function CreatePocoFieldDialog({ isOpen, onClose, fieldName, fiel
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <p className="text-xs text-amber-800">
               <strong>Note:</strong> This field will be created in your Paperless-ngx instance as a custom field.
-              It's required for POCOclass document classification to work correctly.
+              It's required for PocoClass document classification to work correctly.
             </p>
           </div>
         </div>
