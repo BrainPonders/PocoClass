@@ -384,7 +384,13 @@ def login():
             if not user:
                 # Create new user with default 'user' role
                 user_id = db.create_user(username, paperless_user_id, 'user')
+                if not user_id:
+                    logger.error("Failed to create user, user_id is None")
+                    return jsonify({'error': 'Failed to create user'}), 500
                 user = db.get_user_by_id(user_id)
+                if not user:
+                    logger.error(f"Failed to retrieve newly created user with id {user_id}")
+                    return jsonify({'error': 'Failed to retrieve user'}), 500
             else:
                 user_id = user['id']
                 db.update_last_login(user_id)
