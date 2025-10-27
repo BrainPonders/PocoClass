@@ -79,32 +79,23 @@ export default function PaperlessFilterBar({
     <div className="mb-4">
       {/* Filter Bar */}
       <div className="flex items-center gap-2 flex-wrap mb-2">
-        {/* Title Filter */}
-        <div className="relative">
-          <button
-            onClick={() => toggleFilter('title')}
-            className={getFilterButtonClass('title')}
-          >
-            <Filter className="w-4 h-4" />
-            Title
-            {filters.title && <X className="w-3 h-3" onClick={(e) => {
-              e.stopPropagation();
-              onFilterChange({ ...filters, title: '' });
-            }} />}
-            <ChevronDown className="w-3 h-3" />
-          </button>
-          {renderFilterDropdown('title', (
-            <div className="p-3">
-              <input
-                type="text"
-                value={filters.title || ''}
-                onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
-                placeholder="Filter by title..."
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                autoFocus
-              />
-            </div>
-          ))}
+        {/* Title Filter - Inline */}
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={filters.title || ''}
+            onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
+            placeholder="Search..."
+            className="px-3 py-1.5 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400 w-48 focus:outline-none focus:border-blue-500"
+          />
+          {filters.title && (
+            <button
+              onClick={() => onFilterChange({ ...filters, title: '' })}
+              className="absolute right-2 text-gray-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Tags Filter */}
