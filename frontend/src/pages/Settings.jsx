@@ -361,21 +361,54 @@ export default function Settings() {
         parsed.fieldDisplaySettings = {};
       }
 
-      // Map placeholder names to field keys
-      const fieldKeyMap = {
+      // Convert placeholder name to camelCase field key
+      // Built-in fields have specific mappings
+      const builtInMap = {
         'Title': 'title',
         'Archive Serial Number': 'archiveSerialNumber',
         'Date Created': 'dateCreated',
         'Correspondent': 'correspondent',
         'Document Type': 'documentType',
         'Storage Path': 'storagePath',
-        'Tags': 'tags',
-        'Document Category': 'documentCategory',
-        'Custom Field 1': 'customField1',
-        'Custom Field 2': 'customField2'
+        'Tags': 'tags'
       };
 
-      const fieldKey = fieldKeyMap[placeholderName];
+      let fieldKey = builtInMap[placeholderName];
+      
+      // For custom fields, convert to camelCase
+      if (!fieldKey) {
+        // Check if it's a known custom field name from placeholder settings
+        const placeholder = placeholders.find(p => p.placeholder_name === placeholderName);
+        if (placeholder && placeholder.is_custom_field) {
+          // Try to match against known custom field names in localStorage
+          const existingCustomNames = parsed.customFieldNames || {};
+          
+          // Find which custom field slot this matches
+          if (placeholderName === existingCustomNames.documentCategory) {
+            fieldKey = 'documentCategory';
+          } else if (placeholderName === existingCustomNames.customField1) {
+            fieldKey = 'customField1';
+          } else if (placeholderName === existingCustomNames.customField2) {
+            fieldKey = 'customField2';
+          } else {
+            // Assign to first available custom field slot
+            if (!existingCustomNames.documentCategory) {
+              fieldKey = 'documentCategory';
+              if (!parsed.customFieldNames) parsed.customFieldNames = {};
+              parsed.customFieldNames.documentCategory = placeholderName;
+            } else if (!existingCustomNames.customField1) {
+              fieldKey = 'customField1';
+              if (!parsed.customFieldNames) parsed.customFieldNames = {};
+              parsed.customFieldNames.customField1 = placeholderName;
+            } else if (!existingCustomNames.customField2) {
+              fieldKey = 'customField2';
+              if (!parsed.customFieldNames) parsed.customFieldNames = {};
+              parsed.customFieldNames.customField2 = placeholderName;
+            }
+          }
+        }
+      }
+
       if (fieldKey) {
         parsed.fieldDisplaySettings[fieldKey] = visibilityMode;
         localStorage.setItem('pococlass_settings', JSON.stringify(parsed));
