@@ -360,16 +360,13 @@ def login():
                     
                     if users_response.status_code == 200:
                         users_data = users_response.json()
-                        logger.info(f"Users API response type: {type(users_data)}, data: {users_data}")
                         users = users_data.get('results', []) if isinstance(users_data, dict) else users_data
-                        logger.info(f"Users list type: {type(users)}, length: {len(users) if isinstance(users, list) else 'N/A'}")
                         
                         # Find user by username
-                        for user in users:
-                            logger.info(f"Checking user: type={type(user)}, value={user}")
-                            if user.get('username') == username:
-                                user_info = user
-                                paperless_user_id = user.get('id')
+                        for paperless_user in users:
+                            if paperless_user.get('username') == username:
+                                user_info = paperless_user
+                                paperless_user_id = paperless_user.get('id')
                                 logger.info(f"Found user via /api/users/ endpoint")
                                 break
                 except Exception as e:
@@ -382,20 +379,20 @@ def login():
                 import hashlib
                 paperless_user_id = int(hashlib.md5(username.encode()).hexdigest()[:8], 16)
             
-            # Get or create user in PocoClass
-            user = db.get_user_by_paperless_id(paperless_user_id)
-            if not user:
+            # Get or create user in PocoClass database
+            pococlass_user = db.get_user_by_paperless_id(paperless_user_id)
+            if not pococlass_user:
                 # Create new user with default 'user' role
                 user_id = db.create_user(username, paperless_user_id, 'user')
                 if not user_id:
                     logger.error("Failed to create user, user_id is None")
                     return jsonify({'error': 'Failed to create user'}), 500
-                user = db.get_user_by_id(user_id)
-                if not user:
+                pococlass_user = db.get_user_by_id(user_id)
+                if not pococlass_user:
                     logger.error(f"Failed to retrieve newly created user with id {user_id}")
                     return jsonify({'error': 'Failed to retrieve user'}), 500
             else:
-                user_id = user['id']
+                user_id = pococlass_user['id']
                 db.update_last_login(user_id)
             
             # Create session
@@ -419,7 +416,7 @@ def login():
                 'user': {
                     'id': user_id,
                     'username': username,
-                    'role': user['pococlass_role']
+                    'role': pococlass_user['pococlass_role']
                 }
             })
             
