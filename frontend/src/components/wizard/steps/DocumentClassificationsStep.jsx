@@ -93,10 +93,6 @@ export default function DocumentClassificationsStep({
         if (value === 'dateCreated') {
           newRules[index].extractionType = 'dateFormat';
           newRules[index].dateFormat = ''; // Reset dateFormat when target field changes
-        } else if (value === 'tags') {
-          newRules[index].extractionType = 'regex';
-          newRules[index].regexPattern = ''; // Reset regexPattern when target field changes
-          newRules[index].tagValue = ''; // Reset tagValue
         } else if (value.startsWith('customField') || value === 'documentCategory') {
           newRules[index].extractionType = 'regex';
           newRules[index].regexPattern = ''; // Reset regexPattern when target field changes
@@ -147,64 +143,57 @@ export default function DocumentClassificationsStep({
   const getAvailableTargetFields = () => {
     const fields = [];
     
-    // Title (can be extracted dynamically)
-    if (fieldDisplaySettings.title === 'dynamic' || fieldDisplaySettings.title === 'both') {
-      fields.push({ value: 'title', label: 'Title', canRepeat: false });
-    }
-    
-    // Date Created
+    // Date Created (only extractable field that makes sense for dynamic)
     if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
       fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false });
     }
     
-    // Correspondent
-    if (fieldDisplaySettings.correspondent === 'dynamic' || fieldDisplaySettings.correspondent === 'both') {
-      fields.push({ value: 'correspondent', label: 'Correspondent', canRepeat: false });
-    }
-    
-    // Document Type
-    if (fieldDisplaySettings.documentType === 'dynamic' || fieldDisplaySettings.documentType === 'both') {
-      fields.push({ value: 'documentType', label: 'Document Type', canRepeat: false });
-    }
-    
-    // Tags (can be extracted multiple times)
-    if (fieldDisplaySettings.tags === 'dynamic' || fieldDisplaySettings.tags === 'both') {
-      fields.push({ value: 'tags', label: 'Tags', canRepeat: true });
-    }
-    
-    // Custom Field: Document Category
+    // Custom fields that support dynamic extraction (string, integer, float, monetary, date)
+    // Document Category
     if (fieldDisplaySettings.documentCategory === 'dynamic' || fieldDisplaySettings.documentCategory === 'both') {
-      fields.push({ 
-        value: 'documentCategory', 
-        label: `Custom Field: ${customFieldNames.documentCategory || 'Document Category'}`, 
-        canRepeat: false 
-      });
+      const fieldName = customFieldNames.documentCategory || 'Document Category';
+      const fieldData = customFieldsData[fieldName];
+      const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+      if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
+        fields.push({ 
+          value: 'documentCategory', 
+          label: `Custom Field: ${fieldName}`, 
+          canRepeat: false 
+        });
+      }
     }
     
     // Custom Field 1
     if (fieldDisplaySettings.customField1 === 'dynamic' || fieldDisplaySettings.customField1 === 'both') {
-      fields.push({ 
-        value: 'customField1', 
-        label: `Custom Field: ${customFieldNames.customField1 || 'Custom Field 1'}`, 
-        canRepeat: false 
-      });
+      const fieldData = customFieldsData[customFieldNames.customField1];
+      const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+      if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
+        fields.push({ 
+          value: 'customField1', 
+          label: `Custom Field: ${customFieldNames.customField1 || 'Custom Field 1'}`, 
+          canRepeat: false 
+        });
+      }
     }
     
     // Custom Field 2
     if (fieldDisplaySettings.customField2 === 'dynamic' || fieldDisplaySettings.customField2 === 'both') {
-      fields.push({ 
-        value: 'customField2', 
-        label: `Custom Field: ${customFieldNames.customField2 || 'Custom Field 2'}`, 
-        canRepeat: false 
-      });
+      const fieldData = customFieldsData[customFieldNames.customField2];
+      const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+      if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
+        fields.push({ 
+          value: 'customField2', 
+          label: `Custom Field: ${customFieldNames.customField2 || 'Custom Field 2'}`, 
+          canRepeat: false 
+        });
+      }
     }
     
     return fields;
   };
 
   const isFieldDisabled = (fieldValue, currentIndex) => {
-    if (fieldValue === 'tags') return false; // Tags can be extracted multiple times
-    
+    // All fields can only be extracted once
     const rules = ruleData.dynamicData?.extractionRules || [];
     return rules.some((rule, idx) => idx !== currentIndex && rule.targetField === fieldValue);
   };
