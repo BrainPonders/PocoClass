@@ -1246,7 +1246,7 @@ def list_documents():
             owner_name = None
             if doc.get('owner'):
                 # Try to get from cache first
-                owner_name = db.get_user_by_paperless_id(doc['owner'])
+                owner_name = db.get_cached_username_by_paperless_id(doc['owner'])
                 if not owner_name:
                     # Fallback to API if not in cache
                     try:
