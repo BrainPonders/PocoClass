@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Rule, Document, Paperless } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
-import { FileText, Filter, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
+import { FileText, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 
 export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
@@ -27,23 +28,25 @@ export default function RuleReviewer() {
   const [allCorrespondents, setAllCorrespondents] = useState([]);
   const [allDocTypes, setAllDocTypes] = useState([]);
   
-  // Filter states
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedCorrespondents, setSelectedCorrespondents] = useState([]);
-  const [selectedDocTypes, setSelectedDocTypes] = useState([]);
-  const [showTagFilter, setShowTagFilter] = useState(false);
-  const [showCorrespondentFilter, setShowCorrespondentFilter] = useState(false);
-  const [showDocTypeFilter, setShowDocTypeFilter] = useState(false);
-  
-  // Filter mode states (include/exclude)
-  const [tagFilterMode, setTagFilterMode] = useState('include');
-  const [correspondentFilterMode, setCorrespondentFilterMode] = useState('include');
-  const [docTypeFilterMode, setDocTypeFilterMode] = useState('include');
-  
-  // Search states for filters
-  const [tagSearch, setTagSearch] = useState('');
-  const [correspondentSearch, setCorrespondentSearch] = useState('');
-  const [docTypeSearch, setDocTypeSearch] = useState('');
+  // Consolidated filter state (Paperless style)
+  const [filters, setFilters] = useState({
+    title: '',
+    tags: [],
+    tagsMode: 'include',
+    tagsSearch: '',
+    correspondents: [],
+    correspondentsMode: 'include',
+    correspondentsSearch: '',
+    docTypes: [],
+    docTypesMode: 'include',
+    docTypesSearch: '',
+    customFields: [],
+    customFieldName: '',
+    customFieldValue: '',
+    dateFrom: '',
+    dateTo: '',
+    permissions: 'all'
+  });
 
   useEffect(() => {
     loadRules();
@@ -154,31 +157,69 @@ export default function RuleReviewer() {
     window.open(url, '_blank');
   };
 
-  // Filter documents based on selected filters with include/exclude support
+  // Filter documents based on Paperless-style filters
   const filteredDocuments = documents.filter(doc => {
+    // Title filter
+    if (filters.title && !doc.title?.toLowerCase().includes(filters.title.toLowerCase())) {
+      return false;
+    }
+
     // Tags filter
-    if (selectedTags.length > 0) {
-      const hasTag = selectedTags.some(tag => doc.tags?.includes(tag));
-      if (tagFilterMode === 'include' && !hasTag) return false;
-      if (tagFilterMode === 'exclude' && hasTag) return false;
+    if (filters.tags.length > 0) {
+      const hasTag = filters.tags.some(tag => doc.tags?.includes(tag));
+      if (filters.tagsMode === 'include' && !hasTag) return false;
+      if (filters.tagsMode === 'exclude' && hasTag) return false;
     }
     
     // Correspondents filter
-    if (selectedCorrespondents.length > 0) {
-      const hasCorrespondent = selectedCorrespondents.includes(doc.correspondent);
-      if (correspondentFilterMode === 'include' && !hasCorrespondent) return false;
-      if (correspondentFilterMode === 'exclude' && hasCorrespondent) return false;
+    if (filters.correspondents.length > 0) {
+      const hasCorrespondent = filters.correspondents.includes(doc.correspondent);
+      if (filters.correspondentsMode === 'include' && !hasCorrespondent) return false;
+      if (filters.correspondentsMode === 'exclude' && hasCorrespondent) return false;
     }
     
     // Document Types filter
-    if (selectedDocTypes.length > 0) {
-      const hasDocType = selectedDocTypes.includes(doc.documentType);
-      if (docTypeFilterMode === 'include' && !hasDocType) return false;
-      if (docTypeFilterMode === 'exclude' && hasDocType) return false;
+    if (filters.docTypes.length > 0) {
+      const hasDocType = filters.docTypes.includes(doc.documentType);
+      if (filters.docTypesMode === 'include' && !hasDocType) return false;
+      if (filters.docTypesMode === 'exclude' && hasDocType) return false;
+    }
+
+    // Date filter (added date - when document was added to Paperless)
+    if (filters.dateFrom) {
+      const docDate = new Date(doc.added || doc.created);
+      const fromDate = new Date(filters.dateFrom);
+      if (docDate < fromDate) return false;
+    }
+    if (filters.dateTo) {
+      const docDate = new Date(doc.added || doc.created);
+      const toDate = new Date(filters.dateTo);
+      if (docDate > toDate) return false;
     }
     
     return true;
   });
+
+  const handleResetFilters = () => {
+    setFilters({
+      title: '',
+      tags: [],
+      tagsMode: 'include',
+      tagsSearch: '',
+      correspondents: [],
+      correspondentsMode: 'include',
+      correspondentsSearch: '',
+      docTypes: [],
+      docTypesMode: 'include',
+      docTypesSearch: '',
+      customFields: [],
+      customFieldName: '',
+      customFieldValue: '',
+      dateFrom: '',
+      dateTo: '',
+      permissions: 'all'
+    });
+  };
 
   // Get performance data from real test results
   const getPerformanceData = () => {
@@ -375,185 +416,19 @@ export default function RuleReviewer() {
       {/* Document Browser */}
       <Card className="mb-6">
         <CardHeader>
-          <div>
-            <CardTitle className="mb-4">Test Documents</CardTitle>
-            <div className="flex gap-2 items-center flex-wrap">
-              <button 
-                className={`btn btn-outline btn-sm ${selectedTags.length > 0 ? 'bg-blue-100' : ''}`}
-                onClick={() => setShowTagFilter(!showTagFilter)}
-              >
-                <Filter className="w-4 h-4 mr-1" />
-                Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
-              </button>
-              <button 
-                className={`btn btn-outline btn-sm ${selectedCorrespondents.length > 0 ? 'bg-blue-100' : ''}`}
-                onClick={() => setShowCorrespondentFilter(!showCorrespondentFilter)}
-              >
-                <Filter className="w-4 h-4 mr-1" />
-                Correspondents {selectedCorrespondents.length > 0 && `(${selectedCorrespondents.length})`}
-              </button>
-              <button 
-                className={`btn btn-outline btn-sm whitespace-nowrap ${selectedDocTypes.length > 0 ? 'bg-blue-100' : ''}`}
-                onClick={() => setShowDocTypeFilter(!showDocTypeFilter)}
-              >
-                <Filter className="w-4 h-4 mr-1" />
-                Document Type {selectedDocTypes.length > 0 && `(${selectedDocTypes.length})`}
-              </button>
-            </div>
-          </div>
+          <CardTitle>Test Documents</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Paperless-style Filter Dropdowns */}
-          <div className="relative">
-          {showTagFilter && (
-            <div className="absolute top-0 left-0 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
-              <div className="p-3 border-b border-gray-700">
-                <div className="flex gap-1 mb-3">
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setTagFilterMode('include')}
-                  >
-                    Include
-                  </button>
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${tagFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setTagFilterMode('exclude')}
-                  >
-                    Exclude
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Filter tags"
-                  value={tagSearch}
-                  onChange={(e) => setTagSearch(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                />
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                {allTags
-                  .filter(tag => tag.toLowerCase().includes(tagSearch.toLowerCase()))
-                  .map(tag => {
-                    const count = documents.filter(d => d.tags?.includes(tag)).length;
-                    return (
-                      <div
-                        key={tag}
-                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedTags.includes(tag) ? 'bg-gray-700' : ''}`}
-                        onClick={() => setSelectedTags(prev => 
-                          prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
-                        )}
-                      >
-                        <span className="text-sm">{tag}</span>
-                        <span className="text-xs text-gray-400">{count}</span>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-          
-          {showCorrespondentFilter && (
-            <div className="absolute top-0 left-80 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
-              <div className="p-3 border-b border-gray-700">
-                <div className="flex gap-1 mb-3">
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setCorrespondentFilterMode('include')}
-                  >
-                    Include
-                  </button>
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${correspondentFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setCorrespondentFilterMode('exclude')}
-                  >
-                    Exclude
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Filter correspondents"
-                  value={correspondentSearch}
-                  onChange={(e) => setCorrespondentSearch(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                />
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                <div
-                  className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${selectedCorrespondents.includes(null) ? 'bg-gray-700' : ''}`}
-                  onClick={() => setSelectedCorrespondents(prev => 
-                    prev.includes(null) ? prev.filter(c => c !== null) : [...prev, null]
-                  )}
-                >
-                  <span className="text-sm italic">Not assigned</span>
-                </div>
-                {allCorrespondents
-                  .filter(corr => corr.toLowerCase().includes(correspondentSearch.toLowerCase()))
-                  .map(corr => {
-                    const count = documents.filter(d => d.correspondent === corr).length;
-                    return (
-                      <div
-                        key={corr}
-                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedCorrespondents.includes(corr) ? 'bg-gray-700' : ''}`}
-                        onClick={() => setSelectedCorrespondents(prev => 
-                          prev.includes(corr) ? prev.filter(c => c !== corr) : [...prev, corr]
-                        )}
-                      >
-                        <span className="text-sm">{corr}</span>
-                        <span className="text-xs text-gray-400">{count}</span>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-          
-          {showDocTypeFilter && (
-            <div className="absolute top-0 right-0 z-50 bg-gray-800 rounded-lg shadow-lg border border-gray-700 text-white" style={{width: '300px'}}>
-              <div className="p-3 border-b border-gray-700">
-                <div className="flex gap-1 mb-3">
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setDocTypeFilterMode('include')}
-                  >
-                    Include
-                  </button>
-                  <button 
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${docTypeFilterMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-                    onClick={() => setDocTypeFilterMode('exclude')}
-                  >
-                    Exclude
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Filter document types"
-                  value={docTypeSearch}
-                  onChange={(e) => setDocTypeSearch(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
-                />
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                {allDocTypes
-                  .filter(type => type.toLowerCase().includes(docTypeSearch.toLowerCase()))
-                  .map(type => {
-                    const count = documents.filter(d => d.documentType === type).length;
-                    return (
-                      <div
-                        key={type}
-                        className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${selectedDocTypes.includes(type) ? 'bg-gray-700' : ''}`}
-                        onClick={() => setSelectedDocTypes(prev => 
-                          prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-                        )}
-                      >
-                        <span className="text-sm">{type}</span>
-                        <span className="text-xs text-gray-400">{count}</span>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-          )}
-          </div>
+          {/* Paperless-style Filter Bar */}
+          <PaperlessFilterBar
+            filters={filters}
+            onFilterChange={setFilters}
+            onResetFilters={handleResetFilters}
+            allTags={allTags}
+            allCorrespondents={allCorrespondents}
+            allDocTypes={allDocTypes}
+            allCustomFields={[]}
+          />
           {isLoadingDocuments ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -582,7 +457,7 @@ export default function RuleReviewer() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">View</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -646,7 +521,7 @@ export default function RuleReviewer() {
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="form-select w-64"
+              className="form-select w-64 h-10"
             >
               <option value="">Select a rule...</option>
               {rules.map(rule => (
@@ -656,7 +531,7 @@ export default function RuleReviewer() {
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
-              className="btn btn-primary"
+              className="btn btn-primary h-10"
             >
               {isRunning ? (
                 <>
