@@ -39,11 +39,22 @@ export default function DocumentClassificationsStep({
           customField2: 'disabled',
           documentCategory: 'predefined'
         });
-        setCustomFieldNames(parsed.customFieldNames || {
+        
+        // Ensure customFieldNames are always strings, not objects
+        const rawNames = parsed.customFieldNames || {
           customField1: 'Invoice Number',
           customField2: 'Reference ID',
           documentCategory: 'Document Category'
+        };
+        
+        // Convert any objects to strings (defensive coding)
+        const safeNames = {};
+        Object.keys(rawNames).forEach(key => {
+          const value = rawNames[key];
+          safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || 'Custom Field');
         });
+        
+        setCustomFieldNames(safeNames);
       }
     } catch (e) {
       console.error('Error reading settings:', e);
