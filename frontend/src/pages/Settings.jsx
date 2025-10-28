@@ -22,6 +22,7 @@ export default function Settings() {
   const [dateFormats, setDateFormats] = useState([]);
   const [placeholders, setPlaceholders] = useState([]);
   const [paperlessConfig, setPaperlessConfig] = useState({});
+  const [customFieldsData, setCustomFieldsData] = useState([]);
   
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [fieldToCreate, setFieldToCreate] = useState(null);
@@ -29,6 +30,7 @@ export default function Settings() {
 
   useEffect(() => {
     loadAllSettings();
+    loadCustomFieldsData();
   }, []);
 
   const loadAllSettings = async () => {
@@ -353,6 +355,50 @@ export default function Settings() {
         duration: 3000,
       });
     }
+  };
+
+  const loadCustomFieldsData = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/paperless/custom-fields`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCustomFieldsData(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading custom fields:', error);
+    }
+  };
+
+  const getCustomFieldDataType = (fieldName) => {
+    const customField = customFieldsData.find(cf => cf.name === fieldName);
+    return customField?.data_type || null;
+  };
+
+  const isDynamicExtractable = (fieldName, isCustomField) => {
+    if (!isCustomField) return true; // Built-in fields are extractable
+    
+    const dataType = getCustomFieldDataType(fieldName);
+    // Only these types support dynamic extraction
+    const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+    return extractableTypes.includes(dataType);
+  };
+
+  const getDynamicDisabledReason = (fieldName, isCustomField) => {
+    if (!isCustomField) return null;
+    
+    const dataType = getCustomFieldDataType(fieldName);
+    if (!dataType) return 'Datatype unknown';
+    
+    if (dataType === 'select') return 'Select fields have predefined options and cannot be extracted dynamically';
+    if (dataType === 'boolean') return 'Boolean fields cannot be extracted from text';
+    if (dataType === 'url') return 'URL fields are not currently supported for dynamic extraction';
+    if (dataType === 'documentlink') return 'Document link fields cannot be extracted from text';
+    
+    return null;
   };
 
   const syncAllPlaceholdersToLocalStorage = (placeholdersList) => {
@@ -1014,6 +1060,9 @@ export default function Settings() {
                     {placeholders.filter(p => !p.is_internal || (p.is_internal && p.is_custom_field)).map(placeholder => {
                       const isMissingPoco = (placeholder.placeholder_name === 'POCO Score' && !pocoScoreExists) || 
                                            (placeholder.placeholder_name === 'POCO OCR' && !pocoOcrExists);
+                      const dataType = getCustomFieldDataType(placeholder.placeholder_name);
+                      const canExtractDynamic = isDynamicExtractable(placeholder.placeholder_name, placeholder.is_custom_field);
+                      const disabledReason = getDynamicDisabledReason(placeholder.placeholder_name, placeholder.is_custom_field);
                       
                       return (
                       <div key={placeholder.id} className={`p-3 border-2 rounded-lg ${
@@ -1032,6 +1081,11 @@ export default function Settings() {
                               <div className="text-sm font-medium text-gray-900">
                                 {placeholder.placeholder_name}
                               </div>
+                              {placeholder.is_custom_field && dataType && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                                  {dataType}
+                                </span>
+                              )}
                             </div>
                             <div className="text-xs text-gray-500 mt-0.5">
                               {placeholder.is_locked ? (
@@ -1081,6 +1135,7 @@ export default function Settings() {
                               </button>
                               <button
                                 onClick={() => {
+                                  if (!canExtractDynamic) return;
                                   const currentMode = placeholder.visibility_mode;
                                   let newMode;
                                   if (currentMode === 'disabled' || currentMode === 'predefined') {
@@ -1092,8 +1147,12 @@ export default function Settings() {
                                   }
                                   handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
                                 }}
+                                disabled={!canExtractDynamic}
+                                title={disabledReason || ''}
                                 className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                  placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
+                                  !canExtractDynamic
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                                    : placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
                                     ? 'bg-green-600 text-white'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
