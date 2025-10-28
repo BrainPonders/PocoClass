@@ -435,15 +435,18 @@ export default function DocumentClassificationsStep({
                         style={isCustomFieldOrDocumentCategory && !isTag ? customFieldStyle : {}}
                       >
                         <option value="">Select target field...</option>
-                        {targetFields.map(field => (
-                          <option 
-                            key={field.value} 
-                            value={field.value}
-                            disabled={isFieldDisabled(field.value, index)}
-                          >
-                            {field.label} {!field.canRepeat && isFieldDisabled(field.value, index) ? '(already used)' : ''}
-                          </option>
-                        ))}
+                        {targetFields.map(field => {
+                          const safeLabel = typeof field.label === 'string' ? field.label : String(field.label?.label || field.label?.name || 'Field');
+                          return (
+                            <option 
+                              key={field.value} 
+                              value={field.value}
+                              disabled={isFieldDisabled(field.value, index)}
+                            >
+                              {safeLabel} {!field.canRepeat && isFieldDisabled(field.value, index) ? '(already used)' : ''}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
 

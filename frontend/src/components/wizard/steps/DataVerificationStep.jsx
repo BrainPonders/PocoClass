@@ -77,7 +77,9 @@ export default function DataVerificationStep({
 
   const getFieldLabel = (field) => {
     if (field.isCustom) {
-      return `Custom Field: ${customFieldNames[field.key] || field.label}`;
+      const rawName = customFieldNames[field.key];
+      const fieldName = typeof rawName === 'string' ? rawName : (rawName?.label || rawName?.name || field.label);
+      return `Custom Field: ${fieldName}`;
     }
     return field.label;
   };
