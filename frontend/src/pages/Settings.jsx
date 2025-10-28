@@ -725,9 +725,10 @@ export default function Settings() {
                           type="number"
                           min="1"
                           max="168"
-                          value={appSettings.session_timeout_hours || '24'}
+                          value={appSettings.session_timeout_hours || ''}
                           onChange={(e) => handleAppSettingChange('session_timeout_hours', e.target.value)}
-                          className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          disabled={loading}
+                          className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                         />
                         <span className="text-sm text-gray-500 self-center">hours</span>
                       </div>
