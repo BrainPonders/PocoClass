@@ -59,7 +59,7 @@ export default function PaperlessFilterBar({
     if (hasValue) {
       return baseClass + "bg-blue-600 text-white hover:bg-blue-700";
     }
-    return baseClass + "bg-gray-700 text-gray-200 hover:bg-gray-600";
+    return baseClass + "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300";
   };
 
   const renderFilterDropdown = (filterName, content) => {
@@ -68,7 +68,7 @@ export default function PaperlessFilterBar({
     return (
       <div
         ref={el => dropdownRefs.current[filterName] = el}
-        className="absolute top-full left-0 mt-1 bg-gray-800 rounded-lg shadow-xl border border-gray-700 text-white z-50 min-w-[300px]"
+        className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-300 z-50 min-w-[300px]"
       >
         {content}
       </div>
@@ -88,12 +88,12 @@ export default function PaperlessFilterBar({
               value={filters.title || ''}
               onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
               placeholder="Search..."
-              className="px-3 py-1.5 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400 w-48 focus:outline-none focus:border-blue-500"
+              className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400 w-48 focus:outline-none focus:border-blue-500"
             />
             {filters.title && (
               <button
                 onClick={() => onFilterChange({ ...filters, title: '' })}
-                className="absolute right-2 text-gray-400 hover:text-white"
+                className="absolute right-2 text-gray-400 hover:text-gray-600"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -114,16 +114,16 @@ export default function PaperlessFilterBar({
           </button>
           {renderFilterDropdown('tags', (
             <div>
-              <div className="p-3 border-b border-gray-700">
+              <div className="p-3 border-b border-gray-200">
                 <div className="flex gap-1 mb-3">
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, tagsMode: 'include' })}
                   >
                     Include
                   </button>
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, tagsMode: 'exclude' })}
                   >
                     Exclude
@@ -134,7 +134,7 @@ export default function PaperlessFilterBar({
                   placeholder="Filter tags"
                   value={filters.tagsSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, tagsSearch: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400"
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">
@@ -143,7 +143,7 @@ export default function PaperlessFilterBar({
                   .map(tag => (
                     <div
                       key={tag}
-                      className={`px-4 py-2 hover:bg-gray-700 cursor-pointer flex justify-between items-center ${filters.tags.includes(tag) ? 'bg-gray-700' : ''}`}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${filters.tags.includes(tag) ? 'bg-blue-50' : ''}`}
                       onClick={() => {
                         const newTags = filters.tags.includes(tag)
                           ? filters.tags.filter(t => t !== tag)
@@ -151,7 +151,7 @@ export default function PaperlessFilterBar({
                         onFilterChange({ ...filters, tags: newTags });
                       }}
                     >
-                      <span className="text-sm">{tag}</span>
+                      <span className="text-sm text-gray-900">{tag}</span>
                     </div>
                   ))}
               </div>
@@ -172,16 +172,16 @@ export default function PaperlessFilterBar({
           </button>
           {renderFilterDropdown('correspondent', (
             <div>
-              <div className="p-3 border-b border-gray-700">
+              <div className="p-3 border-b border-gray-200">
                 <div className="flex gap-1 mb-3">
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.correspondentsMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.correspondentsMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, correspondentsMode: 'include' })}
                   >
                     Include
                   </button>
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.correspondentsMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.correspondentsMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, correspondentsMode: 'exclude' })}
                   >
                     Exclude
@@ -192,12 +192,12 @@ export default function PaperlessFilterBar({
                   placeholder="Filter correspondents"
                   value={filters.correspondentsSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, correspondentsSearch: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400"
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">
                 <div
-                  className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.correspondents.includes(null) ? 'bg-gray-700' : ''}`}
+                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.correspondents.includes(null) ? 'bg-blue-50' : ''}`}
                   onClick={() => {
                     const newCorr = filters.correspondents.includes(null)
                       ? filters.correspondents.filter(c => c !== null)
@@ -205,14 +205,14 @@ export default function PaperlessFilterBar({
                     onFilterChange({ ...filters, correspondents: newCorr });
                   }}
                 >
-                  <span className="text-sm italic">Not assigned</span>
+                  <span className="text-sm italic text-gray-700">Not assigned</span>
                 </div>
                 {allCorrespondents
                   .filter(corr => !filters.correspondentsSearch || corr.toLowerCase().includes(filters.correspondentsSearch.toLowerCase()))
                   .map(corr => (
                     <div
                       key={corr}
-                      className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.correspondents.includes(corr) ? 'bg-gray-700' : ''}`}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.correspondents.includes(corr) ? 'bg-blue-50' : ''}`}
                       onClick={() => {
                         const newCorr = filters.correspondents.includes(corr)
                           ? filters.correspondents.filter(c => c !== corr)
@@ -220,7 +220,7 @@ export default function PaperlessFilterBar({
                         onFilterChange({ ...filters, correspondents: newCorr });
                       }}
                     >
-                      <span className="text-sm">{corr}</span>
+                      <span className="text-sm text-gray-900">{corr}</span>
                     </div>
                   ))}
               </div>
@@ -241,16 +241,16 @@ export default function PaperlessFilterBar({
           </button>
           {renderFilterDropdown('documentType', (
             <div>
-              <div className="p-3 border-b border-gray-700">
+              <div className="p-3 border-b border-gray-200">
                 <div className="flex gap-1 mb-3">
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.docTypesMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.docTypesMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, docTypesMode: 'include' })}
                   >
                     Include
                   </button>
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.docTypesMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.docTypesMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'}`}
                     onClick={() => onFilterChange({ ...filters, docTypesMode: 'exclude' })}
                   >
                     Exclude
@@ -261,12 +261,12 @@ export default function PaperlessFilterBar({
                   placeholder="Filter document types"
                   value={filters.docTypesSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, docTypesSearch: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400"
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">
                 <div
-                  className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.docTypes.includes(null) ? 'bg-gray-700' : ''}`}
+                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.docTypes.includes(null) ? 'bg-blue-50' : ''}`}
                   onClick={() => {
                     const newTypes = filters.docTypes.includes(null)
                       ? filters.docTypes.filter(t => t !== null)
@@ -274,14 +274,14 @@ export default function PaperlessFilterBar({
                     onFilterChange({ ...filters, docTypes: newTypes });
                   }}
                 >
-                  <span className="text-sm italic">Not assigned</span>
+                  <span className="text-sm italic text-gray-700">Not assigned</span>
                 </div>
                 {allDocTypes
                   .filter(type => !filters.docTypesSearch || type.toLowerCase().includes(filters.docTypesSearch.toLowerCase()))
                   .map(type => (
                     <div
                       key={type}
-                      className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.docTypes.includes(type) ? 'bg-gray-700' : ''}`}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.docTypes.includes(type) ? 'bg-blue-50' : ''}`}
                       onClick={() => {
                         const newTypes = filters.docTypes.includes(type)
                           ? filters.docTypes.filter(t => t !== type)
@@ -289,7 +289,7 @@ export default function PaperlessFilterBar({
                         onFilterChange({ ...filters, docTypes: newTypes });
                       }}
                     >
-                      <span className="text-sm">{type}</span>
+                      <span className="text-sm text-gray-900">{type}</span>
                     </div>
                   ))}
               </div>
@@ -335,21 +335,21 @@ export default function PaperlessFilterBar({
           {renderFilterDropdown('dates', (
             <div className="p-3 min-w-[300px]">
               <div className="mb-3">
-                <label className="block text-xs text-gray-400 mb-1">Added</label>
+                <label className="block text-xs text-gray-600 mb-1">Added</label>
                 <div className="flex gap-2 items-center mb-2">
                   <input
                     type="date"
                     value={filters.dateFrom || ''}
                     onChange={(e) => onFilterChange({ ...filters, dateFrom: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white"
+                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900"
                     placeholder="From"
                   />
-                  <span className="text-gray-400">to</span>
+                  <span className="text-gray-600">to</span>
                   <input
                     type="date"
                     value={filters.dateTo || ''}
                     onChange={(e) => onFilterChange({ ...filters, dateTo: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded text-sm text-white"
+                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900"
                     placeholder="To"
                   />
                 </div>
@@ -370,20 +370,20 @@ export default function PaperlessFilterBar({
           </button>
           {renderFilterDropdown('permissions', (
             <div>
-              <div className="px-4 py-2 text-xs text-yellow-400 bg-yellow-900 bg-opacity-20 border-b border-yellow-700">
+              <div className="px-4 py-2 text-xs text-yellow-700 bg-yellow-50 border-b border-yellow-200">
                 ⚠️ Permissions filtering requires backend support
               </div>
               <div className="py-2 min-w-[200px]">
               {['all', 'my_documents', 'shared_with_me', 'shared_by_me', 'unowned'].map(perm => (
                 <div
                   key={perm}
-                  className={`px-4 py-2 hover:bg-gray-700 cursor-pointer ${filters.permissions === perm ? 'bg-gray-700' : ''}`}
+                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.permissions === perm ? 'bg-blue-50' : ''}`}
                   onClick={() => {
                     onFilterChange({ ...filters, permissions: perm });
                     setOpenFilter(null);
                   }}
                 >
-                  <span className="text-sm">
+                  <span className="text-sm text-gray-900">
                     {filters.permissions === perm && '✓ '}
                     {perm === 'all' && 'All'}
                     {perm === 'my_documents' && 'My documents'}
