@@ -19,12 +19,22 @@ export default function DocumentClassificationsStep({
   const [customFieldNames, setCustomFieldNames] = React.useState({});
   const [customFieldsData, setCustomFieldsData] = React.useState({});
   const [allPlaceholders, setAllPlaceholders] = React.useState([]);
+  const [placeholdersLoaded, setPlaceholdersLoaded] = React.useState(false);
 
   React.useEffect(() => {
     loadFieldDisplaySettings();
     loadCustomFieldsData();
     loadAllPlaceholders();
   }, []);
+
+  // Debug: Log state when it changes
+  React.useEffect(() => {
+    console.log('Placeholders state changed:', allPlaceholders.length, 'items');
+  }, [allPlaceholders]);
+
+  React.useEffect(() => {
+    console.log('Placeholders loaded state:', placeholdersLoaded);
+  }, [placeholdersLoaded]);
 
   const loadFieldDisplaySettings = () => {
     try {
@@ -105,16 +115,26 @@ export default function DocumentClassificationsStep({
 
   const loadAllPlaceholders = async () => {
     try {
+      console.log('Starting to load placeholders...');
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/settings/placeholders`, {
+      const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/settings/placeholders`;
+      console.log('Fetching from:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
+      
+      console.log('Response status:', response.status, response.ok);
+      
       if (response.ok) {
         const data = await response.json();
-        console.log('Loaded placeholders:', data);
+        console.log('Loaded placeholders:', data.length, 'items:', data);
         setAllPlaceholders(data);
+        setPlaceholdersLoaded(true);
       } else {
         console.error('Failed to load placeholders, status:', response.status);
+        const text = await response.text();
+        console.error('Response body:', text);
       }
     } catch (e) {
       console.error('Error loading placeholders:', e);
