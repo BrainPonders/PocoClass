@@ -115,6 +115,74 @@ class MetadataProcessor:
             self.logger.error(f"Error extracting value between anchors: {e}")
             return None
     
+    def validate_and_sanitize_value(self, value: str, data_type: str) -> Optional[str]:
+        """Validate and sanitize extracted value based on target field datatype
+        
+        Args:
+            value: The extracted string value
+            data_type: The Paperless-ngx field datatype (integer, float, monetary, etc.)
+            
+        Returns:
+            Sanitized value or None if validation fails
+        """
+        if not value:
+            return None
+            
+        value = value.strip()
+        
+        try:
+            if data_type == 'integer':
+                # Must be a whole number
+                # Remove common separators (commas, spaces)
+                cleaned = re.sub(r'[,\s]', '', value)
+                # Extract first integer found
+                match = re.search(r'-?\d+', cleaned)
+                if match:
+                    return str(int(match.group()))
+                self.logger.warning(f"Integer validation failed for value: {value}")
+                return None
+                
+            elif data_type == 'float':
+                # Must be a decimal number, normalize decimal separator
+                # Replace comma with period for decimal point
+                cleaned = value.replace(',', '.')
+                # Remove thousand separators (spaces)
+                cleaned = re.sub(r'(?<=\d)\s(?=\d)', '', cleaned)
+                # Extract first float found
+                match = re.search(r'-?\d+\.?\d*', cleaned)
+                if match:
+                    float_val = float(match.group())
+                    return str(float_val)
+                self.logger.warning(f"Float validation failed for value: {value}")
+                return None
+                
+            elif data_type == 'monetary':
+                # Monetary format: must use . as decimal separator with exactly 2 decimal places
+                # Replace comma with period
+                cleaned = value.replace(',', '.')
+                # Remove currency symbols and spaces
+                cleaned = re.sub(r'[^\d.-]', '', cleaned)
+                # Extract first number found
+                match = re.search(r'-?\d+\.?\d*', cleaned)
+                if match:
+                    float_val = float(match.group())
+                    # Format to exactly 2 decimal places
+                    return f"{float_val:.2f}"
+                self.logger.warning(f"Monetary validation failed for value: {value}")
+                return None
+                
+            elif data_type in ['string', 'date']:
+                # No validation needed for strings and dates (dates have their own parsing)
+                return value
+                
+            else:
+                # Unknown datatype, return as-is
+                return value
+                
+        except Exception as e:
+            self.logger.error(f"Error validating value '{value}' for datatype '{data_type}': {e}")
+            return None
+    
     def extract_filename_metadata(self, rule: Dict[str, Any], filename: str) -> Dict[str, Any]:
         """Extract metadata from filename using rule patterns
         
