@@ -896,7 +896,7 @@ export default function Settings() {
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Data Synchronization</h3>
                     
                     {syncStatus && (
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <div className="text-sm text-blue-600 font-medium">Correspondents</div>
                           <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
@@ -912,6 +912,10 @@ export default function Settings() {
                         <div className="bg-orange-50 p-4 rounded-lg">
                           <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
                           <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
+                        </div>
+                        <div className="bg-cyan-50 p-4 rounded-lg">
+                          <div className="text-sm text-cyan-600 font-medium">Users</div>
+                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
                         </div>
                       </div>
                     )}
