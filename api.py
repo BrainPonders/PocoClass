@@ -697,7 +697,7 @@ def get_settings_batch():
         # Paperless config
         try:
             paperless_url = db.get_config('paperless_url')
-            response['paperlessConfig'] = {'url': paperless_url}
+            response['paperlessConfig'] = {'paperless_url': paperless_url}
         except Exception as e:
             logger.error(f"Error loading paperless config: {e}")
         
