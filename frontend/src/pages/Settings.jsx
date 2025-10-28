@@ -6,6 +6,7 @@ import { User } from '@/api/entities';
 import API_BASE_URL from '@/config/api';
 import { usePOCOFields } from '@/contexts/POCOFieldsContext';
 import CreatePocoFieldDialog from '@/components/CreatePocoFieldDialog';
+import { QuickTooltip } from '@/components/ui/QuickTooltip';
 
 export default function Settings() {
   const { toast } = useToast();
@@ -1149,32 +1150,33 @@ export default function Settings() {
                               >
                                 Predefined
                               </button>
-                              <button
-                                onClick={() => {
-                                  if (!canExtractDynamic) return;
-                                  const currentMode = placeholder.visibility_mode;
-                                  let newMode;
-                                  if (currentMode === 'disabled' || currentMode === 'predefined') {
-                                    newMode = currentMode === 'disabled' ? 'dynamic' : 'both';
-                                  } else if (currentMode === 'dynamic') {
-                                    newMode = 'disabled';
-                                  } else {
-                                    newMode = 'predefined';
-                                  }
-                                  handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
-                                }}
-                                disabled={!canExtractDynamic}
-                                title={disabledReason || ''}
-                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                  !canExtractDynamic
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
-                                    : placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                              >
-                                Dynamic
-                              </button>
+                              <QuickTooltip content={disabledReason} disabled={canExtractDynamic}>
+                                <button
+                                  onClick={() => {
+                                    if (!canExtractDynamic) return;
+                                    const currentMode = placeholder.visibility_mode;
+                                    let newMode;
+                                    if (currentMode === 'disabled' || currentMode === 'predefined') {
+                                      newMode = currentMode === 'disabled' ? 'dynamic' : 'both';
+                                    } else if (currentMode === 'dynamic') {
+                                      newMode = 'disabled';
+                                    } else {
+                                      newMode = 'predefined';
+                                    }
+                                    handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
+                                  }}
+                                  disabled={!canExtractDynamic}
+                                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                    !canExtractDynamic
+                                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                                      : placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
+                                      ? 'bg-green-600 text-white'
+                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }`}
+                                >
+                                  Dynamic
+                                </button>
+                              </QuickTooltip>
                             </div>
                           ) : placeholder.is_internal ? (
                             placeholder.placeholder_name === 'POCO Score' ? (
