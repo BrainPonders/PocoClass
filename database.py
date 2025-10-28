@@ -182,6 +182,38 @@ class Database:
             )
         """)
         
+        # Logs table for classification and rule execution events
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                type TEXT NOT NULL,
+                level TEXT NOT NULL,
+                source TEXT,
+                message TEXT NOT NULL,
+                rule_name TEXT,
+                rule_id TEXT,
+                document_id INTEGER,
+                document_name TEXT,
+                poco_score REAL,
+                poco_ocr REAL,
+                user_id INTEGER,
+                details TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        """)
+        
+        # Create index for faster log queries
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp DESC)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_logs_type ON logs(type)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)
+        """)
+        
         conn.commit()
         conn.close()
         logger.info("Database initialized")
@@ -895,3 +927,83 @@ class Database:
         
         conn.commit()
         conn.close()
+    
+    def add_log(self, log_type: str, level: str, message: str, 
+                rule_name: str = None, rule_id: str = None,
+                document_id: int = None, document_name: str = None,
+                poco_score: float = None, poco_ocr: float = None,
+                user_id: int = None, source: str = None, details: str = None):
+        """Add a log entry"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO logs (timestamp, type, level, source, message, rule_name, rule_id, 
+                            document_id, document_name, poco_score, poco_ocr, user_id, details)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (datetime.now().isoformat(), log_type, level, source, message, rule_name, rule_id,
+              document_id, document_name, poco_score, poco_ocr, user_id, details))
+        conn.commit()
+        log_id = cursor.lastrowid
+        conn.close()
+        return log_id
+    
+    def get_logs(self, limit: int = 500, order_by: str = '-timestamp',
+                 log_type: str = None, level: str = None,
+                 date_from: str = None, date_to: str = None,
+                 search: str = None) -> List[Dict]:
+        """Get logs with optional filtering"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM logs WHERE 1=1"
+        params = []
+        
+        if log_type and log_type != 'all':
+            query += " AND type = ?"
+            params.append(log_type)
+        
+        if level and level != 'all':
+            query += " AND level = ?"
+            params.append(level)
+        
+        if date_from:
+            query += " AND timestamp >= ?"
+            params.append(date_from)
+        
+        if date_to:
+            query += " AND timestamp <= ?"
+            # Add end of day
+            date_to_dt = datetime.fromisoformat(date_to)
+            date_to_dt = date_to_dt.replace(hour=23, minute=59, second=59)
+            params.append(date_to_dt.isoformat())
+        
+        if search:
+            query += " AND (message LIKE ? OR rule_name LIKE ? OR document_name LIKE ?)"
+            search_pattern = f"%{search}%"
+            params.extend([search_pattern, search_pattern, search_pattern])
+        
+        # Handle ordering - WHITELIST ALLOWED COLUMNS TO PREVENT SQL INJECTION
+        allowed_sort_fields = ['timestamp', 'type', 'level', 'rule_name', 'document_name', 'poco_score', 'poco_ocr']
+        desc = False
+        
+        if order_by.startswith('-'):
+            desc = True
+            sort_field = order_by[1:]
+        else:
+            sort_field = order_by
+        
+        # Validate sort field against whitelist
+        if sort_field not in allowed_sort_fields:
+            sort_field = 'timestamp'  # Default to timestamp if invalid
+        
+        query += f" ORDER BY {sort_field}"
+        query += " DESC" if desc else " ASC"
+        
+        if limit:
+            query += " LIMIT ?"
+            params.append(limit)
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
