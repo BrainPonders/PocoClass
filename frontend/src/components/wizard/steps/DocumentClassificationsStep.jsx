@@ -18,10 +18,12 @@ export default function DocumentClassificationsStep({
   const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
   const [customFieldNames, setCustomFieldNames] = React.useState({});
   const [customFieldsData, setCustomFieldsData] = React.useState({});
+  const [allPlaceholders, setAllPlaceholders] = React.useState([]);
 
   React.useEffect(() => {
     loadFieldDisplaySettings();
     loadCustomFieldsData();
+    loadAllPlaceholders();
   }, []);
 
   const loadFieldDisplaySettings = () => {
@@ -101,6 +103,21 @@ export default function DocumentClassificationsStep({
     }
   };
 
+  const loadAllPlaceholders = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/placeholders`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setAllPlaceholders(data);
+      }
+    } catch (e) {
+      console.error('Error loading placeholders:', e);
+    }
+  };
+
   // Helper function to safely get custom field name as string (defensive against objects)
   const getCustomFieldName = (fieldKey, defaultName) => {
     const rawValue = customFieldNames?.[fieldKey];
@@ -108,6 +125,17 @@ export default function DocumentClassificationsStep({
     if (typeof rawValue === 'string') return rawValue;
     // Handle object case (defensive coding for malformed localStorage data)
     return rawValue?.label || rawValue?.name || defaultName;
+  };
+
+  // Get all custom field placeholders that should be shown in predefined section
+  const getCustomFieldPlaceholders = (mode) => {
+    return allPlaceholders.filter(p => 
+      p.is_custom_field && 
+      !p.is_internal && 
+      !p.is_locked &&
+      p.visibility_mode &&
+      (p.visibility_mode === mode || p.visibility_mode === 'both')
+    );
   };
 
   const addExtractionRule = () => {
@@ -189,51 +217,24 @@ export default function DocumentClassificationsStep({
         fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false });
       }
       
-      // Custom fields that support dynamic extraction (string, integer, float, monetary, date)
-      // Document Category
-      if (fieldDisplaySettings.documentCategory === 'dynamic' || fieldDisplaySettings.documentCategory === 'both') {
-        const rawFieldName = customFieldNames?.documentCategory;
-        const fieldName = typeof rawFieldName === 'string' ? rawFieldName : (rawFieldName?.label || rawFieldName?.name || 'Document Category');
+      // Dynamically add ALL custom fields that support dynamic extraction (string, integer, float, monetary, date)
+      const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+      const dynamicCustomFields = getCustomFieldPlaceholders('dynamic');
+      
+      dynamicCustomFields.forEach(placeholder => {
+        const fieldName = placeholder.placeholder_name;
         const fieldData = customFieldsData[fieldName];
-        const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+        const fieldKey = `customField_${placeholder.id}`;
+        
+        // Only include if dataType is extractable (or unknown/null - be permissive)
         if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
           fields.push({ 
-            value: 'documentCategory', 
+            value: fieldKey, 
             label: `Custom Field: ${fieldName}`, 
             canRepeat: false 
           });
         }
-      }
-      
-      // Custom Field 1
-      if (fieldDisplaySettings.customField1 === 'dynamic' || fieldDisplaySettings.customField1 === 'both') {
-        const rawFieldName1 = customFieldNames?.customField1;
-        const fieldName1 = typeof rawFieldName1 === 'string' ? rawFieldName1 : (rawFieldName1?.label || rawFieldName1?.name || 'Custom Field 1');
-        const fieldData = customFieldsData[fieldName1];
-        const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
-        if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
-          fields.push({ 
-            value: 'customField1', 
-            label: `Custom Field: ${fieldName1}`, 
-            canRepeat: false 
-          });
-        }
-      }
-      
-      // Custom Field 2
-      if (fieldDisplaySettings.customField2 === 'dynamic' || fieldDisplaySettings.customField2 === 'both') {
-        const rawFieldName2 = customFieldNames?.customField2;
-        const fieldName2 = typeof rawFieldName2 === 'string' ? rawFieldName2 : (rawFieldName2?.label || rawFieldName2?.name || 'Custom Field 2');
-        const fieldData = customFieldsData[fieldName2];
-        const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
-        if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
-          fields.push({ 
-            value: 'customField2', 
-            label: `Custom Field: ${fieldName2}`, 
-            canRepeat: false 
-          });
-        }
-      }
+      });
     } catch (error) {
       console.error('Error building target fields:', error);
     }
@@ -327,65 +328,44 @@ export default function DocumentClassificationsStep({
             </div>
           )}
 
-          {(fieldDisplaySettings.documentCategory === 'predefined' || fieldDisplaySettings.documentCategory === 'both') && (
-            <div className="form-group">
-              <label className="form-label">Custom Field: {getCustomFieldName('documentCategory', 'Document Category')}</label>
-              {customFieldsData['Document Category']?.dataType === 'select' && customFieldsData['Document Category']?.extraData?.select_options ? (
-                <select
-                  value={ruleData.predefinedData?.documentCategory || ''}
-                  onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentCategory: e.target.value })}
-                  className="form-input"
-                  style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-                >
-                  <option value="">Select an option...</option>
-                  {customFieldsData['Document Category'].extraData.select_options.map((option, idx) => {
-                    const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
-                    const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
-                    return (
-                      <option key={idx} value={optionValue}>{optionLabel}</option>
-                    );
-                  })}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={ruleData.predefinedData?.documentCategory || ''}
-                  onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentCategory: e.target.value })}
-                  placeholder="Enter document category..."
-                  className="form-input"
-                  style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-                />
-              )}
-            </div>
-          )}
-
-          {(fieldDisplaySettings.customField1 === 'predefined' || fieldDisplaySettings.customField1 === 'both') && (
-            <div className="form-group">
-              <label className="form-label">Custom Field: {getCustomFieldName('customField1', 'Custom Field 1')}</label>
-              <input
-                type="text"
-                value={ruleData.predefinedData?.customField1 || ''}
-                onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, customField1: e.target.value })}
-                placeholder="Enter custom field value..."
-                className="form-input"
-                style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-              />
-            </div>
-          )}
-
-          {(fieldDisplaySettings.customField2 === 'predefined' || fieldDisplaySettings.customField2 === 'both') && (
-            <div className="form-group">
-              <label className="form-label">Custom Field: {getCustomFieldName('customField2', 'Custom Field 2')}</label>
-              <input
-                type="text"
-                value={ruleData.predefinedData?.customField2 || ''}
-                onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, customField2: e.target.value })}
-                placeholder="Enter custom field value..."
-                className="form-input"
-                style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-              />
-            </div>
-          )}
+          {/* Dynamically render ALL custom fields from Settings */}
+          {getCustomFieldPlaceholders('predefined').map(placeholder => {
+            const fieldName = placeholder.placeholder_name;
+            const fieldData = customFieldsData[fieldName];
+            const fieldKey = `customField_${placeholder.id}`;
+            
+            return (
+              <div key={placeholder.id} className="form-group">
+                <label className="form-label">Custom Field: {fieldName}</label>
+                {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
+                  <select
+                    value={ruleData.predefinedData?.[fieldKey] || ''}
+                    onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
+                    className="form-input"
+                    style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                  >
+                    <option value="">Select an option...</option>
+                    {fieldData.extraData.select_options.map((option, idx) => {
+                      const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
+                      const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
+                      return (
+                        <option key={idx} value={optionValue}>{optionLabel}</option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={ruleData.predefinedData?.[fieldKey] || ''}
+                    onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
+                    placeholder={`Enter ${fieldName.toLowerCase()}...`}
+                    className="form-input"
+                    style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
