@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FileStack, Filter, Download, RefreshCw } from 'lucide-react';
+import { FileStack, Download, RefreshCw } from 'lucide-react';
 import { Log } from '@/api/entities';
 import { useTranslation } from '@/components/translations';
+import LogFilterBar from '@/components/LogFilterBar';
 
 export default function Logs() {
   const { t } = useTranslation();
@@ -15,6 +16,17 @@ export default function Logs() {
     dateTo: '',
     search: ''
   });
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return date.toLocaleDateString('en-US', options);
+  };
+
+  const formatDateForCSV = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().replace('T', ' ').substring(0, 19);
+  };
 
   const loadLogs = useCallback(async () => {
     setLoading(true);
@@ -97,7 +109,7 @@ export default function Logs() {
     const csv = [
       ['Timestamp', 'Type', 'Level', 'Rule', 'Document', 'POCO Score', 'Message'],
       ...filteredLogs.map(log => [
-        moment(log.timestamp).format('YYYY-MM-DD HH:mm:ss'),
+        formatDateForCSV(log.timestamp),
         log.type,
         log.level,
         log.rule_name || '',
@@ -111,7 +123,8 @@ export default function Logs() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `pococlass_logs_${moment().format('YYYY-MM-DD')}.csv`;
+    const today = new Date().toISOString().split('T')[0];
+    link.download = `pococlass_logs_${today}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -158,69 +171,10 @@ export default function Logs() {
         </div>
       </div>
 
-      <div className="card mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div>
-            <input
-              type="text"
-              value={filters.search}
-              onChange={(e) => setFilters({...filters, search: e.target.value})}
-              placeholder="Search logs..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-          <div>
-            <select
-              value={filters.type}
-              onChange={(e) => setFilters({...filters, type: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
-            >
-              <option value="all">{t('logs_filter_all')}</option>
-              <option value="rule_execution">{t('logs_filter_rule_execution')}</option>
-              <option value="classification">{t('logs_filter_classification')}</option>
-              <option value="system">{t('logs_filter_system')}</option>
-              <option value="error">{t('logs_filter_error')}</option>
-              <option value="paperless_api">{t('logs_filter_paperless')}</option>
-            </select>
-          </div>
-          <div>
-            <select
-              value={filters.level}
-              onChange={(e) => setFilters({...filters, level: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white"
-            >
-              <option value="all">All Levels</option>
-              <option value="info">{t('logs_level_info')}</option>
-              <option value="success">{t('logs_level_success')}</option>
-              <option value="warning">{t('logs_level_warning')}</option>
-              <option value="error">{t('logs_level_error')}</option>
-            </select>
-          </div>
-          <div>
-            <input
-              type="date"
-              value={filters.dateFrom}
-              onChange={(e) => setFilters({...filters, dateFrom: e.target.value})}
-              placeholder="Date From"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-          <div>
-            <input
-              type="date"
-              value={filters.dateTo}
-              onChange={(e) => setFilters({...filters, dateTo: e.target.value})}
-              placeholder="Date To"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-            />
-          </div>
-        </div>
-        {(filters.type !== 'all' || filters.level !== 'all' || filters.dateFrom || filters.dateTo || filters.search) && (
-          <button onClick={clearFilters} className="btn btn-ghost btn-sm mt-4">
-            {t('logs_clear_filters')}
-          </button>
-        )}
-      </div>
+      <LogFilterBar 
+        filters={filters}
+        onFilterChange={setFilters}
+      />
 
       <div className="card">
         <div className="mb-4">
@@ -257,7 +211,7 @@ export default function Logs() {
                         </span>
                       )}
                       <span className="text-xs text-gray-500">
-                        {moment(log.timestamp).format('MMM D, YYYY HH:mm:ss')}
+                        {formatDate(log.timestamp)}
                       </span>
                     </div>
                     <p className="text-sm font-medium text-gray-900 mb-1">{log.message}</p>
