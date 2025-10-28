@@ -145,19 +145,19 @@ export default function DocumentClassificationsStep({
     
     // Date Created (only extractable field that makes sense for dynamic)
     if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
-      fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false });
+      fields.push({ value: 'dateCreated', label: String('Date Created'), canRepeat: false });
     }
     
     // Custom fields that support dynamic extraction (string, integer, float, monetary, date)
     // Document Category
     if (fieldDisplaySettings.documentCategory === 'dynamic' || fieldDisplaySettings.documentCategory === 'both') {
-      const fieldName = customFieldNames.documentCategory || 'Document Category';
+      const fieldName = String(customFieldNames.documentCategory || 'Document Category');
       const fieldData = customFieldsData[fieldName];
       const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
       if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
         fields.push({ 
           value: 'documentCategory', 
-          label: `Custom Field: ${fieldName}`, 
+          label: String(`Custom Field: ${fieldName}`), 
           canRepeat: false 
         });
       }
@@ -165,12 +165,13 @@ export default function DocumentClassificationsStep({
     
     // Custom Field 1
     if (fieldDisplaySettings.customField1 === 'dynamic' || fieldDisplaySettings.customField1 === 'both') {
-      const fieldData = customFieldsData[customFieldNames.customField1];
+      const fieldName1 = String(customFieldNames.customField1 || 'Custom Field 1');
+      const fieldData = customFieldsData[fieldName1];
       const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
       if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
         fields.push({ 
           value: 'customField1', 
-          label: `Custom Field: ${customFieldNames.customField1 || 'Custom Field 1'}`, 
+          label: String(`Custom Field: ${fieldName1}`), 
           canRepeat: false 
         });
       }
@@ -178,12 +179,13 @@ export default function DocumentClassificationsStep({
     
     // Custom Field 2
     if (fieldDisplaySettings.customField2 === 'dynamic' || fieldDisplaySettings.customField2 === 'both') {
-      const fieldData = customFieldsData[customFieldNames.customField2];
+      const fieldName2 = String(customFieldNames.customField2 || 'Custom Field 2');
+      const fieldData = customFieldsData[fieldName2];
       const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
       if (!fieldData || extractableTypes.includes(fieldData.dataType)) {
         fields.push({ 
           value: 'customField2', 
-          label: `Custom Field: ${customFieldNames.customField2 || 'Custom Field 2'}`, 
+          label: String(`Custom Field: ${fieldName2}`), 
           canRepeat: false 
         });
       }
