@@ -27,15 +27,6 @@ export default function DocumentClassificationsStep({
     loadAllPlaceholders();
   }, []);
 
-  // Debug: Log state when it changes
-  React.useEffect(() => {
-    console.log('Placeholders state changed:', allPlaceholders.length, 'items');
-  }, [allPlaceholders]);
-
-  React.useEffect(() => {
-    console.log('Placeholders loaded state:', placeholdersLoaded);
-  }, [placeholdersLoaded]);
-
   const loadFieldDisplaySettings = () => {
     try {
       const settings = localStorage.getItem('pococlass_settings');
@@ -115,10 +106,8 @@ export default function DocumentClassificationsStep({
 
   const loadAllPlaceholders = async () => {
     try {
-      console.log('Starting to load placeholders...');
       const { apiClient } = await import('../../../api/apiClient');
       const data = await apiClient.get('/settings/placeholders');
-      console.log('Loaded placeholders:', data.length, 'items:', data);
       setAllPlaceholders(data);
       setPlaceholdersLoaded(true);
     } catch (e) {
@@ -137,20 +126,13 @@ export default function DocumentClassificationsStep({
 
   // Get all custom field placeholders that should be shown in predefined section
   const getCustomFieldPlaceholders = (mode) => {
-    console.log('Getting placeholders for mode:', mode, 'Total placeholders:', allPlaceholders.length);
-    const filtered = allPlaceholders.filter(p => {
-      const matches = p.is_custom_field && 
+    return allPlaceholders.filter(p => {
+      return p.is_custom_field && 
         !p.is_internal && 
         !p.is_locked &&
         p.visibility_mode &&
         (p.visibility_mode === mode || p.visibility_mode === 'both');
-      if (matches) {
-        console.log('Matched placeholder:', p.placeholder_name, 'visibility:', p.visibility_mode);
-      }
-      return matches;
     });
-    console.log('Filtered placeholders:', filtered.length);
-    return filtered;
   };
 
   const addExtractionRule = () => {
