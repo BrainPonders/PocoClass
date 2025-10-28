@@ -696,7 +696,7 @@ class Database:
         logger.info(f"Synced {synced} Paperless users")
         return synced
     
-    def get_user_by_paperless_id(self, paperless_id: int) -> Optional[str]:
+    def get_cached_username_by_paperless_id(self, paperless_id: int) -> Optional[str]:
         """Get cached username by Paperless user ID"""
         conn = self.get_connection()
         cursor = conn.cursor()
