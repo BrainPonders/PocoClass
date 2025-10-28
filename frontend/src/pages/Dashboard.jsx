@@ -387,7 +387,7 @@ export default function Dashboard() {
                             <FileText className="w-4 h-4" />
                           </button>
                           <button 
-                            className="btn btn-primary btn-sm ml-auto"
+                            className="btn btn-primary btn-sm"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCreateRuleForDocument(doc);
