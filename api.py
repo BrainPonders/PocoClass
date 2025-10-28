@@ -1165,8 +1165,27 @@ def test_rule(rule_id):
 def list_logs():
     """List logs"""
     try:
-        # TODO: Implement log retrieval from log file
-        return jsonify([])
+        # Get filter parameters
+        limit = request.args.get('limit', 500, type=int)
+        order_by = request.args.get('order', '-timestamp')
+        log_type = request.args.get('type')
+        level = request.args.get('level')
+        date_from = request.args.get('dateFrom')
+        date_to = request.args.get('dateTo')
+        search = request.args.get('search')
+        
+        # Retrieve logs from database
+        logs = db.get_logs(
+            limit=limit,
+            order_by=order_by,
+            log_type=log_type,
+            level=level,
+            date_from=date_from,
+            date_to=date_to,
+            search=search
+        )
+        
+        return jsonify(logs)
     except Exception as e:
         logger.error(f"Error listing logs: {e}")
         return jsonify({'error': str(e)}), 500
@@ -1490,12 +1509,14 @@ def test_rule_endpoint():
         document_content = data.get('documentContent', '')
         document_filename = data.get('documentFilename', 'test.pdf')
         paperless_metadata = data.get('paperlessMetadata', None)
+        document_id = data.get('documentId')
         
         if not rule_data:
             return jsonify({'error': 'Rule data is required'}), 400
         
         # Convert frontend format to backend format if needed
         backend_rule = convert_frontend_to_backend(rule_data)
+        rule_name = backend_rule.get('rule_name', 'Unnamed Rule')
         
         # Test the rule
         result = test_engine.test_rule(
@@ -1505,9 +1526,36 @@ def test_rule_endpoint():
             paperless_metadata
         )
         
+        # Log the test result
+        if result.get('success'):
+            poco_score = result.get('scores', {}).get('poco_score', 0)
+            poco_ocr = result.get('scores', {}).get('poco_ocr_score', 0)
+            matched = result.get('result') == 'Match'
+            
+            db.add_log(
+                log_type='rule_execution',
+                level='success' if matched else 'info',
+                message=f"Rule test {'successful' if matched else 'completed'}: {rule_name} - {'Match' if matched else 'No match'}",
+                rule_name=rule_name,
+                rule_id=rule_data.get('id'),
+                document_id=document_id,
+                document_name=document_filename,
+                poco_score=poco_score,
+                poco_ocr=poco_ocr,
+                source='test_engine'
+            )
+        
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error testing rule: {e}", exc_info=True)
+        # Log the error
+        db.add_log(
+            log_type='error',
+            level='error',
+            message=f"Rule test failed: {str(e)}",
+            rule_name=rule_data.get('ruleName', 'Unknown') if rule_data else 'Unknown',
+            source='test_engine'
+        )
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>/execute', methods=['POST'])

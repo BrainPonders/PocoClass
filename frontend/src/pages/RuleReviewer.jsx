@@ -457,7 +457,7 @@ export default function RuleReviewer() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">View</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -487,7 +487,7 @@ export default function RuleReviewer() {
                         )}
                       </td>
                       <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 justify-center">
                           <button 
                             className="btn btn-ghost btn-sm p-1"
                             onClick={(e) => {
@@ -541,7 +541,7 @@ export default function RuleReviewer() {
               ) : (
                 <>
                   <Play className="w-5 h-5 mr-2" />
-                  Run Evaluation
+                  RUN
                 </>
               )}
             </button>
