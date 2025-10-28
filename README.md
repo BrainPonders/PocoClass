@@ -178,6 +178,93 @@ curl -X POST http://localhost:8000/api/test \
   -d '{"rule_id": "your_rule", "content": "document content"}'
 ```
 
+## Future Enhancements / Roadmap
+
+### High Priority
+
+#### Dynamic Extraction for Additional Fields
+Currently, only **Date Created** and **Custom Fields** (string, integer, float, monetary, date types) support dynamic extraction. The following built-in fields are planned for future support:
+
+1. **Correspondent, Document Type, Tags** (Complex)
+   - **Challenge**: Risk of database pollution from poor OCR creating duplicate entries
+   - **Option A - Sanity Check (Recommended)**: 
+     - Match extracted values against existing Paperless options only
+     - Implement fuzzy matching algorithm (e.g., "Bank of Amercia" → "Bank of America")
+     - Confidence threshold for matches (e.g., 80% similarity required)
+     - Log rejected extractions for manual review
+     - Safer approach, prevents OCR errors from creating "Sank of America", "Bank 0f America" as separate correspondents
+   - **Option B - Auto-Create (Advanced)**:
+     - Allow PocoClass to create new correspondents/types/tags automatically
+     - Requires safeguards: confidence scoring, duplicate detection, similarity checking
+     - Manual review queue for low-confidence extractions
+     - Higher automation but riskier with poor OCR quality
+
+2. **Title** (Medium Complexity)
+   - Extract document titles from OCR content
+   - Useful for standardizing document naming conventions
+   - Example: Extract "Invoice #12345" from invoice header
+
+3. **Archive Serial Number** (Low Complexity)
+   - Extract archive serial numbers from document content
+   - Pattern-based extraction with regex support
+   - Validation against expected format (e.g., ASN-2024-001)
+
+4. **Storage Path** (Low Complexity)
+   - Dynamic assignment of storage paths based on document content
+   - Requires mapping extracted values to existing storage path options
+
+### Medium Priority
+
+#### Data Validation Integration
+- **Status**: Validation methods exist in `metadata_processor.py` but not yet integrated into extraction flow
+- **Tasks**:
+  - Wire `validate_and_sanitize_value()` into dynamic metadata extraction
+  - Apply validation for monetary (. separator, 2 decimal places), integer (whole numbers), float formats
+  - Add validation error reporting in test results
+
+#### Enhanced OCR Pattern Matching
+- Support for more complex logic operators (NOT, XOR)
+- Pattern libraries for common document types (invoices, receipts, contracts)
+- Machine learning-based pattern suggestions based on document corpus
+
+#### Rule Testing Enhancements
+- Batch testing against multiple documents
+- Performance metrics and analytics
+- A/B testing for rule variations
+- Historical accuracy tracking
+
+### Low Priority
+
+#### UI/UX Improvements
+- Dark mode support
+- Rule templates library with pre-built rules for common documents
+- Visual pattern builder (drag-and-drop interface)
+- Rule performance dashboard with charts and statistics
+
+#### Advanced Features
+- Multi-language OCR support with language detection
+- Integration with external OCR engines (Tesseract, Google Vision API)
+- Webhook support for real-time document processing
+- Bulk rule execution with progress tracking
+- Export/import rules between PocoClass instances
+
+#### Performance Optimizations
+- Rule execution caching for identical documents
+- Parallel rule processing for batch operations
+- Database query optimization for large document sets
+- Frontend code splitting for faster initial load
+
+### Technical Debt
+- Migrate from SQLite to PostgreSQL for production deployments
+- Add comprehensive unit and integration tests
+- API documentation with OpenAPI/Swagger
+- Implement proper logging levels and rotation
+- Add database migration system (e.g., Alembic)
+
+---
+
+**Note**: This roadmap is subject to change based on user feedback and priorities. Contributions addressing these items are welcome!
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
