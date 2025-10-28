@@ -171,6 +171,9 @@ export default function Settings() {
       });
 
       if (!response.ok) throw new Error('Sync failed');
+      
+      // Reload custom fields data after sync to get new/updated fields
+      await loadCustomFieldsData();
 
       const data = await response.json();
       toast({
@@ -379,19 +382,32 @@ export default function Settings() {
   };
 
   const isDynamicExtractable = (fieldName, isCustomField) => {
-    if (!isCustomField) return true; // Built-in fields are extractable
+    // Built-in fields: only Date Created supports dynamic extraction
+    if (!isCustomField) {
+      const extractableBuiltInFields = ['Date Created'];
+      return extractableBuiltInFields.includes(fieldName);
+    }
     
     const dataType = getCustomFieldDataType(fieldName);
+    if (!dataType) return false; // No datatype means not extractable
+    
     // Only these types support dynamic extraction
     const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
     return extractableTypes.includes(dataType);
   };
 
   const getDynamicDisabledReason = (fieldName, isCustomField) => {
-    if (!isCustomField) return null;
+    if (!isCustomField) {
+      // Built-in fields that don't support dynamic extraction
+      const extractableBuiltInFields = ['Date Created'];
+      if (!extractableBuiltInFields.includes(fieldName)) {
+        return 'This field does not support dynamic extraction';
+      }
+      return null;
+    }
     
     const dataType = getCustomFieldDataType(fieldName);
-    if (!dataType) return 'Datatype unknown';
+    if (!dataType) return 'Datatype unknown - sync with Paperless-ngx to load field information';
     
     if (dataType === 'select') return 'Select fields have predefined options and cannot be extracted dynamically';
     if (dataType === 'boolean') return 'Boolean fields cannot be extracted from text';
@@ -1050,9 +1066,9 @@ export default function Settings() {
                     <h3 className="text-sm font-semibold text-blue-900 mb-2">Visibility Modes</h3>
                     <ul className="text-xs text-blue-800 space-y-1">
                       <li><strong>Disabled:</strong> Field is hidden from the wizard</li>
-                      <li><strong>Predefined Only:</strong> Show dropdown with existing values (used in verification)</li>
-                      <li><strong>Dynamic Only:</strong> Extract value from document content only</li>
-                      <li><strong>Both:</strong> Show dropdown + extract from document (recommended)</li>
+                      <li><strong>Predefined:</strong> Show dropdown with existing values from Paperless (used for static assignment and verification)</li>
+                      <li><strong>Dynamic:</strong> Extract value from document content using patterns and anchors</li>
+                      <li><strong>Both Enabled:</strong> Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically</li>
                     </ul>
                   </div>
 
