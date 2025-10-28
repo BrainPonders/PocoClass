@@ -56,6 +56,9 @@ export default function Settings() {
         setSyncStatus(data.syncStatus || null);
         setSyncHistory(data.syncHistory || []);
         setUsers(data.users || []);
+
+        // Sync all placeholders to localStorage
+        syncAllPlaceholdersToLocalStorage(data.placeholders || []);
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -349,6 +352,73 @@ export default function Settings() {
         variant: 'destructive',
         duration: 3000,
       });
+    }
+  };
+
+  const syncAllPlaceholdersToLocalStorage = (placeholdersList) => {
+    try {
+      const settings = localStorage.getItem('pococlass_settings');
+      const parsed = settings ? JSON.parse(settings) : {};
+      
+      if (!parsed.fieldDisplaySettings) {
+        parsed.fieldDisplaySettings = {};
+      }
+      if (!parsed.customFieldNames) {
+        parsed.customFieldNames = {};
+      }
+
+      // Built-in field mappings
+      const builtInMap = {
+        'Title': 'title',
+        'Archive Serial Number': 'archiveSerialNumber',
+        'Date Created': 'dateCreated',
+        'Correspondent': 'correspondent',
+        'Document Type': 'documentType',
+        'Storage Path': 'storagePath',
+        'Tags': 'tags'
+      };
+
+      // Process each placeholder
+      placeholdersList.forEach(placeholder => {
+        const placeholderName = placeholder.placeholder_name;
+        const visibilityMode = placeholder.visibility_mode;
+        
+        let fieldKey = builtInMap[placeholderName];
+        
+        // For custom fields, assign to slots
+        if (!fieldKey && placeholder.is_custom_field) {
+          // Check if already mapped
+          if (placeholderName === parsed.customFieldNames.documentCategory) {
+            fieldKey = 'documentCategory';
+          } else if (placeholderName === parsed.customFieldNames.customField1) {
+            fieldKey = 'customField1';
+          } else if (placeholderName === parsed.customFieldNames.customField2) {
+            fieldKey = 'customField2';
+          } else {
+            // Assign to first available slot
+            if (!parsed.customFieldNames.documentCategory) {
+              fieldKey = 'documentCategory';
+              parsed.customFieldNames.documentCategory = placeholderName;
+            } else if (!parsed.customFieldNames.customField1) {
+              fieldKey = 'customField1';
+              parsed.customFieldNames.customField1 = placeholderName;
+            } else if (!parsed.customFieldNames.customField2) {
+              fieldKey = 'customField2';
+              parsed.customFieldNames.customField2 = placeholderName;
+            }
+          }
+        }
+
+        // Update field display setting
+        if (fieldKey) {
+          parsed.fieldDisplaySettings[fieldKey] = visibilityMode;
+        }
+      });
+
+      localStorage.setItem('pococlass_settings', JSON.stringify(parsed));
+      console.log('Synced all placeholders to localStorage:', parsed);
+    } catch (e) {
+      console.error('Error syncing placeholders to localStorage:', e);
     }
   };
 
