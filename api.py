@@ -1214,10 +1214,10 @@ def list_documents():
         # Fetch documents
         documents = api_client.get_documents(limit=limit, ignore_tags=ignore_tags)
         
-        # Get cached data for lookups
-        correspondents = {c['id']: c for c in db.get_all_correspondents()}
-        doc_types = {dt['id']: dt for dt in db.get_all_document_types()}
-        tags = {t['id']: t for t in db.get_all_tags()}
+        # Get cached data for lookups (use paperless_id as key, not internal id)
+        correspondents = {c['paperless_id']: c for c in db.get_all_correspondents()}
+        doc_types = {dt['paperless_id']: dt for dt in db.get_all_document_types()}
+        tags = {t['paperless_id']: t for t in db.get_all_tags()}
         
         # Convert to frontend format
         formatted_docs = []
