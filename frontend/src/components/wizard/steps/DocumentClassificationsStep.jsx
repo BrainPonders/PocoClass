@@ -17,9 +17,11 @@ export default function DocumentClassificationsStep({
   const [activeRuleIndex, setActiveRuleIndex] = React.useState(null);
   const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
   const [customFieldNames, setCustomFieldNames] = React.useState({});
+  const [customFieldsData, setCustomFieldsData] = React.useState({});
 
   React.useEffect(() => {
     loadFieldDisplaySettings();
+    loadCustomFieldsData();
   }, []);
 
   const loadFieldDisplaySettings = () => {
@@ -45,6 +47,26 @@ export default function DocumentClassificationsStep({
       }
     } catch (e) {
       console.error('Error reading settings:', e);
+    }
+  };
+
+  const loadCustomFieldsData = async () => {
+    try {
+      const { Paperless } = await import('@/api/entities');
+      const customFields = await Paperless.getCustomFields();
+      
+      const fieldsMap = {};
+      customFields.forEach(field => {
+        const fieldName = field.name;
+        fieldsMap[fieldName] = {
+          dataType: field.data_type,
+          extraData: field.extra_data,
+          id: field.paperless_id
+        };
+      });
+      setCustomFieldsData(fieldsMap);
+    } catch (e) {
+      console.error('Error loading custom fields:', e);
     }
   };
 
@@ -125,12 +147,32 @@ export default function DocumentClassificationsStep({
   const getAvailableTargetFields = () => {
     const fields = [];
     
-    // dateCreated is available for dynamic extraction if its setting is 'dynamic' or 'both'
-    // This aligns its availability with custom fields and tags for consistency.
+    // Title (can be extracted dynamically)
+    if (fieldDisplaySettings.title === 'dynamic' || fieldDisplaySettings.title === 'both') {
+      fields.push({ value: 'title', label: 'Title', canRepeat: false });
+    }
+    
+    // Date Created
     if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
       fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false });
     }
-    // Added Document Category
+    
+    // Correspondent
+    if (fieldDisplaySettings.correspondent === 'dynamic' || fieldDisplaySettings.correspondent === 'both') {
+      fields.push({ value: 'correspondent', label: 'Correspondent', canRepeat: false });
+    }
+    
+    // Document Type
+    if (fieldDisplaySettings.documentType === 'dynamic' || fieldDisplaySettings.documentType === 'both') {
+      fields.push({ value: 'documentType', label: 'Document Type', canRepeat: false });
+    }
+    
+    // Tags (can be extracted multiple times)
+    if (fieldDisplaySettings.tags === 'dynamic' || fieldDisplaySettings.tags === 'both') {
+      fields.push({ value: 'tags', label: 'Tags', canRepeat: true });
+    }
+    
+    // Custom Field: Document Category
     if (fieldDisplaySettings.documentCategory === 'dynamic' || fieldDisplaySettings.documentCategory === 'both') {
       fields.push({ 
         value: 'documentCategory', 
@@ -138,7 +180,8 @@ export default function DocumentClassificationsStep({
         canRepeat: false 
       });
     }
-    // Updated labels for Custom Fields
+    
+    // Custom Field 1
     if (fieldDisplaySettings.customField1 === 'dynamic' || fieldDisplaySettings.customField1 === 'both') {
       fields.push({ 
         value: 'customField1', 
@@ -146,16 +189,14 @@ export default function DocumentClassificationsStep({
         canRepeat: false 
       });
     }
+    
+    // Custom Field 2
     if (fieldDisplaySettings.customField2 === 'dynamic' || fieldDisplaySettings.customField2 === 'both') {
       fields.push({ 
         value: 'customField2', 
         label: `Custom Field: ${customFieldNames.customField2 || 'Custom Field 2'}`, 
         canRepeat: false 
       });
-    }
-    // Tags can be extracted dynamically if configured for dynamic extraction or both
-    if (fieldDisplaySettings.tags === 'dynamic' || fieldDisplaySettings.tags === 'both') {
-      fields.push({ value: 'tags', label: 'Tags', canRepeat: true });
     }
     
     return fields;
@@ -251,14 +292,28 @@ export default function DocumentClassificationsStep({
           {(fieldDisplaySettings.documentCategory === 'predefined' || fieldDisplaySettings.documentCategory === 'both') && (
             <div className="form-group">
               <label className="form-label">Custom Field: {customFieldNames.documentCategory || 'Document Category'}</label>
-              <input
-                type="text"
-                value={ruleData.predefinedData?.documentCategory || ''}
-                onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentCategory: e.target.value })}
-                placeholder="Enter document category..."
-                className="form-input"
-                style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-              />
+              {customFieldsData['Document Category']?.dataType === 'select' && customFieldsData['Document Category']?.extraData?.select_options ? (
+                <select
+                  value={ruleData.predefinedData?.documentCategory || ''}
+                  onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentCategory: e.target.value })}
+                  className="form-input"
+                  style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                >
+                  <option value="">Select an option...</option>
+                  {customFieldsData['Document Category'].extraData.select_options.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={ruleData.predefinedData?.documentCategory || ''}
+                  onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentCategory: e.target.value })}
+                  placeholder="Enter document category..."
+                  className="form-input"
+                  style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                />
+              )}
             </div>
           )}
 

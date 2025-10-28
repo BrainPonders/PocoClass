@@ -121,6 +121,7 @@ class Database:
                 paperless_id INTEGER UNIQUE NOT NULL,
                 name TEXT NOT NULL,
                 data_type TEXT,
+                extra_data TEXT,
                 last_synced TEXT NOT NULL
             )
         """)
@@ -213,6 +214,13 @@ class Database:
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)
         """)
+        
+        # Migration: Add extra_data column to paperless_custom_fields if it doesn't exist
+        cursor.execute("PRAGMA table_info(paperless_custom_fields)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'extra_data' not in columns:
+            cursor.execute("ALTER TABLE paperless_custom_fields ADD COLUMN extra_data TEXT")
+            logger.info("Added extra_data column to paperless_custom_fields table")
         
         conn.commit()
         conn.close()
@@ -638,10 +646,12 @@ class Database:
         
         # Insert or update current fields
         for cf in custom_fields:
+            import json
+            extra_data_json = json.dumps(cf.get('extra_data', {})) if cf.get('extra_data') else None
             cursor.execute("""
-                INSERT OR REPLACE INTO paperless_custom_fields (paperless_id, name, data_type, last_synced)
-                VALUES (?, ?, ?, ?)
-            """, (cf['id'], cf['name'], cf.get('data_type', 'string'), now))
+                INSERT OR REPLACE INTO paperless_custom_fields (paperless_id, name, data_type, extra_data, last_synced)
+                VALUES (?, ?, ?, ?, ?)
+            """, (cf['id'], cf['name'], cf.get('data_type', 'string'), extra_data_json, now))
             synced += 1
         
         conn.commit()
@@ -665,12 +675,24 @@ class Database:
     
     def get_all_custom_fields(self) -> List[Dict]:
         """Get all cached custom fields"""
+        import json
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM paperless_custom_fields ORDER BY name")
         rows = cursor.fetchall()
         conn.close()
-        return [dict(row) for row in rows]
+        
+        result = []
+        for row in rows:
+            field_dict = dict(row)
+            # Parse extra_data JSON if it exists
+            if field_dict.get('extra_data'):
+                try:
+                    field_dict['extra_data'] = json.loads(field_dict['extra_data'])
+                except (json.JSONDecodeError, TypeError):
+                    field_dict['extra_data'] = {}
+            result.append(field_dict)
+        return result
     
     def sync_users(self, users: List[Dict]) -> int:
         """Sync Paperless users from API"""
