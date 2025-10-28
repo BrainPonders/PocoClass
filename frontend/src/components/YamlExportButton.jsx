@@ -37,7 +37,7 @@ predefined_data:
 
 # Filename Patterns (multiplier: ${ruleData.filenameMultiplier || 1})
 filename_patterns:
-  patterns: [${ruleData.filenamePatterns?.patterns?.map(p => `"${p.pattern}"`).join(', ') || ''}]
+  patterns: [${ruleData.filenamePatterns?.patterns?.filter(p => p && p.trim()).map(p => `"${p}"`).join(', ') || ''}]
   date_formats: [${ruleData.filenamePatterns?.dateFormats?.map(f => `"${f.format}"`).join(', ') || ''}]
 
 # Status
