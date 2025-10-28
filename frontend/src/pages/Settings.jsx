@@ -179,7 +179,7 @@ export default function Settings() {
       const data = await response.json();
       toast({
         title: 'Sync Complete',
-        description: `Synced: ${data.results.correspondents} correspondents, ${data.results.tags} tags, ${data.results.document_types} document types, ${data.results.custom_fields} custom fields`,
+        description: `Synced: ${data.results.correspondents} correspondents, ${data.results.tags} tags, ${data.results.document_types} document types, ${data.results.custom_fields} custom fields, ${data.results.users} users`,
         duration: 5000,
       });
 
