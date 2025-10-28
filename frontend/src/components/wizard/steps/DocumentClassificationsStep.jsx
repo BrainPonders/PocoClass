@@ -242,7 +242,8 @@ export default function DocumentClassificationsStep({
         const fieldKey = `customField_${placeholder.id}`;
         
         // Only include if dataType is extractable (or unknown/null - be permissive)
-        if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
+        // AND the field doesn't have a predefined value (conflict prevention)
+        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasPredefinedValue(fieldKey)) {
           fields.push({ 
             value: fieldKey, 
             label: `Custom Field: ${fieldName}`, 
@@ -261,6 +262,18 @@ export default function DocumentClassificationsStep({
     // All fields can only be extracted once
     const rules = ruleData.dynamicData?.extractionRules || [];
     return rules.some((rule, idx) => idx !== currentIndex && rule.targetField === fieldValue);
+  };
+
+  // Check if a field has a predefined value set
+  const hasPredefinedValue = (fieldKey) => {
+    const value = ruleData.predefinedData?.[fieldKey];
+    return value !== undefined && value !== null && value !== '';
+  };
+
+  // Check if a field has a dynamic extraction rule
+  const hasDynamicRule = (fieldKey) => {
+    const rules = ruleData.dynamicData?.extractionRules || [];
+    return rules.some(rule => rule.targetField === fieldKey);
   };
 
   const targetFields = getAvailableTargetFields();
@@ -348,16 +361,26 @@ export default function DocumentClassificationsStep({
             const fieldName = placeholder.placeholder_name;
             const fieldData = customFieldsData[fieldName];
             const fieldKey = `customField_${placeholder.id}`;
+            const hasConflict = hasDynamicRule(fieldKey);
             
             return (
               <div key={placeholder.id} className="form-group">
                 <label className="form-label">Custom Field: {fieldName}</label>
+                {hasConflict && (
+                  <div className="mb-2 p-3 bg-yellow-50 border border-yellow-300 rounded-lg flex items-start gap-2">
+                    <span className="text-yellow-600 text-lg">⚠️</span>
+                    <div className="text-sm text-yellow-800">
+                      <strong>Conflict:</strong> This field already has a dynamic extraction rule. You can only use predefined OR dynamic, not both. Remove the dynamic rule to enter a predefined value.
+                    </div>
+                  </div>
+                )}
                 {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
                   <select
                     value={ruleData.predefinedData?.[fieldKey] || ''}
                     onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
                     className="form-input"
                     style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                    disabled={hasConflict}
                   >
                     <option value="">Select an option...</option>
                     {fieldData.extraData.select_options.map((option, idx) => {
@@ -373,9 +396,10 @@ export default function DocumentClassificationsStep({
                     type="text"
                     value={ruleData.predefinedData?.[fieldKey] || ''}
                     onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
-                    placeholder={`Enter ${fieldName.toLowerCase()}...`}
+                    placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
                     className="form-input"
                     style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                    disabled={hasConflict}
                   />
                 )}
               </div>
@@ -396,6 +420,20 @@ export default function DocumentClassificationsStep({
         <p className="text-gray-600 mb-4">
           Define anchor points and extraction patterns for dynamic field population
         </p>
+
+        {/* Show info about filtered fields */}
+        {(() => {
+          const allDynamicFields = getCustomFieldPlaceholders('dynamic');
+          const filteredCount = allDynamicFields.filter(p => hasPredefinedValue(`customField_${p.id}`)).length;
+          return filteredCount > 0 && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg flex items-start gap-2">
+              <span className="text-blue-600 text-lg">ℹ️</span>
+              <div className="text-sm text-blue-800">
+                <strong>Note:</strong> {filteredCount} custom field{filteredCount > 1 ? 's are' : ' is'} hidden from the dropdown because {filteredCount > 1 ? 'they already have' : 'it already has'} predefined values. Clear the predefined value to enable dynamic extraction.
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Graphic Representation */}
         <div className="flex items-center justify-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
