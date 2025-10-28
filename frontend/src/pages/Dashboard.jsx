@@ -338,6 +338,7 @@ export default function Dashboard() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
                     <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
+                    <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -386,6 +387,10 @@ export default function Dashboard() {
                           >
                             <FileText className="w-4 h-4" />
                           </button>
+                        </div>
+                      </td>
+                      <td className="py-2 whitespace-nowrap">
+                        <div className="flex justify-center">
                           <button 
                             className="btn btn-primary btn-sm"
                             onClick={(e) => {
