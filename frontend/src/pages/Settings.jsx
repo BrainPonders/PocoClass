@@ -940,7 +940,7 @@ export default function Settings() {
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              {placeholder.is_locked && <Lock className="w-4 h-4 text-gray-500" />}
+                              {!!placeholder.is_locked && <Lock className="w-4 h-4 text-gray-500" />}
                               <div className="text-sm font-medium text-gray-900">
                                 {placeholder.placeholder_name}
                               </div>
