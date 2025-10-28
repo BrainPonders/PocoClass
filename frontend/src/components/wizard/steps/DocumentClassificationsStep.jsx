@@ -27,37 +27,57 @@ export default function DocumentClassificationsStep({
   const loadFieldDisplaySettings = () => {
     try {
       const settings = localStorage.getItem('pococlass_settings');
-      if (settings) {
-        const parsed = JSON.parse(settings);
-        setFieldDisplaySettings(parsed.fieldDisplaySettings || {
-          title: 'predefined',
-          dateCreated: 'dynamic', // Default for dateCreated
-          correspondent: 'predefined',
-          documentType: 'predefined',
-          tags: 'predefined',
-          customField1: 'disabled',
-          customField2: 'disabled',
-          documentCategory: 'predefined'
-        });
-        
-        // Ensure customFieldNames are always strings, not objects
-        const rawNames = parsed.customFieldNames || {
-          customField1: 'Invoice Number',
-          customField2: 'Reference ID',
-          documentCategory: 'Document Category'
-        };
-        
-        // Convert any objects to strings (defensive coding)
-        const safeNames = {};
-        Object.keys(rawNames).forEach(key => {
-          const value = rawNames[key];
-          safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || 'Custom Field');
-        });
-        
-        setCustomFieldNames(safeNames);
-      }
+      const parsed = settings ? JSON.parse(settings) : {};
+      
+      // Always set defaults (whether localStorage exists or not)
+      const defaultFieldSettings = {
+        title: 'predefined',
+        dateCreated: 'dynamic',
+        correspondent: 'predefined',
+        documentType: 'predefined',
+        tags: 'predefined',
+        customField1: 'disabled',
+        customField2: 'disabled',
+        documentCategory: 'predefined'
+      };
+      
+      const defaultCustomNames = {
+        customField1: 'Invoice Number',
+        customField2: 'Reference ID',
+        documentCategory: 'Document Category'
+      };
+      
+      setFieldDisplaySettings(parsed.fieldDisplaySettings || defaultFieldSettings);
+      
+      // Ensure customFieldNames are always strings, not objects
+      const rawNames = parsed.customFieldNames || defaultCustomNames;
+      
+      // Convert any objects to strings (defensive coding)
+      const safeNames = {};
+      Object.keys(rawNames).forEach(key => {
+        const value = rawNames[key];
+        safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || 'Custom Field');
+      });
+      
+      setCustomFieldNames(safeNames);
     } catch (e) {
       console.error('Error reading settings:', e);
+      // On error, set safe defaults
+      setFieldDisplaySettings({
+        title: 'predefined',
+        dateCreated: 'dynamic',
+        correspondent: 'predefined',
+        documentType: 'predefined',
+        tags: 'predefined',
+        customField1: 'disabled',
+        customField2: 'disabled',
+        documentCategory: 'predefined'
+      });
+      setCustomFieldNames({
+        customField1: 'Invoice Number',
+        customField2: 'Reference ID',
+        documentCategory: 'Document Category'
+      });
     }
   };
 
