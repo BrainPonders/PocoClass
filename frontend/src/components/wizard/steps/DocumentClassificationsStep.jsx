@@ -106,12 +106,15 @@ export default function DocumentClassificationsStep({
   const loadAllPlaceholders = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/placeholders`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/settings/placeholders`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('Loaded placeholders:', data);
         setAllPlaceholders(data);
+      } else {
+        console.error('Failed to load placeholders, status:', response.status);
       }
     } catch (e) {
       console.error('Error loading placeholders:', e);
@@ -129,13 +132,20 @@ export default function DocumentClassificationsStep({
 
   // Get all custom field placeholders that should be shown in predefined section
   const getCustomFieldPlaceholders = (mode) => {
-    return allPlaceholders.filter(p => 
-      p.is_custom_field && 
-      !p.is_internal && 
-      !p.is_locked &&
-      p.visibility_mode &&
-      (p.visibility_mode === mode || p.visibility_mode === 'both')
-    );
+    console.log('Getting placeholders for mode:', mode, 'Total placeholders:', allPlaceholders.length);
+    const filtered = allPlaceholders.filter(p => {
+      const matches = p.is_custom_field && 
+        !p.is_internal && 
+        !p.is_locked &&
+        p.visibility_mode &&
+        (p.visibility_mode === mode || p.visibility_mode === 'both');
+      if (matches) {
+        console.log('Matched placeholder:', p.placeholder_name, 'visibility:', p.visibility_mode);
+      }
+      return matches;
+    });
+    console.log('Filtered placeholders:', filtered.length);
+    return filtered;
   };
 
   const addExtractionRule = () => {
