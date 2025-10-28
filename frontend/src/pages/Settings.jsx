@@ -367,15 +367,15 @@ export default function Settings() {
         parsed.customFieldNames = {};
       }
 
-      // Built-in field mappings
+      // Built-in field mappings (case-insensitive normalized keys)
       const builtInMap = {
-        'Title': 'title',
-        'Archive Serial Number': 'archiveSerialNumber',
-        'Date Created': 'dateCreated',
-        'Correspondent': 'correspondent',
-        'Document Type': 'documentType',
-        'Storage Path': 'storagePath',
-        'Tags': 'tags'
+        'title': 'title',
+        'archive serial number': 'archiveSerialNumber',
+        'date created': 'dateCreated',
+        'correspondent': 'correspondent',
+        'document type': 'documentType',
+        'storage path': 'storagePath',
+        'tags': 'tags'
       };
 
       // Process each placeholder
@@ -383,7 +383,9 @@ export default function Settings() {
         const placeholderName = placeholder.placeholder_name;
         const visibilityMode = placeholder.visibility_mode;
         
-        let fieldKey = builtInMap[placeholderName];
+        // Normalize to lowercase and trim for case-insensitive matching
+        const normalizedName = placeholderName.toLowerCase().trim();
+        let fieldKey = builtInMap[normalizedName];
         
         // For custom fields, assign to slots
         if (!fieldKey && placeholder.is_custom_field) {
@@ -432,18 +434,20 @@ export default function Settings() {
       }
 
       // Convert placeholder name to camelCase field key
-      // Built-in fields have specific mappings
+      // Built-in fields have specific mappings (case-insensitive)
       const builtInMap = {
-        'Title': 'title',
-        'Archive Serial Number': 'archiveSerialNumber',
-        'Date Created': 'dateCreated',
-        'Correspondent': 'correspondent',
-        'Document Type': 'documentType',
-        'Storage Path': 'storagePath',
-        'Tags': 'tags'
+        'title': 'title',
+        'archive serial number': 'archiveSerialNumber',
+        'date created': 'dateCreated',
+        'correspondent': 'correspondent',
+        'document type': 'documentType',
+        'storage path': 'storagePath',
+        'tags': 'tags'
       };
 
-      let fieldKey = builtInMap[placeholderName];
+      // Normalize to lowercase and trim for case-insensitive matching
+      const normalizedName = placeholderName.toLowerCase().trim();
+      let fieldKey = builtInMap[normalizedName];
       
       // For custom fields, convert to camelCase
       if (!fieldKey) {
