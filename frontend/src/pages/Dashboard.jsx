@@ -337,7 +337,7 @@ export default function Dashboard() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -387,7 +387,7 @@ export default function Dashboard() {
                             <FileText className="w-4 h-4" />
                           </button>
                           <button 
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-primary btn-sm ml-auto"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCreateRuleForDocument(doc);
