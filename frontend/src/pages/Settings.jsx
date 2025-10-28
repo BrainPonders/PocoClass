@@ -1097,7 +1097,7 @@ export default function Settings() {
                               <div className="text-sm font-medium text-gray-900">
                                 {placeholder.placeholder_name}
                               </div>
-                              {placeholder.is_custom_field && dataType && (
+                              {!!placeholder.is_custom_field && dataType && (
                                 <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
                                   {dataType}
                                 </span>
