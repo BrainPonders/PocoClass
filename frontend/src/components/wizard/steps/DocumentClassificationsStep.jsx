@@ -338,9 +338,13 @@ export default function DocumentClassificationsStep({
                   style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                 >
                   <option value="">Select an option...</option>
-                  {customFieldsData['Document Category'].extraData.select_options.map(option => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
+                  {customFieldsData['Document Category'].extraData.select_options.map((option, idx) => {
+                    const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
+                    const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
+                    return (
+                      <option key={idx} value={optionValue}>{optionLabel}</option>
+                    );
+                  })}
                 </select>
               ) : (
                 <input
