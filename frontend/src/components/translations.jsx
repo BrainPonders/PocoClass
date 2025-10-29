@@ -1,5 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
+const SETTINGS_STORAGE_KEY = 'pococlass_settings';
+const SETTINGS_UPDATED_EVENT = 'pococlass-settings-updated';
 
 export const translations = {
   en: {
@@ -502,32 +505,302 @@ export const translations = {
     step1_threshold_permissive: "Permissivo",
     step1_threshold_recommended: "Raccomandato",
     step1_threshold_strict: "Rigoroso",
+  },
+
+  nl: {
+    // Navigation
+    nav_dashboard: "Dashboard",
+    nav_rules: "Regels",
+    nav_evaluation: "Regelbeoordeling",
+    nav_logs: "Logboeken",
+    nav_settings: "Instellingen",
+    nav_guide: "Handleiding",
+    nav_user: "Gebruiker",
+    nav_logout: "Afmelden",
+
+    // Common
+    common_save: "Opslaan",
+    common_cancel: "Annuleren",
+    common_delete: "Verwijderen",
+    common_edit: "Bewerken",
+    common_create: "Maken",
+    common_back: "Terug",
+    common_next: "Volgende",
+    common_previous: "Vorige",
+    common_finish: "Voltooien",
+    common_close: "Sluiten",
+    common_search: "Zoeken",
+    common_filter: "Filteren",
+    common_sort: "Sorteren",
+    common_actions: "Acties",
+    common_status: "Status",
+    common_loading: "Bezig met laden...",
+    common_saving: "Bezig met opslaan...",
+    common_no_data: "Geen gegevens beschikbaar",
+    common_confirm: "Bevestigen",
+    common_duplicate: "Dupliceren",
+    common_view: "Bekijken",
+
+    // Status
+    status_active: "Actief",
+    status_inactive: "Inactief",
+    status_draft: "Concept",
+    status_enabled: "Ingeschakeld",
+    status_disabled: "Uitgeschakeld",
+
+    // Dashboard
+    dashboard_title: "Dashboard",
+    dashboard_subtitle: "Overzicht van uw documentclassificatiesysteem",
+    dashboard_active_rules: "Actieve regels",
+    dashboard_draft_rules: "Conceptregels",
+    dashboard_documents_processed: "Verwerkte documenten",
+    dashboard_avg_poco: "Gemiddelde POCO-score",
+    dashboard_unclassified: "Documenten zonder regels",
+    dashboard_unclassified_desc: "Deze documenten komen niet overeen met actieve regels",
+    dashboard_create_rule: "Nieuwe regel maken",
+
+    // Rules
+    rules_title: "Regels",
+    rules_subtitle: "Beheer je documentclassificatieregels",
+    rules_create: "Nieuwe regel maken",
+    rules_search_placeholder: "Zoek regels...",
+    rules_sort_by: "Sorteren op",
+    rules_no_rules: "Geen regels gevonden",
+    rules_confirm_delete: "Weet je zeker dat je deze regel wilt verwijderen?",
+    rules_cannot_undo: "Deze actie kan niet ongedaan worden gemaakt.",
+
+    // Rule Editor
+    editor_create_title: "Nieuwe regel maken",
+    editor_edit_title: "Regel bewerken",
+    editor_unsaved_warning: "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?",
+    editor_save_success: "Regel succesvol opgeslagen!",
+    editor_save_error: "Fout bij het opslaan van de regel. Probeer het opnieuw.",
+    editor_validation_error: "Vul de verplichte velden in.",
+    editor_view_ocr: "OCR bekijken",
+    editor_view_pdf: "PDF bekijken",
+    editor_selected_file: "Geselecteerd bestand:",
+
+    // Steps
+    step_1_title: "Stap 1 van 6: Basisinformatie",
+    step_1_subtitle: "Definieer de basisinformatie van de regel",
+    step_2_title: "Stap 2 van 6: OCR-identificatoren",
+    step_2_subtitle: "Configureer patronen om documenten op basis van OCR-inhoud te identificeren",
+    step_3_title: "Stap 3 van 6: Documentclassificaties",
+    step_3_subtitle: "Configureer documentclassificatie",
+    step_4_title: "Stap 4 van 6: Bestandsnaamherkenning",
+    step_4_subtitle: "Definieer bestandsnaampatronen",
+    step_5_title: "Stap 5 van 6: Gegevensverificatie",
+    step_5_subtitle: "Configureer verificatie",
+    step_6_title: "Stap 6 van 6: Controle & samenvatting",
+    step_6_subtitle: "Controleer de configuratie",
+
+    // Step 2 - OCR Identifiers
+    ocr_identifiers_tooltip: "Definieer tekstpatronen die in de documentinhoud voorkomen en helpen het documenttype te identificeren. Elke logische groep kan meerdere patronen bevatten met verschillende matchregels.",
+    ocr_identifiers_description: "Definieer patronen die dit documenttype identificeren aan de hand van tekstinhoud",
+    ocr_identifiers_warning: "Je hebt slechts {filledGroups} logische groep(en) met patronen geconfigureerd. We raden er minimaal 3 aan voor een betrouwbare classificatie.",
+    add_logic_group: "Logische groep toevoegen",
+    ocr_score_requirement: "OCR-scorevereiste: {tempOcrThreshold}%",
+    ocr_score_requirement_tooltip: "Minimaal percentage OCR-patronen dat moet overeenkomen. Als minder patronen overeenkomen dan deze drempel, faalt de regel onmiddellijk.",
+    ocr_score_requirement_description: "Minimale OCR-overeenkomst die nodig is voor deze regel. Als het OCR-overeenkomingspercentage onder deze drempel komt, faalt de regel onmiddellijk.",
+    permissive: "Toegeeflijk",
+    recommended: "Aanbevolen",
+    very_strict: "Zeer strikt",
+    ocr_weight_multiplier: "OCR-gewichtsvermenigvuldiger: {tempMultiplier}×",
+    ocr_weight_multiplier_tooltip: "Bepaalt hoeveel invloed OCR-inhoud heeft op de uiteindelijke POCO-score. Hogere waarden betekenen dat OCR-patronen belangrijker zijn.",
+    ocr_weight_multiplier_description: "Bepaalt hoeveel invloed OCR-patronen hebben op de uiteindelijke POCO-score. De standaardwaarde van 3× betekent dat OCR-patronen drie keer hun basiswaarde bijdragen aan de score.",
+    low_weight: "Laag gewicht",
+    medium_weight: "Gemiddeld",
+    high_weight: "Hoog gewicht",
+    default_weight: "Standaard",
+    configuration_summary: "Configuratiesamenvatting",
+    logic_groups_summary: "Logische groepen",
+    with_total_identifiers: "met in totaal {totalIdentifiers} OCR-identificatoren (inclusief EN)",
+    ocr_score_requirement_summary: "OCR-scorevereiste",
+    ocr_pattern_weight_summary: "OCR-patroongewicht",
+    points: "punten",
+    ocr_multiplier_summary: "OCR-vermenigvuldiger",
+    max_ocr_weight_summary: "Maximaal OCR-gewicht voor Poco-score",
+    change_ocr_score_requirement_title: "OCR-scorevereiste wijzigen?",
+    change_ocr_score_requirement_message: "Je verandert de vereiste OCR-score van 75% (aanbevolen) naar {pendingOcrThreshold}%. {pendingOcrThreshold < 75 ? 'Lagere waarden kunnen leiden tot fout-positieve resultaten (onjuiste classificaties).' : 'Hogere waarden kunnen ertoe leiden dat geldige documenten niet worden geclassificeerd.'} Weet je het zeker?",
+    yes_change_it: "Ja, wijzigen",
+    cancel: "Annuleren",
+    change_ocr_weight_multiplier_title: "OCR-gewichtsvermenigvuldiger wijzigen?",
+    change_ocr_weight_multiplier_message: "Je verandert de OCR-gewichtsvermenigvuldiger van 3× (aanbevolen) naar {pendingMultiplier}×. Dit beïnvloedt sterk hoeveel OCR-patronen meetellen in de uiteindelijke POCO-score. Weet je het zeker?",
+
+    // Step 3 specific
+    no_dynamic_extraction_rules: "Geen dynamische extractieregels",
+    add_extraction_rules_description: "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te halen",
+    add_first_rule: "Eerste regel toevoegen",
+    dynamic_extraction_rule_number: "Dynamische extractieregel #{number}",
+    target_field: "Doelveld",
+    select_target_field: "Selecteer doelveld...",
+    already_used: "al gebruikt",
+    before_anchor: "Voor anker",
+    after_anchor: "Na anker",
+    enter_text_or_regex_pattern: "Voer tekst of regex-patroon in...",
+    extraction_type: "Extractietype",
+    date_format: "Datumnotatie",
+    select_or_enter_date_format: "Selecteer of voer een datumnotatie in...",
+    select_tag_to_extract: "Selecteer tag om te extraheren",
+    select_tag: "Selecteer tag...",
+    pattern_to_match: "Patroon om te matchen",
+    select_target_field_to_configure_extraction: "Selecteer een doelveld om extractie te configureren",
+    add_extraction_rule: "Extractieregel toevoegen",
+    date_created_field: "Aanmaakdatum",
+    custom_field_1: "Aangepast veld 1",
+    custom_field_2: "Aangepast veld 2",
+    tags_field: "Tags",
+
+    // Step 3 additional translations
+    configure_document_classification: "Configureer documentclassificatiegegevens die uit OCR worden gehaald",
+    predefined_data: "Vooraf ingestelde gegevens",
+    dynamic_data_extraction: "Dynamische gegevensextractie",
+    define_anchor_points: "Definieer ankerpunten en extractiepatronen voor dynamische vulling van velden",
+    enter_document_category: "Voer documentcategorie in...",
+    enter_custom_field_value: "Voer waarde voor aangepast veld in...",
+
+    // Fields
+    step1_rule_name: "Regelnaam",
+    step1_rule_name_placeholder: "bijv. Bankafschrift",
+    step1_rule_name_help: "Menselijk leesbare naam",
+    step1_rule_id: "Regel-ID",
+    step1_rule_id_placeholder: "bijv. bankafschrift",
+    step1_rule_id_help: "Technische identifier",
+    step1_description: "Beschrijving",
+    step1_description_placeholder: "Beschrijf de regel...",
+    step1_poco_threshold: "POCO-drempel",
+    step1_poco_threshold_help: "Minimale vertrouwensscore vereist",
+    step1_threshold_permissive: "Toegeeflijk",
+    step1_threshold_recommended: "Aanbevolen",
+    step1_threshold_strict: "Strikt",
   }
 };
 
+translations['en-GB'] = { ...translations.en };
+
+const getStoredSettings = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(SETTINGS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.error('Error reading stored settings:', error);
+    return null;
+  }
+};
+
+const findLanguageKey = (code) => {
+  if (!code) {
+    return null;
+  }
+
+  const normalized = code.toLowerCase();
+  return Object.keys(translations).find((lang) => lang.toLowerCase() === normalized) || null;
+};
+
+const resolveInitialLanguage = () => {
+  const stored = getStoredSettings();
+  if (stored?.language) {
+    return stored.language;
+  }
+
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    const exactMatch = findLanguageKey(navigator.language);
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    if (navigator.language.includes('-')) {
+      const baseMatch = findLanguageKey(navigator.language.split('-')[0]);
+      if (baseMatch) {
+        return baseMatch;
+      }
+    }
+  }
+
+  return 'en';
+};
+
 export function useTranslation() {
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState(() => resolveInitialLanguage());
 
   useEffect(() => {
-    try {
-      const settings = localStorage.getItem('pococlass_settings');
-      if (settings) {
-        const parsed = JSON.parse(settings);
-        setLanguage(parsed.language || 'en');
-      }
-    } catch (e) {
-      console.error('Error loading language setting:', e);
+    if (typeof window === 'undefined') {
+      return undefined;
     }
+
+    const applyStoredLanguage = () => {
+      const stored = getStoredSettings();
+      if (stored?.language) {
+        setLanguage(stored.language);
+      }
+    };
+
+    const handleSettingsUpdated = (event) => {
+      const updatedSettings = event?.detail;
+      if (updatedSettings && typeof updatedSettings === 'object' && updatedSettings.language) {
+        setLanguage(updatedSettings.language);
+      } else {
+        applyStoredLanguage();
+      }
+    };
+
+    const handleStorageChange = (event) => {
+      if (event.key === SETTINGS_STORAGE_KEY) {
+        try {
+          const parsed = event.newValue ? JSON.parse(event.newValue) : null;
+          if (parsed?.language) {
+            setLanguage(parsed.language);
+          }
+        } catch (error) {
+          console.error('Error syncing language from storage:', error);
+        }
+      }
+    };
+
+    applyStoredLanguage();
+    window.addEventListener(SETTINGS_UPDATED_EVENT, handleSettingsUpdated);
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener(SETTINGS_UPDATED_EVENT, handleSettingsUpdated);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const t = (key, replacements = {}) => {
-    let text = translations[language]?.[key] || translations['en'][key] || key;
-    
-    // Replace placeholders like {count} with actual values
-    Object.keys(replacements).forEach(replKey => {
-      text = text.replace(`{${replKey}}`, replacements[replKey]);
+    const normalizedLanguage = findLanguageKey(language) || language;
+    const baseLanguage = normalizedLanguage && normalizedLanguage.includes('-')
+      ? findLanguageKey(normalizedLanguage.split('-')[0])
+      : findLanguageKey(language?.split('-')[0]);
+
+    const candidateLanguages = [];
+    if (normalizedLanguage && translations[normalizedLanguage]) {
+      candidateLanguages.push(normalizedLanguage);
+    }
+    if (baseLanguage && translations[baseLanguage] && !candidateLanguages.includes(baseLanguage)) {
+      candidateLanguages.push(baseLanguage);
+    }
+    if (!candidateLanguages.includes('en')) {
+      candidateLanguages.push('en');
+    }
+
+    let text = key;
+    for (const langKey of candidateLanguages) {
+      const dictionary = translations[langKey];
+      if (dictionary && dictionary[key] !== undefined) {
+        text = dictionary[key];
+        break;
+      }
+    }
+
+    Object.keys(replacements).forEach((replKey) => {
+      text = text.replace(new RegExp(`{${replKey}}`, 'g'), replacements[replKey]);
     });
-    
+
     return text;
   };
 

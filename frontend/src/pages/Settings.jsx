@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,7 +24,24 @@ export default function Settings() {
   const [placeholders, setPlaceholders] = useState([]);
   const [paperlessConfig, setPaperlessConfig] = useState({});
   const [customFieldsData, setCustomFieldsData] = useState([]);
-  
+
+  const updateLocalAppSettingsCache = useCallback((newSettings) => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      const existing = localStorage.getItem('pococlass_settings');
+      const parsed = existing ? JSON.parse(existing) : {};
+      const merged = { ...parsed, ...newSettings };
+
+      localStorage.setItem('pococlass_settings', JSON.stringify(merged));
+      window.dispatchEvent(new CustomEvent('pococlass-settings-updated', { detail: merged }));
+    } catch (error) {
+      console.error('Error caching app settings:', error);
+    }
+  }, []);
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [fieldToCreate, setFieldToCreate] = useState(null);
   const [isCreatingField, setIsCreatingField] = useState(false);
@@ -52,7 +69,9 @@ export default function Settings() {
         const data = await response.json();
         
         // Update all state at once
-        setAppSettings(data.appSettings || {});
+        const nextAppSettings = data.appSettings || {};
+        setAppSettings(nextAppSettings);
+        updateLocalAppSettingsCache(nextAppSettings);
         setDateFormats(data.dateFormats || []);
         setPlaceholders(data.placeholders || []);
         setPaperlessConfig(data.paperlessConfig || {});
@@ -283,7 +302,11 @@ export default function Settings() {
         duration: 2000,
       });
 
-      setAppSettings({ ...appSettings, [key]: value });
+      setAppSettings(prev => {
+        const updated = { ...prev, [key]: value };
+        updateLocalAppSettingsCache(updated);
+        return updated;
+      });
     } catch (error) {
       toast({
         title: 'Update Failed',
@@ -968,11 +991,11 @@ export default function Settings() {
                       onChange={(e) => handleAppSettingChange('language', e.target.value)}
                       className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                      <option value="nl">Dutch</option>
+                      <option value="en">English (US)</option>
+                      <option value="en-GB">English (UK)</option>
+                      <option value="fr">Français</option>
+                      <option value="it">Italiano</option>
+                      <option value="nl">Nederlands</option>
                     </select>
                   </div>
 

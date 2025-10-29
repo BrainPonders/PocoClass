@@ -2,7 +2,7 @@
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react'; // Changed from HelpCircle, added Trash2
 import Tooltip from '../Tooltip'; // Assuming Tooltip is a custom component
-import { useTranslation } from 'react-i18next'; // Added for t function
+import { useTranslation } from '@/components/translations';
 
 export default function BonusIdentifiersStep({ 
   ruleData, 
