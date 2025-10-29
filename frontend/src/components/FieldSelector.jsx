@@ -12,27 +12,24 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
   }, [type]);
 
   const loadOptions = async () => {
-    // TODO: Fetch from Paperless API based on type
-    // For now, using mock data
     if (type === 'correspondent') {
-      setAvailableOptions([
-        'Rabobank',
-        'ING',
-        'ABN AMRO',
-        'Tax Office',
-        'Insurance Company',
-        'Utility Provider'
-      ]);
+      try {
+        const { Paperless } = await import('@/api/entities');
+        const correspondents = await Paperless.getCorrespondents();
+        setAvailableOptions(correspondents.map(c => c.name).sort());
+      } catch (e) {
+        console.error('Error loading correspondents:', e);
+        setAvailableOptions([]);
+      }
     } else if (type === 'documentType') {
-      setAvailableOptions([
-        'Bank Statement',
-        'Invoice',
-        'Receipt',
-        'Contract',
-        'Tax Document',
-        'Insurance Policy',
-        'Utility Bill'
-      ]);
+      try {
+        const { Paperless } = await import('@/api/entities');
+        const docTypes = await Paperless.getDocumentTypes();
+        setAvailableOptions(docTypes.map(dt => dt.name).sort());
+      } catch (e) {
+        console.error('Error loading document types:', e);
+        setAvailableOptions([]);
+      }
     } else if (type === 'dateFormat') {
       // Define a default set of common date formats
       const defaultCommonFormats = [
