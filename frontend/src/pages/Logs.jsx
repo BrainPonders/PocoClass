@@ -31,7 +31,7 @@ export default function Logs() {
   const loadLogs = useCallback(async () => {
     setLoading(true);
     try {
-      const fetchedLogs = await Log.list('-timestamp', 500);
+      const fetchedLogs = await Log.list({ order: '-timestamp', limit: 500 });
       setLogs(fetchedLogs);
     } catch (error) {
       console.error('Error loading logs:', error);
