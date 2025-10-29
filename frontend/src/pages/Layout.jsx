@@ -445,14 +445,10 @@ export default function Layout({ children }) {
             <div className="min-h-screen flex w-full">
               <Sidebar className="border-r border-gray-200">
                 <SidebarHeader className="border-b border-gray-200 p-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white" />
-                    </div>
+                  <div className="flex items-center gap-3">
+                    <img src="/logo.png" alt="PocoClass Logo" className="h-10 w-auto" />
                     <div>
-                      <h2 className="font-semibold text-gray-900">
-                        PocoClass <span className="text-xs font-normal text-gray-500">v2.0</span>
-                      </h2>
+                      <span className="text-xs font-normal text-gray-500">v2.0</span>
                       <p className="text-xs text-gray-500">Document Classification</p>
                     </div>
                   </div>
