@@ -19,9 +19,25 @@ export default function YamlPreview({ ruleData }) {
     }
   };
 
+  // Helper function to escape double quotes in YAML strings
+  const escapeYaml = (str) => {
+    if (!str) return '';
+    return str.replace(/"/g, '\\"');
+  };
+
   const generateYaml = () => {
     const creationDate = new Date().toISOString().split('T')[0];
-    const userName = currentUser?.full_name || 'Unknown User';
+    const userName = currentUser?.full_name ?? 'Unknown User';
+    
+    // Apply default values matching the backend - use ?? to preserve explicit 0 values
+    const ruleName = ruleData.ruleName ?? 'Unnamed Rule';
+    const ruleId = ruleData.ruleId ?? '';
+    const description = ruleData.description ?? '';
+    const threshold = ruleData.threshold ?? 75;
+    const ocrThreshold = ruleData.ocrThreshold ?? 75;
+    const ocrMultiplier = ruleData.ocrMultiplier ?? 3;
+    const filenameMultiplier = ruleData.filenameMultiplier ?? 1;
+    const verificationMultiplier = ruleData.verificationMultiplier ?? 0.5;
     
     return `# =================================================================================================
 # PocoClass Document Classification Rule
@@ -31,7 +47,7 @@ export default function YamlPreview({ ruleData }) {
 #
 # Created: ${creationDate}
 # Created by: ${userName}
-# Rule Name: ${ruleData.ruleName || 'Unnamed Rule'}
+# Rule Name: ${ruleName}
 # =================================================================================================
 
 # =============================
@@ -39,13 +55,13 @@ export default function YamlPreview({ ruleData }) {
 # =============================
 # General rule identification and threshold settings
 
-rule_name: "${ruleData.ruleName || ''}"
-rule_id: "${ruleData.ruleId || ''}"
-description: "${ruleData.description || ''}"
+rule_name: "${escapeYaml(ruleName)}"
+rule_id: "${escapeYaml(ruleId)}"
+description: "${escapeYaml(description)}"
 
 # POCO Score Requirement: Minimum overall confidence score required for document classification
 # This combines scores from OCR content, filename patterns, and Paperless Placeholder Verification
-poco_score_requirement: ${ruleData.threshold}  # ${ruleData.threshold}% minimum confidence
+threshold: ${threshold}  # ${threshold}% minimum confidence
 
 ${ruleData.ocrIdentifiers?.length > 0 ? `
 # =============================
@@ -54,20 +70,28 @@ ${ruleData.ocrIdentifiers?.length > 0 ? `
 # Text patterns found in document content that help identify the document type
 # Each logic group can contain multiple patterns with different matching rules
 
-ocr_identifiers:
-  # OCR Score Requirement: Minimum percentage of OCR patterns that must match
-  ocr_score_requirement: ${ruleData.ocrThreshold || 75}  # ${ruleData.ocrThreshold || 75}% minimum match rate
-  
-  # OCR Weight Multiplier: Controls importance of OCR content in final POCO score
-  ocr_multiplier: ${ruleData.ocrMultiplier || 3}  # ${ruleData.ocrMultiplier || 3}× weight
-  
+# OCR Score Requirement: Minimum percentage of OCR patterns that must match
+ocr_threshold: ${ocrThreshold}  # ${ocrThreshold}% minimum match rate
+
+# OCR Weight Multiplier: Controls importance of OCR content in final POCO score
+ocr_multiplier: ${ocrMultiplier}  # ${ocrMultiplier}× weight
+
+core_identifiers:
   logic_groups:
-${ruleData.ocrIdentifiers.map((group, idx) => `    # Logic Group ${idx + 1}
-    - type: "${group.type || 'match'}"     # Match type: 'match' (OR) or 'match_all' (AND)
-      mandatory: ${group.mandatory || false}  # Must match for rule to succeed
+${ruleData.ocrIdentifiers.map((group, idx) => {
+  const numGroups = ruleData.ocrIdentifiers.length;
+  const scorePerGroup = Math.round(100 / numGroups);
+  const groupType = group.type ?? 'match';
+  const mandatory = group.mandatory ?? false;
+  return `    # Logic Group ${idx + 1}
+    - type: ${groupType}     # Match type: 'match' (OR) or 'match_all' (AND)
+      score: ${scorePerGroup}
+      mandatory: ${mandatory}  # Must match for rule to succeed
       conditions:
-${group.conditions?.map(condition => `        - pattern: "${condition.pattern || ''}"    # Search pattern (text or regex)
-          range: "${condition.range || '0-1600'}"        # Search area`).join('\n') || ''}`).join('\n')}
+${group.conditions?.map(condition => `        - pattern: "${escapeYaml(condition.pattern ?? '')}"    # Search pattern (text or regex)
+          source: content
+          range: "${condition.range ?? '0-1600'}"        # Search area`).join('\n') ?? ''}`;
+}).join('\n')}
 ` : '# =============================\n# STEP 2: OCR IDENTIFIERS\n# =============================\n# No OCR identifiers configured\n'}
 
 # =============================
@@ -75,42 +99,48 @@ ${group.conditions?.map(condition => `        - pattern: "${condition.pattern ||
 # =============================
 # Static metadata and dynamic data extraction rules
 
-static_data:
-  correspondent: "${ruleData.predefinedData?.correspondent || ''}"
-  document_type: "${ruleData.predefinedData?.documentType || ''}"
-  tags: [${ruleData.predefinedData?.tags?.map(tag => `"${tag}"`).join(', ') || ''}]
+static_metadata:
+  correspondent: "${escapeYaml(ruleData.predefinedData?.correspondent ?? '')}"
+  document_type: "${escapeYaml(ruleData.predefinedData?.documentType ?? '')}"${ruleData.predefinedData?.tags?.length > 0 ? `
+  tags: [${ruleData.predefinedData.tags.map(tag => `"${escapeYaml(tag)}"`).join(', ')}]` : ''}
 
-${ruleData.dynamicData?.extractionRules?.length > 0 ? `dynamic_data:
-  extraction_rules:
-${ruleData.dynamicData.extractionRules.map((rule, idx) => `    # Extraction Rule ${idx + 1}
-    - target_field: "${rule.targetField || ''}"
-      before_anchor: "${rule.beforeAnchor?.pattern || ''}"
-      extraction_type: "${rule.extractionType || ''}"
-      after_anchor: "${rule.afterAnchor?.pattern || ''}"`).join('\n')}
+${ruleData.dynamicData?.extractionRules?.length > 0 ? `dynamic_metadata:
+${ruleData.dynamicData.extractionRules.map((rule, idx) => {
+  const targetField = rule.targetField ?? '';
+  const beforeAnchor = escapeYaml(rule.beforeAnchor?.pattern ?? '');
+  const afterAnchor = escapeYaml(rule.afterAnchor?.pattern ?? '');
+  const extractionType = rule.extractionType ?? '';
+  const dateFormat = rule.dateFormat ?? 'DD-MM-YYYY';
+  
+  return `  ${targetField}:
+    pattern_before: "${beforeAnchor}"
+    pattern_after: "${afterAnchor}"${extractionType === 'date' ? `
+    format: ${dateFormat}` : ''}`;
+}).join('\n')}
 ` : ''}
 # =============================
 # STEP 4: FILENAME IDENTIFICATION  
 # =============================
 # Patterns that identify documents by filename
 
+# Filename Weight Multiplier: Controls importance of filename matching in POCO score
+filename_multiplier: ${filenameMultiplier}  # ${filenameMultiplier}× weight
+
 filename_patterns:
-  # Filename Weight Multiplier: Controls importance of filename matching in POCO score
-  filename_multiplier: ${ruleData.filenameMultiplier || 1}  # ${ruleData.filenameMultiplier || 1}× weight
-  
-  patterns:
-${ruleData.filenamePatterns?.patterns?.filter(p => p).map(pattern => `    - "${pattern}"`).join('\n') || '    # No filename patterns configured'}
+${ruleData.filenamePatterns?.patterns?.filter(p => p).map(pattern => `  - "${escapeYaml(pattern)}"`).join('\n') || '  # No filename patterns configured'}
 
 # =============================
 # STEP 5: PAPERLESS DATA VERIFICATION
 # =============================
 # Paperless placeholder fields to verify for additional confidence
 
-verification:
-  # Verification Weight Multiplier: Controls importance of placeholder verification
-  verification_multiplier: ${ruleData.verificationMultiplier || 0.5}  # ${ruleData.verificationMultiplier || 0.5}× weight
-  
-  enabled_fields:
-${Object.entries(ruleData.verification?.enabledFields || {}).filter(([k, v]) => v).map(([field]) => `    - "${field}"`).join('\n') || '    # No verification fields enabled'}`;
+# Verification Weight Multiplier: Controls importance of placeholder verification
+verification_multiplier: ${verificationMultiplier}  # ${verificationMultiplier}× weight
+
+verification_fields:
+${Object.entries(ruleData.verification?.enabledFields || {}).filter(([k, v]) => v).map(([field]) => `  - ${field}`).join('\n') || '  # No verification fields enabled'}
+
+status: ${ruleData.status ?? 'draft'}`;
   };
 
   const generateColoredYaml = () => {
