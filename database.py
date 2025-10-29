@@ -282,6 +282,34 @@ class Database:
             CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)
         """)
         
+        # Processing history table for background processing runs
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS processing_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                started_at TEXT NOT NULL,
+                completed_at TEXT,
+                status TEXT NOT NULL,
+                trigger_type TEXT NOT NULL,
+                documents_found INTEGER DEFAULT 0,
+                documents_processed INTEGER DEFAULT 0,
+                documents_classified INTEGER DEFAULT 0,
+                documents_skipped INTEGER DEFAULT 0,
+                rules_applied INTEGER DEFAULT 0,
+                error_message TEXT,
+                user_id INTEGER,
+                details TEXT,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        """)
+        
+        # Create index for faster history queries
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_processing_history_started ON processing_history(started_at DESC)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_processing_history_status ON processing_history(status)
+        """)
+        
         # Migration: Add extra_data column to paperless_custom_fields if it doesn't exist
         cursor.execute("PRAGMA table_info(paperless_custom_fields)")
         columns = [col[1] for col in cursor.fetchall()]
@@ -301,6 +329,21 @@ class Database:
         # Set default session timeout to 24 hours if not already set
         if self.get_app_setting('session_timeout_hours') is None:
             self.set_app_setting('session_timeout_hours', '24')
+        
+        # Initialize background processing defaults
+        if self.get_config('bg_enabled') is None:
+            self.set_config('bg_enabled', 'false')
+        if self.get_config('bg_debounce_seconds') is None:
+            self.set_config('bg_debounce_seconds', '30')
+        if self.get_config('bg_tag_new') is None:
+            self.set_config('bg_tag_new', 'NEW')
+        if self.get_config('bg_tag_poco') is None:
+            self.set_config('bg_tag_poco', 'POCO')
+        if self.get_config('bg_processing_lock') is None:
+            self.set_config('bg_processing_lock', 'false')
+        if self.get_config('bg_needs_rerun') is None:
+            self.set_config('bg_needs_rerun', 'false')
+        
         self.init_date_formats()
         self.init_placeholder_settings()
     
@@ -1109,6 +1152,102 @@ class Database:
         
         query += f" ORDER BY {sort_field}"
         query += " DESC" if desc else " ASC"
+        
+        if limit:
+            query += " LIMIT ?"
+            params.append(limit)
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    
+    def get_processing_lock(self) -> bool:
+        """Get current processing lock status"""
+        return self.get_config('bg_processing_lock') == 'true'
+    
+    def set_processing_lock(self, locked: bool):
+        """Set processing lock status"""
+        self.set_config('bg_processing_lock', 'true' if locked else 'false')
+    
+    def get_needs_rerun(self) -> bool:
+        """Get needs rerun flag"""
+        return self.get_config('bg_needs_rerun') == 'true'
+    
+    def set_needs_rerun(self, needs_rerun: bool):
+        """Set needs rerun flag"""
+        self.set_config('bg_needs_rerun', 'true' if needs_rerun else 'false')
+    
+    def create_processing_run(self, trigger_type: str = 'manual', user_id: int = None) -> int:
+        """Create a new processing run record and return its ID"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO processing_history (started_at, status, trigger_type, user_id)
+            VALUES (?, ?, ?, ?)
+        """, (datetime.now().isoformat(), 'running', trigger_type, user_id))
+        conn.commit()
+        run_id = cursor.lastrowid
+        conn.close()
+        return run_id
+    
+    def update_processing_run(self, run_id: int, status: str, 
+                            documents_found: int = None,
+                            documents_processed: int = None,
+                            documents_classified: int = None,
+                            documents_skipped: int = None,
+                            rules_applied: int = None,
+                            error_message: str = None,
+                            details: str = None):
+        """Update a processing run record"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        update_fields = ['status = ?', 'completed_at = ?']
+        params = [status, datetime.now().isoformat()]
+        
+        if documents_found is not None:
+            update_fields.append('documents_found = ?')
+            params.append(documents_found)
+        if documents_processed is not None:
+            update_fields.append('documents_processed = ?')
+            params.append(documents_processed)
+        if documents_classified is not None:
+            update_fields.append('documents_classified = ?')
+            params.append(documents_classified)
+        if documents_skipped is not None:
+            update_fields.append('documents_skipped = ?')
+            params.append(documents_skipped)
+        if rules_applied is not None:
+            update_fields.append('rules_applied = ?')
+            params.append(rules_applied)
+        if error_message is not None:
+            update_fields.append('error_message = ?')
+            params.append(error_message)
+        if details is not None:
+            update_fields.append('details = ?')
+            params.append(details)
+        
+        params.append(run_id)
+        
+        query = f"UPDATE processing_history SET {', '.join(update_fields)} WHERE id = ?"
+        cursor.execute(query, params)
+        conn.commit()
+        conn.close()
+    
+    def get_processing_history(self, limit: int = 100, status: str = None) -> List[Dict]:
+        """Get processing history with optional filtering"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM processing_history WHERE 1=1"
+        params = []
+        
+        if status and status != 'all':
+            query += " AND status = ?"
+            params.append(status)
+        
+        query += " ORDER BY started_at DESC"
         
         if limit:
             query += " LIMIT ?"
