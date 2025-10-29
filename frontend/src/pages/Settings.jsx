@@ -44,7 +44,7 @@ export default function Settings() {
       setCurrentUser(user);
       
       // Load all settings in one batch request
-      const response = await fetch(`${API_BASE_URL}/api/settings/batch?history_limit=4`, {
+      const response = await fetch(`${API_BASE_URL}/api/settings/batch?history_limit=5`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       
@@ -92,7 +92,7 @@ export default function Settings() {
   const loadSyncHistory = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=4`, {
+      const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=5`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       const data = await response.json();
