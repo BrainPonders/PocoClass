@@ -102,13 +102,8 @@ export default function Login() {
         <div className="wizard-container">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
+              <img src="/logo.png" alt="PocoClass Logo" className="h-20 w-auto" />
             </div>
-            <h1 className="text-3xl font-bold" style={{ color: 'var(--app-text)' }}>
-              PocoClass
-            </h1>
             <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
               Document Classification System
             </p>

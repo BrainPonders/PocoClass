@@ -105,9 +105,7 @@ export default function SetupWizard() {
           {step === 1 && (
             <div className="text-center">
               <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                  <FileText className="w-10 h-10 text-white" />
-                </div>
+                <img src="/logo.png" alt="PocoClass Logo" className="h-24 w-auto" />
               </div>
               
               <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
