@@ -53,39 +53,75 @@ Documents are classified only when **both thresholds** are met, ensuring high ac
    cd PocoClass
    ```
 
-2. **Set up environment variables**
+2. **Generate encryption key** (REQUIRED)
+   
+   PocoClass encrypts Paperless API tokens for security. Generate a unique key for your installation:
+   
    ```bash
-   # Paperless-ngx connection (required)
+   python3 generate_secret_key.py
+   ```
+   
+   This will generate a secure encryption key and show setup instructions for different deployment methods.
+
+3. **Set up environment variables**
+   
+   **Option A: Using .env file (Development - Recommended)**
+   ```bash
+   # Copy template
+   cp .env.example .env
+   
+   # Edit .env and add your generated key
+   nano .env
+   ```
+   
+   Add to `.env`:
+   ```bash
+   # REQUIRED: Encryption key (from step 2)
+   POCOCLASS_SECRET_KEY=your_generated_key_here
+   
+   # OPTIONAL: Paperless-ngx connection (can be configured via Web UI)
+   PAPERLESS_URL=https://your-paperless-instance.com
+   PAPERLESS_TOKEN=your-api-token-here
+   ```
+   
+   **Option B: Export in terminal (Temporary)**
+   ```bash
+   export POCOCLASS_SECRET_KEY="your_generated_key_here"
    export PAPERLESS_URL="https://your-paperless-instance.com"
    export PAPERLESS_TOKEN="your-api-token-here"
-   
-   # Database connection (auto-configured on Replit)
-   export DATABASE_URL="postgresql://..."
    ```
 
-3. **Install backend dependencies**
+4. **Install backend dependencies**
    ```bash
-   pip install flask flask-cors pyyaml requests tabulate
+   pip install flask flask-cors pyyaml requests tabulate cryptography
    ```
 
-4. **Install frontend dependencies**
+5. **Install frontend dependencies**
    ```bash
    cd frontend
    npm install
    ```
 
-5. **Build frontend**
+6. **Build frontend**
    ```bash
    npm run build
    cd ..
    ```
 
-6. **Run the application**
+7. **Run the application**
    ```bash
    ./start.sh
    ```
 
-The application will be available at `http://localhost:5000`
+The application will be available at `http://localhost:5000` (HTTPS on Replit)
+
+### Docker Installation
+
+See detailed Docker installation guide below.
+
+### Bare Metal Installation
+
+See detailed bare metal installation guide below.
 
 ## Configuration
 
