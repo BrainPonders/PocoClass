@@ -8,6 +8,11 @@ __pycache__/
 settings.py
 settings_backup_*.py
 
+# Environment variables (contains secrets - DO NOT COMMIT!)
+.env
+.env.local
+.env.*.local
+
 # Runtime files
 log.txt
 *.log
