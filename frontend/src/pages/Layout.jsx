@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User as UserIcon, X, AlertTriangle } from "lucide-react";
+import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User as UserIcon, X, AlertTriangle, Activity } from "lucide-react";
 import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { usePOCOFields } from "@/contexts/POCOFieldsContext";
+import { useTabVisibility } from "@/components/hooks/useTabVisibility";
+import { useToast } from "@/components/ui/use-toast";
 import GuardedLink from "@/components/GuardedLink";
+import API_BASE_URL from '@/config/api';
 import {
   Sidebar,
   SidebarContent,
@@ -41,6 +44,12 @@ const navigationItems = [
     icon: BarChart3,
   },
   {
+    title: "Background Process",
+    url: createPageUrl("BackgroundProcess"),
+    icon: Activity,
+    adminOnly: true,
+  },
+  {
     title: "Logs",
     url: createPageUrl("Logs"),
     icon: FileStack,
@@ -58,6 +67,7 @@ export default function Layout({ children }) {
   const [showQuickGuide, setShowQuickGuide] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const { hasMissingFields } = usePOCOFields();
+  const { toast } = useToast();
 
   useEffect(() => {
     loadUser();
@@ -73,15 +83,60 @@ export default function Layout({ children }) {
     }
   };
 
+  const handleTabVisible = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/sync/counts`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.needs_sync) {
+          toast({
+            title: 'Auto-Sync Triggered',
+            description: 'Syncing data from Paperless-ngx...',
+            duration: 3000,
+          });
+
+          const syncResponse = await fetch(`${API_BASE_URL}/api/sync`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${sessionToken}` }
+          });
+
+          if (syncResponse.ok) {
+            const syncData = await syncResponse.json();
+            toast({
+              title: 'Auto-Sync Complete',
+              description: `Synced: ${syncData.results?.correspondents || 0} correspondents, ${syncData.results?.tags || 0} tags, ${syncData.results?.document_types || 0} document types`,
+              duration: 4000,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Auto-sync error:', error);
+    }
+  };
+
+  useTabVisibility(handleTabVisible);
+
   // Check if user is admin
   const isAdmin = currentUser?.role === 'admin';
 
-  // Redirect non-admin users away from Settings
+  // Redirect non-admin users away from admin-only pages
   useEffect(() => {
-    if (currentUser && !isAdmin && location.pathname === createPageUrl('Settings')) {
-      window.location.href = createPageUrl('Dashboard');
+    if (currentUser && !isAdmin) {
+      const adminOnlyPaths = [
+        createPageUrl('Settings'),
+        createPageUrl('BackgroundProcess')
+      ];
+      
+      if (adminOnlyPaths.includes(location.pathname)) {
+        window.location.href = createPageUrl('Dashboard');
+      }
     }
-  }, [currentUser, isAdmin, location.pathname]); // Added location.pathname to dependencies for completeness
+  }, [currentUser, isAdmin, location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -462,8 +517,8 @@ export default function Layout({ children }) {
                     <SidebarGroupContent>
                       <SidebarMenu>
                         {navigationItems.map((item) => {
-                          // Hide Settings for non-admin users
-                          if (item.title === 'Settings' && !isAdmin) {
+                          // Hide admin-only items for non-admin users
+                          if (item.adminOnly && !isAdmin) {
                             return null;
                           }
                           

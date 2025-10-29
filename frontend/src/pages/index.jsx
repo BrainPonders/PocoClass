@@ -18,6 +18,8 @@ import SetupWizard from "./SetupWizard";
 
 import Login from "./Login";
 
+import BackgroundProcess from "./BackgroundProcess";
+
 import AuthGuard from "@/components/AuthGuard";
 import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
 
@@ -38,6 +40,8 @@ const PAGES = {
     Logs: Logs,
     
     ChangePassword: ChangePassword,
+    
+    BackgroundProcess: BackgroundProcess,
     
 }
 
@@ -75,6 +79,7 @@ function PagesContent() {
                 <Route path="/RuleReviewer" element={<Layout currentPageName={currentPage}><RuleReviewer /></Layout>} />
                 <Route path="/Logs" element={<Layout currentPageName={currentPage}><Logs /></Layout>} />
                 <Route path="/ChangePassword" element={<Layout currentPageName={currentPage}><ChangePassword /></Layout>} />
+                <Route path="/BackgroundProcess" element={<Layout currentPageName={currentPage}><BackgroundProcess /></Layout>} />
             </Routes>
         </AuthGuard>
     );
