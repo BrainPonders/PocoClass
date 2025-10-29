@@ -154,9 +154,8 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
           label: 'Space matching (flexible)',
           matches: [
             pattern,
-            pattern.replace(/ /g, '').replace(/ /g, ''), // remove spaces
-            pattern.replace(/ /g, '  '), // multiple spaces
-            pattern.replace(/ /g, '   ')
+            pattern.replace(/ /g, ''), // remove spaces
+            pattern.replace(/ /g, '  ') // multiple spaces
           ]
         });
       } else if (spaceFlexibility === 'very-flexible') {
