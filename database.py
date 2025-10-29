@@ -11,12 +11,79 @@ from pathlib import Path
 from typing import Optional, Dict, List
 import secrets
 import hashlib
+import os
+import base64
+from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
+
+
+class TokenEncryption:
+    """Handles encryption/decryption of Paperless API tokens"""
+    
+    def __init__(self):
+        self._cipher = None
+        self._load_key()
+    
+    def _load_key(self):
+        """Load encryption key from environment - REQUIRED for production"""
+        key = os.getenv('POCOCLASS_SECRET_KEY')
+        
+        if not key:
+            # CRITICAL: Must set POCOCLASS_SECRET_KEY environment variable
+            error_msg = (
+                "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
+                "Token encryption requires a persistent encryption key.\n\n"
+                "To generate a secure key, run:\n"
+                "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
+                "Then add it to your environment:\n"
+                "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
+                "Application startup ABORTED for security."
+            )
+            logger.critical(error_msg)
+            raise ValueError("POCOCLASS_SECRET_KEY environment variable is required")
+        
+        # Ensure key is bytes
+        if isinstance(key, str):
+            key = key.encode()
+        
+        # Validate and create cipher
+        try:
+            self._cipher = Fernet(key)
+            logger.info("Token encryption initialized successfully")
+        except Exception as e:
+            logger.critical(f"Invalid POCOCLASS_SECRET_KEY: {e}")
+            raise ValueError(f"Invalid encryption key format: {e}")
+    
+    def encrypt(self, plaintext: str) -> str:
+        """Encrypt a string and return base64-encoded ciphertext"""
+        if not plaintext:
+            return plaintext
+        
+        try:
+            encrypted = self._cipher.encrypt(plaintext.encode())
+            return base64.b64encode(encrypted).decode()
+        except Exception as e:
+            logger.error(f"Encryption failed: {e}")
+            raise
+    
+    def decrypt(self, ciphertext: str) -> str:
+        """Decrypt base64-encoded ciphertext and return plaintext"""
+        if not ciphertext:
+            return ciphertext
+        
+        try:
+            encrypted = base64.b64decode(ciphertext.encode())
+            decrypted = self._cipher.decrypt(encrypted)
+            return decrypted.decode()
+        except Exception as e:
+            logger.error(f"Decryption failed: {e}")
+            raise
 
 class Database:
     def __init__(self, db_path: str = "pococlass.db"):
         self.db_path = db_path
+        self.encryption = TokenEncryption()
         self.init_database()
     
     def get_connection(self):
@@ -389,16 +456,19 @@ class Database:
         session_token = secrets.token_urlsafe(32)
         expires_at = datetime.now() + timedelta(hours=duration_hours)
         
+        # Encrypt the Paperless API token before storing
+        encrypted_token = self.encryption.encrypt(paperless_token)
+        
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO sessions (session_token, user_id, paperless_token, created_at, expires_at)
             VALUES (?, ?, ?, ?, ?)
-        """, (session_token, user_id, paperless_token, datetime.now().isoformat(), expires_at.isoformat()))
+        """, (session_token, user_id, encrypted_token, datetime.now().isoformat(), expires_at.isoformat()))
         conn.commit()
         conn.close()
         
-        logger.info(f"Created session for user {user_id}")
+        logger.info(f"Created encrypted session for user {user_id}")
         return session_token
     
     def get_session(self, session_token: str) -> Optional[Dict]:
@@ -421,6 +491,14 @@ class Database:
         
         # Check if session expired
         if datetime.fromisoformat(session['expires_at']) < datetime.now():
+            self.delete_session(session_token)
+            return None
+        
+        # Decrypt the Paperless API token
+        try:
+            session['paperless_token'] = self.encryption.decrypt(session['paperless_token'])
+        except Exception as e:
+            logger.error(f"Failed to decrypt token for session {session_token}: {e}")
             self.delete_session(session_token)
             return None
         
@@ -464,6 +542,17 @@ class Database:
         conn.close()
         if deleted > 0:
             logger.info(f"Cleaned up {deleted} expired sessions")
+    
+    def clear_all_sessions(self):
+        """Clear all sessions (use for security migration)"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM sessions")
+        deleted = cursor.rowcount
+        conn.commit()
+        conn.close()
+        logger.warning(f"Cleared all {deleted} sessions for security migration")
+        return deleted
     
     def get_setting(self, key: str) -> Optional[str]:
         """Get a setting value"""
