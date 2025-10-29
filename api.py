@@ -1080,6 +1080,179 @@ def get_rule(rule_id):
         logger.error(f"Error getting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
+def generate_formatted_yaml(frontend_data, user_name='System'):
+    """Generate formatted YAML with comments matching the preview"""
+    creation_date = datetime.now().strftime('%Y-%m-%d')
+    rule_name = frontend_data.get('ruleName', 'Unnamed Rule')
+    rule_id = frontend_data.get('ruleId', '')
+    description = frontend_data.get('description', '')
+    threshold = frontend_data.get('threshold', 75)
+    ocr_threshold = frontend_data.get('ocrThreshold', 75)
+    ocr_multiplier = frontend_data.get('ocrMultiplier', 3)
+    filename_multiplier = frontend_data.get('filenameMultiplier', 1)
+    verification_multiplier = frontend_data.get('verificationMultiplier', 0.5)
+    
+    yaml_content = f"""# =================================================================================================
+# PocoClass Document Classification Rule
+# =================================================================================================
+# This YAML file was generated using the PocoClass Rule Builder wizard.
+# Each section below corresponds to a step in the 6-step configuration process.
+#
+# Created: {creation_date}
+# Created by: {user_name}
+# Rule Name: {rule_name}
+# =================================================================================================
+
+# =============================
+# STEP 1: BASIC INFORMATION
+# =============================
+# General rule identification and threshold settings
+
+rule_name: "{rule_name}"
+rule_id: "{rule_id}"
+description: "{description}"
+
+# POCO Score Requirement: Minimum overall confidence score required for document classification
+# This combines scores from OCR content, filename patterns, and Paperless Placeholder Verification
+threshold: {threshold}  # {threshold}% minimum confidence
+
+"""
+    
+    # Step 2: OCR Identifiers
+    ocr_identifiers = frontend_data.get('ocrIdentifiers', [])
+    if ocr_identifiers:
+        yaml_content += f"""# =============================
+# STEP 2: OCR IDENTIFIERS
+# =============================
+# Text patterns found in document content that help identify the document type
+# Each logic group can contain multiple patterns with different matching rules
+
+# OCR Score Requirement: Minimum percentage of OCR patterns that must match
+ocr_threshold: {ocr_threshold}  # {ocr_threshold}% minimum match rate
+
+# OCR Weight Multiplier: Controls importance of OCR content in final POCO score
+ocr_multiplier: {ocr_multiplier}  # {ocr_multiplier}× weight
+
+core_identifiers:
+  logic_groups:
+"""
+        for idx, group in enumerate(ocr_identifiers, 1):
+            group_type = group.get('type', 'match')
+            mandatory = 'true' if group.get('mandatory', False) else 'false'
+            num_groups = len(ocr_identifiers)
+            score_per_group = round(100 / num_groups) if num_groups > 0 else 100
+            
+            yaml_content += f"""    # Logic Group {idx}
+    - type: {group_type}     # Match type: 'match' (OR) or 'match_all' (AND)
+      score: {score_per_group}
+      mandatory: {mandatory}  # Must match for rule to succeed
+      conditions:
+"""
+            for condition in group.get('conditions', []):
+                pattern = condition.get('pattern', '').replace('"', '\\"')
+                range_val = condition.get('range', '0-1600')
+                yaml_content += f"""        - pattern: "{pattern}"    # Search pattern (text or regex)
+          source: content
+          range: "{range_val}"        # Search area
+"""
+    else:
+        yaml_content += """# =============================
+# STEP 2: OCR IDENTIFIERS
+# =============================
+# No OCR identifiers configured
+
+"""
+    
+    # Step 3: Document Classifications
+    predefined = frontend_data.get('predefinedData', {})
+    dynamic = frontend_data.get('dynamicData', {})
+    
+    yaml_content += """
+# =============================
+# STEP 3: DOCUMENT CLASSIFICATIONS
+# =============================
+# Static metadata and dynamic data extraction rules
+
+static_metadata:
+"""
+    yaml_content += f"""  correspondent: "{predefined.get('correspondent', '')}"
+  document_type: "{predefined.get('documentType', '')}"
+"""
+    tags = predefined.get('tags', [])
+    if tags:
+        yaml_content += f"""  tags: [{', '.join(f'"{tag}"' for tag in tags)}]
+"""
+    
+    extraction_rules = dynamic.get('extractionRules', [])
+    if extraction_rules:
+        yaml_content += """
+dynamic_metadata:
+"""
+        for rule in extraction_rules:
+            target_field = rule.get('targetField', '')
+            before_anchor = rule.get('beforeAnchor', {}).get('pattern', '')
+            after_anchor = rule.get('afterAnchor', {}).get('pattern', '')
+            extraction_type = rule.get('extractionType', '')
+            
+            yaml_content += f"""  {target_field}:
+    pattern_before: "{before_anchor}"
+    pattern_after: "{after_anchor}"
+"""
+            if extraction_type == 'date':
+                date_format = rule.get('dateFormat', 'DD-MM-YYYY')
+                yaml_content += f"""    format: {date_format}
+"""
+    
+    # Step 4: Filename Patterns
+    yaml_content += f"""
+# =============================
+# STEP 4: FILENAME IDENTIFICATION  
+# =============================
+# Patterns that identify documents by filename
+
+filename_multiplier: {filename_multiplier}  # {filename_multiplier}× weight
+
+filename_patterns:
+"""
+    filename_patterns = frontend_data.get('filenamePatterns', {}).get('patterns', [])
+    if filename_patterns and any(p for p in filename_patterns if p):
+        for pattern in filename_patterns:
+            if pattern:
+                yaml_content += f"""  - "{pattern}"
+"""
+    else:
+        yaml_content += """  # No filename patterns configured
+"""
+    
+    # Step 5: Verification
+    yaml_content += f"""
+# =============================
+# STEP 5: PAPERLESS DATA VERIFICATION
+# =============================
+# Paperless placeholder fields to verify for additional confidence
+
+verification_multiplier: {verification_multiplier}  # {verification_multiplier}× weight
+
+verification_fields:
+"""
+    enabled_fields = frontend_data.get('verification', {}).get('enabledFields', {})
+    enabled_list = [field for field, enabled in enabled_fields.items() if enabled]
+    if enabled_list:
+        for field in enabled_list:
+            yaml_content += f"""  - {field}
+"""
+    else:
+        yaml_content += """  # No verification fields enabled
+"""
+    
+    # Status
+    status = frontend_data.get('status', 'draft')
+    yaml_content += f"""
+status: {status}
+"""
+    
+    return yaml_content
+
 @app.route('/api/rules', methods=['POST'])
 def create_rule():
     """Create a new rule"""
@@ -1090,13 +1263,22 @@ def create_rule():
         if not rule_id:
             return jsonify({'error': 'Rule ID is required'}), 400
         
-        # Convert frontend format to backend YAML format
-        backend_rule = convert_frontend_to_backend(rule_data)
+        # Get current user for attribution
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session = db.get_session(session_token) if session_token else None
+        user_name = 'System'
+        if session:
+            user = db.get_user_by_id(session.get('user_id'))
+            if user:
+                user_name = user.get('full_name', 'Unknown User')
+        
+        # Generate formatted YAML with comments
+        formatted_yaml = generate_formatted_yaml(rule_data, user_name)
         
         # Save rule
         rule_file = os.path.join('rules', f'{rule_id}.yaml')
         with open(rule_file, 'w') as f:
-            yaml.dump(backend_rule, f, default_flow_style=False, sort_keys=False)
+            f.write(formatted_yaml)
         
         return jsonify({'id': rule_id, 'message': 'Rule created successfully'})
     except Exception as e:
@@ -1109,13 +1291,22 @@ def update_rule(rule_id):
     try:
         rule_data = request.json
         
-        # Convert frontend format to backend YAML format
-        backend_rule = convert_frontend_to_backend(rule_data)
+        # Get current user for attribution
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session = db.get_session(session_token) if session_token else None
+        user_name = 'System'
+        if session:
+            user = db.get_user_by_id(session.get('user_id'))
+            if user:
+                user_name = user.get('full_name', 'Unknown User')
+        
+        # Generate formatted YAML with comments
+        formatted_yaml = generate_formatted_yaml(rule_data, user_name)
         
         # Save rule
         rule_file = os.path.join('rules', f'{rule_id}.yaml')
         with open(rule_file, 'w') as f:
-            yaml.dump(backend_rule, f, default_flow_style=False, sort_keys=False)
+            f.write(formatted_yaml)
         
         return jsonify({'id': rule_id, 'message': 'Rule updated successfully'})
     except Exception as e:
