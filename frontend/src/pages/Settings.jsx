@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
 import API_BASE_URL from '@/config/api';
@@ -28,10 +29,18 @@ export default function Settings() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [fieldToCreate, setFieldToCreate] = useState(null);
   const [isCreatingField, setIsCreatingField] = useState(false);
+  
+  const [backgroundSettings, setBackgroundSettings] = useState({
+    bg_enabled: false,
+    bg_debounce_seconds: 30,
+    bg_tag_new: 'NEW',
+    bg_tag_poco: 'POCO'
+  });
 
   useEffect(() => {
     loadAllSettings();
     loadCustomFieldsData();
+    loadBackgroundSettings();
   }, []);
 
   const loadAllSettings = async () => {
@@ -377,6 +386,68 @@ export default function Settings() {
     }
   };
 
+  const loadBackgroundSettings = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setBackgroundSettings({
+          bg_enabled: data.bg_enabled || false,
+          bg_debounce_seconds: data.bg_debounce_seconds || 30,
+          bg_tag_new: data.bg_tag_new || 'NEW',
+          bg_tag_poco: data.bg_tag_poco || 'POCO'
+        });
+      }
+    } catch (error) {
+      console.error('Error loading background settings:', error);
+    }
+  };
+
+  const handleBackgroundSettingsSave = async () => {
+    if (currentUser?.role !== 'admin') {
+      toast({
+        title: 'Permission Denied',
+        description: 'Only administrators can update background processing settings',
+        variant: 'destructive',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        },
+        body: JSON.stringify(backgroundSettings)
+      });
+
+      if (!response.ok) throw new Error('Failed to save background settings');
+
+      toast({
+        title: 'Settings Saved',
+        description: 'Background processing settings have been updated',
+        duration: 3000,
+      });
+
+      await loadBackgroundSettings();
+    } catch (error) {
+      toast({
+        title: 'Save Failed',
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    }
+  };
+
   const getCustomFieldDataType = (fieldName) => {
     const customField = customFieldsData.find(cf => cf.name === fieldName);
     return customField?.data_type || null;
@@ -676,6 +747,7 @@ export default function Settings() {
 
   const tabs = [
     { id: 'system', label: 'System', icon: Database, adminOnly: true },
+    { id: 'backgroundProcessing', label: 'Background Processing', icon: Activity, adminOnly: true },
     { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
     { id: 'dateFormats', label: 'Date Formats', icon: Calendar, adminOnly: false },
     { id: 'fieldVisibility', label: 'Field Visibility', icon: FileText, adminOnly: false },
@@ -1247,6 +1319,108 @@ export default function Settings() {
                         </p>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'backgroundProcessing' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Background Processing</h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Configure automatic document classification for newly uploaded documents
+                    </p>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <div className="space-y-6">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Enable Background Processing
+                          </label>
+                          <Switch
+                            checked={backgroundSettings.bg_enabled}
+                            onCheckedChange={(checked) => setBackgroundSettings({ ...backgroundSettings, bg_enabled: checked })}
+                            disabled={!isAdmin}
+                          />
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Automatically classify documents when they are uploaded to Paperless-ngx
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Debounce Time (seconds)
+                        </label>
+                        <div className="flex gap-3 mb-2">
+                          <input
+                            type="number"
+                            min="5"
+                            max="300"
+                            value={backgroundSettings.bg_debounce_seconds}
+                            onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_debounce_seconds: parseInt(e.target.value) || 30 })}
+                            disabled={!isAdmin}
+                            className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          />
+                          <span className="text-sm text-gray-500 self-center">seconds</span>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Wait time after detecting new documents before processing (prevents multiple runs for batch uploads). Range: 5-300 seconds.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          NEW Tag Name
+                        </label>
+                        <input
+                          type="text"
+                          value={backgroundSettings.bg_tag_new}
+                          onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_tag_new: e.target.value })}
+                          disabled={!isAdmin}
+                          placeholder="NEW"
+                          className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Tag name to identify documents for processing. Documents with this tag will be classified.
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          POCO Tag Name
+                        </label>
+                        <input
+                          type="text"
+                          value={backgroundSettings.bg_tag_poco}
+                          onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_tag_poco: e.target.value })}
+                          disabled={!isAdmin}
+                          placeholder="POCO"
+                          className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Tag name to mark documents as processed by POCO. This tag is added after classification.
+                        </p>
+                      </div>
+
+                      <div className="border-t pt-4">
+                        <Button
+                          onClick={handleBackgroundSettingsSave}
+                          disabled={!isAdmin}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          Save Settings
+                        </Button>
+                        {!isAdmin && (
+                          <p className="mt-2 text-xs text-gray-500">
+                            Only administrators can update background processing settings
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
