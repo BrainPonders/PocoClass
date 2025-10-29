@@ -100,7 +100,7 @@ export default function BackgroundProcess() {
       
       if (response.ok) {
         const data = await response.json();
-        setProcessingHistory(data);
+        setProcessingHistory(data.history || []);
       }
     } catch (error) {
       console.error('Error loading history:', error);
