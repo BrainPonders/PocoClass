@@ -1362,6 +1362,7 @@ def convert_frontend_to_backend(frontend_data):
     """Convert frontend rule format to backend YAML format"""
     backend = {
         'rule_name': frontend_data.get('ruleName', ''),
+        'rule_id': frontend_data.get('ruleId', ''),
         'description': frontend_data.get('description', ''),
         'threshold': frontend_data.get('threshold', 75),
         'ocr_threshold': frontend_data.get('ocrThreshold', 75),
@@ -1374,9 +1375,13 @@ def convert_frontend_to_backend(frontend_data):
     # OCR Identifiers - Use v2 format with core_identifiers
     if frontend_data.get('ocrIdentifiers'):
         backend['core_identifiers'] = {'logic_groups': []}
+        num_groups = len(frontend_data['ocrIdentifiers'])
+        score_per_group = round(100 / num_groups) if num_groups > 0 else 100
+        
         for group in frontend_data['ocrIdentifiers']:
             backend_group = {
                 'type': group.get('type', 'match'),
+                'score': score_per_group,
                 'mandatory': group.get('mandatory', False),
                 'conditions': []
             }
