@@ -1600,6 +1600,176 @@ def execute_rule_endpoint(rule_id):
         logger.error(f"Error executing rule: {e}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Initialize singleton background processor at module level
+from background_processor import BackgroundProcessor
+background_processor = BackgroundProcessor(db)
+
+@app.route('/api/background/trigger', methods=['POST'])
+@require_auth
+def trigger_background_processing():
+    """Trigger background processing with debouncing (admin only)"""
+    try:
+        result = background_processor.trigger_processing()
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error triggering background processing: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/status', methods=['GET'])
+@require_auth
+def get_background_status():
+    """Get background processing status"""
+    try:
+        status = background_processor.get_status()
+        return jsonify(status)
+    except Exception as e:
+        logger.error(f"Error getting background status: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/process', methods=['POST'])
+@require_auth
+def manual_processing():
+    """Manual processing with optional filters"""
+    try:
+        session = request.current_user
+        data = request.json or {}
+        
+        # Manual processing bypasses auto-pause check
+        result = background_processor.process_batch(user_session=session)
+        
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Error in manual processing: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/history', methods=['GET'])
+@require_auth
+def get_processing_history():
+    """Get processing history"""
+    try:
+        limit = request.args.get('limit', 100, type=int)
+        status = request.args.get('status', None)
+        
+        history = db.get_processing_history(limit=limit, status=status)
+        
+        return jsonify({
+            'history': history,
+            'count': len(history)
+        })
+    except Exception as e:
+        logger.error(f"Error getting processing history: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/settings', methods=['GET'])
+@require_auth
+def get_background_settings():
+    """Get background processing settings"""
+    try:
+        settings = {
+            'enabled': db.get_config('bg_enabled') == 'true',
+            'debounce_seconds': int(db.get_config('bg_debounce_seconds') or '30'),
+            'tag_new': db.get_config('bg_tag_new') or 'NEW',
+            'tag_poco': db.get_config('bg_tag_poco') or 'POCO'
+        }
+        
+        return jsonify(settings)
+    except Exception as e:
+        logger.error(f"Error getting background settings: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/settings', methods=['POST'])
+@require_admin
+def update_background_settings():
+    """Update background processing settings (admin only)"""
+    try:
+        data = request.json
+        
+        if 'enabled' in data:
+            db.set_config('bg_enabled', 'true' if data['enabled'] else 'false')
+        
+        if 'debounce_seconds' in data:
+            db.set_config('bg_debounce_seconds', str(int(data['debounce_seconds'])))
+        
+        if 'tag_new' in data:
+            db.set_config('bg_tag_new', data['tag_new'])
+        
+        if 'tag_poco' in data:
+            db.set_config('bg_tag_poco', data['tag_poco'])
+        
+        return jsonify({'success': True, 'message': 'Settings updated'})
+    except Exception as e:
+        logger.error(f"Error updating background settings: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/sync/counts', methods=['GET'])
+@require_auth
+def get_sync_counts():
+    """Get entity counts from Paperless vs local cache (for auto-sync checking)"""
+    try:
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        config = Config(paperless_url=paperless_url, paperless_token=session['paperless_token'])
+        api_client = PaperlessAPIClient(config, db)
+        
+        # Get counts from Paperless (using page_size=1 for lightweight queries)
+        paperless_counts = {}
+        local_counts = {}
+        
+        # Query Paperless counts
+        try:
+            resp = api_client.session.get(f"{paperless_url}/api/correspondents/?page_size=1", timeout=10)
+            paperless_counts['correspondents'] = resp.json().get('count', 0) if resp.status_code == 200 else 0
+        except:
+            paperless_counts['correspondents'] = 0
+        
+        try:
+            resp = api_client.session.get(f"{paperless_url}/api/tags/?page_size=1", timeout=10)
+            paperless_counts['tags'] = resp.json().get('count', 0) if resp.status_code == 200 else 0
+        except:
+            paperless_counts['tags'] = 0
+        
+        try:
+            resp = api_client.session.get(f"{paperless_url}/api/document_types/?page_size=1", timeout=10)
+            paperless_counts['document_types'] = resp.json().get('count', 0) if resp.status_code == 200 else 0
+        except:
+            paperless_counts['document_types'] = 0
+        
+        try:
+            resp = api_client.session.get(f"{paperless_url}/api/custom_fields/?page_size=1", timeout=10)
+            paperless_counts['custom_fields'] = resp.json().get('count', 0) if resp.status_code == 200 else 0
+        except:
+            paperless_counts['custom_fields'] = 0
+        
+        # Get local cached counts
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT COUNT(*) as count FROM paperless_correspondents")
+        local_counts['correspondents'] = cursor.fetchone()['count']
+        
+        cursor.execute("SELECT COUNT(*) as count FROM paperless_tags")
+        local_counts['tags'] = cursor.fetchone()['count']
+        
+        cursor.execute("SELECT COUNT(*) as count FROM paperless_document_types")
+        local_counts['document_types'] = cursor.fetchone()['count']
+        
+        cursor.execute("SELECT COUNT(*) as count FROM paperless_custom_fields")
+        local_counts['custom_fields'] = cursor.fetchone()['count']
+        
+        conn.close()
+        
+        # Check if sync is needed
+        needs_sync = any(paperless_counts[k] != local_counts[k] for k in paperless_counts.keys())
+        
+        return jsonify({
+            'paperless_counts': paperless_counts,
+            'local_counts': local_counts,
+            'needs_sync': needs_sync
+        })
+    except Exception as e:
+        logger.error(f"Error getting sync counts: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # In development, run with debug mode on port 8000
     # Frontend Vite runs on port 5000 and proxies API requests to 8000
