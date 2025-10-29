@@ -469,11 +469,11 @@ def list_all_users():
         }
         
         # Fetch Paperless users and groups
-        users_response = requests.get(f"{paperless_url}/api/users/", headers=headers)
+        users_response = requests.get(f"{paperless_url}/api/users/", headers=headers, timeout=30)
         users_response.raise_for_status()
         paperless_data = users_response.json()
         
-        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers)
+        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers, timeout=30)
         groups_response.raise_for_status()
         groups_data = groups_response.json()
         
@@ -587,7 +587,7 @@ def get_all_paperless_users():
             'Content-Type': 'application/json'
         }
         # Fetch users from Paperless
-        response = requests.get(f"{paperless_url}/api/users/", headers=headers)
+        response = requests.get(f"{paperless_url}/api/users/", headers=headers, timeout=30)
         response.raise_for_status()
         paperless_data = response.json()
         
@@ -601,7 +601,7 @@ def get_all_paperless_users():
             return jsonify({'error': 'Unexpected API response format'}), 500
         
         # Fetch groups from Paperless to map IDs to names
-        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers)
+        groups_response = requests.get(f"{paperless_url}/api/groups/", headers=headers, timeout=30)
         groups_response.raise_for_status()
         groups_data = groups_response.json()
         
