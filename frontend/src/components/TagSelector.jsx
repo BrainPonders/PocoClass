@@ -11,20 +11,17 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
   }, []);
 
   const loadTags = async () => {
-    // TODO: Fetch tags from Paperless API
-    // For now, using mock data
-    setAvailableTags([
-      'Financial',
-      'Invoice',
-      'Receipt',
-      'Contract',
-      'Tax Document',
-      'Bank Statement',
-      'Insurance',
-      'Medical',
-      'Legal',
-      'Personal'
-    ]);
+    try {
+      const { Paperless } = await import('@/api/entities');
+      const tags = await Paperless.getTags();
+      // Extract tag names from the API response
+      const tagNames = tags.map(tag => tag.name);
+      setAvailableTags(tagNames);
+    } catch (error) {
+      console.error('Error loading tags from Paperless:', error);
+      // Fallback to empty array on error
+      setAvailableTags([]);
+    }
   };
 
   const filteredTags = availableTags.filter(tag => 
