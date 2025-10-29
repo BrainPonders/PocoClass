@@ -16,6 +16,9 @@ except ImportError:
 class PaperlessAPIClient:
     """Client for interacting with Paperless-ngx API"""
     
+    # Default timeout for all API requests (30 seconds)
+    REQUEST_TIMEOUT = 30
+    
     def __init__(self, config: Config, db: Optional[Database] = None):
         self.config = config
         self.db = db or Database()
@@ -31,7 +34,7 @@ class PaperlessAPIClient:
     def test_connection(self) -> bool:
         """Test connection to Paperless API"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/")
+            response = self.session.get(f"{self.config.paperless_url}/api/", timeout=self.REQUEST_TIMEOUT)
             response.raise_for_status()
             self.logger.info("Successfully connected to Paperless API")
             return True
@@ -56,7 +59,7 @@ class PaperlessAPIClient:
             url = f"{self.config.paperless_url}/api/tags/"
             
             while url:
-                response = self.session.get(url)
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 data = response.json()
                 all_tags.extend(data.get('results', []))
@@ -72,7 +75,8 @@ class PaperlessAPIClient:
             # Create tag if it doesn't exist
             response = self.session.post(
                 f"{self.config.paperless_url}/api/tags/",
-                json={'name': tag_name}
+                json={'name': tag_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -104,7 +108,8 @@ class PaperlessAPIClient:
             # First try to find existing correspondent
             response = self.session.get(
                 f"{self.config.paperless_url}/api/correspondents/",
-                params={'name': correspondent_name}
+                params={'name': correspondent_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -117,7 +122,8 @@ class PaperlessAPIClient:
             # Create correspondent if it doesn't exist
             response = self.session.post(
                 f"{self.config.paperless_url}/api/correspondents/",
-                json={'name': correspondent_name}
+                json={'name': correspondent_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -149,7 +155,8 @@ class PaperlessAPIClient:
             # First try to find existing document type
             response = self.session.get(
                 f"{self.config.paperless_url}/api/document_types/",
-                params={'name': document_type_name}
+                params={'name': document_type_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -162,7 +169,8 @@ class PaperlessAPIClient:
             # Create document type if it doesn't exist
             response = self.session.post(
                 f"{self.config.paperless_url}/api/document_types/",
-                json={'name': document_type_name}
+                json={'name': document_type_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -194,7 +202,8 @@ class PaperlessAPIClient:
             # First try to find existing custom field
             response = self.session.get(
                 f"{self.config.paperless_url}/api/custom_fields/",
-                params={'name': field_name}
+                params={'name': field_name},
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -210,7 +219,8 @@ class PaperlessAPIClient:
                 json={
                     'name': field_name,
                     'data_type': 'string'
-                }
+                },
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             
@@ -249,7 +259,7 @@ class PaperlessAPIClient:
             
             if document_id:
                 # Get specific document
-                response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/")
+                response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/", timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 doc = response.json()
                 
@@ -297,7 +307,8 @@ class PaperlessAPIClient:
                     
                     response = self.session.get(
                         f"{self.config.paperless_url}/api/documents/",
-                        params=params
+                        params=params,
+                        timeout=self.REQUEST_TIMEOUT
                     )
                     response.raise_for_status()
                     
@@ -325,7 +336,7 @@ class PaperlessAPIClient:
         """Get OCR content for a document"""
         try:
             # Get document metadata which includes the content field
-            response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/")
+            response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/", timeout=self.REQUEST_TIMEOUT)
             response.raise_for_status()
             doc_data = response.json()
             return doc_data.get('content', '')
@@ -338,7 +349,8 @@ class PaperlessAPIClient:
         try:
             response = self.session.patch(
                 f"{self.config.paperless_url}/api/documents/{document_id}/",
-                json=updates
+                json=updates,
+                timeout=self.REQUEST_TIMEOUT
             )
             response.raise_for_status()
             self.logger.info(f"Successfully updated document {document_id}")
@@ -354,7 +366,7 @@ class PaperlessAPIClient:
             url = f"{self.config.paperless_url}/api/correspondents/"
             
             while url:
-                response = self.session.get(url)
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 data = response.json()
                 
@@ -375,7 +387,7 @@ class PaperlessAPIClient:
             url = f"{self.config.paperless_url}/api/document_types/"
             
             while url:
-                response = self.session.get(url)
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 data = response.json()
                 
@@ -396,7 +408,7 @@ class PaperlessAPIClient:
             url = f"{self.config.paperless_url}/api/tags/"
             
             while url:
-                response = self.session.get(url)
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 data = response.json()
                 
@@ -413,7 +425,7 @@ class PaperlessAPIClient:
     def get_all_custom_fields(self) -> Dict[str, int]:
         """Get all custom fields as name -> ID mapping"""
         try:
-            response = self.session.get(f"{self.config.paperless_url}/api/custom_fields/")
+            response = self.session.get(f"{self.config.paperless_url}/api/custom_fields/", timeout=self.REQUEST_TIMEOUT)
             response.raise_for_status()
             
             custom_fields = {}
