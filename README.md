@@ -221,6 +221,14 @@ curl -X POST http://localhost:8000/api/test \
 No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Keyboard navigation for dropdowns** - Added full keyboard support to Correspondent, Document Type, and Tags dropdowns in the rule editor:
+  - Arrow Up/Down to navigate options
+  - Enter to select highlighted option
+  - Escape to close dropdown
+  - Home/End to jump to first/last option
+  - Blue highlight for visual feedback
+  - Includes zero-options guard to prevent navigation errors and accidental form submission
+- ✅ **Auto-remove draft status** - Rules automatically change from "draft" to "active" status when user saves and all mandatory steps (1-3 and 6) are complete. Steps 1-3 are considered mandatory: rule name/description, 3+ OCR pattern groups, and correspondent OR document type.
 - ✅ **Fixed custom fields not loading/saving** - Custom fields now properly save to and load from YAML. Previously only "Document Category" was supported; now ALL custom fields are handled. All user values are properly escaped to prevent YAML syntax errors with special characters.
 - ✅ **Fixed tag extraction not saving** - Tag extraction rules (dynamic metadata) now properly save to YAML with pattern, value, and optional prefix fields. All values are escaped for safety.
 - ✅ **Fixed dynamic extraction rules not loading** - Added missing conversion code in `convert_backend_to_frontend()` to properly load dynamic metadata extraction rules (date extraction and tag extraction) from YAML files when opening existing rules in the rule editor.

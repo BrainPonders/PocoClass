@@ -118,6 +118,18 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
       typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
     ) ? 1 : 0);
 
+    // Guard against empty options
+    if (totalOptions === 0) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setShowDropdown(false);
+        setHighlightedIndex(0);
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); // Prevent form submission
+      }
+      return;
+    }
+
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
