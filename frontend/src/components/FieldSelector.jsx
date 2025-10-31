@@ -6,6 +6,7 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
   const [availableOptions, setAvailableOptions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   useEffect(() => {
     loadOptions();
@@ -100,6 +101,62 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
     onChange(optionValue);
     setSearchTerm('');
     setShowDropdown(false);
+    setHighlightedIndex(0);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        e.preventDefault();
+        setShowDropdown(true);
+        setHighlightedIndex(0);
+      }
+      return;
+    }
+
+    const totalOptions = filteredOptions.length + (allowCustom && searchTerm && !availableOptions.some(opt => 
+      typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
+    ) ? 1 : 0);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev + 1) % totalOptions);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev - 1 + totalOptions) % totalOptions);
+        break;
+      case 'Home':
+        e.preventDefault();
+        setHighlightedIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        setHighlightedIndex(totalOptions - 1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (allowCustom && searchTerm && !availableOptions.some(opt => 
+          typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
+        )) {
+          if (highlightedIndex === 0) {
+            addCustomOption();
+          } else {
+            selectOption(filteredOptions[highlightedIndex - 1]);
+          }
+        } else {
+          if (highlightedIndex < filteredOptions.length) {
+            selectOption(filteredOptions[highlightedIndex]);
+          }
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setShowDropdown(false);
+        setHighlightedIndex(0);
+        break;
+    }
   };
 
   const addCustomOption = () => {
@@ -135,8 +192,10 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setShowDropdown(true);
+              setHighlightedIndex(0);
             }}
             onFocus={() => setShowDropdown(true)}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className="form-input"
           />
@@ -153,21 +212,28 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
                 ) && (
                   <button
                     onClick={addCustomOption}
-                    className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-blue-600"
+                    className={`w-full text-left px-4 py-2 flex items-center gap-2 text-blue-600 ${highlightedIndex === 0 ? 'bg-blue-50' : 'hover:bg-blue-50'}`}
                     type="button"
+                    onMouseEnter={() => setHighlightedIndex(0)}
                   >
                     <Plus className="w-4 h-4" />
                     Add "{searchTerm}"
                   </button>
                 )}
                 {filteredOptions.map((option, idx) => {
+                  const optionIndex = allowCustom && searchTerm && !availableOptions.some(opt => 
+                    typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
+                  ) ? idx + 1 : idx;
+                  const isHighlighted = highlightedIndex === optionIndex;
+                  
                   if (typeof option === 'object') {
                     return (
                       <button
                         key={idx}
                         onClick={() => selectOption(option)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
+                        className={`w-full text-left px-4 py-2 text-gray-700 ${isHighlighted ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                         type="button"
+                        onMouseEnter={() => setHighlightedIndex(optionIndex)}
                       >
                         <div className="font-medium">{option.value}</div>
                         <div className="text-xs text-gray-500">Example: {option.example}</div>
@@ -178,8 +244,9 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
                       <button
                         key={idx}
                         onClick={() => selectOption(option)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
+                        className={`w-full text-left px-4 py-2 text-gray-700 ${isHighlighted ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
                         type="button"
+                        onMouseEnter={() => setHighlightedIndex(optionIndex)}
                       >
                         {option}
                       </button>
