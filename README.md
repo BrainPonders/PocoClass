@@ -221,22 +221,57 @@ curl -X POST http://localhost:8000/api/test \
 #### High Priority
 1. **QuickTestModal - Connect to Real Backend API** ⚠️
    - **File**: `frontend/src/components/QuickTestModal.jsx`
-   - **Issue**: Currently generates mock/random test scores (lines 34-53)
-   - **Action**: Connect to `/api/test/rule` endpoint to use real POCO scoring engine
-   - **Impact**: Users will see actual test results instead of fake data
+   - **Current Behavior**: 
+     - User clicks "Quick Test" button on Rules page
+     - Modal opens and allows file upload
+     - After upload, generates **random/fake scores** (lines 34-53):
+       - `ocrScore`: Random based on rule's OCR identifier count
+       - `pocoScore`: Random value between 60-100
+       - `passed`: Randomly determined based on fake scores
+     - Shows fake "Match" or "No Match" results
+   - **Problem**: Users cannot trust test results - they're completely fabricated
+   - **Solution Needed**:
+     - Connect to working endpoint `/api/rules/test` (line 1699)
+     - Pass uploaded document content to backend
+     - Use real POCO Scoring v2 engine for actual scores
+     - Display genuine OCR pattern matches and metadata extraction results
+   - **Backend API Already Available**: YES - `/api/rules/test` is fully implemented with `test_engine.test_rule()` at line 1718
+   - **Impact**: HIGH - Users will see actual test results and can trust the system for rule validation
 
 #### Medium Priority
 2. **Clarify Test Endpoint Usage** ⚠️
    - **File**: `api.py` (lines 1332-1353)
-   - **Issue**: Endpoint `/api/rules/<rule_id>/test` has TODO comment and returns empty results
-   - **Note**: Other working test endpoints exist using `test_engine` (lines 1718, 1785)
-   - **Action**: Determine if this is duplicate or needs implementation
+   - **Duplicate Endpoints**:
+     - **Stub endpoint**: `/api/rules/<rule_id>/test` (line 1332) - Returns empty mock results, has TODO comment
+     - **Working endpoint**: `/api/rules/test` (line 1699) - Fully functional, uses `test_engine.test_rule()`
+     - **Execute endpoint**: `/api/rules/<rule_id>/execute` (line 1757) - For applying rules to Paperless documents
+   - **Current State**:
+     - Stub accepts `documentId` parameter but doesn't use it
+     - Returns hardcoded zeros: `poco_ocr_score: 0, poco_score: 0, matched: False`
+     - Has been marked TODO since initial implementation
+   - **Decision Needed**:
+     - **Option A**: Delete stub endpoint (likely duplicate, no frontend usage found)
+     - **Option B**: Implement it as a convenience wrapper around `/api/rules/test` that loads the rule by ID automatically
+     - **Option C**: Keep as placeholder for future per-rule testing features
+   - **Recommendation**: Delete - The working `/api/rules/test` endpoint provides all needed functionality
 
 3. **Dashboard Filter Features** 📋
-   - **Files**: `frontend/src/pages/Dashboard.jsx` (lines 173, 176)
-   - **Issue**: Custom Fields and Permissions filters need backend support
-   - **Status**: Documented in code as intentionally disabled/greyed out
-   - **Action**: Decide if these should be implemented or removed
+   - **Files**: `frontend/src/pages/Dashboard.jsx` (lines 173-177)
+   - **Current Implementation**:
+     - **Working filters**: Title (inline search), Tags, Correspondent, Document Type, Dates
+     - **Disabled filters**: Custom Fields, Permissions (greyed out with TODO comments)
+   - **Custom Fields Filter**:
+     - **What it needs**: Fetch custom field values from Paperless API for each document
+     - **Challenge**: Documents may have different custom fields, requires dynamic schema
+     - **Backend support**: Would need to enhance `/api/documents` to include custom field data
+     - **Use case**: Filter documents by custom field values (e.g., "Invoice Number = 12345")
+   - **Permissions Filter**:
+     - **What it needs**: Owner and sharing permissions data from Paperless
+     - **Challenge**: Paperless permissions API needs to be integrated
+     - **Backend support**: Would need new endpoint to fetch document permissions
+     - **Use case**: Filter by "My Documents", "Shared with me", "Public", etc.
+   - **Status**: Intentionally disabled/documented as future enhancements
+   - **Action**: Decision point - implement or remove from UI entirely to avoid user confusion
 
 ### Recently Completed ✅
 - ✅ Fixed YAML "created by" field showing "Unknown User" (now shows actual Paperless username)
