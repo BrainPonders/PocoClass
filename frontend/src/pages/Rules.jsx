@@ -120,24 +120,21 @@ export default function Rules() {
   const handleDelete = async (ruleId) => {
     const rule = rules.find(r => r.id === ruleId);
     
+    // Protect template_v2 from deletion
+    if (rule.ruleId === 'template_v2') {
+      showToast('Template Rule v2 cannot be deleted', 'error');
+      return;
+    }
+    
     setConfirmDialog({
       isOpen: true,
       title: t('rules_confirm_delete'),
-      message: t('rules_cannot_undo'),
+      message: `Delete "${rule.ruleName}"? This rule will be moved to the deleted folder.`,
       onConfirm: async () => {
         try {
-          // Save to trash before deleting
-          await DeletedRule.create({
-            originalRuleId: rule.ruleId,
-            ruleName: rule.ruleName,
-            ruleData: rule,
-            deletedDate: new Date().toISOString(),
-            deletedBy: 'current_user' // In real app, get from User.me()
-          });
-          
-          // Delete the rule
+          // Delete the rule (backend moves it to deleted folder)
           await Rule.delete(ruleId);
-          showToast(`Rule moved to trash`, 'success');
+          showToast(`Rule "${rule.ruleName}" moved to deleted folder`, 'success');
           await reloadRules();
         } catch (error) {
           console.error('Error deleting rule:', error);
@@ -181,23 +178,22 @@ export default function Rules() {
         message: 'Rules will be moved to the trash can.',
         onConfirm: async () => {
           try {
-            // Save all to trash
-            await Promise.all(
-              selectedRules.map(id => {
-                const rule = rules.find(r => r.id === id);
-                return DeletedRule.create({
-                  originalRuleId: rule.ruleId,
-                  ruleName: rule.ruleName,
-                  ruleData: rule,
-                  deletedDate: new Date().toISOString(),
-                  deletedBy: 'current_user'
-                });
-              })
-            );
+            // Filter out protected rules
+            const rulesToDelete = selectedRules.filter(id => {
+              const rule = rules.find(r => r.id === id);
+              return rule.ruleId !== 'template_v2';
+            });
             
-            // Delete all rules
-            await Promise.all(selectedRules.map(id => Rule.delete(id)));
-            showToast(`${selectedRules.length} rule(s) moved to trash`, 'success');
+            const protectedCount = selectedRules.length - rulesToDelete.length;
+            
+            // Delete all non-protected rules (backend moves to deleted folder)
+            await Promise.all(rulesToDelete.map(id => Rule.delete(id)));
+            
+            if (protectedCount > 0) {
+              showToast(`${rulesToDelete.length} rule(s) deleted. ${protectedCount} protected rule(s) skipped.`, 'warning');
+            } else {
+              showToast(`${rulesToDelete.length} rule(s) moved to deleted folder`, 'success');
+            }
             setSelectedRules([]);
             await reloadRules();
           } catch (error) {
