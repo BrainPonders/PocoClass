@@ -221,6 +221,8 @@ curl -X POST http://localhost:8000/api/test \
 No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Fixed custom fields not loading/saving** - Custom fields now properly save to and load from YAML. Previously only "Document Category" was supported; now ALL custom fields are handled. All user values are properly escaped to prevent YAML syntax errors with special characters.
+- ✅ **Fixed tag extraction not saving** - Tag extraction rules (dynamic metadata) now properly save to YAML with pattern, value, and optional prefix fields. All values are escaped for safety.
 - ✅ **Fixed dynamic extraction rules not loading** - Added missing conversion code in `convert_backend_to_frontend()` to properly load dynamic metadata extraction rules (date extraction and tag extraction) from YAML files when opening existing rules in the rule editor.
 - ✅ **Fixed YAML regex pattern escaping bug** - Changed YAML generation to use single-quoted strings for patterns, which preserve backslashes literally. Added validation to catch YAML syntax errors before saving rules. This prevents "unknown escape character" errors that were preventing rules from loading.
 - ✅ **Removed QuickTestModal feature** - Deleted unused Quick Test button and modal from Rules page. Users should use the Rule Reviewer page for testing rules against documents.
