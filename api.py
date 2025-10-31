@@ -1080,6 +1080,38 @@ def get_rule(rule_id):
         logger.error(f"Error getting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
+def escape_yaml_string(value):
+    """
+    Escape special characters for YAML single-quoted strings.
+    Single quotes preserve backslashes literally, avoiding YAML escape sequence interpretation.
+    Only single quotes need to be escaped by doubling them.
+    """
+    if not value:
+        return value
+    # In single-quoted YAML strings, single quotes are escaped by doubling them (' -> '')
+    value = value.replace("'", "''")
+    return value
+
+def validate_yaml_content(yaml_content):
+    """
+    Validate that generated YAML can be parsed correctly.
+    Returns (is_valid, error_message) tuple.
+    """
+    try:
+        yaml.safe_load(yaml_content)
+        return (True, None)
+    except yaml.YAMLError as e:
+        error_msg = str(e)
+        # Extract line and column information if available
+        if hasattr(e, 'problem_mark'):
+            mark = e.problem_mark
+            error_msg = f"YAML validation error at line {mark.line + 1}, column {mark.column + 1}: {e.problem}"
+        logger.error(f"YAML validation failed: {error_msg}")
+        return (False, error_msg)
+    except Exception as e:
+        logger.error(f"Unexpected error during YAML validation: {e}")
+        return (False, f"Validation error: {str(e)}")
+
 def generate_formatted_yaml(frontend_data, user_name='System'):
     """Generate formatted YAML with comments matching the preview"""
     creation_date = datetime.now().strftime('%Y-%m-%d')
@@ -1149,9 +1181,9 @@ core_identifiers:
       conditions:
 """
             for condition in group.get('conditions', []):
-                pattern = condition.get('pattern', '').replace('"', '\\"')
+                pattern = escape_yaml_string(condition.get('pattern', ''))
                 range_val = condition.get('range', '0-1600')
-                yaml_content += f"""        - pattern: "{pattern}"    # Search pattern (text or regex)
+                yaml_content += f"""        - pattern: '{pattern}'    # Search pattern (text or regex)
           source: content
           range: "{range_val}"        # Search area
 """
@@ -1190,13 +1222,13 @@ dynamic_metadata:
 """
         for rule in extraction_rules:
             target_field = rule.get('targetField', '')
-            before_anchor = rule.get('beforeAnchor', {}).get('pattern', '')
-            after_anchor = rule.get('afterAnchor', {}).get('pattern', '')
+            before_anchor = escape_yaml_string(rule.get('beforeAnchor', {}).get('pattern', ''))
+            after_anchor = escape_yaml_string(rule.get('afterAnchor', {}).get('pattern', ''))
             extraction_type = rule.get('extractionType', '')
             
             yaml_content += f"""  {target_field}:
-    pattern_before: "{before_anchor}"
-    pattern_after: "{after_anchor}"
+    pattern_before: '{before_anchor}'
+    pattern_after: '{after_anchor}'
 """
             if extraction_type == 'date':
                 date_format = rule.get('dateFormat', 'DD-MM-YYYY')
@@ -1218,7 +1250,8 @@ filename_patterns:
     if filename_patterns and any(p for p in filename_patterns if p):
         for pattern in filename_patterns:
             if pattern:
-                yaml_content += f"""  - "{pattern}"
+                escaped_pattern = escape_yaml_string(pattern)
+                yaml_content += f"""  - '{escaped_pattern}'
 """
     else:
         yaml_content += """  # No filename patterns configured
@@ -1275,6 +1308,12 @@ def create_rule():
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
         
+        # Validate YAML before saving
+        is_valid, error_msg = validate_yaml_content(formatted_yaml)
+        if not is_valid:
+            logger.error(f"Failed to create rule {rule_id}: {error_msg}")
+            return jsonify({'error': f'Invalid YAML generated: {error_msg}'}), 400
+        
         # Save rule
         rule_file = os.path.join('rules', f'{rule_id}.yaml')
         with open(rule_file, 'w') as f:
@@ -1302,6 +1341,12 @@ def update_rule(rule_id):
         
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
+        
+        # Validate YAML before saving
+        is_valid, error_msg = validate_yaml_content(formatted_yaml)
+        if not is_valid:
+            logger.error(f"Failed to update rule {rule_id}: {error_msg}")
+            return jsonify({'error': f'Invalid YAML generated: {error_msg}'}), 400
         
         # Save rule
         rule_file = os.path.join('rules', f'{rule_id}.yaml')
