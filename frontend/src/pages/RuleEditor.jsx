@@ -278,6 +278,13 @@ export default function RuleEditor() {
       const dataToSave = { ...ruleData };
       delete dataToSave.ruleIdManuallyEdited;
       
+      // Auto-remove draft status when all mandatory steps (1-3 and 6) are complete
+      // Step 6 is always valid (summary), so we only need to check 1-3
+      const mandatoryStepsComplete = validateStep(1) && validateStep(2) && validateStep(3);
+      if (mandatoryStepsComplete && dataToSave.status === 'draft') {
+        dataToSave.status = 'active';
+      }
+      
       if (ruleId) {
         await Rule.update(ruleId, dataToSave);
       } else {

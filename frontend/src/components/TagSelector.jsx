@@ -5,6 +5,7 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
   const [availableTags, setAvailableTags] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   useEffect(() => {
     loadTags();
@@ -39,6 +40,58 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
     }
     setSearchTerm('');
     setShowDropdown(false);
+    setHighlightedIndex(0);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showDropdown) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        e.preventDefault();
+        setShowDropdown(true);
+        setHighlightedIndex(0);
+      }
+      return;
+    }
+
+    const totalOptions = filteredTags.length + (allowCustom && searchTerm && !availableTags.includes(searchTerm) ? 1 : 0);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev + 1) % totalOptions);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex((prev) => (prev - 1 + totalOptions) % totalOptions);
+        break;
+      case 'Home':
+        e.preventDefault();
+        setHighlightedIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        setHighlightedIndex(totalOptions - 1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (allowCustom && searchTerm && !availableTags.includes(searchTerm)) {
+          if (highlightedIndex === 0) {
+            addCustomTag();
+          } else {
+            addTag(filteredTags[highlightedIndex - 1]);
+          }
+        } else {
+          if (highlightedIndex < filteredTags.length) {
+            addTag(filteredTags[highlightedIndex]);
+          }
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setShowDropdown(false);
+        setHighlightedIndex(0);
+        break;
+    }
   };
 
   const removeTag = (tag) => {
@@ -82,8 +135,10 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setShowDropdown(true);
+            setHighlightedIndex(0);
           }}
           onFocus={() => setShowDropdown(true)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="form-input"
         />
@@ -98,21 +153,28 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
               {allowCustom && searchTerm && !availableTags.includes(searchTerm) && (
                 <button
                   onClick={addCustomTag}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-gray-600"
+                  className={`w-full text-left px-4 py-2 flex items-center gap-2 text-gray-600 ${highlightedIndex === 0 ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                  onMouseEnter={() => setHighlightedIndex(0)}
                 >
                   <Plus className="w-4 h-4" />
                   Add "{searchTerm}"
                 </button>
               )}
-              {filteredTags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => addTag(tag)}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700"
-                >
-                  {tag}
-                </button>
-              ))}
+              {filteredTags.map((tag, idx) => {
+                const optionIndex = allowCustom && searchTerm && !availableTags.includes(searchTerm) ? idx + 1 : idx;
+                const isHighlighted = highlightedIndex === optionIndex;
+                
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => addTag(tag)}
+                    className={`w-full text-left px-4 py-2 text-gray-700 ${isHighlighted ? 'bg-blue-50' : 'hover:bg-gray-50'}`}
+                    onMouseEnter={() => setHighlightedIndex(optionIndex)}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
               {filteredTags.length === 0 && !searchTerm && (
                 <div className="px-4 py-2 text-gray-500 text-sm">No tags available</div>
               )}
