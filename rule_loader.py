@@ -66,12 +66,16 @@ class RuleLoader:
     
     def validate_rule(self, rule: Dict[str, Any], filename: str) -> bool:
         """Validate rule structure and required fields"""
-        required_fields = ['rule_name', 'rule_id', 'threshold', 'core_identifiers']
+        required_fields = ['rule_name', 'rule_id', 'threshold']
         
         for field in required_fields:
             if field not in rule:
                 self.logger.error(f"Rule {filename} missing required field: {field}")
                 return False
+        
+        # core_identifiers is optional - initialize if missing
+        if 'core_identifiers' not in rule:
+            rule['core_identifiers'] = {'logic_groups': []}
         
         # Validate threshold
         threshold = rule.get('threshold')
