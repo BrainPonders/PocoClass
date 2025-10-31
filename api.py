@@ -1212,7 +1212,19 @@ static_metadata:
 """
     tags = predefined.get('tags', [])
     if tags:
-        yaml_content += f"""  tags: [{', '.join(f'"{tag}"' for tag in tags)}]
+        escaped_tags = [f"'{escape_yaml_string(tag)}'" for tag in tags]
+        yaml_content += f"""  tags: [{', '.join(escaped_tags)}]
+"""
+    
+    # Add custom fields if present
+    custom_fields = predefined.get('customFields', {})
+    if custom_fields and any(v for v in custom_fields.values() if v):
+        yaml_content += """  custom_fields:
+"""
+        for field_name, field_value in custom_fields.items():
+            if field_value:
+                escaped_value = escape_yaml_string(str(field_value))
+                yaml_content += f"""    {field_name}: '{escaped_value}'
 """
     
     extraction_rules = dynamic.get('extractionRules', [])
@@ -1220,19 +1232,37 @@ static_metadata:
         yaml_content += """
 dynamic_metadata:
 """
-        for rule in extraction_rules:
+        # Separate date extraction and tag extraction rules
+        date_rules = [r for r in extraction_rules if r.get('extractionType') == 'date']
+        tag_rules = [r for r in extraction_rules if r.get('extractionType') == 'text' and r.get('targetField') == 'tags']
+        
+        # Handle date extraction
+        for rule in date_rules:
             target_field = rule.get('targetField', '')
             before_anchor = escape_yaml_string(rule.get('beforeAnchor', {}).get('pattern', ''))
             after_anchor = escape_yaml_string(rule.get('afterAnchor', {}).get('pattern', ''))
-            extraction_type = rule.get('extractionType', '')
+            date_format = rule.get('dateFormat', 'DD-MM-YYYY')
             
             yaml_content += f"""  {target_field}:
     pattern_before: '{before_anchor}'
     pattern_after: '{after_anchor}'
+    format: {date_format}
 """
-            if extraction_type == 'date':
-                date_format = rule.get('dateFormat', 'DD-MM-YYYY')
-                yaml_content += f"""    format: {date_format}
+        
+        # Handle tag extraction
+        if tag_rules:
+            yaml_content += """  extracted_tags:
+"""
+            for rule in tag_rules:
+                regex_pattern = escape_yaml_string(rule.get('regexPattern', ''))
+                tag_value = escape_yaml_string(rule.get('tagValue', ''))
+                prefix = escape_yaml_string(rule.get('prefix', ''))
+                
+                yaml_content += f"""    - pattern: '{regex_pattern}'
+      value: '{tag_value}'
+"""
+                if prefix:
+                    yaml_content += f"""      prefix: '{prefix}'
 """
     
     # Step 4: Filename Patterns
@@ -1708,7 +1738,7 @@ def convert_backend_to_frontend(backend_data, rule_id):
             'correspondent': sm.get('correspondent', ''),
             'documentType': sm.get('document_type', ''),
             'tags': sm.get('tags', []),
-            'documentCategory': sm.get('custom_fields', {}).get('Document Category', '')
+            'customFields': sm.get('custom_fields', {})
         }
     
     # Dynamic metadata (extraction rules)
