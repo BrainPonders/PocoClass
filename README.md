@@ -221,6 +221,7 @@ curl -X POST http://localhost:8000/api/test \
 No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Fixed YAML regex pattern escaping bug** - Added automatic backslash escaping for regex patterns in YAML generation. Patterns with `\s`, `\d`, and other regex escape sequences are now properly escaped as `\\s`, `\\d` when saved to YAML files. Added validation to catch YAML syntax errors before saving rules. This prevents "unknown escape character" errors that were preventing rules from loading.
 - ✅ **Removed QuickTestModal feature** - Deleted unused Quick Test button and modal from Rules page. Users should use the Rule Reviewer page for testing rules against documents.
 - ✅ **Removed duplicate stub test endpoint** from `api.py` (lines 1332-1353) - The working `/api/rules/test` endpoint provides all needed functionality
 - ✅ **Cleaned up Dashboard filters** - Removed disabled/greyed-out filters (Storage Path, Custom Fields, Permissions) to reduce UI clutter and user confusion. Working filters remain: Title search, Tags, Correspondent, Document Type, and Dates
