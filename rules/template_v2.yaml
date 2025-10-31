@@ -13,7 +13,7 @@
 rule_name: "Template Rule v2"
 rule_id: "template_v2"
 description: "Template demonstrating the new POCO Scoring v2 structure"
-status: "draft"  # draft, active, inactive
+status: "new"  # draft, active, inactive
 
 # Thresholds
 threshold: 80           # Minimum POCO Score for classification (default: 80%)
