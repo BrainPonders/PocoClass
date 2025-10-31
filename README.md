@@ -239,6 +239,7 @@ curl -X POST http://localhost:8000/api/test \
    - **Action**: Decide if these should be implemented or removed
 
 ### Recently Completed ✅
+- ✅ Fixed YAML "created by" field showing "Unknown User" (now shows actual Paperless username)
 - ✅ Fixed YAML formatting mismatch (backend/frontend alignment)
 - ✅ Fixed YamlPreview component (POCO v2 format, quote escaping, nullish coalescing)
 - ✅ Fixed TagSelector to use real Paperless tags (removed mock data)
