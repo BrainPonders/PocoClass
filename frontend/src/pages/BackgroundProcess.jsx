@@ -19,6 +19,8 @@ export default function BackgroundProcess() {
   const [historyPage, setHistoryPage] = useState(1);
   const [historyLimit] = useState(20);
   const [dryRun, setDryRun] = useState(false);
+  const [matchingDocuments, setMatchingDocuments] = useState([]);
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
   
   const [allTags, setAllTags] = useState([]);
   const [allCorrespondents, setAllCorrespondents] = useState([]);
@@ -121,6 +123,48 @@ export default function BackgroundProcess() {
       console.error('Error loading cache data:', error);
     }
   };
+
+  const loadMatchingDocuments = async () => {
+    setLoadingDocuments(true);
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const params = new URLSearchParams();
+      
+      // Build query params from filters
+      if (filters.title) params.append('title', filters.title);
+      if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
+      if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
+      if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
+      if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
+      if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
+      if (filters.docTypesMode) params.append('doc_types_mode', filters.docTypesMode);
+      if (filters.dateFrom) params.append('date_from', filters.dateFrom);
+      if (filters.dateTo) params.append('date_to', filters.dateTo);
+      
+      const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch documents');
+
+      const data = await response.json();
+      setMatchingDocuments(data.results || []);
+    } catch (error) {
+      console.error('Error loading matching documents:', error);
+      setMatchingDocuments([]);
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  // Load matching documents when filters change
+  useEffect(() => {
+    if (currentUser && currentUser.role === 'admin') {
+      loadMatchingDocuments();
+    }
+  }, [filters, currentUser]);
 
   const handleTrigger = async () => {
     if (currentUser?.role !== 'admin') {
@@ -430,6 +474,67 @@ export default function BackgroundProcess() {
               <Play className="w-4 h-4" />
               {loading ? 'Processing...' : 'Process Documents'}
             </Button>
+          </div>
+
+          {/* Matching Documents List */}
+          <div className="mt-6">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              Matching Documents ({matchingDocuments.length})
+            </h3>
+            {loadingDocuments ? (
+              <div className="flex items-center justify-center py-8">
+                <RefreshCw className="w-6 h-6 text-gray-400 animate-spin" />
+              </div>
+            ) : matchingDocuments.length === 0 ? (
+              <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No documents match the current filter criteria</p>
+              </div>
+            ) : (
+              <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                <table className="w-full">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {matchingDocuments.map((doc) => (
+                      <tr key={doc.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2 text-sm text-gray-900">{doc.title || 'Untitled'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-600">{doc.correspondent_name || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-600">{doc.document_type_name || '-'}</td>
+                        <td className="px-4 py-2 text-sm">
+                          {doc.tags?.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {doc.tags.slice(0, 3).map((tag, idx) => (
+                                <span key={idx} className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
+                                  {tag}
+                                </span>
+                              ))}
+                              {doc.tags.length > 3 && (
+                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
+                                  +{doc.tags.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-600">
+                          {doc.created ? new Date(doc.created).toLocaleDateString() : '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

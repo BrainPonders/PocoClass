@@ -221,6 +221,9 @@ curl -X POST http://localhost:8000/api/test \
 No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Fixed rule deletion** - Deletion now works correctly by removing broken `DeletedRule.create()` call. Backend handles moving rules to deleted folder.
+- ✅ **Protected Template Rule v2** - Cannot be deleted (shows error message). Bulk delete automatically skips protected rules with warning notification.
+- ✅ **Added document preview to Background Process** - Background Process page now shows a table of documents matching the current filter criteria. Updates in real-time as filters change. Shows document title, correspondent, document type, tags, and creation date.
 - ✅ **Status workflow redesign** - Replaced "draft" status with "new" and implemented proper lifecycle:
   - New rules start with "new" status
   - User manually changes to "active" or "inactive" via dropdown in Step 6 (Summary)
