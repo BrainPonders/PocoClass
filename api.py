@@ -1270,7 +1270,7 @@ def create_rule():
         if session:
             user = db.get_user_by_id(session.get('user_id'))
             if user:
-                user_name = user.get('full_name', 'Unknown User')
+                user_name = user.get('paperless_username', 'Unknown User')
         
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
@@ -1298,7 +1298,7 @@ def update_rule(rule_id):
         if session:
             user = db.get_user_by_id(session.get('user_id'))
             if user:
-                user_name = user.get('full_name', 'Unknown User')
+                user_name = user.get('paperless_username', 'Unknown User')
         
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
