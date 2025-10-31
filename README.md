@@ -252,6 +252,30 @@ curl -X POST http://localhost:8000/api/test \
 
 ### High Priority
 
+Currently no high priority items.
+
+### Medium Priority
+
+#### Data Validation Integration
+- **Status**: Validation methods exist in `metadata_processor.py` but not yet integrated into extraction flow
+- **Tasks**:
+  - Wire `validate_and_sanitize_value()` into dynamic metadata extraction
+  - Apply validation for monetary (. separator, 2 decimal places), integer (whole numbers), float formats
+  - Add validation error reporting in test results
+
+#### Enhanced OCR Pattern Matching
+- Support for more complex logic operators (NOT, XOR)
+- Pattern libraries for common document types (invoices, receipts, contracts)
+- Machine learning-based pattern suggestions based on document corpus
+
+#### Rule Testing Enhancements
+- Batch testing against multiple documents
+- Performance metrics and analytics
+- A/B testing for rule variations
+- Historical accuracy tracking
+
+### Low Priority
+
 #### Dynamic Extraction for Additional Fields
 Currently, only **Date Created** and **Custom Fields** (string, integer, float, monetary, date types) support dynamic extraction. The following built-in fields are planned for future support:
 
@@ -282,28 +306,6 @@ Currently, only **Date Created** and **Custom Fields** (string, integer, float, 
 4. **Storage Path** (Low Complexity)
    - Dynamic assignment of storage paths based on document content
    - Requires mapping extracted values to existing storage path options
-
-### Medium Priority
-
-#### Data Validation Integration
-- **Status**: Validation methods exist in `metadata_processor.py` but not yet integrated into extraction flow
-- **Tasks**:
-  - Wire `validate_and_sanitize_value()` into dynamic metadata extraction
-  - Apply validation for monetary (. separator, 2 decimal places), integer (whole numbers), float formats
-  - Add validation error reporting in test results
-
-#### Enhanced OCR Pattern Matching
-- Support for more complex logic operators (NOT, XOR)
-- Pattern libraries for common document types (invoices, receipts, contracts)
-- Machine learning-based pattern suggestions based on document corpus
-
-#### Rule Testing Enhancements
-- Batch testing against multiple documents
-- Performance metrics and analytics
-- A/B testing for rule variations
-- Historical accuracy tracking
-
-### Low Priority
 
 #### UI/UX Improvements
 - Dark mode support
