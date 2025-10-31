@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Rule } from "@/api/entities";
 import { DeletedRule } from "@/api/entities";
 import { createPageUrl } from "@/utils";
-import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown, PlayCircle } from 'lucide-react';
+import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import { useToast } from '@/components/ToastContainer';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import YamlExportButton from '@/components/YamlExportButton';
-import QuickTestModal from '@/components/QuickTestModal';
 import TrashCanModal from '@/components/TrashCanModal';
 
 export default function Rules() {
@@ -24,7 +23,6 @@ export default function Rules() {
   const [selectedRules, setSelectedRules] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false });
-  const [quickTestModal, setQuickTestModal] = useState({ isOpen: false, rule: null });
   const [trashCanModal, setTrashCanModal] = useState(false);
   
   const ITEMS_PER_PAGE = 10;
@@ -498,14 +496,6 @@ export default function Rules() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
-                        <button 
-                          onClick={() => setQuickTestModal({ isOpen: true, rule })}
-                          className="btn btn-ghost btn-sm"
-                          title="Quick test"
-                          aria-label={`Quick test rule ${rule.ruleName}`}
-                        >
-                          <PlayCircle className="w-4 h-4" />
-                        </button>
                         <YamlExportButton ruleData={rule} buttonStyle="ghost" />
                         <button 
                           onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${rule.id}`)}
@@ -583,11 +573,6 @@ export default function Rules() {
       )}
 
       <ConfirmDialog {...confirmDialog} />
-      <QuickTestModal 
-        isOpen={quickTestModal.isOpen}
-        onClose={() => setQuickTestModal({ isOpen: false, rule: null })}
-        rule={quickTestModal.rule}
-      />
       <TrashCanModal
         isOpen={trashCanModal}
         onClose={() => setTrashCanModal(false)}
