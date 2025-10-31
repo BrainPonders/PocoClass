@@ -13,7 +13,8 @@ import {
 export default function SummaryStep({ 
   ruleData, 
   showInfoBoxes,
-  setShowInfoBoxes 
+  setShowInfoBoxes,
+  updateRuleData
 }) {
   const ocrMultiplier = ruleData.ocrMultiplier ?? OCR_DEFAULT_MULTIPLIER;
   const filenameMultiplier = ruleData.filenameMultiplier ?? FILENAME_DEFAULT_MULTIPLIER;
@@ -64,9 +65,26 @@ export default function SummaryStep({
               <span className="text-gray-600">Threshold:</span>
               <span className="font-medium">{ruleData.threshold}%</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <span className="text-gray-600">Status:</span>
-              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">{ruleData.status}</span>
+              <select
+                value={ruleData.status || 'new'}
+                onChange={(e) => updateRuleData('status', e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              >
+                {ruleData.status === 'new' ? (
+                  <>
+                    <option value="new">New</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </>
+                )}
+              </select>
             </div>
           </div>
         </div>

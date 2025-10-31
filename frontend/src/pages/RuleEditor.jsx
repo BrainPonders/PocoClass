@@ -95,7 +95,8 @@ export default function RuleEditor() {
       validationRules: [],
       enabledFields: {}
     },
-    status: 'draft'
+    status: 'new',
+    originalStatus: null  // Track original status for edit detection
   });
 
   const [stepStatus, setStepStatus] = useState({
@@ -163,7 +164,8 @@ export default function RuleEditor() {
               validationRules: rule.verification?.validationRules || [],
               enabledFields: rule.verification?.enabledFields || {}
             },
-            ruleIdManuallyEdited: true
+            ruleIdManuallyEdited: true,
+            originalStatus: rule.status  // Store original status for edit detection
           });
           setHasUnsavedChanges(false);
         }
@@ -196,6 +198,19 @@ export default function RuleEditor() {
                   ? { ...(prev[section] || {}), ...data }
                   : data
           };
+        
+        // If user is changing status, update originalStatus to track this as the new baseline
+        if (isUserChange && section === 'status') {
+          newData.originalStatus = data;
+        }
+        // If editing an active/inactive rule (not changing status field), revert to "new"
+        else if (isUserChange && section !== 'status' && prev.originalStatus && (prev.originalStatus === 'active' || prev.originalStatus === 'inactive')) {
+          newData.status = 'new';
+        }
+        // Also check current status if originalStatus wasn't set (new rule that was just activated)
+        else if (isUserChange && section !== 'status' && !prev.originalStatus && (prev.status === 'active' || prev.status === 'inactive')) {
+          newData.status = 'new';
+        }
         
         return newData;
     });
@@ -277,13 +292,7 @@ export default function RuleEditor() {
     try {
       const dataToSave = { ...ruleData };
       delete dataToSave.ruleIdManuallyEdited;
-      
-      // Auto-remove draft status when all mandatory steps (1-3 and 6) are complete
-      // Step 6 is always valid (summary), so we only need to check 1-3
-      const mandatoryStepsComplete = validateStep(1) && validateStep(2) && validateStep(3);
-      if (mandatoryStepsComplete && dataToSave.status === 'draft') {
-        dataToSave.status = 'active';
-      }
+      delete dataToSave.originalStatus;  // Don't save internal tracking field
       
       if (ruleId) {
         await Rule.update(ruleId, dataToSave);
