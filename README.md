@@ -214,6 +214,39 @@ curl -X POST http://localhost:8000/api/test \
   -d '{"rule_id": "your_rule", "content": "document content"}'
 ```
 
+## To-Do List
+
+### Outstanding Tasks
+
+#### High Priority
+1. **QuickTestModal - Connect to Real Backend API** ⚠️
+   - **File**: `frontend/src/components/QuickTestModal.jsx`
+   - **Issue**: Currently generates mock/random test scores (lines 34-53)
+   - **Action**: Connect to `/api/test/rule` endpoint to use real POCO scoring engine
+   - **Impact**: Users will see actual test results instead of fake data
+
+#### Medium Priority
+2. **Clarify Test Endpoint Usage** ⚠️
+   - **File**: `api.py` (lines 1332-1353)
+   - **Issue**: Endpoint `/api/rules/<rule_id>/test` has TODO comment and returns empty results
+   - **Note**: Other working test endpoints exist using `test_engine` (lines 1718, 1785)
+   - **Action**: Determine if this is duplicate or needs implementation
+
+3. **Dashboard Filter Features** 📋
+   - **Files**: `frontend/src/pages/Dashboard.jsx` (lines 173, 176)
+   - **Issue**: Custom Fields and Permissions filters need backend support
+   - **Status**: Documented in code as intentionally disabled/greyed out
+   - **Action**: Decide if these should be implemented or removed
+
+### Recently Completed ✅
+- ✅ Fixed YAML formatting mismatch (backend/frontend alignment)
+- ✅ Fixed YamlPreview component (POCO v2 format, quote escaping, nullish coalescing)
+- ✅ Fixed TagSelector to use real Paperless tags (removed mock data)
+- ✅ Fixed Logs page API call format (filters object)
+- ✅ Added Known Limitations section to README
+
+---
+
 ## Future Enhancements / Roadmap
 
 ### High Priority
