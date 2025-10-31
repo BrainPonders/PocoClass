@@ -36,12 +36,8 @@ export default function Dashboard() {
     docTypes: [],
     docTypesMode: 'include',
     docTypesSearch: '',
-    customFields: [],
-    customFieldName: '',
-    customFieldValue: '',
     dateFrom: '',
-    dateTo: '',
-    permissions: 'all'
+    dateTo: ''
   });
 
   useEffect(() => {
@@ -169,12 +165,6 @@ export default function Dashboard() {
       const toDate = new Date(filters.dateTo);
       if (docDate > toDate) return false;
     }
-
-    // Custom fields filter - TODO: Requires backend API support
-    // Would need to fetch and match custom field values from Paperless
-    
-    // Permissions filter - TODO: Requires backend API support  
-    // Would need owner/sharing data from Paperless for each document
     
     return true;
   });
@@ -191,12 +181,8 @@ export default function Dashboard() {
       docTypes: [],
       docTypesMode: 'include',
       docTypesSearch: '',
-      customFields: [],
-      customFieldName: '',
-      customFieldValue: '',
       dateFrom: '',
-      dateTo: '',
-      permissions: 'all'
+      dateTo: ''
     });
   };
 

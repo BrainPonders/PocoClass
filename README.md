@@ -218,63 +218,25 @@ curl -X POST http://localhost:8000/api/test \
 
 ### Outstanding Tasks
 
-#### High Priority
-1. **QuickTestModal - Connect to Real Backend API** ⚠️
+#### Deferred (Complex Implementation)
+1. **QuickTestModal - Connect to Real Backend API** 🔄
    - **File**: `frontend/src/components/QuickTestModal.jsx`
-   - **Current Behavior**: 
-     - User clicks "Quick Test" button on Rules page
-     - Modal opens and allows file upload
-     - After upload, generates **random/fake scores** (lines 34-53):
-       - `ocrScore`: Random based on rule's OCR identifier count
-       - `pocoScore`: Random value between 60-100
-       - `passed`: Randomly determined based on fake scores
-     - Shows fake "Match" or "No Match" results
-   - **Problem**: Users cannot trust test results - they're completely fabricated
-   - **Solution Needed**:
-     - Connect to working endpoint `/api/rules/test` (line 1699)
-     - Pass uploaded document content to backend
-     - Use real POCO Scoring v2 engine for actual scores
-     - Display genuine OCR pattern matches and metadata extraction results
-   - **Backend API Already Available**: YES - `/api/rules/test` is fully implemented with `test_engine.test_rule()` at line 1718
-   - **Impact**: HIGH - Users will see actual test results and can trust the system for rule validation
-
-#### Medium Priority
-2. **Clarify Test Endpoint Usage** ⚠️
-   - **File**: `api.py` (lines 1332-1353)
-   - **Duplicate Endpoints**:
-     - **Stub endpoint**: `/api/rules/<rule_id>/test` (line 1332) - Returns empty mock results, has TODO comment
-     - **Working endpoint**: `/api/rules/test` (line 1699) - Fully functional, uses `test_engine.test_rule()`
-     - **Execute endpoint**: `/api/rules/<rule_id>/execute` (line 1757) - For applying rules to Paperless documents
-   - **Current State**:
-     - Stub accepts `documentId` parameter but doesn't use it
-     - Returns hardcoded zeros: `poco_ocr_score: 0, poco_score: 0, matched: False`
-     - Has been marked TODO since initial implementation
-   - **Decision Needed**:
-     - **Option A**: Delete stub endpoint (likely duplicate, no frontend usage found)
-     - **Option B**: Implement it as a convenience wrapper around `/api/rules/test` that loads the rule by ID automatically
-     - **Option C**: Keep as placeholder for future per-rule testing features
-   - **Recommendation**: Delete - The working `/api/rules/test` endpoint provides all needed functionality
-
-3. **Dashboard Filter Features** 📋
-   - **Files**: `frontend/src/pages/Dashboard.jsx` (lines 173-177)
-   - **Current Implementation**:
-     - **Working filters**: Title (inline search), Tags, Correspondent, Document Type, Dates
-     - **Disabled filters**: Custom Fields, Permissions (greyed out with TODO comments)
-   - **Custom Fields Filter**:
-     - **What it needs**: Fetch custom field values from Paperless API for each document
-     - **Challenge**: Documents may have different custom fields, requires dynamic schema
-     - **Backend support**: Would need to enhance `/api/documents` to include custom field data
-     - **Use case**: Filter documents by custom field values (e.g., "Invoice Number = 12345")
-   - **Permissions Filter**:
-     - **What it needs**: Owner and sharing permissions data from Paperless
-     - **Challenge**: Paperless permissions API needs to be integrated
-     - **Backend support**: Would need new endpoint to fetch document permissions
-     - **Use case**: Filter by "My Documents", "Shared with me", "Public", etc.
-   - **Status**: Intentionally disabled/documented as future enhancements
-   - **Action**: Decision point - implement or remove from UI entirely to avoid user confusion
+   - **Status**: **DEFERRED** - Requires complex implementation with Paperless upload, OCR polling, and cleanup
+   - **Current Behavior**: Modal generates random test scores (not connected to backend)
+   - **Why Deferred**: 
+     - Proper implementation requires:
+       1. New backend endpoint `/api/quick-test/upload` to upload files to Paperless
+       2. Polling mechanism to wait for OCR processing completion
+       3. Cleanup logic to remove temporary test documents
+       4. File size validation and error handling
+     - **Alternative Available**: Users can use the **Rule Reviewer** page which already provides full rule testing capabilities with document preview against existing Paperless documents
+   - **Recommendation**: Use Rule Reviewer for real testing; QuickTestModal can remain as-is or be removed in future cleanup
+   - **Architecture Note**: Architect recommended backend-mediated pipeline with temporary Paperless uploads for proper OCR extraction
 
 ### Recently Completed ✅
-- ✅ Fixed YAML "created by" field showing "Unknown User" (now shows actual Paperless username)
+- ✅ **Removed duplicate stub test endpoint** from `api.py` (lines 1332-1353) - The working `/api/rules/test` endpoint provides all needed functionality
+- ✅ **Cleaned up Dashboard filters** - Removed disabled/greyed-out filters (Storage Path, Custom Fields, Permissions) to reduce UI clutter and user confusion. Working filters remain: Title search, Tags, Correspondent, Document Type, and Dates
+- ✅ **Fixed YAML "created by" field** showing "Unknown User" (now shows actual Paperless username)
 - ✅ Fixed YAML formatting mismatch (backend/frontend alignment)
 - ✅ Fixed YamlPreview component (POCO v2 format, quote escaping, nullish coalescing)
 - ✅ Fixed TagSelector to use real Paperless tags (removed mock data)
