@@ -218,22 +218,10 @@ curl -X POST http://localhost:8000/api/test \
 
 ### Outstanding Tasks
 
-#### Deferred (Complex Implementation)
-1. **QuickTestModal - Connect to Real Backend API** 🔄
-   - **File**: `frontend/src/components/QuickTestModal.jsx`
-   - **Status**: **DEFERRED** - Requires complex implementation with Paperless upload, OCR polling, and cleanup
-   - **Current Behavior**: Modal generates random test scores (not connected to backend)
-   - **Why Deferred**: 
-     - Proper implementation requires:
-       1. New backend endpoint `/api/quick-test/upload` to upload files to Paperless
-       2. Polling mechanism to wait for OCR processing completion
-       3. Cleanup logic to remove temporary test documents
-       4. File size validation and error handling
-     - **Alternative Available**: Users can use the **Rule Reviewer** page which already provides full rule testing capabilities with document preview against existing Paperless documents
-   - **Recommendation**: Use Rule Reviewer for real testing; QuickTestModal can remain as-is or be removed in future cleanup
-   - **Architecture Note**: Architect recommended backend-mediated pipeline with temporary Paperless uploads for proper OCR extraction
+No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Removed QuickTestModal feature** - Deleted unused Quick Test button and modal from Rules page. Users should use the Rule Reviewer page for testing rules against documents.
 - ✅ **Removed duplicate stub test endpoint** from `api.py` (lines 1332-1353) - The working `/api/rules/test` endpoint provides all needed functionality
 - ✅ **Cleaned up Dashboard filters** - Removed disabled/greyed-out filters (Storage Path, Custom Fields, Permissions) to reduce UI clutter and user confusion. Working filters remain: Title search, Tags, Correspondent, Document Type, and Dates
 - ✅ **Fixed YAML "created by" field** showing "Unknown User" (now shows actual Paperless username)
