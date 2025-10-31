@@ -1711,6 +1711,57 @@ def convert_backend_to_frontend(backend_data, rule_id):
             'documentCategory': sm.get('custom_fields', {}).get('Document Category', '')
         }
     
+    # Dynamic metadata (extraction rules)
+    if backend_data.get('dynamic_metadata'):
+        dm = backend_data['dynamic_metadata']
+        
+        # Date extraction
+        if dm.get('date_created'):
+            date_rule = dm['date_created']
+            
+            # Handle pattern_before (new format - string) or beforeAnchor (old format - dict or string)
+            before_pattern = ''
+            if 'pattern_before' in date_rule:
+                before_pattern = date_rule['pattern_before']
+            elif 'beforeAnchor' in date_rule:
+                before_anchor = date_rule['beforeAnchor']
+                # Check if it's a dict with 'pattern' key or just a string
+                if isinstance(before_anchor, dict):
+                    before_pattern = before_anchor.get('pattern', '')
+                else:
+                    before_pattern = before_anchor
+            
+            # Handle pattern_after (new format - string) or afterAnchor (old format - dict or string)
+            after_pattern = ''
+            if 'pattern_after' in date_rule:
+                after_pattern = date_rule['pattern_after']
+            elif 'afterAnchor' in date_rule:
+                after_anchor = date_rule['afterAnchor']
+                # Check if it's a dict with 'pattern' key or just a string
+                if isinstance(after_anchor, dict):
+                    after_pattern = after_anchor.get('pattern', '')
+                else:
+                    after_pattern = after_anchor
+            
+            frontend['dynamicData']['extractionRules'].append({
+                'targetField': 'dateCreated',
+                'extractionType': 'date',
+                'beforeAnchor': {'pattern': before_pattern},
+                'afterAnchor': {'pattern': after_pattern},
+                'dateFormat': date_rule.get('format', 'DD-MM-YYYY')
+            })
+        
+        # Tag extraction
+        if dm.get('extracted_tags'):
+            for tag_rule in dm['extracted_tags']:
+                frontend['dynamicData']['extractionRules'].append({
+                    'targetField': 'tags',
+                    'extractionType': 'text',
+                    'regexPattern': tag_rule.get('pattern', ''),
+                    'tagValue': tag_rule.get('value', ''),
+                    'prefix': tag_rule.get('prefix', '')
+                })
+    
     # Filename patterns
     if backend_data.get('filename_patterns'):
         frontend['filenamePatterns']['patterns'] = backend_data['filename_patterns']
