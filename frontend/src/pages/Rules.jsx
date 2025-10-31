@@ -155,7 +155,7 @@ export default function Rules() {
         ...rule,
         ruleName: `${rule.ruleName} (Copy)`,
         ruleId: `${rule.ruleId}_copy_${Date.now()}`,
-        status: 'draft'
+        status: 'new'
       };
       delete duplicateData.id;
       delete duplicateData.created_date;
@@ -219,13 +219,13 @@ export default function Rules() {
       let warningMessage = `${selectedRules.length} rule(s) will be ${newStatus}`;
       
       if (action === 'activate') {
-        const draftRules = selectedRules.filter(id => {
+        const newRules = selectedRules.filter(id => {
           const rule = rules.find(r => r.id === id);
-          return rule && rule.status === 'draft';
+          return rule && rule.status === 'new';
         });
         
-        if (draftRules.length > 0) {
-          warningMessage = `⚠️ Warning: ${draftRules.length} of ${selectedRules.length} selected rule(s) are in draft status. Are you sure you want to activate them?`;
+        if (newRules.length > 0) {
+          warningMessage = `⚠️ Warning: ${newRules.length} of ${selectedRules.length} selected rule(s) are in "new" status. Are you sure you want to activate them?`;
         }
       }
 
@@ -350,7 +350,7 @@ export default function Rules() {
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
-                <option value="draft">Draft</option>
+                <option value="new">New</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>
