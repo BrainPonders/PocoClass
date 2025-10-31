@@ -1329,29 +1329,6 @@ def delete_rule(rule_id):
         logger.error(f"Error deleting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/rules/<rule_id>/test', methods=['POST'])
-def test_rule(rule_id):
-    """Test a rule against a document"""
-    try:
-        data = request.json
-        document_id = data.get('documentId')
-        
-        # TODO: Implement rule testing logic
-        # This will use the new scoring algorithm
-        
-        return jsonify({
-            'success': True,
-            'results': {
-                'poco_ocr_score': 0,
-                'poco_score': 0,
-                'matched': False,
-                'details': {}
-            }
-        })
-    except Exception as e:
-        logger.error(f"Error testing rule {rule_id}: {e}")
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/api/logs', methods=['GET'])
 def list_logs():
     """List logs"""

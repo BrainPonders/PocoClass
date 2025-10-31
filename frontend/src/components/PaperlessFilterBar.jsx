@@ -36,10 +36,8 @@ export default function PaperlessFilterBar({
            filters.tags.length > 0 ||
            filters.correspondents.length > 0 ||
            filters.docTypes.length > 0 ||
-           filters.customFields.length > 0 ||
            filters.dateFrom ||
-           filters.dateTo ||
-           filters.permissions !== 'all';
+           filters.dateTo;
   };
 
   const getFilterButtonClass = (filterName) => {
@@ -49,9 +47,7 @@ export default function PaperlessFilterBar({
       case 'tags': hasValue = filters.tags.length > 0; break;
       case 'correspondent': hasValue = filters.correspondents.length > 0; break;
       case 'documentType': hasValue = filters.docTypes.length > 0; break;
-      case 'customFields': hasValue = filters.customFields.length > 0; break;
       case 'dates': hasValue = filters.dateFrom || filters.dateTo; break;
-      case 'permissions': hasValue = filters.permissions !== 'all'; break;
       default: hasValue = false;
     }
 
@@ -297,31 +293,6 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
-        {/* Storage Path Filter (Disabled) */}
-        <div className="relative">
-          <button
-            disabled
-            className="px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 bg-gray-600 text-gray-400 cursor-not-allowed opacity-50"
-          >
-            <Filter className="w-4 h-4" />
-            Storage path
-            <ChevronDown className="w-3 h-3" />
-          </button>
-        </div>
-
-        {/* Custom Fields Filter - Disabled pending full implementation */}
-        <div className="relative">
-          <button
-            disabled
-            className="px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 bg-gray-600 text-gray-400 cursor-not-allowed opacity-50"
-            title="Custom fields filtering requires backend support for field definitions and select options"
-          >
-            <Filter className="w-4 h-4" />
-            Custom fields
-            <ChevronDown className="w-3 h-3" />
-          </button>
-        </div>
-
         {/* Dates Filter */}
         <div className="relative">
           <button
@@ -353,46 +324,6 @@ export default function PaperlessFilterBar({
                     placeholder="To"
                   />
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Permissions Filter */}
-        <div className="relative">
-          <button
-            onClick={() => toggleFilter('permissions')}
-            className={getFilterButtonClass('permissions')}
-          >
-            <Filter className="w-4 h-4" />
-            Permissions
-            <ChevronDown className="w-3 h-3" />
-          </button>
-          {renderFilterDropdown('permissions', (
-            <div>
-              <div className="px-4 py-2 text-xs text-yellow-700 bg-yellow-50 border-b border-yellow-200">
-                ⚠️ Permissions filtering requires backend support
-              </div>
-              <div className="py-2 min-w-[200px]">
-              {['all', 'my_documents', 'shared_with_me', 'shared_by_me', 'unowned'].map(perm => (
-                <div
-                  key={perm}
-                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.permissions === perm ? 'bg-blue-50' : ''}`}
-                  onClick={() => {
-                    onFilterChange({ ...filters, permissions: perm });
-                    setOpenFilter(null);
-                  }}
-                >
-                  <span className="text-sm text-gray-900">
-                    {filters.permissions === perm && '✓ '}
-                    {perm === 'all' && 'All'}
-                    {perm === 'my_documents' && 'My documents'}
-                    {perm === 'shared_with_me' && 'Shared with me'}
-                    {perm === 'shared_by_me' && 'Shared by me'}
-                    {perm === 'unowned' && 'Unowned'}
-                  </span>
-                </div>
-              ))}
               </div>
             </div>
           ))}
