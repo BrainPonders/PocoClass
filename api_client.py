@@ -237,7 +237,11 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to get/create custom field '{field_name}': {e}")
             return None
     
-    def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None, ignore_tags: bool = False) -> List[Dict[str, Any]]:
+    def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None, ignore_tags: bool = False,
+                     title: Optional[str] = None, tags: Optional[List[str]] = None, tags_mode: str = 'include',
+                     correspondents: Optional[List[str]] = None, correspondents_mode: str = 'include',
+                     doc_types: Optional[List[str]] = None, doc_types_mode: str = 'include',
+                     date_from: Optional[str] = None, date_to: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get documents matching filter criteria"""
         try:
             # Skip tag filtering if ignore_tags is True
@@ -256,6 +260,58 @@ class PaperlessAPIClient:
             
             # Build query parameters
             params = {}
+            
+            # Add custom filters
+            if title:
+                params['title__icontains'] = title
+            
+            if tags and len(tags) > 0:
+                # Get tag IDs from names
+                tag_ids = []
+                for tag_name in tags:
+                    tag_id = self.get_tag_id(tag_name)
+                    if tag_id:
+                        tag_ids.append(tag_id)
+                
+                if tag_ids:
+                    if tags_mode == 'include':
+                        params['tags__id__in'] = ','.join(map(str, tag_ids))
+                    else:  # exclude
+                        params['tags__id__none'] = ','.join(map(str, tag_ids))
+            
+            if correspondents and len(correspondents) > 0:
+                # Get correspondent IDs from names
+                corr_ids = []
+                cached_corrs = {c['name']: c['paperless_id'] for c in self.db.get_all_correspondents()}
+                for corr_name in correspondents:
+                    if corr_name in cached_corrs:
+                        corr_ids.append(cached_corrs[corr_name])
+                
+                if corr_ids:
+                    if correspondents_mode == 'include':
+                        params['correspondent__id__in'] = ','.join(map(str, corr_ids))
+                    else:  # exclude
+                        params['correspondent__id__none'] = ','.join(map(str, corr_ids))
+            
+            if doc_types and len(doc_types) > 0:
+                # Get document type IDs from names
+                dt_ids = []
+                cached_dts = {dt['name']: dt['paperless_id'] for dt in self.db.get_all_document_types()}
+                for dt_name in doc_types:
+                    if dt_name in cached_dts:
+                        dt_ids.append(cached_dts[dt_name])
+                
+                if dt_ids:
+                    if doc_types_mode == 'include':
+                        params['document_type__id__in'] = ','.join(map(str, dt_ids))
+                    else:  # exclude
+                        params['document_type__id__none'] = ','.join(map(str, dt_ids))
+            
+            # Date filtering (use added date, not created date)
+            if date_from:
+                params['added__gte'] = date_from
+            if date_to:
+                params['added__lte'] = date_to
             
             if document_id:
                 # Get specific document

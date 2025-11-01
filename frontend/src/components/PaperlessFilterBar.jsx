@@ -293,14 +293,19 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
-        {/* Dates Filter */}
+        {/* Dates Added Filter */}
         <div className="relative">
           <button
             onClick={() => toggleFilter('dates')}
             className={getFilterButtonClass('dates')}
           >
             <Calendar className="w-4 h-4" />
-            Dates
+            Dates Added
+            {(filters.dateFrom || filters.dateTo) && (
+              <span className="ml-1 text-xs">
+                ({filters.dateFrom || '...'} - {filters.dateTo || '...'})
+              </span>
+            )}
             <ChevronDown className="w-3 h-3" />
           </button>
           {renderFilterDropdown('dates', (
