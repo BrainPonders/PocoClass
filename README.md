@@ -223,6 +223,18 @@ No outstanding tasks at this time.
 ---
 
 ### Recently Completed ✅
+- ✅ **Server-Side Filtering with Exclude Tags & Configurable Limits** (2025-11-01):
+  - **Backend API Enhancement**: Added `exclude_tags` parameter to `/api/documents` endpoint, allowing simultaneous tag inclusion AND exclusion (e.g., include "NEW" + exclude "POCO")
+  - **Exclude Tags Filter**: New red-themed "Exclude Tags" button in PaperlessFilterBar for independent tag exclusion
+  - **Configurable Limit Filter**: Added inline number input field (1-1000 range) in filter bar to control result set size
+  - **Page-Specific Defaults**:
+    - Dashboard: limit=10, excludeTags=['POCO']
+    - RuleReviewer: limit=50, excludeTags=['POCO']
+    - BackgroundProcess: limit=100, excludeTags=['POCO']
+  - **Complete Server-Side Migration**: Removed all client-side filtering logic across Dashboard, RuleReviewer, and BackgroundProcess pages
+  - **Smart Reset**: Reset button restores default limits and exclusions for each page
+  - **Performance Optimization**: Backend filtering reduces API payload and enables full document archive access with smart defaults
+
 - ✅ **Enhanced Rule Activation Controls & UI Refinements** (2025-11-01):
   - **Individual Rule Activation Icons**: Each rule row now displays Power/PowerOff icon for quick activate/deactivate without selection. Green icon when active, gray when inactive. Activation requires confirmation warning about automatic document processing.
   - **Rules Page Warning Banner**: Added soft yellow warning banner at top of Rules page explaining rule activation implications and power icon functionality.
