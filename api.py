@@ -1441,6 +1441,17 @@ def list_documents():
         limit = request.args.get('limit', type=int)
         ignore_tags = request.args.get('ignore_tags', 'false').lower() == 'true'
         
+        # Get filter parameters
+        title = request.args.get('title')
+        tags = request.args.get('tags', '').split(',') if request.args.get('tags') else None
+        tags_mode = request.args.get('tags_mode', 'include')
+        correspondents = request.args.get('correspondents', '').split(',') if request.args.get('correspondents') else None
+        correspondents_mode = request.args.get('correspondents_mode', 'include')
+        doc_types = request.args.get('doc_types', '').split(',') if request.args.get('doc_types') else None
+        doc_types_mode = request.args.get('doc_types_mode', 'include')
+        date_from = request.args.get('date_from')
+        date_to = request.args.get('date_to')
+        
         # Get Paperless credentials from session
         session = request.current_user
         paperless_url = db.get_config('paperless_url')
@@ -1452,10 +1463,22 @@ def list_documents():
         config = Config()
         config.paperless_token = session['paperless_token']
         config.paperless_url = paperless_url
-        api_client = PaperlessAPIClient(config)
+        api_client = PaperlessAPIClient(config, db)
         
-        # Fetch documents
-        documents = api_client.get_documents(limit=limit, ignore_tags=ignore_tags)
+        # Fetch documents with filters
+        documents = api_client.get_documents(
+            limit=limit, 
+            ignore_tags=ignore_tags,
+            title=title,
+            tags=tags,
+            tags_mode=tags_mode,
+            correspondents=correspondents,
+            correspondents_mode=correspondents_mode,
+            doc_types=doc_types,
+            doc_types_mode=doc_types_mode,
+            date_from=date_from,
+            date_to=date_to
+        )
         
         # Get cached data for lookups (use paperless_id as key, not internal id)
         correspondents = {c['paperless_id']: c for c in db.get_all_correspondents()}

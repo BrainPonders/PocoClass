@@ -26,9 +26,20 @@ export default function BackgroundProcess() {
   const [allCorrespondents, setAllCorrespondents] = useState([]);
   const [allDocTypes, setAllDocTypes] = useState([]);
   
+  // Helper function to get last 7 days date
+  const getLast7DaysDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+    return date.toISOString().split('T')[0];
+  };
+
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
   const [filters, setFilters] = useState({
     title: '',
-    tags: [],
+    tags: ['NEW'],
     tagsMode: 'include',
     tagsSearch: '',
     correspondents: [],
@@ -40,8 +51,8 @@ export default function BackgroundProcess() {
     customFields: [],
     customFieldName: '',
     customFieldValue: '',
-    dateFrom: '',
-    dateTo: '',
+    dateFrom: getLast7DaysDate(),
+    dateTo: getTodayDate(),
     permissions: 'all'
   });
 
