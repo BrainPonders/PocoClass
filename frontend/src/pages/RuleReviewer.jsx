@@ -462,6 +462,7 @@ export default function RuleReviewer() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
                     <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
                   </tr>
                 </thead>
@@ -487,6 +488,19 @@ export default function RuleReviewer() {
                           doc.tags.map((tag, i) => (
                             <Badge key={i} className="bg-blue-500 text-white text-xs mr-1">{tag}</Badge>
                           ))
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="px-2 py-1 text-center">
+                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
+                          <span className={`text-xs font-semibold ${
+                            doc.pocoScore >= 80 ? 'text-green-600' : 
+                            doc.pocoScore >= 1 ? 'text-amber-600' : 
+                            'text-gray-400'
+                          }`}>
+                            {doc.pocoScore.toFixed(1)}
+                          </span>
                         ) : (
                           <span className="text-gray-400 text-xs">-</span>
                         )}
