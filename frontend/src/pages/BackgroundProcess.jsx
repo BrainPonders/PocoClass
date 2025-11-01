@@ -346,7 +346,7 @@ export default function BackgroundProcess() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
             <Activity className="w-8 h-8" />
@@ -354,14 +354,24 @@ export default function BackgroundProcess() {
           </h1>
           <p className="text-gray-500 mt-1">Monitor and manage automatic document classification</p>
         </div>
-        <Button
-          onClick={handleTrigger}
-          disabled={loading || processingStatus?.is_processing}
-          className="flex items-center gap-2"
-        >
-          <Play className="w-4 h-4" />
-          {loading ? 'Triggering...' : 'Trigger Now'}
-        </Button>
+        <div className="flex flex-col items-end">
+          <Button
+            onClick={handleTrigger}
+            disabled={loading || processingStatus?.is_processing}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+          >
+            <RefreshCw className="w-4 h-4" />
+            {loading ? 'Triggering...' : 'Trigger Now'}
+          </Button>
+          <p className="text-xs text-gray-500 mt-1">Auto-discover & process documents tagged "NEW"</p>
+        </div>
+      </div>
+
+      {/* Info banner about Trigger Now */}
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-sm text-blue-800">
+          <strong>Trigger Now:</strong> This button triggers automatic background processing to discover and classify documents tagged with "NEW". It's separate from manual testing below and operates independently of filter settings.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -471,7 +481,7 @@ export default function BackgroundProcess() {
           {/* Action Buttons */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h4 className="text-sm font-semibold text-gray-700 mb-3">Processing Actions</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Dry Run Button */}
               <div className="flex flex-col">
@@ -484,7 +494,7 @@ export default function BackgroundProcess() {
                   {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
                 </Button>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                  Test rules without changing Paperless
+                  Test all rules without changing Paperless
                 </p>
               </div>
 
@@ -506,25 +516,10 @@ export default function BackgroundProcess() {
                   ⚠️ Apply active rules to Paperless
                 </p>
               </div>
-
-              {/* Trigger Now Button */}
-              <div className="flex flex-col">
-                <Button
-                  onClick={handleTrigger}
-                  disabled={loading}
-                  className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Trigger Now
-                </Button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
-                  Auto-discover & process NEW docs
-                </p>
-              </div>
             </div>
             
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-              <strong>Note:</strong> Only rules with status "active" are applied during Run or Trigger Now. Dry Run tests all rules.
+              <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
             </div>
           </div>
 
