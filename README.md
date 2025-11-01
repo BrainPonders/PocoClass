@@ -221,9 +221,19 @@ curl -X POST http://localhost:8000/api/test \
 No outstanding tasks at this time.
 
 ### Recently Completed ✅
+- ✅ **Comprehensive Background Process Safety Improvements** (2025-11-01):
+  - **Date Filter Enhancement**: Renamed "Dates" to "Dates Added" with visible date range display. Backend filters on document added date (not created date) for accurate new document discovery.
+  - **Smart Default Filters**: Background Process page defaults to NEW tag and last 7 days for safe, focused testing. Reset button restores these defaults.
+  - **Redesigned Action Buttons**: Three independent buttons replace confusing toggle:
+    - **Dry Run** (Blue): Test all rules without changes
+    - **Run** (Orange): Apply active rules with mandatory warning confirmation
+    - **Trigger Now** (Green): Auto-discover NEW documents with clear subtitle
+  - **Rule Activation Warning**: Activating a rule now requires confirmation dialog warning about automatic document processing. Active rules display persistent orange warning banner.
+  - **Settings Clarification**: Added blue info box explaining background processing automatically pauses while any user is logged in to prevent unwanted modifications during testing.
+  - **Document List Display**: Real-time preview of matching documents updates as filters change, preventing accidental bulk processing.
+
 - ✅ **Fixed rule deletion** - Deletion now works correctly by removing broken `DeletedRule.create()` call. Backend handles moving rules to deleted folder.
 - ✅ **Protected Template Rule v2** - Cannot be deleted (shows error message). Bulk delete automatically skips protected rules with warning notification.
-- ✅ **Added document preview to Background Process** - Background Process page now shows a table of documents matching the current filter criteria. Updates in real-time as filters change. Shows document title, correspondent, document type, tags, and creation date.
 - ✅ **Status workflow redesign** - Replaced "draft" status with "new" and implemented proper lifecycle:
   - New rules start with "new" status
   - User manually changes to "active" or "inactive" via dropdown in Step 6 (Summary)
