@@ -220,7 +220,24 @@ curl -X POST http://localhost:8000/api/test \
 
 No outstanding tasks at this time.
 
+---
+
 ### Recently Completed ✅
+- ✅ **Enhanced Rule Activation Controls & UI Refinements** (2025-11-01):
+  - **Individual Rule Activation Icons**: Each rule row now displays Power/PowerOff icon for quick activate/deactivate without selection. Green icon when active, gray when inactive. Activation requires confirmation warning about automatic document processing.
+  - **Rules Page Warning Banner**: Added soft yellow warning banner at top of Rules page explaining rule activation implications and power icon functionality.
+  - **Trigger Now Clarification**: Moved Trigger Now button to top-right header only on Background Process page with subtitle explaining it auto-discovers documents tagged "NEW". Removed from manual processing section to eliminate confusion. Added blue info banner explaining it's separate from filtered manual testing.
+  - **Filter Bar Enhancements**: 
+    - Reset button now always visible (greyed out when at default settings)
+    - Date range display separated from Dates Added filter button
+    - Shows "Last 7 days" text when default range is active instead of actual dates
+    - Fixed hasActiveFilters() logic to ignore default 7-day range, ensuring Reset button is properly disabled at baseline
+  - **Consistent Color Theme**: Standardized banner colors across all pages:
+    - Soft Blue (bg-blue-50, border-blue-200) for general information and descriptions
+    - Soft Yellow (bg-yellow-50, border-yellow-200) for warnings and caution messages
+    - Soft Red (bg-red-50, border-red-200) for errors
+  - **Manual Processing Layout**: Changed from 3-button to 2-button grid (Dry Run + Run) for clearer testing workflow
+
 - ✅ **Comprehensive Background Process Safety Improvements** (2025-11-01):
   - **Date Filter Enhancement**: Renamed "Dates" to "Dates Added" with visible date range display. Backend filters on document added date (not created date) for accurate new document discovery.
   - **Smart Default Filters**: Background Process page defaults to NEW tag and last 7 days for safe, focused testing. Reset button restores these defaults.
@@ -228,7 +245,7 @@ No outstanding tasks at this time.
     - **Dry Run** (Blue): Test all rules without changes
     - **Run** (Orange): Apply active rules with mandatory warning confirmation
     - **Trigger Now** (Green): Auto-discover NEW documents with clear subtitle
-  - **Rule Activation Warning**: Activating a rule now requires confirmation dialog warning about automatic document processing. Active rules display persistent orange warning banner.
+  - **Rule Activation Warning**: Activating a rule now requires confirmation dialog warning about automatic document processing. Active rules display persistent warning banner.
   - **Settings Clarification**: Added blue info box explaining background processing automatically pauses while any user is logged in to prevent unwanted modifications during testing.
   - **Document List Display**: Real-time preview of matching documents updates as filters change, preventing accidental bulk processing.
 
