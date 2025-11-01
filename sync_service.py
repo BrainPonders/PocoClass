@@ -88,8 +88,79 @@ class SyncService:
             logger.error(f"Failed to sync users: {e}")
             results['users'] = 0
         
+        # Auto-create mandatory custom fields and tags if missing
+        try:
+            logger.info("Checking for mandatory custom fields and tags...")
+            created_items = self._ensure_mandatory_data(api_client)
+            results['mandatory_data_created'] = created_items
+            
+            # Re-sync custom fields and tags if we created any
+            if created_items['fields_created'] or created_items['tags_created']:
+                logger.info("Re-syncing after creating mandatory data...")
+                if created_items['fields_created']:
+                    custom_fields_data = self._fetch_all_with_pagination(
+                        api_client, f"{paperless_url}/api/custom_fields/"
+                    )
+                    results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+                
+                if created_items['tags_created']:
+                    tags_data = self._fetch_all_with_pagination(
+                        api_client, f"{paperless_url}/api/tags/"
+                    )
+                    results['tags'] = self.db.sync_tags(tags_data)
+        except Exception as e:
+            logger.error(f"Failed to ensure mandatory data: {e}")
+            results['mandatory_data_error'] = str(e)
+        
         logger.info(f"Sync completed: {results}")
         return results
+    
+    def _ensure_mandatory_data(self, api_client: PaperlessAPIClient) -> Dict:
+        """Ensure mandatory custom fields and tags exist, create if missing"""
+        created_fields = []
+        created_tags = []
+        
+        # Check and create mandatory custom fields
+        required_fields = [
+            {'name': 'POCO Score', 'data_type': 'string'},
+            {'name': 'POCO OCR', 'data_type': 'string'}
+        ]
+        
+        for field_spec in required_fields:
+            field_name = field_spec['name']
+            if not api_client.get_custom_field_id(field_name):
+                try:
+                    logger.info(f"Creating mandatory custom field: {field_name}")
+                    success = api_client.create_custom_field(field_name, field_spec['data_type'])
+                    if success:
+                        created_fields.append(field_name)
+                        logger.info(f"Successfully created custom field: {field_name}")
+                except Exception as e:
+                    logger.error(f"Failed to create custom field {field_name}: {e}")
+        
+        # Check and create mandatory tags
+        required_tags = [
+            {'name': 'POCO+', 'color': '#10b981', 'is_inbox_tag': False},  # Green
+            {'name': 'POCO-', 'color': '#ef4444', 'is_inbox_tag': False},  # Red
+            {'name': 'NEW', 'color': '#3b82f6', 'is_inbox_tag': False}      # Blue
+        ]
+        
+        for tag_spec in required_tags:
+            tag_name = tag_spec['name']
+            if not api_client.get_tag_id(tag_name):
+                try:
+                    logger.info(f"Creating mandatory tag: {tag_name}")
+                    success = api_client.create_tag(tag_name, tag_spec['color'], tag_spec['is_inbox_tag'])
+                    if success:
+                        created_tags.append(tag_name)
+                        logger.info(f"Successfully created tag: {tag_name}")
+                except Exception as e:
+                    logger.error(f"Failed to create tag {tag_name}: {e}")
+        
+        return {
+            'fields_created': created_fields,
+            'tags_created': created_tags
+        }
     
     def _fetch_all_with_pagination(self, api_client: PaperlessAPIClient, url: str) -> List[Dict]:
         """Fetch all items from a paginated endpoint"""
