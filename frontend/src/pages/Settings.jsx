@@ -880,9 +880,12 @@ export default function Settings() {
                         />
                         <span className="text-sm text-gray-500 self-center">hours</span>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 mb-3">
                         How long before inactive sessions expire. Your session automatically refreshes with each activity, so you'll only be logged out after this much time of <strong>inactivity</strong>.
                       </p>
+                      <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                        <strong>Background Processing Protection:</strong> The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.
+                      </div>
                     </div>
                   </div>
 

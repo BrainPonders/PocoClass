@@ -69,7 +69,19 @@ export default function SummaryStep({
               <span className="text-gray-600">Status:</span>
               <select
                 value={ruleData.status || 'new'}
-                onChange={(e) => updateRuleData('status', e.target.value)}
+                onChange={(e) => {
+                  const newStatus = e.target.value;
+                  if (newStatus === 'active') {
+                    if (window.confirm('⚠️ WARNING: Activating this rule will allow it to automatically process documents in your Paperless archive during background processing. This may modify your documents. Are you sure you want to activate this rule?')) {
+                      updateRuleData('status', newStatus);
+                    } else {
+                      // Reset dropdown to current value
+                      e.target.value = ruleData.status || 'new';
+                    }
+                  } else {
+                    updateRuleData('status', newStatus);
+                  }
+                }}
                 className="px-3 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 {ruleData.status === 'new' ? (
@@ -86,6 +98,11 @@ export default function SummaryStep({
                 )}
               </select>
             </div>
+            {ruleData.status === 'active' && (
+              <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-800">
+                <strong>⚠️ Active Rule:</strong> This rule will process documents automatically during background processing.
+              </div>
+            )}
           </div>
         </div>
 

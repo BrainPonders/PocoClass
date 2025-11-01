@@ -18,9 +18,9 @@ export default function BackgroundProcess() {
   const [processingHistory, setProcessingHistory] = useState([]);
   const [historyPage, setHistoryPage] = useState(1);
   const [historyLimit] = useState(20);
-  const [dryRun, setDryRun] = useState(false);
   const [matchingDocuments, setMatchingDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const [currentDryRun, setCurrentDryRun] = useState(null);
   
   const [allTags, setAllTags] = useState([]);
   const [allCorrespondents, setAllCorrespondents] = useState([]);
@@ -219,7 +219,7 @@ export default function BackgroundProcess() {
     }
   };
 
-  const handleManualProcess = async () => {
+  const handleManualProcess = async (dryRunMode) => {
     if (currentUser?.role !== 'admin') {
       toast({
         title: 'Permission Denied',
@@ -231,6 +231,7 @@ export default function BackgroundProcess() {
     }
 
     setLoading(true);
+    setCurrentDryRun(dryRunMode);
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/process-manual`, {
@@ -251,7 +252,7 @@ export default function BackgroundProcess() {
             date_from: filters.dateFrom || null,
             date_to: filters.dateTo || null,
           },
-          dry_run: dryRun
+          dry_run: dryRunMode
         })
       });
 
@@ -259,12 +260,12 @@ export default function BackgroundProcess() {
 
       const data = await response.json();
       toast({
-        title: dryRun ? 'Dry Run Complete' : 'Processing Complete',
+        title: dryRunMode ? 'Dry Run Complete' : 'Processing Complete',
         description: `${data.documents_found || 0} documents found, ${data.classified || 0} classified, ${data.rules_applied || 0} rules applied`,
         duration: 5000,
       });
 
-      if (!dryRun) {
+      if (!dryRunMode) {
         await loadHistory();
       }
     } catch (error) {
@@ -276,13 +277,14 @@ export default function BackgroundProcess() {
       });
     } finally {
       setLoading(false);
+      setCurrentDryRun(null);
     }
   };
 
   const handleResetFilters = () => {
     setFilters({
       title: '',
-      tags: [],
+      tags: ['NEW'],
       tagsMode: 'include',
       tagsSearch: '',
       correspondents: [],
@@ -294,8 +296,8 @@ export default function BackgroundProcess() {
       customFields: [],
       customFieldName: '',
       customFieldValue: '',
-      dateFrom: '',
-      dateTo: '',
+      dateFrom: getLast7DaysDate(),
+      dateTo: getTodayDate(),
       permissions: 'all'
     });
   };
@@ -453,7 +455,7 @@ export default function BackgroundProcess() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4">
-            Process specific documents based on filters. Use dry run mode to preview results without applying changes.
+            Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.
           </p>
           
           <PaperlessFilterBar
@@ -466,25 +468,64 @@ export default function BackgroundProcess() {
             allCustomFields={[]}
           />
 
-          <div className="flex items-center gap-4 mt-4">
-            <div className="flex items-center gap-2">
-              <Switch
-                id="dry-run"
-                checked={dryRun}
-                onCheckedChange={setDryRun}
-              />
-              <label htmlFor="dry-run" className="text-sm font-medium text-gray-700">
-                Dry Run (preview only)
-              </label>
+          {/* Action Buttons */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">Processing Actions</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* Dry Run Button */}
+              <div className="flex flex-col">
+                <Button
+                  onClick={() => handleManualProcess(true)}
+                  disabled={loading || matchingDocuments.length === 0}
+                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Play className="w-4 h-4" />
+                  {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
+                </Button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Test rules without changing Paperless
+                </p>
+              </div>
+
+              {/* Run Button */}
+              <div className="flex flex-col">
+                <Button
+                  onClick={() => {
+                    if (window.confirm('⚠️ WARNING: This will apply active rules to your Paperless documents and make real changes. Are you sure you want to proceed?')) {
+                      handleManualProcess(false);
+                    }
+                  }}
+                  disabled={loading || matchingDocuments.length === 0}
+                  className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700"
+                >
+                  <Play className="w-4 h-4" />
+                  {loading && currentDryRun === false ? 'Running...' : 'Run'}
+                </Button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  ⚠️ Apply active rules to Paperless
+                </p>
+              </div>
+
+              {/* Trigger Now Button */}
+              <div className="flex flex-col">
+                <Button
+                  onClick={handleTrigger}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Trigger Now
+                </Button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Auto-discover & process NEW docs
+                </p>
+              </div>
             </div>
-            <Button
-              onClick={handleManualProcess}
-              disabled={loading}
-              className="flex items-center gap-2"
-            >
-              <Play className="w-4 h-4" />
-              {loading ? 'Processing...' : 'Process Documents'}
-            </Button>
+            
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+              <strong>Note:</strong> Only rules with status "active" are applied during Run or Trigger Now. Dry Run tests all rules.
+            </div>
           </div>
 
           {/* Matching Documents List */}
