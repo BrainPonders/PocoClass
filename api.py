@@ -1112,7 +1112,13 @@ def update_poco_ocr_enabled():
         # If enabling, sync to check/create the field
         if enabled:
             session = request.current_user
-            api_client = PaperlessAPIClient.from_session(session, db)
+            paperless_url = db.get_config('paperless_url')
+            
+            config = Config()
+            config.paperless_token = session['paperless_token']
+            config.paperless_url = paperless_url
+            api_client = PaperlessAPIClient(config, db)
+            
             poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
             
             return jsonify({
@@ -1134,7 +1140,12 @@ def check_mandatory_data():
     """Check for mandatory custom fields and tags in Paperless-ngx"""
     try:
         session = request.current_user
-        api_client = PaperlessAPIClient.from_session(session, db)
+        paperless_url = db.get_config('paperless_url')
+        
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config, db)
         
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
@@ -1191,7 +1202,12 @@ def fix_mandatory_data():
     """Create missing mandatory custom fields and tags (admin only)"""
     try:
         session = request.current_user
-        api_client = PaperlessAPIClient.from_session(session, db)
+        paperless_url = db.get_config('paperless_url')
+        
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config, db)
         
         created_fields = []
         created_tags = []
@@ -2183,7 +2199,12 @@ def trigger_background_processing():
     try:
         # Check if mandatory data exists before processing
         session = request.current_user
-        api_client = PaperlessAPIClient.from_session(session, db)
+        paperless_url = db.get_config('paperless_url')
+        
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config, db)
         
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
@@ -2229,7 +2250,12 @@ def manual_processing():
         data = request.json or {}
         
         # Check if mandatory data exists before processing
-        api_client = PaperlessAPIClient.from_session(session, db)
+        paperless_url = db.get_config('paperless_url')
+        
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config, db)
         
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
