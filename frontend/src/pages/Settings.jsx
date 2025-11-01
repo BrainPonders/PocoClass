@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity, Sliders } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
@@ -51,6 +51,9 @@ export default function Settings() {
   const [loadingValidation, setLoadingValidation] = useState(false);
   const [fixingMandatoryData, setFixingMandatoryData] = useState(false);
 
+  const [pocoOcrEnabled, setPocoOcrEnabled] = useState(false);
+  const [loadingPocoOcr, setLoadingPocoOcr] = useState(false);
+
   useEffect(() => {
     loadAllSettings();
     loadCustomFieldsData();
@@ -60,6 +63,8 @@ export default function Settings() {
   useEffect(() => {
     if (activeTab === 'validation') {
       loadValidationData();
+    } else if (activeTab === 'optionalFeatures') {
+      loadPocoOcrEnabled();
     }
   }, [activeTab]);
 
@@ -531,6 +536,71 @@ export default function Settings() {
     }
   };
 
+  const loadPocoOcrEnabled = async () => {
+    try {
+      setLoadingPocoOcr(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/settings/poco-ocr-enabled`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPocoOcrEnabled(data.enabled || false);
+      }
+    } catch (error) {
+      console.error('Error loading POCO OCR enabled status:', error);
+    } finally {
+      setLoadingPocoOcr(false);
+    }
+  };
+
+  const handlePocoOcrEnabledToggle = async (enabled) => {
+    if (currentUser?.role !== 'admin') {
+      toast({
+        title: 'Permission Denied',
+        description: 'Only administrators can update POCO OCR settings',
+        variant: 'destructive',
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      setLoadingPocoOcr(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/settings/poco-ocr-enabled`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
+        },
+        body: JSON.stringify({ enabled })
+      });
+
+      if (!response.ok) throw new Error('Failed to update POCO OCR setting');
+
+      setPocoOcrEnabled(enabled);
+      
+      toast({
+        title: 'Setting Updated',
+        description: enabled 
+          ? 'POCO OCR field will be created during next sync or when you click "Fix Missing Data"'
+          : 'POCO OCR field disabled',
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: 'Update Failed',
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setLoadingPocoOcr(false);
+    }
+  };
+
   const getCustomFieldDataType = (fieldName) => {
     const customField = customFieldsData.find(cf => cf.name === fieldName);
     return customField?.data_type || null;
@@ -830,6 +900,7 @@ export default function Settings() {
 
   const tabs = [
     { id: 'system', label: 'System', icon: Database, adminOnly: true },
+    { id: 'optionalFeatures', label: 'Optional Features', icon: Sliders, adminOnly: true },
     { id: 'validation', label: 'Data Validation', icon: AlertCircle, adminOnly: true },
     { id: 'backgroundProcessing', label: 'Background Processing', icon: Activity, adminOnly: true },
     { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
@@ -1406,6 +1477,56 @@ export default function Settings() {
                         </p>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'optionalFeatures' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Optional Features</h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Configure optional features that provide additional functionality beyond core PocoClass capabilities
+                    </p>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 pr-4">
+                          <label className="block text-sm font-medium text-gray-900 mb-1">
+                            POCO OCR Transparency Score Field
+                          </label>
+                          <p className="text-sm text-gray-600">
+                            Enable the POCO OCR custom field in Paperless-ngx. This field stores the OCR transparency score separately from the main POCO Score. <strong>Not required for PocoClass to work</strong> - this provides additional visibility for advanced users who want to see the OCR pattern matching quality.
+                          </p>
+                        </div>
+                        <Switch
+                          checked={pocoOcrEnabled}
+                          onCheckedChange={handlePocoOcrEnabledToggle}
+                          disabled={!isAdmin || loadingPocoOcr}
+                        />
+                      </div>
+
+                      {!isAdmin && (
+                        <p className="text-xs text-gray-500">
+                          Only administrators can modify optional feature settings
+                        </p>
+                      )}
+
+                      {pocoOcrEnabled && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-sm text-blue-900">
+                                POCO OCR field will be created during next sync or when you click "Fix Missing Data"
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
