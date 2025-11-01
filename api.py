@@ -1686,6 +1686,7 @@ def list_documents():
         doc_types_mode = request.args.get('doc_types_mode', 'include')
         date_from = request.args.get('date_from')
         date_to = request.args.get('date_to')
+        score_range = request.args.get('score_range')
         
         # Get Paperless credentials from session
         session = request.current_user
@@ -1715,6 +1716,46 @@ def list_documents():
             date_from=date_from,
             date_to=date_to
         )
+        
+        # Apply POCO Score range filtering (client-side)
+        if score_range:
+            # Get POCO Score custom field ID
+            poco_score_field_id = api_client.get_custom_field_id('POCO Score')
+            
+            if poco_score_field_id:
+                filtered_docs = []
+                for doc in documents:
+                    # Extract POCO Score from document's custom_fields
+                    score = None
+                    custom_fields = doc.get('custom_fields', [])
+                    for cf in custom_fields:
+                        if cf.get('field') == poco_score_field_id:
+                            try:
+                                score = float(cf.get('value', 0))
+                            except (ValueError, TypeError):
+                                score = 0  # Treat invalid values as 0
+                            break
+                    
+                    # If no score field found, treat as 0
+                    if score is None:
+                        score = 0
+                    
+                    # Check if score matches the requested range
+                    matches = False
+                    if score_range == "0":
+                        matches = (score == 0)
+                    elif score_range == "1-79":
+                        matches = (1 <= score <= 79)
+                    elif score_range == "80-100":
+                        matches = (80 <= score <= 100)
+                    
+                    if matches:
+                        filtered_docs.append(doc)
+                
+                documents = filtered_docs
+                logger.info(f"Filtered {len(filtered_docs)} documents with score range '{score_range}'")
+            else:
+                logger.warning(f"POCO Score custom field not found, skipping score filtering")
         
         # Get cached data for lookups (use paperless_id as key, not internal id)
         correspondents = {c['paperless_id']: c for c in db.get_all_correspondents()}
