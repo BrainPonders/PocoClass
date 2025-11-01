@@ -348,6 +348,21 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
+        {/* Date Range Display - Inline after Dates Added */}
+        {(filters.dateFrom || filters.dateTo) && (
+          <div className="flex items-center gap-2 text-xs text-gray-600 px-2 py-1">
+            <span>
+              {isDefaultDateRange() ? (
+                <strong>Last 7 days</strong>
+              ) : (
+                <span>
+                  {filters.dateFrom || '...'} to {filters.dateTo || '...'}
+                </span>
+              )}
+            </span>
+          </div>
+        )}
+
         {/* Spacer to push Reset button to the right */}
         <div className="flex-grow"></div>
 
@@ -365,22 +380,6 @@ export default function PaperlessFilterBar({
           Reset filters
         </button>
       </div>
-
-      {/* Date Range Display */}
-      {(filters.dateFrom || filters.dateTo) && (
-        <div className="flex items-center gap-2 text-xs text-gray-600 mt-2">
-          <Calendar className="w-3 h-3" />
-          <span>
-            {isDefaultDateRange() ? (
-              <strong>Last 7 days</strong>
-            ) : (
-              <span>
-                {filters.dateFrom || '...'} to {filters.dateTo || '...'}
-              </span>
-            )}
-          </span>
-        </div>
-      )}
     </div>
   );
 }
