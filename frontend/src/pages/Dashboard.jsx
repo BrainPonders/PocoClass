@@ -340,6 +340,7 @@ export default function Dashboard() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correspondent</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
+                    <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">POCO Score</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
                     <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
                     <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -367,6 +368,19 @@ export default function Dashboard() {
                             <span className="text-gray-400 text-xs">No tags</span>
                           )}
                         </div>
+                      </td>
+                      <td className="py-2 text-center">
+                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
+                          <span className={`text-sm font-semibold ${
+                            doc.pocoScore >= 80 ? 'text-green-600' : 
+                            doc.pocoScore >= 1 ? 'text-amber-600' : 
+                            'text-gray-400'
+                          }`}>
+                            {doc.pocoScore.toFixed(1)}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-sm">-</span>
+                        )}
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-500">{doc.owner || '-'}</td>
                       <td className="py-2 whitespace-nowrap">
