@@ -99,7 +99,7 @@ export default function SummaryStep({
               </select>
             </div>
             {ruleData.status === 'active' && (
-              <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-800">
+              <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
                 <strong>⚠️ Active Rule:</strong> This rule will process documents automatically during background processing.
               </div>
             )}

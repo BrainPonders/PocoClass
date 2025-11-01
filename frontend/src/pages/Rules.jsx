@@ -168,6 +168,33 @@ export default function Rules() {
     }
   };
 
+  const handleToggleStatus = async (rule) => {
+    const isCurrentlyActive = rule.status === 'active';
+    const newStatus = isCurrentlyActive ? 'inactive' : 'active';
+    
+    if (!isCurrentlyActive) {
+      const confirmed = window.confirm(
+        `⚠️ WARNING: Activating this rule will allow it to automatically process documents in your Paperless archive.\n\nRule: ${rule.ruleName}\n\nActive rules will be applied during:\n• Background processing (when triggered)\n• Manual "Run" operations\n\nAre you sure you want to activate this rule?`
+      );
+      
+      if (!confirmed) {
+        return;
+      }
+    }
+    
+    try {
+      await Rule.update(rule.id, { ...rule, status: newStatus });
+      const message = isCurrentlyActive 
+        ? `Rule "${rule.ruleName}" deactivated`
+        : `Rule "${rule.ruleName}" activated`;
+      showToast(message, 'success');
+      await reloadRules();
+    } catch (error) {
+      console.error('Error toggling rule status:', error);
+      showToast('Error updating rule status', 'error');
+    }
+  };
+
   const handleBulkAction = async (action) => {
     if (selectedRules.length === 0) return;
 
@@ -316,6 +343,14 @@ export default function Rules() {
               {t('rules_create')}
             </button>
           </div>
+        </div>
+
+        {/* Warning banner about rule activation */}
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
+            <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
+          </p>
         </div>
 
         {/* Search, Filter, Sort Bar */}
@@ -492,6 +527,20 @@ export default function Rules() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => handleToggleStatus(rule)}
+                          className={`btn btn-ghost btn-sm ${
+                            rule.status === 'active' ? 'text-green-600' : 'text-gray-400'
+                          }`}
+                          title={rule.status === 'active' ? 'Deactivate rule' : 'Activate rule'}
+                          aria-label={rule.status === 'active' ? `Deactivate rule ${rule.ruleName}` : `Activate rule ${rule.ruleName}`}
+                        >
+                          {rule.status === 'active' ? (
+                            <Power className="w-4 h-4" />
+                          ) : (
+                            <PowerOff className="w-4 h-4" />
+                          )}
+                        </button>
                         <YamlExportButton ruleData={rule} buttonStyle="ghost" />
                         <button 
                           onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${rule.id}`)}
