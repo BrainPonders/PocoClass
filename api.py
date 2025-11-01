@@ -1445,6 +1445,7 @@ def list_documents():
         title = request.args.get('title')
         tags = request.args.get('tags', '').split(',') if request.args.get('tags') else None
         tags_mode = request.args.get('tags_mode', 'include')
+        exclude_tags = request.args.get('exclude_tags', '').split(',') if request.args.get('exclude_tags') else None
         correspondents = request.args.get('correspondents', '').split(',') if request.args.get('correspondents') else None
         correspondents_mode = request.args.get('correspondents_mode', 'include')
         doc_types = request.args.get('doc_types', '').split(',') if request.args.get('doc_types') else None
@@ -1472,6 +1473,7 @@ def list_documents():
             title=title,
             tags=tags,
             tags_mode=tags_mode,
+            exclude_tags=exclude_tags,
             correspondents=correspondents,
             correspondents_mode=correspondents_mode,
             doc_types=doc_types,
