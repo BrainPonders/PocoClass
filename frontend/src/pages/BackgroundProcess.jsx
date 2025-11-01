@@ -42,6 +42,8 @@ export default function BackgroundProcess() {
     tags: ['NEW'],
     tagsMode: 'include',
     tagsSearch: '',
+    excludeTags: ['POCO'],
+    excludeTagsSearch: '',
     correspondents: [],
     correspondentsMode: 'include',
     correspondentsSearch: '',
@@ -53,7 +55,8 @@ export default function BackgroundProcess() {
     customFieldValue: '',
     dateFrom: getLast7DaysDate(),
     dateTo: getTodayDate(),
-    permissions: 'all'
+    permissions: 'all',
+    limit: 100
   });
 
   useEffect(() => {
@@ -145,12 +148,14 @@ export default function BackgroundProcess() {
       if (filters.title) params.append('title', filters.title);
       if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
       if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
+      if (filters.excludeTags && filters.excludeTags.length > 0) params.append('exclude_tags', filters.excludeTags.join(','));
       if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
       if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
       if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
       if (filters.docTypesMode) params.append('doc_types_mode', filters.docTypesMode);
       if (filters.dateFrom) params.append('date_from', filters.dateFrom);
       if (filters.dateTo) params.append('date_to', filters.dateTo);
+      if (filters.limit) params.append('limit', filters.limit);
       
       const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
         headers: {
@@ -287,6 +292,8 @@ export default function BackgroundProcess() {
       tags: ['NEW'],
       tagsMode: 'include',
       tagsSearch: '',
+      excludeTags: ['POCO'],
+      excludeTagsSearch: '',
       correspondents: [],
       correspondentsMode: 'include',
       correspondentsSearch: '',
@@ -298,7 +305,8 @@ export default function BackgroundProcess() {
       customFieldValue: '',
       dateFrom: getLast7DaysDate(),
       dateTo: getTodayDate(),
-      permissions: 'all'
+      permissions: 'all',
+      limit: 100
     });
   };
 

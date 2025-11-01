@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
+import API_BASE_URL from '@/config/api';
 
 export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
@@ -45,6 +46,8 @@ export default function RuleReviewer() {
     tags: ['NEW'],
     tagsMode: 'include',
     tagsSearch: '',
+    excludeTags: ['POCO'],
+    excludeTagsSearch: '',
     correspondents: [],
     correspondentsMode: 'include',
     correspondentsSearch: '',
@@ -56,7 +59,8 @@ export default function RuleReviewer() {
     customFieldValue: '',
     dateFrom: getLast7DaysDate(),
     dateTo: getTodayDate(),
-    permissions: 'all'
+    permissions: 'all',
+    limit: 50
   });
 
   useEffect(() => {
@@ -64,6 +68,11 @@ export default function RuleReviewer() {
     loadDocuments();
     loadCacheData();
   }, []);
+  
+  // Reload documents when filters change
+  useEffect(() => {
+    loadDocuments();
+  }, [filters]);
 
   const loadRules = async () => {
     try {
@@ -77,10 +86,35 @@ export default function RuleReviewer() {
   const loadDocuments = async () => {
     setIsLoadingDocuments(true);
     try {
-      const fetchedDocuments = await Document.list({ limit: 50 });
-      setDocuments(fetchedDocuments);
+      const params = new URLSearchParams();
+      
+      // Add filters to query
+      if (filters.title) params.append('title', filters.title);
+      if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
+      if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
+      if (filters.excludeTags && filters.excludeTags.length > 0) params.append('exclude_tags', filters.excludeTags.join(','));
+      if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
+      if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
+      if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
+      if (filters.docTypesMode) params.append('doc_types_mode', filters.docTypesMode);
+      if (filters.dateFrom) params.append('date_from', filters.dateFrom);
+      if (filters.dateTo) params.append('date_to', filters.dateTo);
+      if (filters.limit) params.append('limit', filters.limit);
+      
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to fetch documents');
+      
+      const data = await response.json();
+      setDocuments(data.results || []);
     } catch (error) {
       console.error("Error loading documents:", error);
+      setDocuments([]);
     }
     setIsLoadingDocuments(false);
   };
@@ -112,7 +146,7 @@ export default function RuleReviewer() {
     if (allSelected) {
       setSelectedDocuments([]);
     } else {
-      setSelectedDocuments(filteredDocuments.map(d => d.id));
+      setSelectedDocuments(documents.map(d => d.id));
     }
     setAllSelected(!allSelected);
   };
@@ -168,48 +202,7 @@ export default function RuleReviewer() {
     window.open(url, '_blank');
   };
 
-  // Filter documents based on Paperless-style filters
-  const filteredDocuments = documents.filter(doc => {
-    // Title filter
-    if (filters.title && !doc.title?.toLowerCase().includes(filters.title.toLowerCase())) {
-      return false;
-    }
-
-    // Tags filter
-    if (filters.tags.length > 0) {
-      const hasTag = filters.tags.some(tag => doc.tags?.includes(tag));
-      if (filters.tagsMode === 'include' && !hasTag) return false;
-      if (filters.tagsMode === 'exclude' && hasTag) return false;
-    }
-    
-    // Correspondents filter
-    if (filters.correspondents.length > 0) {
-      const hasCorrespondent = filters.correspondents.includes(doc.correspondent);
-      if (filters.correspondentsMode === 'include' && !hasCorrespondent) return false;
-      if (filters.correspondentsMode === 'exclude' && hasCorrespondent) return false;
-    }
-    
-    // Document Types filter
-    if (filters.docTypes.length > 0) {
-      const hasDocType = filters.docTypes.includes(doc.documentType);
-      if (filters.docTypesMode === 'include' && !hasDocType) return false;
-      if (filters.docTypesMode === 'exclude' && hasDocType) return false;
-    }
-
-    // Date filter (added date - when document was added to Paperless)
-    if (filters.dateFrom) {
-      const docDate = new Date(doc.added || doc.created);
-      const fromDate = new Date(filters.dateFrom);
-      if (docDate < fromDate) return false;
-    }
-    if (filters.dateTo) {
-      const docDate = new Date(doc.added || doc.created);
-      const toDate = new Date(filters.dateTo);
-      if (docDate > toDate) return false;
-    }
-    
-    return true;
-  });
+  // Documents are already filtered by backend
 
   const handleResetFilters = () => {
     setFilters({
@@ -217,6 +210,8 @@ export default function RuleReviewer() {
       tags: ['NEW'],
       tagsMode: 'include',
       tagsSearch: '',
+      excludeTags: ['POCO'],
+      excludeTagsSearch: '',
       correspondents: [],
       correspondentsMode: 'include',
       correspondentsSearch: '',
@@ -228,7 +223,8 @@ export default function RuleReviewer() {
       customFieldValue: '',
       dateFrom: getLast7DaysDate(),
       dateTo: getTodayDate(),
-      permissions: 'all'
+      permissions: 'all',
+      limit: 50
     });
   };
 
@@ -444,13 +440,11 @@ export default function RuleReviewer() {
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
-          ) : filteredDocuments.length === 0 ? (
+          ) : documents.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
-              <p className="text-gray-500">
-                {documents.length === 0 ? 'No documents found for testing rules.' : 'No documents match the selected filters.'}
-              </p>
+              <p className="text-gray-500">No documents match the selected filters.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -472,7 +466,7 @@ export default function RuleReviewer() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredDocuments.map((doc) => (
+                  {documents.map((doc) => (
                     <tr
                       key={doc.id}
                       className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}

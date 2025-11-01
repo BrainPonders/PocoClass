@@ -56,6 +56,8 @@ export default function PaperlessFilterBar({
            filters.tags.length > 0 ||
            filters.correspondents.length > 0 ||
            filters.docTypes.length > 0 ||
+           (filters.excludeTags && filters.excludeTags.length > 0) ||
+           (filters.limit && filters.limit > 0) ||
            hasCustomDateRange;
   };
 
@@ -67,11 +69,16 @@ export default function PaperlessFilterBar({
       case 'correspondent': hasValue = filters.correspondents.length > 0; break;
       case 'documentType': hasValue = filters.docTypes.length > 0; break;
       case 'dates': hasValue = filters.dateFrom || filters.dateTo; break;
+      case 'excludeTags': hasValue = filters.excludeTags && filters.excludeTags.length > 0; break;
       default: hasValue = false;
     }
 
     const baseClass = "px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 ";
     if (hasValue) {
+      // Use red for exclude tags filter
+      if (filterName === 'excludeTags') {
+        return baseClass + "bg-red-600 text-white hover:bg-red-700";
+      }
       return baseClass + "bg-blue-600 text-white hover:bg-blue-700";
     }
     return baseClass + "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300";
@@ -362,6 +369,64 @@ export default function PaperlessFilterBar({
             </span>
           </div>
         )}
+
+        {/* Exclude Tags Filter */}
+        <div className="relative">
+          <button
+            onClick={() => toggleFilter('excludeTags')}
+            className={getFilterButtonClass('excludeTags')}
+          >
+            <Filter className="w-4 h-4" />
+            Exclude Tags
+            {filters.excludeTags?.length > 0 && ` (${filters.excludeTags.length})`}
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {renderFilterDropdown('excludeTags', (
+            <div>
+              <div className="p-3 border-b border-gray-200">
+                <input
+                  type="text"
+                  placeholder="Filter tags"
+                  value={filters.excludeTagsSearch || ''}
+                  onChange={(e) => onFilterChange({ ...filters, excludeTagsSearch: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400"
+                />
+              </div>
+              <div className="max-h-64 overflow-y-auto">
+                {allTags
+                  .filter(tag => !filters.excludeTagsSearch || tag.toLowerCase().includes(filters.excludeTagsSearch.toLowerCase()))
+                  .map(tag => (
+                    <div
+                      key={tag}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${filters.excludeTags?.includes(tag) ? 'bg-red-50' : ''}`}
+                      onClick={() => {
+                        const newExcludeTags = filters.excludeTags?.includes(tag)
+                          ? filters.excludeTags.filter(t => t !== tag)
+                          : [...(filters.excludeTags || []), tag];
+                        onFilterChange({ ...filters, excludeTags: newExcludeTags });
+                      }}
+                    >
+                      <span className="text-sm text-gray-900">{tag}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Limit Filter - Inline */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Limit:</label>
+          <input
+            type="number"
+            min="1"
+            max="1000"
+            value={filters.limit || ''}
+            onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) || null })}
+            placeholder="All"
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400 w-20 focus:outline-none focus:border-blue-500"
+          />
+        </div>
 
         {/* Spacer to push Reset button to the right */}
         <div className="flex-grow"></div>

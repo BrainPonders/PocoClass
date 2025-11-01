@@ -239,6 +239,7 @@ class PaperlessAPIClient:
     
     def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None, ignore_tags: bool = False,
                      title: Optional[str] = None, tags: Optional[List[str]] = None, tags_mode: str = 'include',
+                     exclude_tags: Optional[List[str]] = None,
                      correspondents: Optional[List[str]] = None, correspondents_mode: str = 'include',
                      doc_types: Optional[List[str]] = None, doc_types_mode: str = 'include',
                      date_from: Optional[str] = None, date_to: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -278,6 +279,24 @@ class PaperlessAPIClient:
                         params['tags__id__in'] = ','.join(map(str, tag_ids))
                     else:  # exclude
                         params['tags__id__none'] = ','.join(map(str, tag_ids))
+            
+            # Handle separate exclude_tags parameter (can be used alongside tags)
+            if exclude_tags and len(exclude_tags) > 0:
+                # Get tag IDs from names
+                exclude_tag_ids = []
+                for tag_name in exclude_tags:
+                    tag_id = self.get_tag_id(tag_name)
+                    if tag_id:
+                        exclude_tag_ids.append(tag_id)
+                
+                if exclude_tag_ids:
+                    # If tags__id__none already exists (from tags with exclude mode), append to it
+                    existing_none = params.get('tags__id__none', '')
+                    if existing_none:
+                        all_exclude_ids = existing_none + ',' + ','.join(map(str, exclude_tag_ids))
+                        params['tags__id__none'] = all_exclude_ids
+                    else:
+                        params['tags__id__none'] = ','.join(map(str, exclude_tag_ids))
             
             if correspondents and len(correspondents) > 0:
                 # Get correspondent IDs from names
