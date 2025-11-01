@@ -1088,6 +1088,45 @@ def update_paperless_config():
         logger.error(f"Error updating Paperless config: {e}")
         return jsonify({'error': str(e)}), 500
 
+# POCO OCR Field Configuration
+@app.route('/api/settings/poco-ocr-enabled', methods=['GET'])
+@require_auth
+def get_poco_ocr_enabled():
+    """Get POCO OCR enabled status"""
+    try:
+        enabled = db.get_config('poco_ocr_enabled') == 'true'
+        return jsonify({'enabled': enabled})
+    except Exception as e:
+        logger.error(f"Error getting POCO OCR enabled status: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/poco-ocr-enabled', methods=['PUT'])
+@require_admin
+def update_poco_ocr_enabled():
+    """Update POCO OCR enabled status (admin only)"""
+    try:
+        data = request.json
+        enabled = data.get('enabled', False)
+        db.set_config('poco_ocr_enabled', 'true' if enabled else 'false')
+        
+        # If enabling, sync to check/create the field
+        if enabled:
+            session = request.current_user
+            api_client = PaperlessAPIClient.from_session(session, db)
+            poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+            
+            return jsonify({
+                'success': True,
+                'enabled': enabled,
+                'field_exists': poco_ocr_exists,
+                'message': 'POCO OCR field enabled. Use "Fix Missing Data" if the field does not exist.' if not poco_ocr_exists else 'POCO OCR field enabled successfully.'
+            })
+        
+        return jsonify({'success': True, 'enabled': enabled})
+    except Exception as e:
+        logger.error(f"Error updating POCO OCR enabled status: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Mandatory Data Validation
 @app.route('/api/validation/mandatory-data', methods=['GET'])
 @require_auth
@@ -1097,10 +1136,15 @@ def check_mandatory_data():
         session = request.current_user
         api_client = PaperlessAPIClient.from_session(session, db)
         
-        # Required custom fields
-        required_fields = ['POCO Score', 'POCO OCR']
-        missing_fields = []
+        # Check if POCO OCR is enabled
+        poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
         
+        # POCO Score is always required; POCO OCR only if enabled
+        required_fields = ['POCO Score']
+        if poco_ocr_enabled:
+            required_fields.append('POCO OCR')
+        
+        missing_fields = []
         for field_name in required_fields:
             field_id = api_client.get_custom_field_id(field_name)
             if not field_id:
@@ -1118,13 +1162,18 @@ def check_mandatory_data():
         # Check if all mandatory data exists
         has_all_data = len(missing_fields) == 0 and len(missing_tags) == 0
         
+        # Check field existence
+        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
+        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        
         return jsonify({
             'valid': has_all_data,
             'missing_fields': missing_fields,
             'missing_tags': missing_tags,
+            'poco_ocr_enabled': poco_ocr_enabled,
             'fields': {
-                'poco_score': 'POCO Score' not in missing_fields,
-                'poco_ocr': 'POCO OCR' not in missing_fields
+                'poco_score': poco_score_exists,
+                'poco_ocr': poco_ocr_exists
             },
             'tags': {
                 'poco_plus': 'POCO+' not in missing_tags,
@@ -1148,11 +1197,13 @@ def fix_mandatory_data():
         created_tags = []
         errors = []
         
-        # Create missing custom fields
-        required_fields = [
-            {'name': 'POCO Score', 'data_type': 'string'},
-            {'name': 'POCO OCR', 'data_type': 'string'}
-        ]
+        # Check if POCO OCR is enabled
+        poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
+        
+        # POCO Score is always required; POCO OCR only if enabled
+        required_fields = [{'name': 'POCO Score', 'data_type': 'string'}]
+        if poco_ocr_enabled:
+            required_fields.append({'name': 'POCO OCR', 'data_type': 'string'})
         
         for field_spec in required_fields:
             field_name = field_spec['name']
@@ -2120,9 +2171,12 @@ def trigger_background_processing():
         session = request.current_user
         api_client = PaperlessAPIClient.from_session(session, db)
         
-        # Check for required custom fields
+        # Check if POCO OCR is enabled
+        poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
+        
+        # Check for required custom fields (POCO Score always required, POCO OCR if enabled)
         poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
-        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None if poco_ocr_enabled else True
         
         # Check for required tags
         poco_plus_exists = api_client.get_tag_id('POCO+') is not None
@@ -2163,9 +2217,12 @@ def manual_processing():
         # Check if mandatory data exists before processing
         api_client = PaperlessAPIClient.from_session(session, db)
         
-        # Check for required custom fields
+        # Check if POCO OCR is enabled
+        poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
+        
+        # Check for required custom fields (POCO Score always required, POCO OCR if enabled)
         poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
-        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None if poco_ocr_enabled else True
         
         # Check for required tags
         poco_plus_exists = api_client.get_tag_id('POCO+') is not None
