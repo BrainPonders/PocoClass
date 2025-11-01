@@ -330,6 +330,10 @@ class Database:
         if self.get_app_setting('session_timeout_hours') is None:
             self.set_app_setting('session_timeout_hours', '24')
         
+        # Initialize POCO OCR field setting (optional feature)
+        if self.get_config('poco_ocr_enabled') is None:
+            self.set_config('poco_ocr_enabled', 'false')
+        
         # Initialize background processing defaults
         if self.get_config('bg_enabled') is None:
             self.set_config('bg_enabled', 'false')

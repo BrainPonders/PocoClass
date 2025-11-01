@@ -120,11 +120,13 @@ class SyncService:
         created_fields = []
         created_tags = []
         
-        # Check and create mandatory custom fields
-        required_fields = [
-            {'name': 'POCO Score', 'data_type': 'string'},
-            {'name': 'POCO OCR', 'data_type': 'string'}
-        ]
+        # Check if POCO OCR is enabled
+        poco_ocr_enabled = self.db.get_config('poco_ocr_enabled') == 'true'
+        
+        # POCO Score is always required; POCO OCR only if enabled
+        required_fields = [{'name': 'POCO Score', 'data_type': 'string'}]
+        if poco_ocr_enabled:
+            required_fields.append({'name': 'POCO OCR', 'data_type': 'string'})
         
         for field_spec in required_fields:
             field_name = field_spec['name']
