@@ -13,6 +13,23 @@ export default function PaperlessFilterBar({
   const [openFilter, setOpenFilter] = useState(null);
   const dropdownRefs = useRef({});
 
+  // Helper functions for default date range
+  const getLast7DaysDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+    return date.toISOString().split('T')[0];
+  };
+
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
+  const isDefaultDateRange = () => {
+    const defaultFrom = getLast7DaysDate();
+    const defaultTo = getTodayDate();
+    return filters.dateFrom === defaultFrom && filters.dateTo === defaultTo;
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,12 +49,14 @@ export default function PaperlessFilterBar({
   };
 
   const hasActiveFilters = () => {
+    // Check if date range is different from default (last 7 days)
+    const hasCustomDateRange = !isDefaultDateRange() && (filters.dateFrom || filters.dateTo);
+    
     return filters.title ||
            filters.tags.length > 0 ||
            filters.correspondents.length > 0 ||
            filters.docTypes.length > 0 ||
-           filters.dateFrom ||
-           filters.dateTo;
+           hasCustomDateRange;
   };
 
   const getFilterButtonClass = (filterName) => {
@@ -301,11 +320,6 @@ export default function PaperlessFilterBar({
           >
             <Calendar className="w-4 h-4" />
             Dates Added
-            {(filters.dateFrom || filters.dateTo) && (
-              <span className="ml-1 text-xs">
-                ({filters.dateFrom || '...'} - {filters.dateTo || '...'})
-              </span>
-            )}
             <ChevronDown className="w-3 h-3" />
           </button>
           {renderFilterDropdown('dates', (
@@ -334,17 +348,39 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
-        {/* Reset Filters Button */}
-        {hasActiveFilters() && (
-          <button
-            onClick={onResetFilters}
-            className="px-3 py-1.5 rounded text-sm font-medium bg-gray-600 text-gray-200 hover:bg-gray-500 flex items-center gap-1"
-          >
-            <X className="w-4 h-4" />
-            Reset filters
-          </button>
-        )}
+        {/* Spacer to push Reset button to the right */}
+        <div className="flex-grow"></div>
+
+        {/* Reset Filters Button - Always visible */}
+        <button
+          onClick={onResetFilters}
+          disabled={!hasActiveFilters()}
+          className={`px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 ${
+            hasActiveFilters() 
+              ? 'bg-gray-600 text-gray-200 hover:bg-gray-500 cursor-pointer' 
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <X className="w-4 h-4" />
+          Reset filters
+        </button>
       </div>
+
+      {/* Date Range Display */}
+      {(filters.dateFrom || filters.dateTo) && (
+        <div className="flex items-center gap-2 text-xs text-gray-600 mt-2">
+          <Calendar className="w-3 h-3" />
+          <span>
+            {isDefaultDateRange() ? (
+              <strong>Last 7 days</strong>
+            ) : (
+              <span>
+                {filters.dateFrom || '...'} to {filters.dateTo || '...'}
+              </span>
+            )}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
