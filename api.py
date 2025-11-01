@@ -280,6 +280,74 @@ def setup():
             except Exception as e:
                 logger.warning(f"Error checking/creating POCO custom fields (non-critical): {e}")
             
+            # Create mandatory tags (POCO+, POCO-, NEW) if they don't exist
+            try:
+                logger.info(f"Checking for mandatory tags (POCO+, POCO-, NEW)...")
+                
+                # Get existing tags
+                tags_response = requests.get(
+                    f'{paperless_url}/api/tags/',
+                    headers={'Authorization': f'Token {paperless_token}'},
+                    timeout=10
+                )
+                
+                if tags_response.status_code == 200:
+                    tags_data = tags_response.json()
+                    tags = tags_data.get('results', []) if isinstance(tags_data, dict) else tags_data
+                    existing_tag_names = [tag.get('name') for tag in tags]
+                    
+                    tags_to_create = []
+                    if 'POCO+' not in existing_tag_names:
+                        tags_to_create.append({
+                            'name': 'POCO+',
+                            'color': '#10b981',  # Green
+                            'is_inbox_tag': False
+                        })
+                    if 'POCO-' not in existing_tag_names:
+                        tags_to_create.append({
+                            'name': 'POCO-',
+                            'color': '#ef4444',  # Red
+                            'is_inbox_tag': False
+                        })
+                    if 'NEW' not in existing_tag_names:
+                        tags_to_create.append({
+                            'name': 'NEW',
+                            'color': '#3b82f6',  # Blue
+                            'is_inbox_tag': False
+                        })
+                    
+                    # Create missing tags
+                    for tag in tags_to_create:
+                        try:
+                            create_response = requests.post(
+                                f'{paperless_url}/api/tags/',
+                                headers={
+                                    'Authorization': f'Token {paperless_token}',
+                                    'Content-Type': 'application/json'
+                                },
+                                json=tag,
+                                timeout=10
+                            )
+                            
+                            if create_response.status_code in [200, 201]:
+                                logger.info(f"Created tag: {tag['name']}")
+                            else:
+                                logger.warning(f"Failed to create tag {tag['name']}: {create_response.status_code}")
+                        except Exception as e:
+                            logger.warning(f"Error creating tag {tag['name']}: {e}")
+                    
+                    # Re-sync tags if we created any
+                    if tags_to_create:
+                        try:
+                            sync_service.sync_all(paperless_token, paperless_url)
+                            logger.info(f"Re-synced after creating tags")
+                        except Exception as e:
+                            logger.warning(f"Re-sync failed (non-critical): {e}")
+                else:
+                    logger.warning(f"Could not fetch tags: {tags_response.status_code}")
+            except Exception as e:
+                logger.warning(f"Error checking/creating mandatory tags (non-critical): {e}")
+            
             logger.info(f"Setup completed by user: {username}")
             
             return jsonify({

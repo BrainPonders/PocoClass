@@ -211,15 +211,15 @@ class BackgroundProcessor:
     def _discover_documents(self, api_client: PaperlessAPIClient) -> List[Dict]:
         """
         Discover documents to process using tag-based filtering
-        Returns documents with NEW tag but without POCO tag
+        Returns documents with NEW tag but without POCO+ or POCO- tags
         """
         # Get tag names from config
         tag_new = self.db.get_config('bg_tag_new') or 'NEW'
-        tag_poco = self.db.get_config('bg_tag_poco') or 'POCO'
         
         # Get tag IDs
         new_tag_id = api_client.get_tag_id(tag_new)
-        poco_tag_id = api_client.get_tag_id(tag_poco)
+        poco_plus_tag_id = api_client.get_tag_id('POCO+')
+        poco_minus_tag_id = api_client.get_tag_id('POCO-')
         
         if not new_tag_id:
             logger.warning(f"Tag '{tag_new}' not found, no documents to process")
@@ -228,22 +228,24 @@ class BackgroundProcessor:
         # Query documents with NEW tag
         all_docs = api_client.get_documents(ignore_tags=True)
         
-        # Filter for documents with NEW tag but without POCO tag
+        # Filter for documents with NEW tag but without POCO+ or POCO- tags
         filtered_docs = []
         for doc in all_docs:
             doc_tags = doc.get('tags', [])
             has_new = new_tag_id in doc_tags
-            has_poco = poco_tag_id and poco_tag_id in doc_tags
+            has_poco_plus = poco_plus_tag_id and poco_plus_tag_id in doc_tags
+            has_poco_minus = poco_minus_tag_id and poco_minus_tag_id in doc_tags
             
-            if has_new and not has_poco:
+            if has_new and not has_poco_plus and not has_poco_minus:
                 filtered_docs.append(doc)
         
-        logger.info(f"Found {len(filtered_docs)} documents with '{tag_new}' tag (without '{tag_poco}' tag)")
+        logger.info(f"Found {len(filtered_docs)} documents with '{tag_new}' tag (not yet processed by PocoClass)")
         return filtered_docs
     
     def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient) -> Dict[str, Any]:
         """
-        Process a single document by applying all matching rules
+        Process a single document by testing all rules and applying the best match.
+        ALWAYS adds POCO scores and tags (POCO+ or POCO-) regardless of match status.
         
         Returns:
             Dict with classified status and rules_applied count
@@ -262,76 +264,73 @@ class BackgroundProcessor:
         # Create test engine
         test_engine = TestEngine(api_client, self.db)
         
-        # Try each rule
-        classified = False
-        rules_applied = 0
+        # Test all rules and find best match
+        best_result = None
+        best_rule = None
+        best_score = 0
         
         for rule in rules:
             try:
                 # Evaluate rule
                 result = test_engine.test_rule(rule, doc_id, content, doc.get('original_file_name', ''), doc)
+                poco_score = result.get('poco_score', 0)
                 
-                if result.get('match'):
-                    logger.info(f"Document {doc_id} matched rule '{rule['rule_name']}' (POCO: {result.get('poco_score', 0):.1f}%, OCR: {result.get('poco_ocr', 0):.1f}%)")
+                # Track best match
+                if poco_score > best_score:
+                    best_score = poco_score
+                    best_result = result
+                    best_rule = rule
                     
-                    # Apply metadata updates
-                    updates = self._build_metadata_updates(result, api_client)
-                    
-                    if updates:
-                        # Add POCO custom fields
-                        poco_score_field_id = api_client.get_custom_field_id('POCO Score')
-                        poco_ocr_field_id = api_client.get_custom_field_id('POCO OCR')
-                        
-                        custom_fields = updates.get('custom_fields', [])
-                        if poco_score_field_id:
-                            custom_fields.append({
-                                'field': poco_score_field_id,
-                                'value': str(round(result.get('poco_score', 0), 1))
-                            })
-                        if poco_ocr_field_id:
-                            custom_fields.append({
-                                'field': poco_ocr_field_id,
-                                'value': str(round(result.get('poco_ocr', 0), 1))
-                            })
-                        
-                        if custom_fields:
-                            updates['custom_fields'] = custom_fields
-                        
-                        # Update document
-                        success = api_client.update_document(doc_id, updates)
-                        if success:
-                            classified = True
-                            rules_applied += 1
-                            
-                            # Log the classification
-                            self.db.add_log(
-                                log_type='classification',
-                                level='info',
-                                message=f"Document classified by rule '{rule['rule_name']}'",
-                                rule_name=rule['rule_name'],
-                                rule_id=rule.get('rule_id'),
-                                document_id=doc_id,
-                                document_name=doc_title,
-                                poco_score=result.get('poco_score'),
-                                poco_ocr=result.get('poco_ocr'),
-                                source='background_processor'
-                            )
-                        else:
-                            logger.error(f"Failed to update document {doc_id} with rule '{rule['rule_name']}'")
-                
             except Exception as e:
-                logger.error(f"Error applying rule '{rule.get('rule_name', 'unknown')}' to document {doc_id}: {e}")
+                logger.error(f"Error testing rule '{rule.get('rule_name', 'unknown')}' on document {doc_id}: {e}")
         
-        # Add POCO tag to mark as processed
+        # Determine if document matched based on threshold
+        threshold = best_rule.get('threshold', 75) if best_rule else 75
+        classified = best_result and best_result.get('match', False) and best_score >= threshold
+        
+        # Get POCO Score and POCO OCR (default to 0 if no match)
+        poco_score = best_score if best_result else 0
+        poco_ocr = best_result.get('poco_ocr', 0) if best_result else 0
+        
+        # Log result
         if classified:
-            tag_poco = self.db.get_config('bg_tag_poco') or 'POCO'
-            poco_tag_id = api_client.get_tag_id(tag_poco)
-            
-            if poco_tag_id:
-                current_tags = doc.get('tags', [])
-                if poco_tag_id not in current_tags:
-                    current_tags.append(poco_tag_id)
-                    api_client.update_document(doc_id, {'tags': current_tags})
+            logger.info(f"Document {doc_id} matched rule '{best_rule['rule_name']}' (POCO: {poco_score:.1f}%, OCR: {poco_ocr:.1f}%)")
+        else:
+            logger.info(f"Document {doc_id} no match (best score: {poco_score:.1f}%)")
+        
+        # Apply metadata updates if classified
+        rules_applied = 0
+        if classified and best_result:
+            updates = self._build_metadata_updates(best_result, api_client)
+            if updates:
+                success = api_client.update_document(doc_id, updates)
+                if success:
+                    rules_applied = 1
+                else:
+                    logger.error(f"Failed to update metadata for document {doc_id}")
+        
+        # ALWAYS add POCO scores to custom fields (even if 0)
+        self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
+        
+        # ALWAYS add POCO+ or POCO- tag
+        self._add_poco_tag(doc_id, doc, classified, api_client)
+        
+        # ALWAYS add scoring table to document notes
+        self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
+        
+        # Log the processing
+        self.db.add_log(
+            log_type='classification' if classified else 'processing',
+            level='info',
+            message=f"Document {'classified' if classified else 'processed'} " + (f"by rule '{best_rule['rule_name']}'" if classified and best_rule else '(no match)'),
+            rule_name=best_rule['rule_name'] if best_rule else None,
+            rule_id=best_rule.get('rule_id') if best_rule else None,
+            document_id=doc_id,
+            document_name=doc_title,
+            poco_score=poco_score,
+            poco_ocr=poco_ocr,
+            source='background_processor'
+        )
         
         return {'classified': classified, 'rules_applied': rules_applied}
     
@@ -382,6 +381,133 @@ class BackgroundProcessor:
             updates['custom_fields'] = custom_fields
         
         return updates
+    
+    def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
+        """Add POCO Score and POCO OCR to document custom fields"""
+        try:
+            poco_score_field_id = api_client.get_custom_field_id('POCO Score')
+            poco_ocr_field_id = api_client.get_custom_field_id('POCO OCR')
+            
+            custom_fields = []
+            if poco_score_field_id:
+                custom_fields.append({
+                    'field': poco_score_field_id,
+                    'value': str(round(poco_score, 1))
+                })
+            if poco_ocr_field_id:
+                custom_fields.append({
+                    'field': poco_ocr_field_id,
+                    'value': str(round(poco_ocr, 1))
+                })
+            
+            if custom_fields:
+                success = api_client.update_document(doc_id, {'custom_fields': custom_fields})
+                if not success:
+                    logger.warning(f"Failed to add POCO scores to document {doc_id}")
+        except Exception as e:
+            logger.error(f"Error adding POCO scores to document {doc_id}: {e}")
+    
+    def _add_poco_tag(self, doc_id: int, doc: Dict, classified: bool, api_client: PaperlessAPIClient) -> None:
+        """Add POCO+ tag if classified, POCO- tag if not"""
+        try:
+            tag_name = 'POCO+' if classified else 'POCO-'
+            tag_id = api_client.get_tag_id(tag_name)
+            
+            if tag_id:
+                current_tags = doc.get('tags', [])
+                if tag_id not in current_tags:
+                    current_tags.append(tag_id)
+                    success = api_client.update_document(doc_id, {'tags': current_tags})
+                    if not success:
+                        logger.warning(f"Failed to add {tag_name} tag to document {doc_id}")
+            else:
+                logger.warning(f"Tag '{tag_name}' not found, cannot tag document {doc_id}")
+        except Exception as e:
+            logger.error(f"Error adding POCO tag to document {doc_id}: {e}")
+    
+    def _add_scoring_note(self, doc_id: int, result: Optional[Dict], rule: Optional[Dict], 
+                         poco_score: float, poco_ocr: float, classified: bool, 
+                         threshold: float, api_client: PaperlessAPIClient) -> None:
+        """Add or update scoring table in document notes"""
+        try:
+            from datetime import datetime
+            import requests
+            
+            # Delete old PocoClass scoring notes
+            paperless_url = self.db.get_config('paperless_url')
+            session = self._get_admin_session()
+            if not session:
+                logger.warning(f"No admin session available to add notes to document {doc_id}")
+                return
+            
+            paperless_token = session['paperless_token']
+            
+            # Get existing notes
+            notes_response = requests.get(
+                f'{paperless_url}/api/documents/{doc_id}/notes/',
+                headers={'Authorization': f'Token {paperless_token}'},
+                timeout=10
+            )
+            
+            if notes_response.status_code == 200:
+                notes = notes_response.json()
+                # Delete notes containing "PocoClass Scoring Report"
+                for note in notes:
+                    if 'PocoClass Scoring Report' in note.get('note', ''):
+                        note_id = note.get('id')
+                        if note_id:
+                            requests.delete(
+                                f'{paperless_url}/api/documents/{doc_id}/notes/{note_id}/',
+                                headers={'Authorization': f'Token {paperless_token}'},
+                                timeout=10
+                            )
+            
+            # Build scoring table
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            rule_name = rule['rule_name'] if rule else 'N/A'
+            
+            # Get multipliers from rule or use defaults
+            ocr_multiplier = rule.get('scoring_weights', {}).get('ocr_patterns', 3) if rule else 3
+            filename_multiplier = rule.get('scoring_weights', {}).get('filename_patterns', 1) if rule else 1
+            metadata_multiplier = rule.get('scoring_weights', {}).get('verification_fields', 1) if rule else 1
+            
+            # Get OCR threshold
+            ocr_threshold = rule.get('ocr_threshold', 75) if rule else 75
+            
+            # Get breakdown scores if available
+            filename_score = result.get('filename_score', 0) if result else 0
+            metadata_score = result.get('metadata_score', 0) if result else 0
+            
+            note_text = f"""PocoClass Scoring Report
+========================
+Processed: {timestamp}
+Rule: {rule_name}
+
+POCO Score: {poco_score:.1f}%
+POCO OCR: {poco_ocr:.1f}% (Minimum {ocr_threshold}%, Multiplier: {ocr_multiplier}x)
+
+Score Breakdown:
+- OCR Patterns: {poco_ocr:.1f}% (Multiplier: {ocr_multiplier}x)
+- Filename Match: {filename_score:.1f}% (Multiplier: {filename_multiplier}x)
+- Metadata Verification: {metadata_score:.1f}% (Multiplier: {metadata_multiplier}x)
+
+Result: {'✓ MATCHED' if classified else '✗ NO MATCH'} (threshold: {threshold}%)
+Tag Applied: {'POCO+' if classified else 'POCO-'}
+"""
+            
+            # Add new note
+            requests.post(
+                f'{paperless_url}/api/documents/{doc_id}/notes/',
+                headers={
+                    'Authorization': f'Token {paperless_token}',
+                    'Content-Type': 'application/json'
+                },
+                json={'note': note_text},
+                timeout=10
+            )
+            
+        except Exception as e:
+            logger.error(f"Error adding scoring note to document {doc_id}: {e}")
     
     def _is_web_ui_active(self) -> bool:
         """Check if Web UI has active sessions (for auto-pause)"""
