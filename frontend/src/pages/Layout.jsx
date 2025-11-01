@@ -12,6 +12,7 @@ import { useTabVisibility } from "@/components/hooks/useTabVisibility";
 import { useToast } from "@/components/ui/use-toast";
 import GuardedLink from "@/components/GuardedLink";
 import API_BASE_URL from '@/config/api';
+import ValidationBanner from '@/components/ValidationBanner';
 import {
   Sidebar,
   SidebarContent,
@@ -591,6 +592,7 @@ export default function Layout({ children }) {
               </Sidebar>
 
               <main className="flex-1 flex flex-col">
+                <ValidationBanner />
                 <header className="bg-white border-b border-gray-200 px-6 py-4 md:hidden">
                   <div className="flex items-center gap-4">
                     <SidebarTrigger className="hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200" />
