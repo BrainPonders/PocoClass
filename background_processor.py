@@ -155,7 +155,7 @@ class BackgroundProcessor:
             logger.info("Syncing data from Paperless before processing...")
             from sync_service import SyncService
             sync_service = SyncService(self.db)
-            sync_result = sync_service.sync_all(api_client)
+            sync_result = sync_service.sync_all(paperless_token, paperless_url)
             logger.info(f"Sync completed: {sync_result}")
             
             # Discover documents to process (tag-based)

@@ -11,7 +11,17 @@ import { QuickTooltip } from '@/components/ui/QuickTooltip';
 
 export default function Settings() {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('system');
+  
+  // Check if we should auto-select validation tab
+  const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  
+  // Clear sessionStorage after reading
+  useEffect(() => {
+    if (sessionStorage.getItem('settings_active_tab')) {
+      sessionStorage.removeItem('settings_active_tab');
+    }
+  }, []);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [testingConnection, setTestingConnection] = useState(false);
@@ -37,11 +47,21 @@ export default function Settings() {
     bg_tag_poco: 'POCO'
   });
 
+  const [validationData, setValidationData] = useState(null);
+  const [loadingValidation, setLoadingValidation] = useState(false);
+  const [fixingMandatoryData, setFixingMandatoryData] = useState(false);
+
   useEffect(() => {
     loadAllSettings();
     loadCustomFieldsData();
     loadBackgroundSettings();
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'validation') {
+      loadValidationData();
+    }
+  }, [activeTab]);
 
   const loadAllSettings = async () => {
     try {
@@ -329,6 +349,69 @@ export default function Settings() {
         variant: 'destructive',
         duration: 3000,
       });
+    }
+  };
+
+  const loadValidationData = async () => {
+    try {
+      setLoadingValidation(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setValidationData(data);
+      }
+    } catch (error) {
+      console.error('Error loading validation data:', error);
+    } finally {
+      setLoadingValidation(false);
+    }
+  };
+
+  const handleFixMandatoryData = async () => {
+    try {
+      setFixingMandatoryData(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/validation/fix-mandatory-data`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success) {
+          const createdCount = data.created_fields.length + data.created_tags.length;
+          toast({
+            title: 'Missing Data Created',
+            description: `Successfully created ${createdCount} missing ${createdCount === 1 ? 'item' : 'items'}`,
+            duration: 3000,
+          });
+          
+          // Reload validation data and POCO fields
+          await loadValidationData();
+          await refreshPocoFields();
+        } else {
+          toast({
+            title: 'Fix Failed',
+            description: data.errors.join(', '),
+            variant: 'destructive',
+            duration: 5000,
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: 'Fix Failed',
+        description: error.message || 'Failed to fix missing data',
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setFixingMandatoryData(false);
     }
   };
 
@@ -747,6 +830,7 @@ export default function Settings() {
 
   const tabs = [
     { id: 'system', label: 'System', icon: Database, adminOnly: true },
+    { id: 'validation', label: 'Data Validation', icon: AlertCircle, adminOnly: true },
     { id: 'backgroundProcessing', label: 'Background Processing', icon: Activity, adminOnly: true },
     { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
     { id: 'dateFormats', label: 'Date Formats', icon: Calendar, adminOnly: false },
@@ -1322,6 +1406,167 @@ export default function Settings() {
                         </p>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'validation' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Data Validation</h2>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Ensure all required custom fields and tags exist in Paperless-ngx for PocoClass to function correctly
+                    </p>
+                  </div>
+
+                  {loadingValidation ? (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">Checking mandatory data...</span>
+                      </div>
+                    </div>
+                  ) : validationData && !validationData.valid ? (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h3 className="text-sm font-semibold text-red-900 mb-2">Missing Required Data</h3>
+                          <p className="text-sm text-red-800 mb-3">
+                            PocoClass requires specific custom fields and tags to function. The following items are missing from your Paperless-ngx instance:
+                          </p>
+                          {validationData.missing_fields.length > 0 && (
+                            <div className="mb-3">
+                              <p className="text-xs font-semibold text-red-900 mb-1">Missing Custom Fields:</p>
+                              <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                                {validationData.missing_fields.map(field => (
+                                  <li key={field}>{field}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {validationData.missing_tags.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold text-red-900 mb-1">Missing Tags:</p>
+                              <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                                {validationData.missing_tags.map(tag => (
+                                  <li key={tag}>{tag}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <Button
+                          onClick={handleFixMandatoryData}
+                          disabled={fixingMandatoryData}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          {fixingMandatoryData ? 'Creating...' : 'Fix Missing Data'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : validationData && validationData.valid ? (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                      <div className="flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <div>
+                          <h3 className="text-sm font-semibold text-green-900 mb-1">All Required Data Present</h3>
+                          <p className="text-sm text-green-800">
+                            All mandatory custom fields and tags are configured correctly in Paperless-ngx.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Required Custom Fields</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {validationData?.fields?.poco_score ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">POCO Score</div>
+                          <div className="text-xs text-gray-500">Stores the overall POCO score (0-100%)</div>
+                        </div>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {validationData?.fields?.poco_score ? 'Present' : 'Missing'}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {validationData?.fields?.poco_ocr ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">POCO OCR</div>
+                          <div className="text-xs text-gray-500">Stores the OCR confidence score (0-100%)</div>
+                        </div>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_ocr ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {validationData?.fields?.poco_ocr ? 'Present' : 'Missing'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Required Tags</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {validationData?.tags?.poco_plus ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">POCO+</div>
+                          <div className="text-xs text-gray-500">Green tag indicating document matched a rule</div>
+                        </div>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {validationData?.tags?.poco_minus ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">POCO-</div>
+                          <div className="text-xs text-gray-500">Red tag indicating document did not match any rule</div>
+                        </div>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                        {validationData?.tags?.new ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900">NEW</div>
+                          <div className="text-xs text-gray-500">Blue tag marking documents not yet processed by PocoClass</div>
+                        </div>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {validationData?.tags?.new ? 'Present' : 'Missing'}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

@@ -1088,6 +1088,121 @@ def update_paperless_config():
         logger.error(f"Error updating Paperless config: {e}")
         return jsonify({'error': str(e)}), 500
 
+# Mandatory Data Validation
+@app.route('/api/validation/mandatory-data', methods=['GET'])
+@require_auth
+def check_mandatory_data():
+    """Check for mandatory custom fields and tags in Paperless-ngx"""
+    try:
+        session = request.current_user
+        api_client = PaperlessAPIClient.from_session(session, db)
+        
+        # Required custom fields
+        required_fields = ['POCO Score', 'POCO OCR']
+        missing_fields = []
+        
+        for field_name in required_fields:
+            field_id = api_client.get_custom_field_id(field_name)
+            if not field_id:
+                missing_fields.append(field_name)
+        
+        # Required tags
+        required_tags = ['POCO+', 'POCO-', 'NEW']
+        missing_tags = []
+        
+        for tag_name in required_tags:
+            tag_id = api_client.get_tag_id(tag_name)
+            if not tag_id:
+                missing_tags.append(tag_name)
+        
+        # Check if all mandatory data exists
+        has_all_data = len(missing_fields) == 0 and len(missing_tags) == 0
+        
+        return jsonify({
+            'valid': has_all_data,
+            'missing_fields': missing_fields,
+            'missing_tags': missing_tags,
+            'fields': {
+                'poco_score': 'POCO Score' not in missing_fields,
+                'poco_ocr': 'POCO OCR' not in missing_fields
+            },
+            'tags': {
+                'poco_plus': 'POCO+' not in missing_tags,
+                'poco_minus': 'POCO-' not in missing_tags,
+                'new': 'NEW' not in missing_tags
+            }
+        })
+    except Exception as e:
+        logger.error(f"Error checking mandatory data: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/validation/fix-mandatory-data', methods=['POST'])
+@require_admin
+def fix_mandatory_data():
+    """Create missing mandatory custom fields and tags (admin only)"""
+    try:
+        session = request.current_user
+        api_client = PaperlessAPIClient.from_session(session, db)
+        
+        created_fields = []
+        created_tags = []
+        errors = []
+        
+        # Create missing custom fields
+        required_fields = [
+            {'name': 'POCO Score', 'data_type': 'string'},
+            {'name': 'POCO OCR', 'data_type': 'string'}
+        ]
+        
+        for field_spec in required_fields:
+            field_name = field_spec['name']
+            if not api_client.get_custom_field_id(field_name):
+                try:
+                    success = api_client.create_custom_field(field_name, field_spec['data_type'])
+                    if success:
+                        created_fields.append(field_name)
+                    else:
+                        errors.append(f"Failed to create field: {field_name}")
+                except Exception as e:
+                    errors.append(f"Error creating field {field_name}: {str(e)}")
+        
+        # Create missing tags
+        required_tags = [
+            {'name': 'POCO+', 'color': '#10b981', 'is_inbox_tag': False},
+            {'name': 'POCO-', 'color': '#ef4444', 'is_inbox_tag': False},
+            {'name': 'NEW', 'color': '#3b82f6', 'is_inbox_tag': False}
+        ]
+        
+        for tag_spec in required_tags:
+            tag_name = tag_spec['name']
+            if not api_client.get_tag_id(tag_name):
+                try:
+                    success = api_client.create_tag(tag_name, tag_spec['color'], tag_spec['is_inbox_tag'])
+                    if success:
+                        created_tags.append(tag_name)
+                    else:
+                        errors.append(f"Failed to create tag: {tag_name}")
+                except Exception as e:
+                    errors.append(f"Error creating tag {tag_name}: {str(e)}")
+        
+        # Force sync to update cache
+        try:
+            paperless_url = db.get_config('paperless_url')
+            paperless_token = session['paperless_token']
+            sync_service.sync_all(paperless_token, paperless_url)
+        except Exception as e:
+            logger.warning(f"Sync failed after creating mandatory data: {e}")
+        
+        return jsonify({
+            'success': len(errors) == 0,
+            'created_fields': created_fields,
+            'created_tags': created_tags,
+            'errors': errors
+        })
+    except Exception as e:
+        logger.error(f"Error fixing mandatory data: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # Serve React App
 @app.route('/')
 @app.route('/<path:path>')
@@ -2001,6 +2116,25 @@ background_processor = BackgroundProcessor(db)
 def trigger_background_processing():
     """Trigger background processing with debouncing (admin only)"""
     try:
+        # Check if mandatory data exists before processing
+        session = request.current_user
+        api_client = PaperlessAPIClient.from_session(session, db)
+        
+        # Check for required custom fields
+        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
+        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        
+        # Check for required tags
+        poco_plus_exists = api_client.get_tag_id('POCO+') is not None
+        poco_minus_exists = api_client.get_tag_id('POCO-') is not None
+        new_tag_exists = api_client.get_tag_id('NEW') is not None
+        
+        if not (poco_score_exists and poco_ocr_exists and poco_plus_exists and poco_minus_exists and new_tag_exists):
+            return jsonify({
+                'error': 'Cannot start background processing: Missing required custom fields or tags. Please fix in Settings > Data Validation.',
+                'validation_required': True
+            }), 400
+        
         result = background_processor.trigger_processing()
         return jsonify(result)
     except Exception as e:
@@ -2025,6 +2159,24 @@ def manual_processing():
     try:
         session = request.current_user
         data = request.json or {}
+        
+        # Check if mandatory data exists before processing
+        api_client = PaperlessAPIClient.from_session(session, db)
+        
+        # Check for required custom fields
+        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
+        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        
+        # Check for required tags
+        poco_plus_exists = api_client.get_tag_id('POCO+') is not None
+        poco_minus_exists = api_client.get_tag_id('POCO-') is not None
+        new_tag_exists = api_client.get_tag_id('NEW') is not None
+        
+        if not (poco_score_exists and poco_ocr_exists and poco_plus_exists and poco_minus_exists and new_tag_exists):
+            return jsonify({
+                'error': 'Cannot start background processing: Missing required custom fields or tags. Please fix in Settings > Data Validation.',
+                'validation_required': True
+            }), 400
         
         # Manual processing bypasses auto-pause check
         result = background_processor.process_batch(user_session=session)
