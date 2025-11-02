@@ -146,12 +146,21 @@ export default function FilenameIdentificationStep({
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">Filename Weight Multiplier: {filenameMultiplier}×</h3>
+          <h3 className="font-semibold text-lg">Filename Weight Multiplier</h3>
           <Tooltip content="Controls how much influence filename patterns have in the final POCO score. Higher values mean filenames are more important." />
         </div>
         <p className="text-sm text-gray-600 mb-3">
           Controls how much weight filename patterns have in the final POCO score. Default is 1× because filenames are less reliable than OCR content.
         </p>
+        
+        {/* Current Value Display */}
+        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+          <div className="text-center">
+            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
+            <div className="text-3xl font-bold text-blue-700">{filenameMultiplier}×</div>
+          </div>
+        </div>
+
         <div className="mt-2">
           <input
             type="range"
@@ -165,10 +174,26 @@ export default function FilenameIdentificationStep({
               background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((filenameMultiplier - 1) / 9) * 100}%, #e5e7eb ${((filenameMultiplier - 1) / 9) * 100}%, #e5e7eb 100%)`
             }}
           />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
-            <span>1× (Default)</span>
-            <span>5× (Medium)</span>
-            <span>10× (High)</span>
+          
+          {/* Scale markers */}
+          <div className="relative mt-2 mb-1">
+            <div className="flex justify-between items-center">
+              <div className="text-center relative">
+                <div className="text-sm font-semibold text-green-600">1×</div>
+                <div className="text-xs text-green-600 font-medium">Default</div>
+                <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-semibold text-gray-700">10×</div>
+                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Text labels */}
+          <div className="flex justify-between text-xs text-gray-500 mt-6">
+            <span className="font-medium">Low Weight</span>
+            <span className="font-medium">High Weight</span>
           </div>
         </div>
       </div>
