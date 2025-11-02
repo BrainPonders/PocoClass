@@ -19,11 +19,13 @@ export default function DataVerificationStep({
     const enabledCount = getEnabledCount();
     if (enabledCount > 0) {
       const dynamicDefault = 1 / enabledCount;
+      // For 1 field, default is 1; for 2+ fields, default is the fraction
+      const defaultValue = enabledCount === 1 ? 1 : dynamicDefault;
       // Always update to the new dynamic default when field count changes
-      updateRuleData('verificationMultiplier', parseFloat(dynamicDefault.toFixed(3)), false);
+      updateRuleData('verificationMultiplier', defaultValue, false);
     } else {
-      // Reset to 0.5 when no fields enabled
-      updateRuleData('verificationMultiplier', 0.5, false);
+      // Reset to 1 when no fields enabled
+      updateRuleData('verificationMultiplier', 1, false);
     }
   }, [ruleData.verification?.enabledFields]);
 
@@ -85,8 +87,26 @@ export default function DataVerificationStep({
   };
 
   const enabledCount = getEnabledCount();
-  const dynamicDefault = enabledCount > 0 ? 1 / enabledCount : 0.5;
+  const dynamicDefault = enabledCount > 0 ? (enabledCount === 1 ? 1 : 1 / enabledCount) : 1;
   const verificationMultiplier = ruleData.verificationMultiplier !== undefined ? ruleData.verificationMultiplier : dynamicDefault;
+  
+  // Create array of discrete values: [1/n, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] or [1, 2, 3...10] for n=1
+  const sliderValues = enabledCount === 1 
+    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    : [1 / enabledCount, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  
+  // Find current slider index
+  const currentSliderIndex = sliderValues.findIndex(val => Math.abs(val - verificationMultiplier) < 0.01);
+  const sliderIndex = currentSliderIndex >= 0 ? currentSliderIndex : 0;
+  
+  // Format display value
+  const formatValue = (value) => {
+    if (value < 1) {
+      return `1/${enabledCount}`;
+    }
+    return `${Math.round(value)}`;
+  };
+  
   const maxVerificationWeight = enabledCount * enabledCount * verificationMultiplier;
 
   const isStepEnabled = () => {
@@ -168,7 +188,10 @@ export default function DataVerificationStep({
             <h3 className="font-semibold text-lg mb-2">Verification Multiplier</h3>
             <p className="text-sm text-gray-600 mb-3">
               Controls how much weight Paperless metadata verification has in the final POCO score. 
-              Minimum is 1/{enabledCount} based on {enabledCount} enabled field{enabledCount !== 1 ? 's' : ''}.
+              {enabledCount === 1 
+                ? `Default is 1 for ${enabledCount} enabled field.`
+                : `Default is 1/${enabledCount} for ${enabledCount} enabled fields.`
+              }
             </p>
             
             {/* Current Value Display */}
@@ -176,9 +199,7 @@ export default function DataVerificationStep({
               <div className="text-center">
                 <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
                 <div className="text-3xl font-bold text-blue-700">
-                  {Math.abs(verificationMultiplier - dynamicDefault) < 0.01 
-                    ? `1/${enabledCount}` 
-                    : `${verificationMultiplier.toFixed(2)}×`}
+                  {formatValue(verificationMultiplier)}
                 </div>
               </div>
             </div>
@@ -186,14 +207,17 @@ export default function DataVerificationStep({
             <div className="mt-2">
               <input
                 type="range"
-                min={dynamicDefault}
-                max="10"
-                step="0.001"
-                value={verificationMultiplier}
-                onChange={(e) => updateRuleData('verificationMultiplier', parseFloat(e.target.value))}
+                min="0"
+                max={sliderValues.length - 1}
+                step="1"
+                value={sliderIndex}
+                onChange={(e) => {
+                  const newIndex = parseInt(e.target.value);
+                  updateRuleData('verificationMultiplier', sliderValues[newIndex]);
+                }}
                 className="w-full h-2 rounded-lg appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 ${((verificationMultiplier - dynamicDefault) / (10 - dynamicDefault)) * 100}%, #e5e7eb ${((verificationMultiplier - dynamicDefault) / (10 - dynamicDefault)) * 100}%)`
+                  background: `linear-gradient(to right, #3b82f6 ${(sliderIndex / (sliderValues.length - 1)) * 100}%, #e5e7eb ${(sliderIndex / (sliderValues.length - 1)) * 100}%)`
                 }}
               />
               
@@ -201,14 +225,10 @@ export default function DataVerificationStep({
               <div className="relative mt-2 mb-1">
                 <div className="flex justify-between items-center">
                   <div className="text-center relative">
-                    <div className="text-sm font-semibold text-green-600 leading-tight">1/{enabledCount}</div>
+                    <div className="text-sm font-semibold text-green-600 leading-tight">
+                      {formatValue(sliderValues[0])}
+                    </div>
                     <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700 leading-tight">1</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700 leading-tight">2</div>
                   </div>
                   <div className="text-center">
                     <div className="text-sm font-semibold text-gray-700 leading-tight">5</div>
