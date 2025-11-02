@@ -226,10 +226,13 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Recent Rules */}
+      {/* Recent Rule Activity */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Rules</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Recent Rule Activity
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -247,31 +250,52 @@ export default function Dashboard() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-3">
-              {rules.slice(0, 5).map((rule) => (
-                <div key={rule.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">
-                  <div>
-                    <h4 className="font-medium">{rule.ruleName}</h4>
-                    <p className="text-sm text-gray-500">Threshold: {rule.threshold}% • {rule.ocrIdentifiers?.length || 0} OCR identifiers</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      rule.status === 'active' ? 'bg-green-100 text-green-800' : 
-                      rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {rule.status}
-                    </span>
-                    <Link 
-                      to={createPageUrl(`RuleEditor?id=${rule.id}`)} 
-                      className="btn btn-outline btn-sm"
-                    >
-                      Edit
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <>
+              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  📊 <strong>Note:</strong> Execution tracking coming soon. Currently showing rule creation dates as activity indicators.
+                </p>
+              </div>
+              <div className="space-y-3">
+                {rules.slice(0, 5).map((rule) => {
+                  const lastActivity = rule.created_date 
+                    ? new Date(rule.created_date).toLocaleDateString('en-GB', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      })
+                    : 'N/A';
+                  
+                  return (
+                    <div key={rule.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{rule.ruleName}</h4>
+                        <div className="mt-1 flex flex-wrap gap-3 text-sm text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Activity className="w-4 h-4" />
+                            Last Activity: {lastActivity}
+                          </span>
+                          <span>•</span>
+                          <span>Status: 
+                            <span className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              rule.status === 'active' ? 'bg-green-100 text-green-800' : 
+                              rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {rule.status}
+                            </span>
+                          </span>
+                          <span>•</span>
+                          <span className="text-gray-500">Executions: -</span>
+                          <span>•</span>
+                          <span className="text-gray-500">Success Rate: -</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
