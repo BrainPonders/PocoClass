@@ -29,38 +29,21 @@ export default function RuleReviewer() {
   const [allCorrespondents, setAllCorrespondents] = useState([]);
   const [allDocTypes, setAllDocTypes] = useState([]);
   
-  // Helper function to get last 7 days date
-  const getLast7DaysDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() - 7);
-    return date.toISOString().split('T')[0];
-  };
-
-  const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
-  };
-  
-  // Consolidated filter state (Paperless style)
+  // Consolidated filter state (new Paperless style with tri-state tags)
   const [filters, setFilters] = useState({
     title: '',
-    tags: ['NEW'],
-    tagsMode: 'include',
+    tagStates: {},
+    tagsLogic: 'any',
     tagsSearch: '',
-    excludeTags: ['POCO'],
-    excludeTagsSearch: '',
     correspondents: [],
     correspondentsMode: 'include',
     correspondentsSearch: '',
     docTypes: [],
     docTypesMode: 'include',
     docTypesSearch: '',
-    customFields: [],
-    customFieldName: '',
-    customFieldValue: '',
-    dateFrom: getLast7DaysDate(),
-    dateTo: getTodayDate(),
-    permissions: 'all',
-    limit: 50
+    dateFrom: '',
+    dateTo: '',
+    limit: 10
   });
 
   useEffect(() => {
@@ -90,9 +73,19 @@ export default function RuleReviewer() {
       
       // Add filters to query
       if (filters.title) params.append('title', filters.title);
-      if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
-      if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
-      if (filters.excludeTags && filters.excludeTags.length > 0) params.append('exclude_tags', filters.excludeTags.join(','));
+      
+      // Convert tri-state tagStates to backend format
+      const includedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'include')
+        .map(([tag, _]) => tag);
+      const excludedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'exclude')
+        .map(([tag, _]) => tag);
+      
+      if (includedTags.length > 0) params.append('tags', includedTags.join(','));
+      if (filters.tagsLogic) params.append('tags_mode', filters.tagsLogic);
+      if (excludedTags.length > 0) params.append('exclude_tags', excludedTags.join(','));
+      
       if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
       if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
       if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
@@ -208,24 +201,18 @@ export default function RuleReviewer() {
   const handleResetFilters = () => {
     setFilters({
       title: '',
-      tags: ['NEW'],
-      tagsMode: 'include',
+      tagStates: {},
+      tagsLogic: 'any',
       tagsSearch: '',
-      excludeTags: ['POCO'],
-      excludeTagsSearch: '',
       correspondents: [],
       correspondentsMode: 'include',
       correspondentsSearch: '',
       docTypes: [],
       docTypesMode: 'include',
       docTypesSearch: '',
-      customFields: [],
-      customFieldName: '',
-      customFieldValue: '',
-      dateFrom: getLast7DaysDate(),
-      dateTo: getTodayDate(),
-      permissions: 'all',
-      limit: 50
+      dateFrom: '',
+      dateTo: '',
+      limit: 10
     });
   };
 
