@@ -57,6 +57,12 @@ export default function RuleReviewer() {
     loadDocuments();
   }, [filters]);
 
+  // Clear selection when documents change
+  useEffect(() => {
+    setSelectedDocuments([]);
+    setAllSelected(false);
+  }, [documents]);
+
   const loadRules = async () => {
     try {
       const fetchedRules = await Rule.list("-created_date");
@@ -129,20 +135,24 @@ export default function RuleReviewer() {
   };
 
   const toggleDocumentSelection = (docId) => {
-    setSelectedDocuments(prev =>
-      prev.includes(docId)
-        ? prev.filter(id => id !== docId)
-        : [...prev, docId]
-    );
+    if (selectedDocuments.includes(docId)) {
+      setSelectedDocuments(selectedDocuments.filter(id => id !== docId));
+      setAllSelected(false);
+    } else {
+      const newSelected = [...selectedDocuments, docId];
+      setSelectedDocuments(newSelected);
+      setAllSelected(newSelected.length === documents.length);
+    }
   };
 
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedDocuments([]);
+      setAllSelected(false);
     } else {
       setSelectedDocuments(documents.map(d => d.id));
+      setAllSelected(true);
     }
-    setAllSelected(!allSelected);
   };
 
   const handleRun = async () => {
@@ -448,7 +458,7 @@ export default function RuleReviewer() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
                     <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
                     <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
