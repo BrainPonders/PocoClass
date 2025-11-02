@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X } from 'lucide-react';
+import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -31,6 +31,9 @@ export default function BackgroundProcess() {
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
   const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
+  
+  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const [allSelected, setAllSelected] = useState(false);
   
   const [filters, setFilters] = useState({
     title: '',
@@ -181,6 +184,12 @@ export default function BackgroundProcess() {
     }
   }, [filters, currentUser]);
 
+  // Clear selection when documents change
+  useEffect(() => {
+    setSelectedDocuments([]);
+    setAllSelected(false);
+  }, [matchingDocuments]);
+
   const handleTrigger = async () => {
     if (currentUser?.role !== 'admin') {
       toast({
@@ -329,6 +338,27 @@ export default function BackgroundProcess() {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}m ${secs}s`;
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedDocuments([]);
+      setAllSelected(false);
+    } else {
+      setSelectedDocuments(matchingDocuments.map(doc => doc.id));
+      setAllSelected(true);
+    }
+  };
+
+  const toggleDocumentSelection = (docId) => {
+    if (selectedDocuments.includes(docId)) {
+      setSelectedDocuments(selectedDocuments.filter(id => id !== docId));
+      setAllSelected(false);
+    } else {
+      const newSelected = [...selectedDocuments, docId];
+      setSelectedDocuments(newSelected);
+      setAllSelected(newSelected.length === matchingDocuments.length);
+    }
   };
 
   const handleViewOCR = async (doc) => {
@@ -567,6 +597,11 @@ export default function BackgroundProcess() {
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left">
+                        <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
+                          {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                        </button>
+                      </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
@@ -580,7 +615,12 @@ export default function BackgroundProcess() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {matchingDocuments.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-gray-50">
+                      <tr key={doc.id} className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`} onClick={() => toggleDocumentSelection(doc.id)}>
+                        <td className="px-4 py-2">
+                          <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
+                            {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+                          </button>
+                        </td>
                         <td className="px-4 py-2 text-sm text-gray-900">{doc.title}</td>
                         <td className="px-4 py-2 text-sm text-gray-500">{doc.id}</td>
                         <td className="px-4 py-2 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
