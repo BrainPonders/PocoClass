@@ -1669,6 +1669,57 @@ def delete_rule(rule_id):
         logger.error(f"Error deleting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/deleted-rules', methods=['GET'])
+def list_deleted_rules():
+    """List all deleted rules from the deleted folder"""
+    try:
+        deleted_dir = os.path.join('rules', 'deleted')
+        if not os.path.exists(deleted_dir):
+            return jsonify([])
+        
+        deleted_rules = []
+        deleted_files = list(Path(deleted_dir).glob('*.yaml')) + list(Path(deleted_dir).glob('*.yml'))
+        
+        for rule_file in deleted_files:
+            try:
+                # Load the rule data
+                rule_data = rule_loader.load_rule_file(rule_file)
+                if rule_data:
+                    # Get file stats for deletion date
+                    stats = os.stat(rule_file)
+                    deleted_date = datetime.fromtimestamp(stats.st_mtime).isoformat()
+                    
+                    deleted_rules.append({
+                        'id': rule_file.stem,
+                        'originalRuleId': rule_data.get('rule_id', rule_file.stem),
+                        'ruleName': rule_data.get('rule_name', rule_file.stem),
+                        'deletedDate': deleted_date,
+                        'ruleData': rule_data
+                    })
+            except Exception as e:
+                logger.error(f"Error loading deleted rule {rule_file.name}: {e}")
+        
+        # Sort by deleted date (newest first)
+        deleted_rules.sort(key=lambda x: x.get('deletedDate', ''), reverse=True)
+        
+        return jsonify(deleted_rules)
+    except Exception as e:
+        logger.error(f"Error listing deleted rules: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/deleted-rules/<rule_id>', methods=['DELETE'])
+def permanently_delete_rule(rule_id):
+    """Permanently delete a rule from the deleted folder"""
+    try:
+        rule_file = os.path.join('rules', 'deleted', f'{rule_id}.yaml')
+        if os.path.exists(rule_file):
+            os.remove(rule_file)
+            return jsonify({'message': 'Rule permanently deleted'})
+        return jsonify({'error': 'Deleted rule not found'}), 404
+    except Exception as e:
+        logger.error(f"Error permanently deleting rule {rule_id}: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/logs', methods=['GET'])
 def list_logs():
     """List logs"""
