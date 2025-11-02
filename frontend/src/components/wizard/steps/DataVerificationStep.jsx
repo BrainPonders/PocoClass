@@ -175,7 +175,7 @@ export default function DataVerificationStep({
             <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
               <div className="text-center">
                 <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-                <div className="text-3xl font-bold text-blue-700">{verificationMultiplier.toFixed(3)}×</div>
+                <div className="text-3xl font-bold text-blue-700">{verificationMultiplier.toFixed(2)}×</div>
               </div>
             </div>
 
@@ -197,21 +197,14 @@ export default function DataVerificationStep({
               <div className="relative mt-2 mb-1">
                 <div className="flex justify-between items-center">
                   <div className="text-center relative">
-                    <div className="text-sm font-semibold text-green-600 leading-tight">{dynamicDefault.toFixed(3)}×</div>
+                    <div className="text-sm font-semibold text-green-600 leading-tight">{dynamicDefault.toFixed(2)}×</div>
                     <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                    <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700">10×</div>
-                    <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                    <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
+                    <div className="text-xs text-gray-600 font-medium leading-tight">High Weight</div>
                   </div>
                 </div>
-              </div>
-              
-              {/* Text labels */}
-              <div className="flex justify-between text-xs text-gray-500 mt-6">
-                <span className="font-medium">Low Weight</span>
-                <span className="font-medium">High Weight</span>
               </div>
             </div>
           </div>

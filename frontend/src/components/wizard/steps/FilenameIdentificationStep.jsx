@@ -181,19 +181,12 @@ export default function FilenameIdentificationStep({
               <div className="text-center relative">
                 <div className="text-sm font-semibold text-green-600 leading-tight">1×</div>
                 <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
               </div>
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700">10×</div>
-                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
+                <div className="text-xs text-gray-600 font-medium leading-tight">High Weight</div>
               </div>
             </div>
-          </div>
-          
-          {/* Text labels */}
-          <div className="flex justify-between text-xs text-gray-500 mt-6">
-            <span className="font-medium">Low Weight</span>
-            <span className="font-medium">High Weight</span>
           </div>
         </div>
       </div>

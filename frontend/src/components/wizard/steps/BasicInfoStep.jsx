@@ -169,25 +169,18 @@ export default function BasicInfoStep({
             <div className="relative mt-2 mb-1">
               <div className="flex justify-between items-center">
                 <div className="text-center">
-                  <div className="text-sm font-semibold text-gray-700">50%</div>
-                  <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                  <div className="text-sm font-semibold text-gray-700 leading-tight">50%</div>
+                  <div className="text-xs text-gray-600 font-medium leading-tight">Permissive</div>
                 </div>
                 <div className="text-center relative">
                   <div className="text-sm font-semibold text-green-600 leading-tight">75%</div>
                   <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                  <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm font-semibold text-gray-700">100%</div>
-                  <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                  <div className="text-sm font-semibold text-gray-700 leading-tight">100%</div>
+                  <div className="text-xs text-gray-600 font-medium leading-tight">Very Strict</div>
                 </div>
               </div>
-            </div>
-            
-            {/* Text labels */}
-            <div className="flex justify-between text-xs text-gray-500 mt-6">
-              <span className="font-medium">Permissive</span>
-              <span className="font-medium">Very Strict</span>
             </div>
           </div>
         </div>
