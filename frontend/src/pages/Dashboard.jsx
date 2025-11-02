@@ -299,7 +299,7 @@ export default function Dashboard() {
                   <div>
                     <div className="text-sm font-medium text-gray-900">Correspondents</div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {syncStatus.correspondents || 0}
+                      {syncStatus.correspondents?.count || 0}
                     </div>
                   </div>
                 </div>
@@ -314,7 +314,7 @@ export default function Dashboard() {
                   <div>
                     <div className="text-sm font-medium text-gray-900">Tags</div>
                     <div className="text-2xl font-bold text-purple-600">
-                      {syncStatus.tags || 0}
+                      {syncStatus.tags?.count || 0}
                     </div>
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function Dashboard() {
                   <div>
                     <div className="text-sm font-medium text-gray-900">Document Types</div>
                     <div className="text-2xl font-bold text-orange-600">
-                      {syncStatus.document_types || 0}
+                      {syncStatus.document_types?.count || 0}
                     </div>
                   </div>
                 </div>
@@ -344,7 +344,7 @@ export default function Dashboard() {
                   <div>
                     <div className="text-sm font-medium text-gray-900">Custom Fields</div>
                     <div className="text-2xl font-bold text-teal-600">
-                      {syncStatus.custom_fields || 0}
+                      {syncStatus.custom_fields?.count || 0}
                     </div>
                   </div>
                 </div>
@@ -359,7 +359,7 @@ export default function Dashboard() {
                   <div>
                     <div className="text-sm font-medium text-gray-900">Users</div>
                     <div className="text-2xl font-bold text-indigo-600">
-                      {syncStatus.users || 0}
+                      {syncStatus.users?.count || 0}
                     </div>
                   </div>
                 </div>
