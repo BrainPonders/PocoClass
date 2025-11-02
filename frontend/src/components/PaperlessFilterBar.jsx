@@ -414,18 +414,19 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
-        {/* Limit Filter - Inline */}
+        {/* Limit Filter - Inline Dropdown */}
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Limit:</label>
-          <input
-            type="number"
-            min="1"
-            max="1000"
-            value={filters.limit || ''}
-            onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) || null })}
-            placeholder="All"
-            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400 w-20 focus:outline-none focus:border-blue-500"
-          />
+          <select
+            value={filters.limit || 10}
+            onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) })}
+            className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm text-gray-900 w-20 focus:outline-none focus:border-blue-500"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
         </div>
 
         {/* Spacer to push Reset button to the right */}
