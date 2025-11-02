@@ -393,6 +393,13 @@ def login():
             )
             
             if auth_response.status_code != 200:
+                # Log failed login attempt
+                db.add_log(
+                    log_type='system',
+                    level='warning',
+                    message=f'Failed login attempt for user: {username}',
+                    source='authentication'
+                )
                 return jsonify({'error': 'Invalid credentials'}), 401
             
             paperless_token = auth_response.json().get('token')
@@ -477,6 +484,14 @@ def login():
                 logger.warning(f"Auto-sync on login failed (non-critical): {e}")
             
             logger.info(f"User logged in: {username}")
+            
+            # Log successful login to database
+            db.add_log(
+                log_type='system',
+                level='info',
+                message=f'User logged in: {username}',
+                source='authentication'
+            )
             
             return jsonify({
                 'success': True,
