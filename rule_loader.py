@@ -18,6 +18,9 @@ class RuleLoader:
     
     def load_all_rules(self) -> Dict[str, Dict[str, Any]]:
         """Load all YAML rule files from the rules directory"""
+        # Clear the rules dictionary to avoid stale data
+        self.rules = {}
+        
         if not self.rules_directory.exists():
             self.logger.error(f"Rules directory does not exist: {self.rules_directory}")
             return {}
