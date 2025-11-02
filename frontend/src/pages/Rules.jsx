@@ -148,15 +148,28 @@ export default function Rules() {
       if (filters.limit) params.append('limit', filters.limit);
       
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
+      const apiUrl = `${API_BASE_URL}/api/documents?${params.toString()}`;
+      console.log('[Documents] Fetching from:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         headers: {
           'Authorization': `Bearer ${sessionToken}`
         }
       });
       
+      console.log('[Documents] API Response status:', response.status, response.statusText);
+      
       if (!response.ok) throw new Error('Failed to fetch documents');
       
       const data = await response.json();
+      console.log('[Documents] API Response data:', {
+        count: data.count || 0,
+        resultsCount: data.results?.length || 0,
+        hasNext: data.next ? 'yes' : 'no',
+        hasPrevious: data.previous ? 'yes' : 'no',
+        fullData: data
+      });
+      
       setDocuments(data.results || []);
     } catch (error) {
       console.error("Error loading documents:", error);
@@ -783,7 +796,9 @@ export default function Rules() {
       {/* Documents without Rules */}
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Documents without Rules</CardTitle>
+          <CardTitle>
+            Documents without Rules ({documents.length} found)
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {/* New Paperless-style Filter Bar */}
@@ -805,7 +820,17 @@ export default function Rules() {
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Found</h3>
-              <p className="text-gray-500">No documents match the selected filters.</p>
+              <div className="text-gray-500 space-y-2">
+                <p>No documents found. This could mean:</p>
+                <ul className="list-disc list-inside text-left max-w-md mx-auto">
+                  <li>No documents exist in Paperless-ngx</li>
+                  <li>All documents have been processed</li>
+                  <li>Current filters are too restrictive</li>
+                </ul>
+                <p className="mt-4 text-sm">
+                  Check the browser console for API response details.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
