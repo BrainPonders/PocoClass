@@ -1704,7 +1704,6 @@ def list_documents():
     """List documents from Paperless-ngx"""
     try:
         limit = request.args.get('limit', type=int)
-        ignore_tags = request.args.get('ignore_tags', 'false').lower() == 'true'
         
         # Get filter parameters
         title = request.args.get('title')
@@ -1717,6 +1716,18 @@ def list_documents():
         doc_types_mode = request.args.get('doc_types_mode', 'include')
         date_from = request.args.get('date_from')
         date_to = request.args.get('date_to')
+        
+        # Determine if we should ignore legacy tag filtering:
+        # - If user explicitly sets ignore_tags parameter, use that
+        # - Otherwise, automatically ignore legacy tags when NO tag filters are active
+        explicit_ignore_tags = request.args.get('ignore_tags')
+        if explicit_ignore_tags is not None:
+            ignore_tags = explicit_ignore_tags.lower() == 'true'
+        else:
+            # Auto-ignore legacy tags when no tag filters are provided
+            ignore_tags = (tags is None and exclude_tags is None)
+        
+        logger.info(f"Document list request - tags={tags}, exclude_tags={exclude_tags}, ignore_tags={ignore_tags}")
         
         # Get Paperless credentials from session
         session = request.current_user
