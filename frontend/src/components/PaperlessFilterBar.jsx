@@ -53,31 +53,38 @@ export default function PaperlessFilterBar({
     const hasCustomDateRange = !isDefaultDateRange() && (filters.dateFrom || filters.dateTo);
     
     return filters.title ||
-           filters.tags.length > 0 ||
+           (filters.tagStates && Object.keys(filters.tagStates).length > 0) ||
            filters.correspondents.length > 0 ||
            filters.docTypes.length > 0 ||
-           (filters.excludeTags && filters.excludeTags.length > 0) ||
            (filters.limit && filters.limit > 0) ||
            hasCustomDateRange;
   };
 
   const getFilterButtonClass = (filterName) => {
     let hasValue = false;
+    let hasMixedStates = false;
+    
     switch(filterName) {
       case 'title': hasValue = filters.title?.length > 0; break;
-      case 'tags': hasValue = filters.tags.length > 0; break;
+      case 'tags': 
+        hasValue = filters.tagStates && Object.keys(filters.tagStates).length > 0;
+        if (hasValue) {
+          const states = Object.values(filters.tagStates);
+          const hasInclude = states.includes('include');
+          const hasExclude = states.includes('exclude');
+          hasMixedStates = hasInclude && hasExclude;
+        }
+        break;
       case 'correspondent': hasValue = filters.correspondents.length > 0; break;
       case 'documentType': hasValue = filters.docTypes.length > 0; break;
       case 'dates': hasValue = filters.dateFrom || filters.dateTo; break;
-      case 'excludeTags': hasValue = filters.excludeTags && filters.excludeTags.length > 0; break;
       default: hasValue = false;
     }
 
     const baseClass = "px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 ";
     if (hasValue) {
-      // Use red for exclude tags filter
-      if (filterName === 'excludeTags') {
-        return baseClass + "bg-red-600 text-white hover:bg-red-700";
+      if (filterName === 'tags' && hasMixedStates) {
+        return baseClass + "bg-purple-600 text-white hover:bg-purple-700";
       }
       return baseClass + "bg-blue-600 text-white hover:bg-blue-700";
     }
@@ -123,7 +130,7 @@ export default function PaperlessFilterBar({
           </div>
         </div>
 
-        {/* Tags Filter */}
+        {/* Tags Filter - Tri-state */}
         <div className="relative">
           <button
             onClick={() => toggleFilter('tags')}
@@ -131,7 +138,7 @@ export default function PaperlessFilterBar({
           >
             <Filter className="w-4 h-4" />
             Tags
-            {filters.tags.length > 0 && ` (${filters.tags.length})`}
+            {filters.tagStates && Object.keys(filters.tagStates).length > 0 && ` (${Object.keys(filters.tagStates).length})`}
             <ChevronDown className="w-3 h-3" />
           </button>
           {renderFilterDropdown('tags', (
@@ -139,16 +146,16 @@ export default function PaperlessFilterBar({
               <div className="p-3 border-b border-gray-200">
                 <div className="flex gap-1 mb-3">
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'include' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                    onClick={() => onFilterChange({ ...filters, tagsMode: 'include' })}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsLogic === 'any' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+                    onClick={() => onFilterChange({ ...filters, tagsLogic: 'any' })}
                   >
-                    Include
+                    Any
                   </button>
                   <button
-                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsMode === 'exclude' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                    onClick={() => onFilterChange({ ...filters, tagsMode: 'exclude' })}
+                    className={`flex-1 px-3 py-1.5 text-sm rounded ${filters.tagsLogic === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+                    onClick={() => onFilterChange({ ...filters, tagsLogic: 'all' })}
                   >
-                    Exclude
+                    All
                   </button>
                 </div>
                 <input
@@ -162,20 +169,38 @@ export default function PaperlessFilterBar({
               <div className="max-h-64 overflow-y-auto">
                 {allTags
                   .filter(tag => !filters.tagsSearch || tag.toLowerCase().includes(filters.tagsSearch.toLowerCase()))
-                  .map(tag => (
-                    <div
-                      key={tag}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${filters.tags.includes(tag) ? 'bg-blue-50' : ''}`}
-                      onClick={() => {
-                        const newTags = filters.tags.includes(tag)
-                          ? filters.tags.filter(t => t !== tag)
-                          : [...filters.tags, tag];
-                        onFilterChange({ ...filters, tags: newTags });
-                      }}
-                    >
-                      <span className="text-sm text-gray-900">{tag}</span>
-                    </div>
-                  ))}
+                  .map(tag => {
+                    const tagState = filters.tagStates?.[tag];
+                    return (
+                      <div
+                        key={tag}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${
+                          tagState === 'include' ? 'bg-blue-50 border-l-4 border-blue-500' : 
+                          tagState === 'exclude' ? 'bg-red-50 border-l-4 border-red-500' : ''
+                        }`}
+                        onClick={() => {
+                          const newTagStates = { ...(filters.tagStates || {}) };
+                          if (!tagState) {
+                            newTagStates[tag] = 'include';
+                          } else if (tagState === 'include') {
+                            newTagStates[tag] = 'exclude';
+                          } else {
+                            delete newTagStates[tag];
+                          }
+                          onFilterChange({ ...filters, tagStates: newTagStates });
+                        }}
+                      >
+                        <span className="text-sm text-gray-900">{tag}</span>
+                        {tagState && (
+                          <span className={`text-xs px-2 py-0.5 rounded ${
+                            tagState === 'include' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
+                          }`}>
+                            {tagState === 'include' ? 'Include' : 'Exclude'}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           ))}
@@ -369,50 +394,6 @@ export default function PaperlessFilterBar({
             </span>
           </div>
         )}
-
-        {/* Exclude Tags Filter */}
-        <div className="relative">
-          <button
-            onClick={() => toggleFilter('excludeTags')}
-            className={getFilterButtonClass('excludeTags')}
-          >
-            <Filter className="w-4 h-4" />
-            Exclude Tags
-            {filters.excludeTags?.length > 0 && ` (${filters.excludeTags.length})`}
-            <ChevronDown className="w-3 h-3" />
-          </button>
-          {renderFilterDropdown('excludeTags', (
-            <div>
-              <div className="p-3 border-b border-gray-200">
-                <input
-                  type="text"
-                  placeholder="Filter tags"
-                  value={filters.excludeTagsSearch || ''}
-                  onChange={(e) => onFilterChange({ ...filters, excludeTagsSearch: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400"
-                />
-              </div>
-              <div className="max-h-64 overflow-y-auto">
-                {allTags
-                  .filter(tag => !filters.excludeTagsSearch || tag.toLowerCase().includes(filters.excludeTagsSearch.toLowerCase()))
-                  .map(tag => (
-                    <div
-                      key={tag}
-                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${filters.excludeTags?.includes(tag) ? 'bg-red-50' : ''}`}
-                      onClick={() => {
-                        const newExcludeTags = filters.excludeTags?.includes(tag)
-                          ? filters.excludeTags.filter(t => t !== tag)
-                          : [...(filters.excludeTags || []), tag];
-                        onFilterChange({ ...filters, excludeTags: newExcludeTags });
-                      }}
-                    >
-                      <span className="text-sm text-gray-900">{tag}</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          ))}
-        </div>
 
         {/* Limit Filter - Inline Dropdown */}
         <div className="flex items-center gap-2">
