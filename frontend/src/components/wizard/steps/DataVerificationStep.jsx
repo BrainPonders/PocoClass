@@ -187,7 +187,7 @@ export default function DataVerificationStep({
           <div>
             <h3 className="font-semibold text-lg mb-2">Verification Multiplier</h3>
             <p className="text-sm text-gray-600 mb-3">
-              Controls how much weight Paperless metadata verification has in the final POCO score. 
+              Controls how much weight Paperless metadata verification has in the final POCO score.{' '}
               {enabledCount === 1 
                 ? `Default is 1 for ${enabledCount} enabled field.`
                 : `Default is 1/${enabledCount} for ${enabledCount} enabled fields.`
