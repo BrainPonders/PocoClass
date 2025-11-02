@@ -234,25 +234,18 @@ export default function OcrIdentifiersStep({
           <div className="relative mt-2 mb-1">
             <div className="flex justify-between items-center">
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700">50%</div>
-                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                <div className="text-sm font-semibold text-gray-700 leading-tight">50%</div>
+                <div className="text-xs text-gray-600 font-medium leading-tight">{t('permissive')}</div>
               </div>
               <div className="text-center relative">
                 <div className="text-sm font-semibold text-green-600 leading-tight">75%</div>
                 <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
               </div>
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700">100%</div>
-                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                <div className="text-sm font-semibold text-gray-700 leading-tight">100%</div>
+                <div className="text-xs text-gray-600 font-medium leading-tight">{t('very_strict')}</div>
               </div>
             </div>
-          </div>
-          
-          {/* Text labels */}
-          <div className="flex justify-between text-xs text-gray-500 mt-6">
-            <span className="font-medium">{t('permissive')}</span>
-            <span className="font-medium">{t('very_strict')}</span>
           </div>
         </div>
       </div>
@@ -294,25 +287,18 @@ export default function OcrIdentifiersStep({
           <div className="relative mt-2 mb-1">
             <div className="flex justify-between items-center">
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700">1×</div>
-                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                <div className="text-sm font-semibold text-gray-700 leading-tight">1×</div>
+                <div className="text-xs text-gray-600 font-medium leading-tight">{t('low_weight')}</div>
               </div>
               <div className="absolute left-[22.2%] -translate-x-1/2 text-center">
                 <div className="text-sm font-semibold text-green-600 leading-tight">3×</div>
                 <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
               </div>
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700">10×</div>
-                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+                <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
+                <div className="text-xs text-gray-600 font-medium leading-tight">{t('high_weight')}</div>
               </div>
             </div>
-          </div>
-          
-          {/* Text labels */}
-          <div className="flex justify-between text-xs text-gray-500 mt-6">
-            <span className="font-medium">{t('low_weight')}</span>
-            <span className="font-medium">{t('high_weight')}</span>
           </div>
         </div>
       </div>
