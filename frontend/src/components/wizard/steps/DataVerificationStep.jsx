@@ -168,14 +168,18 @@ export default function DataVerificationStep({
             <h3 className="font-semibold text-lg mb-2">Verification Multiplier</h3>
             <p className="text-sm text-gray-600 mb-3">
               Controls how much weight Paperless metadata verification has in the final POCO score. 
-              Minimum is {dynamicDefault.toFixed(3)}× (= 1/{enabledCount}) based on {enabledCount} enabled field{enabledCount !== 1 ? 's' : ''}.
+              Minimum is 1/{enabledCount} based on {enabledCount} enabled field{enabledCount !== 1 ? 's' : ''}.
             </p>
             
             {/* Current Value Display */}
             <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
               <div className="text-center">
                 <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-                <div className="text-3xl font-bold text-blue-700">{verificationMultiplier.toFixed(2)}×</div>
+                <div className="text-3xl font-bold text-blue-700">
+                  {Math.abs(verificationMultiplier - dynamicDefault) < 0.01 
+                    ? `1/${enabledCount}` 
+                    : `${verificationMultiplier.toFixed(2)}×`}
+                </div>
               </div>
             </div>
 
@@ -197,11 +201,20 @@ export default function DataVerificationStep({
               <div className="relative mt-2 mb-1">
                 <div className="flex justify-between items-center">
                   <div className="text-center relative">
-                    <div className="text-sm font-semibold text-green-600 leading-tight">{dynamicDefault.toFixed(2)}×</div>
+                    <div className="text-sm font-semibold text-green-600 leading-tight">1/{enabledCount}</div>
                     <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
+                    <div className="text-sm font-semibold text-gray-700 leading-tight">1</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-gray-700 leading-tight">2</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-gray-700 leading-tight">5</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-gray-700 leading-tight">10</div>
                     <div className="text-xs text-gray-600 font-medium leading-tight">High Weight</div>
                   </div>
                 </div>
