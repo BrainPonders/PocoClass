@@ -446,7 +446,7 @@ export default function RuleReviewer() {
                     </th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
@@ -468,7 +468,7 @@ export default function RuleReviewer() {
                       </td>
                       <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.created}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.added || doc.created}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
