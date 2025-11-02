@@ -174,10 +174,8 @@ export default function BasicInfoStep({
                 </div>
                 <div className="text-center relative">
                   <div className="text-sm font-semibold text-green-600">75%</div>
-                  <div className="w-0.5 h-2 bg-green-500 mx-auto"></div>
-                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs text-green-600 font-medium whitespace-nowrap">
-                    ⭐ Recommended
-                  </div>
+                  <div className="text-xs text-green-600 font-medium">Default</div>
+                  <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
                 </div>
                 <div className="text-center">
                   <div className="text-sm font-semibold text-gray-700">100%</div>
