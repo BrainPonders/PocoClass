@@ -840,16 +840,16 @@ export default function Rules() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correspondent</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
-                    <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">POCO Score</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
-                    <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
-                    <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -859,12 +859,12 @@ export default function Rules() {
                       className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
                       onClick={() => setSelectedDocument(doc)}
                     >
-                      <td className="px-4 py-2 text-sm text-gray-900">{doc.title}</td>
-                      <td className="px-4 py-2 text-sm text-gray-500">{doc.id}</td>
-                      <td className="px-4 py-2 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-4 py-2 text-sm text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-4 py-2 text-sm text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-4 py-2 whitespace-nowrap">
+                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
+                      <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-1 flex-wrap">
                           {doc.tags && doc.tags.length > 0 ? (
                             doc.tags.map((tag, i) => {
@@ -896,9 +896,9 @@ export default function Rules() {
                           )}
                         </div>
                       </td>
-                      <td className="py-2 text-center">
+                      <td className="px-2 py-1 text-center">
                         {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
-                          <span className={`text-sm font-semibold ${
+                          <span className={`text-xs font-semibold ${
                             doc.pocoScore >= 80 ? 'text-green-600' : 
                             doc.pocoScore >= 1 ? 'text-amber-600' : 
                             'text-gray-400'
@@ -906,11 +906,11 @@ export default function Rules() {
                             {doc.pocoScore.toFixed(1)}
                           </span>
                         ) : (
-                          <span className="text-gray-400 text-sm">-</span>
+                          <span className="text-gray-400 text-xs">-</span>
                         )}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-500">{doc.owner || '-'}</td>
-                      <td className="py-2 whitespace-nowrap">
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.owner || '-'}</td>
+                      <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-2 justify-center items-center">
                           <button 
                             className="btn btn-ghost btn-sm"
@@ -934,7 +934,7 @@ export default function Rules() {
                           </button>
                         </div>
                       </td>
-                      <td className="py-2 whitespace-nowrap">
+                      <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex justify-center">
                           <button 
                             className="btn btn-primary btn-sm"
