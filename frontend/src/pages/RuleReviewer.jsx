@@ -126,7 +126,7 @@ export default function RuleReviewer() {
         Paperless.getCorrespondents(),
         Paperless.getDocumentTypes()
       ]);
-      setAllTags(tags.map(t => t.name).sort());
+      setAllTags(tags.map(t => ({ name: t.name, color: t.color })).sort((a, b) => a.name.localeCompare(b.name)));
       setAllCorrespondents(correspondents.map(c => c.name).sort());
       setAllDocTypes(docTypes.map(dt => dt.name).sort());
     } catch (error) {
@@ -485,9 +485,31 @@ export default function RuleReviewer() {
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         {doc.tags && doc.tags.length > 0 ? (
-                          doc.tags.map((tag, i) => (
-                            <Badge key={i} className="bg-blue-500 text-white text-xs mr-1">{tag}</Badge>
-                          ))
+                          doc.tags.map((tag, i) => {
+                            const tagObj = allTags.find(t => t.name === tag);
+                            const tagColor = tagObj?.color || '#3B82F6';
+                            
+                            const getTextColor = (hexColor) => {
+                              const r = parseInt(hexColor.slice(1, 3), 16);
+                              const g = parseInt(hexColor.slice(3, 5), 16);
+                              const b = parseInt(hexColor.slice(5, 7), 16);
+                              const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                              return luminance > 0.5 ? '#111827' : '#FFFFFF';
+                            };
+                            
+                            return (
+                              <Badge 
+                                key={i} 
+                                className="text-xs mr-1"
+                                style={{ 
+                                  backgroundColor: tagColor,
+                                  color: getTextColor(tagColor)
+                                }}
+                              >
+                                {tag}
+                              </Badge>
+                            );
+                          })
                         ) : (
                           <span className="text-gray-400 text-xs">-</span>
                         )}
