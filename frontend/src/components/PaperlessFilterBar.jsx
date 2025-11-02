@@ -168,29 +168,50 @@ export default function PaperlessFilterBar({
               </div>
               <div className="max-h-64 overflow-y-auto">
                 {allTags
-                  .filter(tag => !filters.tagsSearch || tag.toLowerCase().includes(filters.tagsSearch.toLowerCase()))
+                  .filter(tag => {
+                    const tagName = typeof tag === 'string' ? tag : tag.name;
+                    return !filters.tagsSearch || tagName.toLowerCase().includes(filters.tagsSearch.toLowerCase());
+                  })
                   .map(tag => {
-                    const tagState = filters.tagStates?.[tag];
+                    const tagName = typeof tag === 'string' ? tag : tag.name;
+                    const tagColor = typeof tag === 'string' ? null : tag.color;
+                    const tagState = filters.tagStates?.[tagName];
+                    
+                    const getTextColor = (hexColor) => {
+                      if (!hexColor) return 'text-gray-900';
+                      const r = parseInt(hexColor.slice(1, 3), 16);
+                      const g = parseInt(hexColor.slice(3, 5), 16);
+                      const b = parseInt(hexColor.slice(5, 7), 16);
+                      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                      return luminance > 0.5 ? 'text-gray-900' : 'text-white';
+                    };
+                    
                     return (
                       <div
-                        key={tag}
-                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center ${
+                        key={tagName}
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2 ${
                           tagState === 'include' ? 'bg-blue-50 border-l-4 border-blue-500' : 
                           tagState === 'exclude' ? 'bg-red-50 border-l-4 border-red-500' : ''
                         }`}
                         onClick={() => {
                           const newTagStates = { ...(filters.tagStates || {}) };
                           if (!tagState) {
-                            newTagStates[tag] = 'include';
+                            newTagStates[tagName] = 'include';
                           } else if (tagState === 'include') {
-                            newTagStates[tag] = 'exclude';
+                            newTagStates[tagName] = 'exclude';
                           } else {
-                            delete newTagStates[tag];
+                            delete newTagStates[tagName];
                           }
                           onFilterChange({ ...filters, tagStates: newTagStates });
                         }}
                       >
-                        <span className="text-sm text-gray-900">{tag}</span>
+                        {tagColor && (
+                          <div 
+                            className="w-1 h-6 rounded"
+                            style={{ backgroundColor: tagColor }}
+                          />
+                        )}
+                        <span className="text-sm text-gray-900 flex-grow">{tagName}</span>
                         {tagState && (
                           <span className={`text-xs px-2 py-0.5 rounded ${
                             tagState === 'include' ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'
