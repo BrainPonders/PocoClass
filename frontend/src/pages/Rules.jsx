@@ -163,6 +163,8 @@ export default function Rules() {
       
       const data = await response.json();
       console.log('[Documents] API Response data:', {
+        isArray: Array.isArray(data),
+        length: Array.isArray(data) ? data.length : 'N/A',
         count: data.count || 0,
         resultsCount: data.results?.length || 0,
         hasNext: data.next ? 'yes' : 'no',
@@ -170,7 +172,8 @@ export default function Rules() {
         fullData: data
       });
       
-      setDocuments(data.results || []);
+      // Backend returns flat array, not paginated response
+      setDocuments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error loading documents:", error);
       setDocuments([]);

@@ -111,7 +111,8 @@ export default function RuleReviewer() {
       if (!response.ok) throw new Error('Failed to fetch documents');
       
       const data = await response.json();
-      setDocuments(data.results || []);
+      // Backend returns flat array, not paginated response
+      setDocuments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error loading documents:", error);
       setDocuments([]);
