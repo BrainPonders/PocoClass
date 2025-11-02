@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { User, Paperless } from '@/api/entities';
+import { apiClient } from "@/api/apiClient";
 import API_BASE_URL from '@/config/api';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 
@@ -25,6 +27,10 @@ export default function BackgroundProcess() {
   const [allTags, setAllTags] = useState([]);
   const [allCorrespondents, setAllCorrespondents] = useState([]);
   const [allDocTypes, setAllDocTypes] = useState([]);
+  
+  const [ocrModalOpen, setOcrModalOpen] = useState(false);
+  const [ocrContent, setOcrContent] = useState('');
+  const [ocrDocumentTitle, setOcrDocumentTitle] = useState('');
   
   const [filters, setFilters] = useState({
     title: '',
@@ -113,9 +119,9 @@ export default function BackgroundProcess() {
         Paperless.getCorrespondents(),
         Paperless.getDocumentTypes()
       ]);
-      setAllTags(tags);
-      setAllCorrespondents(correspondents);
-      setAllDocTypes(docTypes);
+      setAllTags(tags.map(t => ({ name: t.name, color: t.color })).sort((a, b) => a.name.localeCompare(b.name)));
+      setAllCorrespondents(correspondents.map(c => c.name).sort());
+      setAllDocTypes(docTypes.map(dt => dt.name).sort());
     } catch (error) {
       console.error('Error loading cache data:', error);
     }
@@ -311,13 +317,7 @@ export default function BackgroundProcess() {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleString('en-GB', { 
-        day: 'numeric', 
-        month: 'short', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
       return dateString;
     }
@@ -329,6 +329,26 @@ export default function BackgroundProcess() {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}m ${secs}s`;
+  };
+
+  const handleViewOCR = async (doc) => {
+    try {
+      const response = await apiClient.get(`/documents/${doc.id}/content`);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(response.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    } catch (error) {
+      console.error('Error loading OCR:', error);
+      setOcrDocumentTitle(doc.title);
+      setOcrContent(doc.content || 'No OCR content available');
+      setOcrModalOpen(true);
+    }
+  };
+
+  const handleViewPDF = (doc) => {
+    const sessionToken = localStorage.getItem('pococlass_session');
+    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    window.open(url, '_blank');
   };
 
   const isAdmin = currentUser?.role === 'admin';
@@ -543,43 +563,98 @@ export default function BackgroundProcess() {
                 <p className="text-sm text-gray-500">No documents match the current filter criteria</p>
               </div>
             ) : (
-              <div className="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+              <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 sticky top-0">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correspondent</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Type</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tags</th>
+                      <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">POCO Score</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
+                      <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {matchingDocuments.map((doc) => (
                       <tr key={doc.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-2 text-sm text-gray-900">{doc.title || 'Untitled'}</td>
-                        <td className="px-4 py-2 text-sm text-gray-600">{doc.correspondent_name || '-'}</td>
-                        <td className="px-4 py-2 text-sm text-gray-600">{doc.document_type_name || '-'}</td>
-                        <td className="px-4 py-2 text-sm">
-                          {doc.tags?.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {doc.tags.slice(0, 3).map((tag, idx) => (
-                                <span key={idx} className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
-                                  {tag}
-                                </span>
-                              ))}
-                              {doc.tags.length > 3 && (
-                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">
-                                  +{doc.tags.length - 3}
-                                </span>
-                              )}
-                            </div>
+                        <td className="px-4 py-2 text-sm text-gray-900">{doc.title}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{doc.id}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{formatDate(doc.added || doc.created)}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{doc.correspondent || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{doc.documentType || '-'}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <div className="flex gap-1 flex-wrap">
+                            {doc.tags && doc.tags.length > 0 ? (
+                              doc.tags.map((tag, i) => {
+                                const tagObj = allTags.find(t => t.name === tag);
+                                const tagColor = tagObj?.color || '#3B82F6';
+                                
+                                const getTextColor = (hexColor) => {
+                                  const r = parseInt(hexColor.slice(1, 3), 16);
+                                  const g = parseInt(hexColor.slice(3, 5), 16);
+                                  const b = parseInt(hexColor.slice(5, 7), 16);
+                                  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                                  return luminance > 0.5 ? '#111827' : '#FFFFFF';
+                                };
+                                
+                                return (
+                                  <Badge 
+                                    key={i} 
+                                    style={{ 
+                                      backgroundColor: tagColor,
+                                      color: getTextColor(tagColor)
+                                    }}
+                                  >
+                                    {tag}
+                                  </Badge>
+                                );
+                              })
+                            ) : (
+                              <span className="text-gray-400 text-xs">No tags</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-2 text-center">
+                          {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
+                            <span className={`text-sm font-semibold ${
+                              doc.pocoScore >= 80 ? 'text-green-600' : 
+                              doc.pocoScore >= 1 ? 'text-amber-600' : 
+                              'text-gray-400'
+                            }`}>
+                              {doc.pocoScore.toFixed(1)}
+                            </span>
                           ) : (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-gray-400 text-sm">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-2 text-sm text-gray-600">
-                          {(doc.added || doc.created) ? new Date(doc.added || doc.created).toLocaleDateString() : '-'}
+                        <td className="px-4 py-2 text-sm text-gray-500">{doc.owner || '-'}</td>
+                        <td className="py-2 whitespace-nowrap">
+                          <div className="flex gap-2 justify-center items-center">
+                            <button 
+                              className="btn btn-ghost btn-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewPDF(doc);
+                              }}
+                              title="View PDF"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button 
+                              className="btn btn-ghost btn-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewOCR(doc);
+                              }}
+                              title="View OCR Content"
+                            >
+                              <FileText className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -665,6 +740,41 @@ export default function BackgroundProcess() {
           )}
         </CardContent>
       </Card>
+
+      {/* OCR Content Modal */}
+      {ocrModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="bg-gray-50 p-4 rounded border flex">
+                <div className="pr-4 border-r border-gray-300 text-right select-none">
+                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+                    {ocrContent.split('\n').map((_, i) => (
+                      <div key={i}>{i + 1}</div>
+                    ))}
+                  </pre>
+                </div>
+                <div className="flex-1 pl-4">
+                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed">
+                    {ocrContent}
+                  </pre>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-6 border-t">
+              <button onClick={() => setOcrModalOpen(false)} className="btn btn-secondary">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
