@@ -45,19 +45,17 @@ export default function Dashboard() {
   // Consolidated filter state (new Paperless style)
   const [filters, setFilters] = useState({
     title: '',
-    tags: ['NEW'],
-    tagsMode: 'include',
+    tagStates: {},
+    tagsLogic: 'any',
     tagsSearch: '',
-    excludeTags: ['POCO'],
-    excludeTagsSearch: '',
     correspondents: [],
     correspondentsMode: 'include',
     correspondentsSearch: '',
     docTypes: [],
     docTypesMode: 'include',
     docTypesSearch: '',
-    dateFrom: getLast7DaysDate(),
-    dateTo: getTodayDate(),
+    dateFrom: '',
+    dateTo: '',
     limit: 10
   });
 
@@ -91,9 +89,19 @@ export default function Dashboard() {
       
       // Add filters to query
       if (filters.title) params.append('title', filters.title);
-      if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
-      if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
-      if (filters.excludeTags && filters.excludeTags.length > 0) params.append('exclude_tags', filters.excludeTags.join(','));
+      
+      // Convert tri-state tagStates to backend format
+      const includedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'include')
+        .map(([tag, _]) => tag);
+      const excludedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'exclude')
+        .map(([tag, _]) => tag);
+      
+      if (includedTags.length > 0) params.append('tags', includedTags.join(','));
+      if (filters.tagsLogic) params.append('tags_mode', filters.tagsLogic);
+      if (excludedTags.length > 0) params.append('exclude_tags', excludedTags.join(','));
+      
       if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
       if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
       if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
@@ -164,7 +172,7 @@ export default function Dashboard() {
   const stats = {
     totalRules: rules.length,
     activeRules: rules.filter(r => r.status === 'active').length,
-    draftRules: rules.filter(r => r.status === 'draft').length,
+    deactivatedRules: rules.filter(r => r.status === 'inactive').length,
   };
 
   const handleCreateRuleForDocument = (doc) => {
@@ -209,11 +217,9 @@ export default function Dashboard() {
   const handleResetFilters = () => {
     setFilters({
       title: '',
-      tags: [],
-      tagsMode: 'include',
+      tagStates: {},
+      tagsLogic: 'any',
       tagsSearch: '',
-      excludeTags: [],
-      excludeTagsSearch: '',
       correspondents: [],
       correspondentsMode: 'include',
       correspondentsSearch: '',
@@ -228,21 +234,6 @@ export default function Dashboard() {
 
   return (
     <div className="p-6">
-      {/* Loading Indicator - Reserved space to prevent layout jump */}
-      <div className="mb-4" style={{ minHeight: '56px' }}>
-        {isLoadingDocuments && (
-          <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
-            <div className="flex items-center gap-3">
-              <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              <span className="text-sm text-blue-700 font-medium">Loading documents from Paperless-ngx...</span>
-            </div>
-          </div>
-        )}
-      </div>
-      
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">PocoClass Dashboard</h1>
@@ -264,7 +255,7 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {/* Background Processing Status */}
               {backgroundSettings && (
                 <div className="flex items-start gap-3 p-4 border rounded-lg">
@@ -393,11 +384,11 @@ export default function Dashboard() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Draft Rules</CardTitle>
+            <CardTitle className="text-sm font-medium">Deactivated Rules</CardTitle>
             <Settings className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.draftRules}</div>
+            <div className="text-2xl font-bold text-yellow-600">{stats.deactivatedRules}</div>
           </CardContent>
         </Card>
       </div>
