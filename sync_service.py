@@ -19,6 +19,14 @@ class SyncService:
         """Sync all Paperless data to cache"""
         logger.info("Starting full sync of Paperless data")
         
+        # Log sync start
+        self.db.add_log(
+            log_type='system',
+            level='info',
+            message='Starting data synchronization from Paperless-ngx',
+            source='sync_service'
+        )
+        
         config = Config()
         config.paperless_token = paperless_token
         config.paperless_url = paperless_url
@@ -31,33 +39,75 @@ class SyncService:
                 api_client, f"{paperless_url}/api/correspondents/"
             )
             results['correspondents'] = self.db.sync_correspondents(correspondents_data)
+            self.db.add_log(
+                log_type='system',
+                level='info',
+                message=f'Synced {results["correspondents"]} correspondents from Paperless-ngx',
+                source='sync_service'
+            )
         except Exception as e:
             logger.error(f"Failed to sync correspondents: {e}")
             results['correspondents'] = 0
+            self.db.add_log(
+                log_type='error',
+                level='error',
+                message=f'Failed to sync correspondents: {str(e)}',
+                source='sync_service'
+            )
         
         try:
             tags_data = self._fetch_all_with_pagination(
                 api_client, f"{paperless_url}/api/tags/"
             )
             results['tags'] = self.db.sync_tags(tags_data)
+            self.db.add_log(
+                log_type='system',
+                level='info',
+                message=f'Synced {results["tags"]} tags from Paperless-ngx',
+                source='sync_service'
+            )
         except Exception as e:
             logger.error(f"Failed to sync tags: {e}")
             results['tags'] = 0
+            self.db.add_log(
+                log_type='error',
+                level='error',
+                message=f'Failed to sync tags: {str(e)}',
+                source='sync_service'
+            )
         
         try:
             doc_types_data = self._fetch_all_with_pagination(
                 api_client, f"{paperless_url}/api/document_types/"
             )
             results['document_types'] = self.db.sync_document_types(doc_types_data)
+            self.db.add_log(
+                log_type='system',
+                level='info',
+                message=f'Synced {results["document_types"]} document types from Paperless-ngx',
+                source='sync_service'
+            )
         except Exception as e:
             logger.error(f"Failed to sync document types: {e}")
             results['document_types'] = 0
+            self.db.add_log(
+                log_type='error',
+                level='error',
+                message=f'Failed to sync document types: {str(e)}',
+                source='sync_service'
+            )
         
         try:
             custom_fields_data = self._fetch_all_with_pagination(
                 api_client, f"{paperless_url}/api/custom_fields/"
             )
             results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+            self.db.add_log(
+                log_type='system',
+                level='info',
+                message=f'Synced {results["custom_fields"]} custom fields from Paperless-ngx',
+                source='sync_service'
+            )
             
             # Check for POCO Score and POCO OCR fields
             poco_status = self.check_poco_fields(custom_fields_data)
@@ -70,6 +120,12 @@ class SyncService:
                 if not poco_status['poco_ocr_exists']:
                     missing.append('POCO OCR')
                 logger.warning(f"Missing required custom fields: {', '.join(missing)}")
+                self.db.add_log(
+                    log_type='system',
+                    level='warning',
+                    message=f'Missing required custom fields: {", ".join(missing)}',
+                    source='sync_service'
+                )
         except Exception as e:
             logger.error(f"Failed to sync custom fields: {e}")
             results['custom_fields'] = 0
@@ -78,15 +134,33 @@ class SyncService:
                 'poco_ocr_exists': False,
                 'error': str(e)
             }
+            self.db.add_log(
+                log_type='error',
+                level='error',
+                message=f'Failed to sync custom fields: {str(e)}',
+                source='sync_service'
+            )
         
         try:
             users_data = self._fetch_all_with_pagination(
                 api_client, f"{paperless_url}/api/users/"
             )
             results['users'] = self.db.sync_users(users_data)
+            self.db.add_log(
+                log_type='system',
+                level='info',
+                message=f'Synced {results["users"]} users from Paperless-ngx',
+                source='sync_service'
+            )
         except Exception as e:
             logger.error(f"Failed to sync users: {e}")
             results['users'] = 0
+            self.db.add_log(
+                log_type='error',
+                level='error',
+                message=f'Failed to sync users: {str(e)}',
+                source='sync_service'
+            )
         
         # Auto-create mandatory custom fields and tags if missing
         try:
@@ -113,6 +187,22 @@ class SyncService:
             results['mandatory_data_error'] = str(e)
         
         logger.info(f"Sync completed: {results}")
+        
+        # Log sync completion
+        total_synced = sum([
+            results.get('correspondents', 0),
+            results.get('tags', 0),
+            results.get('document_types', 0),
+            results.get('custom_fields', 0),
+            results.get('users', 0)
+        ])
+        self.db.add_log(
+            log_type='system',
+            level='info',
+            message=f'Data synchronization completed: {total_synced} total items synced',
+            source='sync_service'
+        )
+        
         return results
     
     def _ensure_mandatory_data(self, api_client: PaperlessAPIClient) -> Dict:
