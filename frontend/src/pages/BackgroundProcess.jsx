@@ -26,36 +26,19 @@ export default function BackgroundProcess() {
   const [allCorrespondents, setAllCorrespondents] = useState([]);
   const [allDocTypes, setAllDocTypes] = useState([]);
   
-  // Helper function to get last 7 days date
-  const getLast7DaysDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() - 7);
-    return date.toISOString().split('T')[0];
-  };
-
-  const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
-  };
-
   const [filters, setFilters] = useState({
     title: '',
-    tags: ['NEW'],
-    tagsMode: 'include',
+    tagStates: {},
+    tagsLogic: 'any',
     tagsSearch: '',
-    excludeTags: ['POCO'],
-    excludeTagsSearch: '',
     correspondents: [],
     correspondentsMode: 'include',
     correspondentsSearch: '',
     docTypes: [],
     docTypesMode: 'include',
     docTypesSearch: '',
-    customFields: [],
-    customFieldName: '',
-    customFieldValue: '',
-    dateFrom: getLast7DaysDate(),
-    dateTo: getTodayDate(),
-    permissions: 'all',
+    dateFrom: '',
+    dateTo: '',
     limit: 100
   });
 
@@ -130,9 +113,9 @@ export default function BackgroundProcess() {
         Paperless.getCorrespondents(),
         Paperless.getDocumentTypes()
       ]);
-      setAllTags(tags.map(t => t.name).sort());
-      setAllCorrespondents(correspondents.map(c => c.name).sort());
-      setAllDocTypes(docTypes.map(dt => dt.name).sort());
+      setAllTags(tags);
+      setAllCorrespondents(correspondents);
+      setAllDocTypes(docTypes);
     } catch (error) {
       console.error('Error loading cache data:', error);
     }
@@ -146,9 +129,19 @@ export default function BackgroundProcess() {
       
       // Build query params from filters
       if (filters.title) params.append('title', filters.title);
-      if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
-      if (filters.tagsMode) params.append('tags_mode', filters.tagsMode);
-      if (filters.excludeTags && filters.excludeTags.length > 0) params.append('exclude_tags', filters.excludeTags.join(','));
+      
+      // Convert tri-state tagStates to backend format
+      const includedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'include')
+        .map(([tag, _]) => tag);
+      const excludedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'exclude')
+        .map(([tag, _]) => tag);
+      
+      if (includedTags.length > 0) params.append('tags', includedTags.join(','));
+      if (filters.tagsLogic) params.append('tags_mode', filters.tagsLogic);
+      if (excludedTags.length > 0) params.append('exclude_tags', excludedTags.join(','));
+      
       if (filters.correspondents.length > 0) params.append('correspondents', filters.correspondents.join(','));
       if (filters.correspondentsMode) params.append('correspondents_mode', filters.correspondentsMode);
       if (filters.docTypes.length > 0) params.append('doc_types', filters.docTypes.join(','));
@@ -166,7 +159,7 @@ export default function BackgroundProcess() {
       if (!response.ok) throw new Error('Failed to fetch documents');
 
       const data = await response.json();
-      setMatchingDocuments(data.results || []);
+      setMatchingDocuments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading matching documents:', error);
       setMatchingDocuments([]);
@@ -239,6 +232,15 @@ export default function BackgroundProcess() {
     setCurrentDryRun(dryRunMode);
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
+      
+      // Convert tri-state tagStates to backend format
+      const includedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'include')
+        .map(([tag, _]) => tag);
+      const excludedTags = Object.entries(filters.tagStates || {})
+        .filter(([_, state]) => state === 'exclude')
+        .map(([tag, _]) => tag);
+      
       const response = await fetch(`${API_BASE_URL}/api/background/process-manual`, {
         method: 'POST',
         headers: {
@@ -248,8 +250,9 @@ export default function BackgroundProcess() {
         body: JSON.stringify({
           filters: {
             title: filters.title || null,
-            tags: filters.tags.length > 0 ? filters.tags : null,
-            tags_mode: filters.tagsMode,
+            tags: includedTags.length > 0 ? includedTags : null,
+            tags_mode: filters.tagsLogic,
+            exclude_tags: excludedTags.length > 0 ? excludedTags : null,
             correspondents: filters.correspondents.length > 0 ? filters.correspondents : null,
             correspondents_mode: filters.correspondentsMode,
             doc_types: filters.docTypes.length > 0 ? filters.docTypes : null,
@@ -289,23 +292,17 @@ export default function BackgroundProcess() {
   const handleResetFilters = () => {
     setFilters({
       title: '',
-      tags: ['NEW'],
-      tagsMode: 'include',
+      tagStates: {},
+      tagsLogic: 'any',
       tagsSearch: '',
-      excludeTags: ['POCO'],
-      excludeTagsSearch: '',
       correspondents: [],
       correspondentsMode: 'include',
       correspondentsSearch: '',
       docTypes: [],
       docTypesMode: 'include',
       docTypesSearch: '',
-      customFields: [],
-      customFieldName: '',
-      customFieldValue: '',
-      dateFrom: getLast7DaysDate(),
-      dateTo: getTodayDate(),
-      permissions: 'all',
+      dateFrom: '',
+      dateTo: '',
       limit: 100
     });
   };
@@ -554,7 +551,7 @@ export default function BackgroundProcess() {
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
                       <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -582,7 +579,7 @@ export default function BackgroundProcess() {
                           )}
                         </td>
                         <td className="px-4 py-2 text-sm text-gray-600">
-                          {doc.created ? new Date(doc.created).toLocaleDateString() : '-'}
+                          {(doc.added || doc.created) ? new Date(doc.added || doc.created).toLocaleDateString() : '-'}
                         </td>
                       </tr>
                     ))}
