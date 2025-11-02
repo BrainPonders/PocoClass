@@ -199,12 +199,21 @@ export default function OcrIdentifiersStep({
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">{t('ocr_score_requirement', { tempOcrThreshold })}</h3>
+          <h3 className="font-semibold text-lg">OCR Score Requirement</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
         </div>
         <p className="text-sm text-gray-600 mb-3">
           {t('ocr_score_requirement_description')}
         </p>
+        
+        {/* Current Value Display */}
+        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+          <div className="text-center">
+            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
+            <div className="text-3xl font-bold text-blue-700">{tempOcrThreshold}%</div>
+          </div>
+        </div>
+
         <div className="mt-2">
           <input
             type="range"
@@ -220,24 +229,53 @@ export default function OcrIdentifiersStep({
               background: `linear-gradient(to right, #3b82f6 ${((tempOcrThreshold - 50) / 50) * 100}%, #e5e7eb ${((tempOcrThreshold - 50) / 50) * 100}%)`
             }}
           />
-          <div className="relative mt-1">
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>{t('permissive')}</span>
-              <span className="font-bold text-blue-600">{t('recommended')}</span>
-              <span>{t('very_strict')}</span>
+          
+          {/* Scale markers */}
+          <div className="relative mt-2 mb-1">
+            <div className="flex justify-between items-center">
+              <div className="text-center">
+                <div className="text-sm font-semibold text-gray-700">50%</div>
+                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+              </div>
+              <div className="text-center relative">
+                <div className="text-sm font-semibold text-green-600">75%</div>
+                <div className="w-0.5 h-2 bg-green-500 mx-auto"></div>
+                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs text-green-600 font-medium whitespace-nowrap">
+                  ⭐ Recommended
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-semibold text-gray-700">100%</div>
+                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+              </div>
             </div>
+          </div>
+          
+          {/* Text labels */}
+          <div className="flex justify-between text-xs text-gray-500 mt-6">
+            <span className="font-medium">{t('permissive')}</span>
+            <span className="font-medium">{t('very_strict')}</span>
           </div>
         </div>
       </div>
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">{t('ocr_weight_multiplier', { tempMultiplier })}</h3>
+          <h3 className="font-semibold text-lg">OCR Weight Multiplier</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
         </div>
         <p className="text-sm text-gray-600 mb-3">
           {t('ocr_weight_multiplier_description')}
         </p>
+        
+        {/* Current Value Display */}
+        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
+          <div className="text-center">
+            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
+            <div className="text-3xl font-bold text-blue-700">{tempMultiplier}×</div>
+          </div>
+        </div>
+
         <div className="mt-2">
           <input
             type="range"
@@ -253,15 +291,32 @@ export default function OcrIdentifiersStep({
               background: `linear-gradient(to right, #3b82f6 ${((tempMultiplier - 1) / 9) * 100}%, #e5e7eb ${((tempMultiplier - 1) / 9) * 100}%)`
             }}
           />
-          <div className="relative mt-1">
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>{t('low_weight')}</span>
-              <span>{t('medium_weight')}</span>
-              <span>{t('high_weight')}</span>
+          
+          {/* Scale markers */}
+          <div className="relative mt-2 mb-1">
+            <div className="flex justify-between items-center">
+              <div className="text-center">
+                <div className="text-sm font-semibold text-gray-700">1×</div>
+                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+              </div>
+              <div className="text-center relative">
+                <div className="text-sm font-semibold text-green-600">3×</div>
+                <div className="w-0.5 h-2 bg-green-500 mx-auto"></div>
+                <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs text-green-600 font-medium whitespace-nowrap">
+                  ⭐ Default
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-semibold text-gray-700">10×</div>
+                <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
+              </div>
             </div>
-            <div className="absolute text-xs text-blue-600 font-semibold" style={{ left: '22.2%', transform: 'translateX(-50%)', top: '0' }}>
-              {t('default_weight')}
-            </div>
+          </div>
+          
+          {/* Text labels */}
+          <div className="flex justify-between text-xs text-gray-500 mt-6">
+            <span className="font-medium">{t('low_weight')}</span>
+            <span className="font-medium">{t('high_weight')}</span>
           </div>
         </div>
       </div>
