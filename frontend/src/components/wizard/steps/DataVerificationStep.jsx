@@ -197,8 +197,8 @@ export default function DataVerificationStep({
               <div className="relative mt-2 mb-1">
                 <div className="flex justify-between items-center">
                   <div className="text-center relative">
-                    <div className="text-sm font-semibold text-green-600">{dynamicDefault.toFixed(3)}×</div>
-                    <div className="text-xs text-green-600 font-medium">Default</div>
+                    <div className="text-sm font-semibold text-green-600 leading-tight">{dynamicDefault.toFixed(3)}×</div>
+                    <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
                     <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
                   </div>
                   <div className="text-center">

@@ -238,8 +238,8 @@ export default function OcrIdentifiersStep({
                 <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
               </div>
               <div className="text-center relative">
-                <div className="text-sm font-semibold text-green-600">75%</div>
-                <div className="text-xs text-green-600 font-medium">Default</div>
+                <div className="text-sm font-semibold text-green-600 leading-tight">75%</div>
+                <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
                 <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
               </div>
               <div className="text-center">
@@ -298,8 +298,8 @@ export default function OcrIdentifiersStep({
                 <div className="w-0.5 h-2 bg-gray-400 mx-auto"></div>
               </div>
               <div className="absolute left-[22.2%] -translate-x-1/2 text-center">
-                <div className="text-sm font-semibold text-green-600">3×</div>
-                <div className="text-xs text-green-600 font-medium">Default</div>
+                <div className="text-sm font-semibold text-green-600 leading-tight">3×</div>
+                <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
                 <div className="w-0.5 h-2 bg-green-500 mx-auto mt-1"></div>
               </div>
               <div className="text-center">
