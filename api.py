@@ -1758,6 +1758,8 @@ def list_documents():
             date_to=date_to
         )
         
+        logger.info(f"Fetched {len(documents)} documents from Paperless API")
+        
         # Get cached data for lookups (use paperless_id as key, not internal id)
         correspondents = {c['paperless_id']: c for c in db.get_all_correspondents()}
         doc_types = {dt['paperless_id']: dt for dt in db.get_all_document_types()}
@@ -1836,6 +1838,7 @@ def list_documents():
                 'pocoScore': poco_score  # POCO Score from custom fields
             })
         
+        logger.info(f"Returning {len(formatted_docs)} formatted documents to frontend")
         return jsonify(formatted_docs)
     except Exception as e:
         logger.error(f"Error listing documents: {e}", exc_info=True)
