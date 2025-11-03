@@ -80,9 +80,7 @@ export default function RuleEditor() {
       documentType: '',
       storagePath: '',
       tags: [],
-      documentCategory: '',
-      pocoScore: '',
-      pocoOcr: ''
+      customFields: {}
     },
     dynamicData: {
       extractionRules: []

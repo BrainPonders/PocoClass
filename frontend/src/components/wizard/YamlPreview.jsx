@@ -63,6 +63,9 @@ description: "${escapeYaml(description)}"
 # This combines scores from OCR content, filename patterns, and Paperless Placeholder Verification
 threshold: ${threshold}  # ${threshold}% minimum confidence
 
+# Source Document ID: Original Paperless document used to create this rule (for OCR/PDF preview)
+source_document_id: ${ruleData.sourceDocumentId || ''}
+
 ${ruleData.ocrIdentifiers?.length > 0 ? `
 # =============================
 # STEP 2: OCR IDENTIFIERS
@@ -102,7 +105,9 @@ ${group.conditions?.map(condition => `        - pattern: "${escapeYaml(condition
 static_metadata:
   correspondent: "${escapeYaml(ruleData.predefinedData?.correspondent ?? '')}"
   document_type: "${escapeYaml(ruleData.predefinedData?.documentType ?? '')}"${ruleData.predefinedData?.tags?.length > 0 ? `
-  tags: [${ruleData.predefinedData.tags.map(tag => `"${escapeYaml(tag)}"`).join(', ')}]` : ''}
+  tags: [${ruleData.predefinedData.tags.map(tag => `"${escapeYaml(tag)}"`).join(', ')}]` : ''}${ruleData.predefinedData?.customFields && Object.keys(ruleData.predefinedData.customFields).some(k => ruleData.predefinedData.customFields[k]) ? `
+  custom_fields:
+${Object.entries(ruleData.predefinedData.customFields).filter(([k, v]) => v).map(([field, value]) => `    ${field}: "${escapeYaml(value)}"`).join('\n')}` : ''}
 
 ${ruleData.dynamicData?.extractionRules?.length > 0 ? `dynamic_metadata:
 ${ruleData.dynamicData.extractionRules.map((rule, idx) => {
