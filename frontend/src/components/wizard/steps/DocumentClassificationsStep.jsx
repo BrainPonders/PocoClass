@@ -245,8 +245,10 @@ export default function DocumentClassificationsStep({
         const fieldKey = `customField_${placeholder.id}`;
         
         // Only include if dataType is extractable (or unknown/null - be permissive)
-        // AND the field doesn't have a predefined value (conflict prevention)
-        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasPredefinedValue(fieldKey, fieldName)) {
+        // AND either: (1) field has no predefined value, OR (2) field is only available in dynamic mode
+        // Conflict prevention: only exclude if field has predefined value AND is available in both modes
+        const hasConflict = placeholder.visibility_mode === 'both' && hasPredefinedValue(fieldKey, fieldName);
+        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasConflict) {
           fields.push({ 
             value: fieldName,  // Use actual field name as value (e.g., "Total Price")
             label: `Custom Field: ${fieldName}`, 
@@ -457,7 +459,10 @@ export default function DocumentClassificationsStep({
         {/* Show info about filtered fields */}
         {(() => {
           const allDynamicFields = getCustomFieldPlaceholders('dynamic');
-          const filteredCount = allDynamicFields.filter(p => hasPredefinedValue(`customField_${p.id}`, p.placeholder_name)).length;
+          // Only count fields that are available in BOTH modes AND have a predefined value (actual conflicts)
+          const filteredCount = allDynamicFields.filter(p => 
+            p.visibility_mode === 'both' && hasPredefinedValue(`customField_${p.id}`, p.placeholder_name)
+          ).length;
           return filteredCount > 0 && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg flex items-start gap-2">
               <span className="text-blue-600 text-lg">ℹ️</span>
