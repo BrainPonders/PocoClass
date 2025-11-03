@@ -509,7 +509,18 @@ export default function RuleEditor() {
             </button>
             <div>
               <h1 className="text-2xl font-bold">
-                {ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
+                {ruleId && ruleData.ruleName ? (
+                  <>
+                    {ruleData.ruleName}
+                    {ruleData.sourceDocumentId && (
+                      <span className="text-base text-gray-500 font-normal ml-2">
+                        ({ruleData.sourceDocumentId})
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  t(ruleId ? 'editor_edit_title' : 'editor_create_title')
+                )}
               </h1>
               {selectedFile && (
                 <p className="text-sm text-gray-600 mt-1">
