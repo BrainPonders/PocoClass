@@ -677,7 +677,14 @@ export default function Rules() {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">{rule.ruleName}</div>
+                      <div className="font-medium text-gray-900">
+                        {rule.ruleName}
+                        {rule.source_document_id && (
+                          <span className="ml-2 text-sm text-gray-500 font-normal">
+                            ({rule.source_document_id})
+                          </span>
+                        )}
+                      </div>
                       {rule.description && (
                         <div className="text-sm text-gray-500 truncate max-w-md">{rule.description}</div>
                       )}
