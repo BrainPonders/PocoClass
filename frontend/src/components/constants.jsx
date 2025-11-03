@@ -6,7 +6,7 @@ export const WEIGHTS = {
   // Base weights per identifier type
   OCR_BASE: 3,
   FILENAME_BASE: 1,
-  VERIFICATION_BASE: 0.5,
+  VERIFICATION_BASE: 1.0,  // Fixed: was 0.5, should be 1.0 per design
   
   // Default multipliers
   OCR_MULTIPLIER_DEFAULT: 3,
