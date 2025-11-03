@@ -2090,6 +2090,9 @@ def convert_frontend_to_backend(frontend_data):
                     'pattern_before': rule.get('beforeAnchor', {}).get('pattern', ''),
                     'pattern_after': rule.get('afterAnchor', {}).get('pattern', ''),
                 }
+                # Store extraction type for data filtering
+                if extraction_type:
+                    backend['dynamic_metadata'][target]['extraction_type'] = extraction_type
                 # Add format for date-type custom fields
                 if extraction_type == 'date' and rule.get('dateFormat'):
                     backend['dynamic_metadata'][target]['format'] = rule.get('dateFormat')
