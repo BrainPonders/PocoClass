@@ -548,14 +548,22 @@ export default function DocumentClassificationsStep({
         {(() => {
           const allDynamicFields = getCustomFieldPlaceholders('dynamic');
           // Only count fields that are available in BOTH modes AND have a predefined value (actual conflicts)
-          const filteredCount = allDynamicFields.filter(p => 
+          const conflictingFields = allDynamicFields.filter(p => 
             p.visibility_mode === 'both' && hasPredefinedValue(`customField_${p.id}`, p.placeholder_name)
-          ).length;
-          return filteredCount > 0 && (
+          );
+          
+          // Debug logging
+          if (conflictingFields.length > 0) {
+            console.log('[Conflict Detection] Fields with both modes and predefined values:', 
+              conflictingFields.map(p => ({ name: p.placeholder_name, visibility: p.visibility_mode }))
+            );
+          }
+          
+          return conflictingFields.length > 0 && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg flex items-start gap-2">
               <span className="text-blue-600 text-lg">ℹ️</span>
               <div className="text-sm text-blue-800">
-                <strong>Note:</strong> {filteredCount} custom field{filteredCount > 1 ? 's are' : ' is'} hidden from the dropdown because {filteredCount > 1 ? 'they already have' : 'it already has'} predefined values. Clear the predefined value to enable dynamic extraction.
+                <strong>Note:</strong> {conflictingFields.length} custom field{conflictingFields.length > 1 ? 's are' : ' is'} hidden from the dropdown because {conflictingFields.length > 1 ? 'they' : 'it'} {conflictingFields.length > 1 ? 'are' : 'is'} available in both Predefined and Dynamic modes and already {conflictingFields.length > 1 ? 'have' : 'has'} predefined values: <strong>{conflictingFields.map(p => p.placeholder_name).join(', ')}</strong>. Clear the predefined value to enable dynamic extraction.
               </div>
             </div>
           );

@@ -1985,6 +1985,7 @@ def proxy_document_preview(doc_id):
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/documents/<int:doc_id>/content', methods=['GET'])
+@app.route('/api/documents/<int:doc_id>/ocr', methods=['GET'])
 @require_auth
 def get_document_ocr_content(doc_id):
     """Get OCR content for a document"""
@@ -2003,7 +2004,7 @@ def get_document_ocr_content(doc_id):
         if content is None:
             return jsonify({'error': 'Could not retrieve document content'}), 500
         
-        return jsonify({'content': content})
+        return jsonify({'ocr': content, 'content': content})  # Return both 'ocr' and 'content' for compatibility
     except Exception as e:
         logger.error(f"Error getting document content: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
