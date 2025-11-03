@@ -254,6 +254,41 @@ export default function DocumentClassificationsStep({
     setActiveAnchorType(null);
   };
 
+  const applyExtractionTypeFilter = (text, extractionType, dateFormat) => {
+    // Apply extraction type filtering to extract specific data from raw text
+    if (extractionType === 'date' || extractionType === 'dateFormat') {
+      // Convert date format to regex pattern (e.g., DD-MM-YYYY -> \d{2}-\d{2}-\d{4})
+      if (dateFormat) {
+        let pattern = dateFormat;
+        pattern = pattern.replace(/YYYY/g, '\\d{4}');
+        pattern = pattern.replace(/YY/g, '\\d{2}');
+        pattern = pattern.replace(/MM/g, '\\d{2}');
+        pattern = pattern.replace(/DD/g, '\\d{2}');
+        pattern = pattern.replace(/M/g, '\\d{1,2}');
+        pattern = pattern.replace(/D/g, '\\d{1,2}');
+        
+        const dateRegex = new RegExp(pattern);
+        const match = text.match(dateRegex);
+        if (match) {
+          return match[0];
+        }
+      }
+      // Fallback: try common date patterns
+      const commonPatterns = [
+        /\d{2}-\d{2}-\d{4}/,  // DD-MM-YYYY
+        /\d{2}\/\d{2}\/\d{4}/, // DD/MM/YYYY
+        /\d{4}-\d{2}-\d{2}/,  // YYYY-MM-DD
+        /\d{2}\.\d{2}\.\d{4}/ // DD.MM.YYYY
+      ];
+      for (const pattern of commonPatterns) {
+        const match = text.match(pattern);
+        if (match) return match[0];
+      }
+    }
+    // For text and unknown types, return as-is
+    return text;
+  };
+
   const testExtractionRule = (index) => {
     const rule = ruleData.dynamicData?.extractionRules?.[index];
     if (!rule || !documentOcr) {
@@ -296,7 +331,18 @@ export default function DocumentClassificationsStep({
         extractedText = ocrText.substring(0, 200).trim();
       }
 
-      // Apply extraction pattern if specified
+      // Apply extraction type filtering
+      if (rule.extractionType && rule.extractionType !== 'text') {
+        const filteredText = applyExtractionTypeFilter(extractedText, rule.extractionType, rule.dateFormat);
+        if (filteredText) {
+          extractedText = filteredText;
+        } else {
+          setTestResults({ ...testResults, [index]: { error: `Extraction type filter "${rule.extractionType}" did not match any data` } });
+          return;
+        }
+      }
+
+      // Apply regex extraction pattern if specified (for text type with regex)
       if (rule.extractionType === 'text' && rule.regexPattern) {
         const extractRegex = new RegExp(rule.regexPattern, 'i');
         const match = extractedText.match(extractRegex);
@@ -320,7 +366,7 @@ export default function DocumentClassificationsStep({
     try {
       // Date Created (only extractable field that makes sense for dynamic)
       if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
-        fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false });
+        fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false, disabled: false });
       }
       
       // Dynamically add ALL custom fields that support dynamic extraction (string, integer, float, monetary, date)
@@ -333,15 +379,17 @@ export default function DocumentClassificationsStep({
         const fieldKey = `customField_${placeholder.id}`;
         
         // Only include if dataType is extractable (or unknown/null - be permissive)
-        // AND either: (1) field has no predefined value, OR (2) field is only available in dynamic mode
-        // Conflict prevention: only exclude if field has predefined value AND is available in both modes
-        const hasConflict = placeholder.visibility_mode === 'both' && hasPredefinedValue(fieldKey, fieldName);
-        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasConflict) {
+        if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
+          // Check if field has a predefined value (should be disabled in dropdown)
+          const hasPredefined = hasPredefinedValue(fieldKey, fieldName);
+          
           fields.push({ 
             value: fieldName,  // Use actual field name as value (e.g., "Total Price")
             label: `Custom Field: ${fieldName}`, 
             canRepeat: false,
-            fieldKey: fieldKey  // Store the key for conflict checking
+            fieldKey: fieldKey,
+            disabled: hasPredefined,
+            disabledReason: hasPredefined ? 'Remove predefined value first' : null
           });
         }
       });
@@ -498,32 +546,46 @@ export default function DocumentClassificationsStep({
               <div key={placeholder.id} className="form-group">
                 <label className="form-label">Custom Field: {fieldName}</label>
                 {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
-                  <select
-                    value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
-                    onChange={(e) => updateCustomField(e.target.value)}
-                    className="form-input"
-                    style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-                    disabled={hasConflict}
-                  >
-                    <option value="">Select an option...</option>
-                    {fieldData.extraData.select_options.map((option, idx) => {
-                      const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
-                      const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
-                      return (
-                        <option key={idx} value={optionValue}>{optionLabel}</option>
-                      );
-                    })}
-                  </select>
+                  <>
+                    <select
+                      value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                      onChange={(e) => updateCustomField(e.target.value)}
+                      className="form-input"
+                      style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      disabled={hasConflict}
+                    >
+                      <option value="">Select an option...</option>
+                      {fieldData.extraData.select_options.map((option, idx) => {
+                        const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
+                        const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
+                        return (
+                          <option key={idx} value={optionValue}>{optionLabel}</option>
+                        );
+                      })}
+                    </select>
+                    {hasConflict && (
+                      <p className="text-sm text-orange-600 mt-1">
+                        ⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.
+                      </p>
+                    )}
+                  </>
                 ) : (
-                  <input
-                    type="text"
-                    value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
-                    onChange={(e) => updateCustomField(e.target.value)}
-                    placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
-                    className="form-input"
-                    style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
-                    disabled={hasConflict}
-                  />
+                  <>
+                    <input
+                      type="text"
+                      value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                      onChange={(e) => updateCustomField(e.target.value)}
+                      placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
+                      className="form-input"
+                      style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      disabled={hasConflict}
+                    />
+                    {hasConflict && (
+                      <p className="text-sm text-orange-600 mt-1">
+                        ⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             );
@@ -544,30 +606,6 @@ export default function DocumentClassificationsStep({
           Define anchor points and extraction patterns for dynamic field population
         </p>
 
-        {/* Show info about filtered fields */}
-        {(() => {
-          const allDynamicFields = getCustomFieldPlaceholders('dynamic');
-          // Only count fields that are available in BOTH modes AND have a predefined value (actual conflicts)
-          const conflictingFields = allDynamicFields.filter(p => 
-            p.visibility_mode === 'both' && hasPredefinedValue(`customField_${p.id}`, p.placeholder_name)
-          );
-          
-          // Debug logging
-          if (conflictingFields.length > 0) {
-            console.log('[Conflict Detection] Fields with both modes and predefined values:', 
-              conflictingFields.map(p => ({ name: p.placeholder_name, visibility: p.visibility_mode }))
-            );
-          }
-          
-          return conflictingFields.length > 0 && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg flex items-start gap-2">
-              <span className="text-blue-600 text-lg">ℹ️</span>
-              <div className="text-sm text-blue-800">
-                <strong>Note:</strong> {conflictingFields.length} custom field{conflictingFields.length > 1 ? 's are' : ' is'} hidden from the dropdown because {conflictingFields.length > 1 ? 'they' : 'it'} {conflictingFields.length > 1 ? 'are' : 'is'} available in both Predefined and Dynamic modes and already {conflictingFields.length > 1 ? 'have' : 'has'} predefined values: <strong>{conflictingFields.map(p => p.placeholder_name).join(', ')}</strong>. Clear the predefined value to enable dynamic extraction.
-              </div>
-            </div>
-          );
-        })()}
 
         {/* Graphic Representation */}
         <div className="flex items-center justify-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -628,13 +666,21 @@ export default function DocumentClassificationsStep({
                         <option value="">Select target field...</option>
                         {targetFields.map(field => {
                           const safeLabel = typeof field.label === 'string' ? field.label : String(field.label?.label || field.label?.name || 'Field');
+                          const alreadyUsed = isFieldDisabled(field.value, index);
+                          const hasPredefined = field.disabled;
+                          const isDisabled = alreadyUsed || hasPredefined;
+                          
+                          let suffix = '';
+                          if (alreadyUsed) suffix = ' (already used)';
+                          else if (hasPredefined) suffix = ' (remove predefined value first)';
+                          
                           return (
                             <option 
                               key={field.value} 
                               value={field.value}
-                              disabled={isFieldDisabled(field.value, index)}
+                              disabled={isDisabled}
                             >
-                              {safeLabel} {!field.canRepeat && isFieldDisabled(field.value, index) ? '(already used)' : ''}
+                              {safeLabel}{suffix}
                             </option>
                           );
                         })}
