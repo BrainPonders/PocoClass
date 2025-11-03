@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
+import API_BASE_URL from '@/config/api';
 
 export default function FieldSelector({ type, value, onChange, placeholder = "Select...", allowCustom = true }) {
   const [availableOptions, setAvailableOptions] = useState([]);
@@ -32,58 +33,56 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
         setAvailableOptions([]);
       }
     } else if (type === 'dateFormat') {
-      // Define a default set of common date formats
-      const defaultCommonFormats = [
-        'DD-MM-YYYY', 'DD-MMM-YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD',
-        'DD.MM.YYYY', 'DDDD DD MMMM YYYY', 'DD MMMM YYYY', 'MMMM DD, YYYY'
-      ];
-      let commonFormats = defaultCommonFormats; // Initialize with defaults
-
-      // Load from settings
+      // Fetch selected date formats from API
       try {
-        const settings = localStorage.getItem('pococlass_settings');
-        if (settings) {
-          const parsed = JSON.parse(settings);
-          // If commonDateFormats exist in settings and is an array, use it
-          if (parsed.commonDateFormats && Array.isArray(parsed.commonDateFormats)) {
-            commonFormats = parsed.commonDateFormats;
+        const sessionToken = localStorage.getItem('pococlass_session');
+        const response = await fetch(`${API_BASE_URL}/api/settings/date-formats/selected`, {
+          headers: { 'Authorization': `Bearer ${sessionToken}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Handle both array response and object with formats property
+          const formats = Array.isArray(data) ? data : (data.formats || []);
+          
+          // Validate we have an array with items
+          if (Array.isArray(formats) && formats.length > 0) {
+            // Map to objects with value and example
+            const formattedOptions = formats.map(fmt => ({
+              value: fmt.format_pattern,
+              example: fmt.example
+            }));
+            setAvailableOptions(formattedOptions);
+          } else {
+            // Fallback to defaults if no formats returned
+            console.warn('No date formats returned from API, using defaults');
+            setAvailableOptions([
+              { value: 'DD-MM-YYYY', example: '15-04-2024' },
+              { value: 'DD-MMM-YYYY', example: '15-Apr-2024' },
+              { value: 'MM/DD/YYYY', example: '04/15/2024' },
+              { value: 'YYYY-MM-DD', example: '2024-04-15' }
+            ]);
           }
+        } else {
+          // Fallback to defaults if API call fails
+          console.error('Failed to fetch date formats, using defaults');
+          setAvailableOptions([
+            { value: 'DD-MM-YYYY', example: '15-04-2024' },
+            { value: 'DD-MMM-YYYY', example: '15-Apr-2024' },
+            { value: 'MM/DD/YYYY', example: '04/15/2024' },
+            { value: 'YYYY-MM-DD', example: '2024-04-15' }
+          ]);
         }
       } catch (e) {
-        console.error('Error loading date formats from localStorage:', e);
-        // If an error occurs during parsing or loading, commonFormats will remain the defaultCommonFormats
+        console.error('Error loading date formats from API:', e);
+        // Fallback to defaults on error
+        setAvailableOptions([
+          { value: 'DD-MM-YYYY', example: '15-04-2024' },
+          { value: 'DD-MMM-YYYY', example: '15-Apr-2024' },
+          { value: 'MM/DD/YYYY', example: '04/15/2024' },
+          { value: 'YYYY-MM-DD', example: '2024-04-15' }
+        ]);
       }
-          
-      // Map to objects with examples
-      const formatExamples = {
-        'DD-MM-YYYY': '15-04-2024',
-        'DD-MMM-YYYY': '15-Apr-2024',
-        'DD/MM/YYYY': '15/04/2024',
-        'MM/DD/YYYY': '04/15/2024',
-        'YYYY-MM-DD': '2024-04-15',
-        'YYYY/MM/DD': '2024/04/15',
-        'DD.MM.YYYY': '15.04.2024',
-        'MM.DD.YYYY': '04.15.2024',
-        'DDDD DD MMMM YYYY': 'Monday 15 April 2024',
-        'DD MMMM YYYY': '15 April 2024',
-        'MMMM DD, YYYY': 'April 15, 2024',
-        'MMM DD, YYYY': 'Apr 15, 2024',
-        'DD MMM YYYY': '15 Apr 2024',
-        'YYYY MMM DD': '2024 Apr 15',
-        'DD-MM-YY': '15-04-24',
-        'MM-DD-YY': '04-15-24',
-        'YY-MM-DD': '24-04-15',
-        'D/M/YYYY': '5/4/2024',
-        'M/D/YYYY': '4/5/2024',
-        'YYYYMMDD': '20240415'
-      };
-      
-      const formattedOptions = commonFormats.map(format => ({
-        value: format,
-        example: formatExamples[format] || format // Fallback to format itself if example not found
-      }));
-      
-      setAvailableOptions(formattedOptions);
     }
   };
 
