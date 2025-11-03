@@ -366,7 +366,14 @@ export default function DocumentClassificationsStep({
     try {
       // Date Created (only extractable field that makes sense for dynamic)
       if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
-        fields.push({ value: 'dateCreated', label: 'Date Created', canRepeat: false, disabled: false });
+        const hasPredefined = hasPredefinedValue('dateCreated');
+        fields.push({ 
+          value: 'dateCreated', 
+          label: 'Date Created', 
+          canRepeat: false, 
+          disabled: hasPredefined,
+          disabledReason: hasPredefined ? 'Remove predefined value first' : null
+        });
       }
       
       // Dynamically add ALL custom fields that support dynamic extraction (string, integer, float, monetary, date)
@@ -481,7 +488,14 @@ export default function DocumentClassificationsStep({
                 value={ruleData.predefinedData?.dateCreated || ''}
                 onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, dateCreated: e.target.value })}
                 className="form-input"
+                disabled={hasDynamicRule('dateCreated')}
+                placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
               />
+              {hasDynamicRule('dateCreated') && (
+                <p className="text-sm text-orange-600 mt-1">
+                  ⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.
+                </p>
+              )}
             </div>
           )}
 
