@@ -194,7 +194,7 @@ export default function SummaryStep({
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Verification Multiplier:</span>
-              <span className="font-medium">{verificationMultiplier}×</span>
+              <span className="font-medium">{verificationMultiplier.toFixed(2)}×</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Maximum Verification Weight:</span>
