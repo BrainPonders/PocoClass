@@ -1984,6 +1984,10 @@ def convert_frontend_to_backend(frontend_data):
         'status': frontend_data.get('status', 'draft'),
     }
     
+    # Save source document ID if provided (for OCR/PDF preview when editing)
+    if frontend_data.get('sourceDocumentId'):
+        backend['source_document_id'] = frontend_data['sourceDocumentId']
+    
     # OCR Identifiers - Use v2 format with core_identifiers
     if frontend_data.get('ocrIdentifiers'):
         backend['core_identifiers'] = {'logic_groups': []}
@@ -2020,9 +2024,10 @@ def convert_frontend_to_backend(frontend_data):
                 'Document Category': pd['documentCategory']
             }
     
-    # Dynamic Metadata
+    # Dynamic Metadata - Always initialize as empty dict to avoid YAML null issues
+    backend['dynamic_metadata'] = {}
+    
     if frontend_data.get('dynamicData', {}).get('extractionRules'):
-        backend['dynamic_metadata'] = {}
         for rule in frontend_data['dynamicData']['extractionRules']:
             target = rule.get('targetField')
             if target == 'dateCreated':
@@ -2067,6 +2072,10 @@ def convert_backend_to_frontend(backend_data, rule_id):
         'filenamePatterns': {'patterns': [], 'dateFormats': []},
         'verification': {'enabledFields': {}}
     }
+    
+    # Load source document ID if available (for OCR/PDF preview when editing)
+    if backend_data.get('source_document_id'):
+        frontend['sourceDocumentId'] = backend_data['source_document_id']
     
     # Convert logic groups to OCR identifiers - Handle both v1 and v2 formats
     # v2 format (core_identifiers)
