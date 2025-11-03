@@ -24,14 +24,7 @@ export default function SummaryStep({
   const totalFilenamePatterns = (ruleData.filenamePatterns?.patterns?.length || 0) + (ruleData.filenamePatterns?.dateFormats?.length || 0);
   const totalVerificationFields = Object.values(ruleData.verification?.enabledFields || {}).filter(Boolean).length;
 
-  const weights = calculateTotalMaxWeight(
-    totalOcrIdentifiers,
-    totalFilenamePatterns,
-    totalVerificationFields,
-    ocrMultiplier,
-    filenameMultiplier,
-    verificationMultiplier
-  );
+  const weights = calculateTotalMaxWeight(ruleData);
   
   const exampleMatchRate = 0.8;
   const exampleScore = calculateExampleScore(weights, exampleMatchRate);
