@@ -508,18 +508,18 @@ export default function RuleEditor() {
               <ArrowLeft size={16} />
             </button>
             <div>
-              <h1 className="text-2xl font-bold">
-                {ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
-              </h1>
-              {ruleData.sourceDocumentId && (
-                <div className="mt-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="text-2xl font-bold">
+                  {ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
+                </h1>
+                {ruleData.sourceDocumentId && (
                   <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
                     <FileText className="w-4 h-4 text-blue-600" />
                     <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
                     <code className="font-mono text-blue-800 font-semibold">{ruleData.sourceDocumentId}</code>
                   </span>
-                </div>
-              )}
+                )}
+              </div>
               {selectedFile && (
                 <p className="text-sm text-gray-600 mt-1">
                   {t('editor_selected_file')} <span className="font-medium">{selectedFile}</span>
