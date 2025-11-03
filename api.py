@@ -1413,6 +1413,9 @@ description: "{description}"
 # This combines scores from OCR content, filename patterns, and Paperless Placeholder Verification
 threshold: {threshold}  # {threshold}% minimum confidence
 
+# Source Document ID: Original Paperless document used to create this rule (for OCR/PDF preview)
+source_document_id: {frontend_data.get('sourceDocumentId', '')}
+
 """
     
     # Step 2: OCR Identifiers
