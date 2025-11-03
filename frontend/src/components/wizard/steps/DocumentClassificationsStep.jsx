@@ -487,7 +487,7 @@ export default function DocumentClassificationsStep({
                 type="date"
                 value={ruleData.predefinedData?.dateCreated || ''}
                 onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, dateCreated: e.target.value })}
-                className="form-input"
+                className={`form-input ${hasDynamicRule('dateCreated') ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                 disabled={hasDynamicRule('dateCreated')}
                 placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
               />
@@ -564,8 +564,8 @@ export default function DocumentClassificationsStep({
                     <select
                       value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
                       onChange={(e) => updateCustomField(e.target.value)}
-                      className="form-input"
-                      style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      className={`form-input ${hasConflict ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                      style={hasConflict ? {} : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                       disabled={hasConflict}
                     >
                       <option value="">Select an option...</option>
@@ -590,8 +590,8 @@ export default function DocumentClassificationsStep({
                       value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
                       onChange={(e) => updateCustomField(e.target.value)}
                       placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
-                      className="form-input"
-                      style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      className={`form-input ${hasConflict ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                      style={hasConflict ? {} : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                       disabled={hasConflict}
                     />
                     {hasConflict && (
