@@ -1,15 +1,17 @@
 
 import React from 'react';
-import { Plus, Trash2, Wand2 } from 'lucide-react';
+import { Plus, Trash2, Wand2, Play, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import Tooltip from '@/components/Tooltip';
 import TagSelector from '@/components/TagSelector';
 import PatternHelperModal from '@/components/PatternHelperModal';
 import FieldSelector from '@/components/FieldSelector';
+import API_BASE_URL from '@/config/api';
 
 export default function DocumentClassificationsStep({
   ruleData,
-  updateRuleData
+  updateRuleData,
+  selectedDocumentId
 }) {
   const { t } = useTranslation();
   const [showPatternHelper, setShowPatternHelper] = React.useState(false);
@@ -17,15 +19,41 @@ export default function DocumentClassificationsStep({
   const [activeRuleIndex, setActiveRuleIndex] = React.useState(null);
   const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
   const [customFieldNames, setCustomFieldNames] = React.useState({});
+  const [testResults, setTestResults] = React.useState({});
   const [customFieldsData, setCustomFieldsData] = React.useState({});
   const [allPlaceholders, setAllPlaceholders] = React.useState([]);
   const [placeholdersLoaded, setPlaceholdersLoaded] = React.useState(false);
+  const [documentOcr, setDocumentOcr] = React.useState('');
 
   React.useEffect(() => {
     loadFieldDisplaySettings();
     loadCustomFieldsData();
     loadAllPlaceholders();
   }, []);
+
+  // Load OCR content when selectedDocumentId is available
+  React.useEffect(() => {
+    if (selectedDocumentId) {
+      loadDocumentOcr(selectedDocumentId);
+    }
+  }, [selectedDocumentId]);
+
+  const loadDocumentOcr = async (docId) => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/ocr`, {
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDocumentOcr(data.ocr || '');
+      }
+    } catch (error) {
+      console.error('Error loading OCR:', error);
+    }
+  };
 
   const loadFieldDisplaySettings = () => {
     try {
@@ -224,6 +252,66 @@ export default function DocumentClassificationsStep({
     setShowPatternHelper(false);
     setActiveRuleIndex(null);
     setActiveAnchorType(null);
+  };
+
+  const testExtractionRule = (index) => {
+    const rule = ruleData.dynamicData?.extractionRules?.[index];
+    if (!rule || !documentOcr) {
+      setTestResults({ ...testResults, [index]: { error: 'No OCR content available' } });
+      return;
+    }
+
+    try {
+      const beforePattern = rule.beforeAnchor?.pattern || '';
+      const afterPattern = rule.afterAnchor?.pattern || '';
+      
+      // Find the text between before and after anchors
+      let extractedText = '';
+      let ocrText = documentOcr;
+
+      // Apply before anchor
+      if (beforePattern) {
+        const beforeRegex = new RegExp(beforePattern, 'i');
+        const beforeMatch = ocrText.match(beforeRegex);
+        if (beforeMatch) {
+          ocrText = ocrText.substring(beforeMatch.index + beforeMatch[0].length);
+        } else {
+          setTestResults({ ...testResults, [index]: { error: `Before anchor pattern "${beforePattern}" not found` } });
+          return;
+        }
+      }
+
+      // Apply after anchor
+      if (afterPattern) {
+        const afterRegex = new RegExp(afterPattern, 'i');
+        const afterMatch = ocrText.match(afterRegex);
+        if (afterMatch) {
+          extractedText = ocrText.substring(0, afterMatch.index).trim();
+        } else {
+          setTestResults({ ...testResults, [index]: { error: `After anchor pattern "${afterPattern}" not found` } });
+          return;
+        }
+      } else {
+        // No after anchor, take some reasonable amount of text
+        extractedText = ocrText.substring(0, 200).trim();
+      }
+
+      // Apply extraction pattern if specified
+      if (rule.extractionType === 'text' && rule.regexPattern) {
+        const extractRegex = new RegExp(rule.regexPattern, 'i');
+        const match = extractedText.match(extractRegex);
+        if (match) {
+          extractedText = match[1] || match[0];
+        } else {
+          setTestResults({ ...testResults, [index]: { error: `Extraction pattern "${rule.regexPattern}" did not match` } });
+          return;
+        }
+      }
+
+      setTestResults({ ...testResults, [index]: { success: true, value: extractedText } });
+    } catch (error) {
+      setTestResults({ ...testResults, [index]: { error: `Error: ${error.message}` } });
+    }
   };
 
   const getAvailableTargetFields = () => {
@@ -681,6 +769,52 @@ export default function DocumentClassificationsStep({
                         </button>
                       </div>
                     </div>
+
+                    {/* Test Extraction Button */}
+                    {documentOcr && (
+                      <div className="mt-4">
+                        <button
+                          onClick={() => testExtractionRule(index)}
+                          className="btn btn-secondary w-full"
+                          type="button"
+                          disabled={!rule.beforeAnchor?.pattern && !rule.afterAnchor?.pattern}
+                        >
+                          <Play className="w-4 h-4" />
+                          Test Extraction on OCR Content
+                        </button>
+                        
+                        {/* Test Results */}
+                        {testResults[index] && (
+                          <div className={`mt-3 p-3 rounded-lg border ${
+                            testResults[index].success 
+                              ? 'bg-green-50 border-green-300' 
+                              : 'bg-red-50 border-red-300'
+                          }`}>
+                            {testResults[index].success ? (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <CheckCircle className="w-5 h-5 text-green-600" />
+                                  <span className="font-semibold text-green-900">Extracted Value:</span>
+                                </div>
+                                <div className="bg-white p-2 rounded border border-green-200 font-mono text-sm text-gray-800">
+                                  {testResults[index].value}
+                                </div>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <XCircle className="w-5 h-5 text-red-600" />
+                                  <span className="font-semibold text-red-900">Extraction Failed:</span>
+                                </div>
+                                <div className="text-sm text-red-800">
+                                  {testResults[index].error}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
