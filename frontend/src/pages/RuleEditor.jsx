@@ -509,19 +509,17 @@ export default function RuleEditor() {
             </button>
             <div>
               <h1 className="text-2xl font-bold">
-                {ruleId && ruleData.ruleName ? (
-                  <>
-                    {ruleData.ruleName}
-                    {ruleData.sourceDocumentId && (
-                      <span className="text-base text-gray-500 font-normal ml-2">
-                        ({ruleData.sourceDocumentId})
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  t(ruleId ? 'editor_edit_title' : 'editor_create_title')
-                )}
+                {ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
               </h1>
+              {ruleData.sourceDocumentId && (
+                <div className="mt-2">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
+                    <code className="font-mono text-blue-800 font-semibold">{ruleData.sourceDocumentId}</code>
+                  </span>
+                </div>
+              )}
               {selectedFile && (
                 <p className="text-sm text-gray-600 mt-1">
                   {t('editor_selected_file')} <span className="font-medium">{selectedFile}</span>
