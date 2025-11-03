@@ -1493,6 +1493,8 @@ static_metadata:
 """
     
     extraction_rules = dynamic.get('extractionRules', [])
+    
+    # Always write dynamic_metadata section if there are extraction rules
     if extraction_rules:
         yaml_content += """
 dynamic_metadata:
@@ -1500,6 +1502,8 @@ dynamic_metadata:
         # Separate date extraction and tag extraction rules
         date_rules = [r for r in extraction_rules if r.get('extractionType') == 'date']
         tag_rules = [r for r in extraction_rules if r.get('extractionType') == 'text' and r.get('targetField') == 'tags']
+        
+        content_written = False
         
         # Handle date extraction
         for rule in date_rules:
@@ -1513,6 +1517,7 @@ dynamic_metadata:
     pattern_after: '{after_anchor}'
     format: {date_format}
 """
+            content_written = True
         
         # Handle tag extraction
         if tag_rules:
@@ -1528,6 +1533,19 @@ dynamic_metadata:
 """
                 if prefix:
                     yaml_content += f"""      prefix: '{prefix}'
+"""
+            content_written = True
+        
+        # If no content was written, make it an empty dict to avoid null
+        if not content_written:
+            # Remove the "dynamic_metadata:\n" and replace with empty dict
+            yaml_content = yaml_content.rstrip()
+            if yaml_content.endswith('dynamic_metadata:'):
+                yaml_content = yaml_content[:-len('dynamic_metadata:')] + 'dynamic_metadata: {}\n'
+    else:
+        # No extraction rules at all - write empty dict
+        yaml_content += """
+dynamic_metadata: {}
 """
     
     # Step 4: Filename Patterns
