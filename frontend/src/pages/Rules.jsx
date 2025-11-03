@@ -658,6 +658,7 @@ export default function Rules() {
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule Name</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule ID</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Source Document</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">{t('common_status')}</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Threshold</th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Created</th>
@@ -677,20 +678,23 @@ export default function Rules() {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">
-                        {rule.ruleName}
-                        {rule.source_document_id && (
-                          <span className="ml-2 text-sm text-gray-500 font-normal">
-                            ({rule.source_document_id})
-                          </span>
-                        )}
-                      </div>
+                      <div className="font-medium text-gray-900">{rule.ruleName}</div>
                       {rule.description && (
                         <div className="text-sm text-gray-500 truncate max-w-md">{rule.description}</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs bg-gray-100 px-2 py-1 rounded">{rule.ruleId}</code>
+                    </td>
+                    <td className="px-4 py-3">
+                      {rule.source_document_id ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-700 font-mono">{rule.source_document_id}</span>
+                          <span className="text-xs text-gray-500">(Paperless ID)</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
