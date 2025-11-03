@@ -71,6 +71,7 @@ export default function RuleEditor() {
     ocrMultiplier: 3,
     filenameMultiplier: 1,
     verificationMultiplier: 0.5,
+    sourceDocumentId: selectedDocumentId || null,  // Save original document ID for OCR/PDF preview
     predefinedData: {
       title: '',
       archiveSerialNumber: '',
@@ -148,6 +149,7 @@ export default function RuleEditor() {
             ocrMultiplier: rule.ocrMultiplier || 3,
             filenameMultiplier: rule.filenameMultiplier || 1,
             verificationMultiplier: rule.verificationMultiplier || 0.5,
+            sourceDocumentId: rule.sourceDocumentId || null,  // Preserve original document ID for OCR/PDF preview
             predefinedData: {
               ...(rule.predefinedData || {}),
               tags: rule.predefinedData?.tags || [],
@@ -323,10 +325,12 @@ export default function RuleEditor() {
   };
 
   const handleViewOcr = async () => {
-    if (!selectedDocumentId) return;
+    // Use saved sourceDocumentId if available (when editing rule), otherwise use URL param
+    const docId = ruleData.sourceDocumentId || selectedDocumentId;
+    if (!docId) return;
     
     try {
-      const response = await apiClient.get(`/documents/${selectedDocumentId}/content`);
+      const response = await apiClient.get(`/documents/${docId}/content`);
       setOcrContent(response.content || 'No OCR content available');
       setShowOcrModal(true);
     } catch (error) {
@@ -462,7 +466,7 @@ export default function RuleEditor() {
       showInfoBoxes,
       setShowInfoBoxes,
       currentStep,
-      selectedDocumentId,
+      selectedDocumentId: ruleData.sourceDocumentId || selectedDocumentId,  // Use saved or URL param
       selectedDocumentName: selectedFile,
       onViewOcr: handleViewOcr,
       onViewPdf: () => setShowPdfViewer(true)
@@ -522,12 +526,12 @@ export default function RuleEditor() {
             </div>
           </div>
           <div className="flex gap-3">
-            {selectedDocumentId && (
+            {(ruleData.sourceDocumentId || selectedDocumentId) && (
               <>
                 <button 
                   className="btn btn-secondary"
                   onClick={handleViewOcr}
-                  disabled={!selectedDocumentId}
+                  disabled={!ruleData.sourceDocumentId && !selectedDocumentId}
                 >
                   <FileText size={16} />
                   {t('editor_view_ocr')}
@@ -535,7 +539,7 @@ export default function RuleEditor() {
                 <button 
                   className="btn btn-secondary"
                   onClick={() => setShowPdfViewer(true)}
-                  disabled={!selectedDocumentId}
+                  disabled={!ruleData.sourceDocumentId && !selectedDocumentId}
                 >
                   <Eye size={16} />
                   {t('editor_view_pdf')}
@@ -615,7 +619,7 @@ export default function RuleEditor() {
       <PdfViewerModal
         isOpen={showPdfViewer}
         onClose={() => setShowPdfViewer(false)}
-        documentUrl={selectedDocumentId ? `/api/documents/${selectedDocumentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}` : ''}
+        documentUrl={(ruleData.sourceDocumentId || selectedDocumentId) ? `/api/documents/${ruleData.sourceDocumentId || selectedDocumentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}` : ''}
         documentName={selectedFile}
       />
 
