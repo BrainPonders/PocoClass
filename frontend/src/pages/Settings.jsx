@@ -1305,6 +1305,11 @@ export default function Settings() {
                       <li><strong>Dynamic:</strong> Extract value from document content using patterns and anchors</li>
                       <li><strong>Both Enabled:</strong> Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically</li>
                     </ul>
+                    <div className="mt-3 pt-3 border-t border-blue-200">
+                      <p className="text-xs text-blue-800">
+                        <strong>Note:</strong> Any field not disabled will also be available in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata.
+                      </p>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -1447,36 +1452,6 @@ export default function Settings() {
                       </div>
                       );
                     })}
-                  </div>
-
-                  <div className="mt-8 border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-3">Fields Used in Verification</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      These fields are displayed in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata
-                    </p>
-                    
-                    <div className="space-y-2">
-                      {placeholders
-                        .filter(p => ['predefined', 'both'].includes(p.visibility_mode) && !p.is_internal)
-                        .map(placeholder => (
-                          <div key={placeholder.id} className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">{placeholder.placeholder_name}</div>
-                              <div className="text-xs text-gray-500">Mode: {placeholder.visibility_mode}</div>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-
-                    {placeholders.filter(p => ['predefined', 'both'].includes(p.visibility_mode) && !p.is_internal).length === 0 && (
-                      <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
-                        <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">
-                          No fields configured for verification. Set fields to "Predefined" or "Both" mode to enable verification.
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
