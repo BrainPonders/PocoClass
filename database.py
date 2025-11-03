@@ -943,23 +943,23 @@ class Database:
             return
         
         formats = [
-            ("DD-MM-YYYY", "Dash (-)", "e.g., 15-04-2024", 0, 1),
-            ("DD-MMM-YYYY", "Dash (-)", "e.g., 15-Apr-2024", 0, 2),
-            ("MM-DD-YYYY", "Dash (-)", "e.g., 04-15-2024", 0, 3),
-            ("YYYY-MM-DD", "Dash (-)", "e.g., 2024-04-15", 0, 4),
+            ("DD-MM-YYYY", "Dash (-)", "e.g., 15-04-2024", 1, 1),
+            ("DD-MMM-YYYY", "Dash (-)", "e.g., 15-Apr-2024", 1, 2),
+            ("MM-DD-YYYY", "Dash (-)", "e.g., 04-15-2024", 1, 3),
+            ("YYYY-MM-DD", "Dash (-)", "e.g., 2024-04-15", 1, 4),
             ("DD-MM-YY", "Dash (-)", "e.g., 15-04-24", 0, 5),
             ("MM-DD-YY", "Dash (-)", "e.g., 04-15-24", 0, 6),
-            ("DD/MM/YYYY", "Slash (/)", "e.g., 15/04/2024", 0, 7),
-            ("MM/DD/YYYY", "Slash (/)", "e.g., 04/15/2024", 0, 8),
+            ("DD/MM/YYYY", "Slash (/)", "e.g., 15/04/2024", 1, 7),
+            ("MM/DD/YYYY", "Slash (/)", "e.g., 04/15/2024", 1, 8),
             ("YYYY/MM/DD", "Slash (/)", "e.g., 2024/04/15", 0, 9),
             ("D/M/YYYY", "Slash (/)", "e.g., 5/4/2024", 0, 10),
-            ("DD.MM.YYYY", "Dot (.)", "e.g., 15.04.2024", 0, 11),
+            ("DD.MM.YYYY", "Dot (.)", "e.g., 15.04.2024", 1, 11),
             ("MM.DD.YYYY", "Dot (.)", "e.g., 04.15.2024", 0, 12),
             ("YYYY.MM.DD", "Dot (.)", "e.g., 2024.04.15", 0, 13),
-            ("DD MMM YYYY", "Space / Text", "e.g., 15 Apr 2024", 0, 14),
+            ("DD MMM YYYY", "Space / Text", "e.g., 15 Apr 2024", 1, 14),
             ("MMM DD, YYYY", "Space / Text", "e.g., April 15, 2024", 0, 15),
-            ("MMMM DD, YYYY", "Space / Text", "e.g., April 15, 2024", 0, 16),
-            ("DD MMMM YYYY", "Space / Text", "e.g., 15 April 2024", 0, 17),
+            ("MMMM DD, YYYY", "Space / Text", "e.g., April 15, 2024", 1, 16),
+            ("DD MMMM YYYY", "Space / Text", "e.g., 15 April 2024", 1, 17),
             ("YYYY MMM DD", "Space / Text", "e.g., 2024 Apr 15", 0, 18),
             ("DDDD DD MMMM YYYY", "Space / Text", "e.g., Monday 15 April 2024", 0, 19),
             ("M/D/YYYY", "Slash (/)", "e.g., 4/5/2024", 0, 20),
@@ -997,6 +997,15 @@ class Database:
         """Set date format selection status"""
         conn = self.get_connection()
         cursor = conn.cursor()
+        
+        # If deselecting, ensure at least one other format is selected
+        if not is_selected:
+            cursor.execute("SELECT COUNT(*) as count FROM date_formats WHERE is_selected = 1")
+            selected_count = cursor.fetchone()['count']
+            if selected_count <= 1:
+                conn.close()
+                raise ValueError("At least one date format must be selected")
+        
         cursor.execute("""
             UPDATE date_formats SET is_selected = ? WHERE format_pattern = ?
         """, (1 if is_selected else 0, format_pattern))

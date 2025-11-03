@@ -330,6 +330,20 @@ export default function Settings() {
 
   const handleDateFormatToggle = async (formatPattern, isSelected) => {
     try {
+      // Prevent deselecting the last date format
+      if (!isSelected) {
+        const selectedCount = dateFormats.filter(fmt => fmt.is_selected === 1).length;
+        if (selectedCount <= 1) {
+          toast({
+            title: 'Cannot Deselect',
+            description: 'At least one date format must be selected.',
+            variant: 'destructive',
+            duration: 3000,
+          });
+          return;
+        }
+      }
+
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/date-formats/${encodeURIComponent(formatPattern)}`, {
         method: 'PUT',

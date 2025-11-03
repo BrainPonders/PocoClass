@@ -1043,6 +1043,10 @@ def update_date_format_selection(format_pattern):
         is_selected = data.get('is_selected', False)
         db.set_date_format_selection(format_pattern, is_selected)
         return jsonify({'success': True})
+    except ValueError as e:
+        # Handle validation errors (e.g., cannot deselect last format)
+        logger.warning(f"Date format selection validation failed: {e}")
+        return jsonify({'error': str(e)}), 400
     except Exception as e:
         logger.error(f"Error updating date format selection: {e}")
         return jsonify({'error': str(e)}), 500
