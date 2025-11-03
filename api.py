@@ -1502,15 +1502,20 @@ static_metadata:
         yaml_content += """
 dynamic_metadata:
 """
-        # Separate date extraction and tag extraction rules
+        # Separate different types of extraction rules
         date_rules = [r for r in extraction_rules if r.get('extractionType') == 'date']
         tag_rules = [r for r in extraction_rules if r.get('extractionType') == 'text' and r.get('targetField') == 'tags']
+        custom_field_rules = [r for r in extraction_rules if r.get('extractionType') == 'text' and r.get('targetField') not in ['tags', 'dateCreated']]
         
         content_written = False
         
-        # Handle date extraction
+        # Handle date extraction (including date-type custom fields)
         for rule in date_rules:
             target_field = rule.get('targetField', '')
+            # Map frontend field names to backend YAML field names
+            if target_field == 'dateCreated':
+                target_field = 'date_created'
+            
             before_anchor = escape_yaml_string(rule.get('beforeAnchor', {}).get('pattern', ''))
             after_anchor = escape_yaml_string(rule.get('afterAnchor', {}).get('pattern', ''))
             date_format = rule.get('dateFormat', 'DD-MM-YYYY')
@@ -1519,6 +1524,18 @@ dynamic_metadata:
     pattern_before: '{before_anchor}'
     pattern_after: '{after_anchor}'
     format: {date_format}
+"""
+            content_written = True
+        
+        # Handle custom field text extraction
+        for rule in custom_field_rules:
+            target_field = rule.get('targetField', '')  # Use actual field name like "Total Price"
+            before_anchor = escape_yaml_string(rule.get('beforeAnchor', {}).get('pattern', ''))
+            after_anchor = escape_yaml_string(rule.get('afterAnchor', {}).get('pattern', ''))
+            
+            yaml_content += f"""  {target_field}:
+    pattern_before: '{before_anchor}'
+    pattern_after: '{after_anchor}'
 """
             content_written = True
         
@@ -2051,19 +2068,30 @@ def convert_frontend_to_backend(frontend_data):
     if frontend_data.get('dynamicData', {}).get('extractionRules'):
         for rule in frontend_data['dynamicData']['extractionRules']:
             target = rule.get('targetField')
+            extraction_type = rule.get('extractionType', '')
+            
             if target == 'dateCreated':
                 backend['dynamic_metadata']['date_created'] = {
                     'pattern_before': rule.get('beforeAnchor', {}).get('pattern', ''),
                     'pattern_after': rule.get('afterAnchor', {}).get('pattern', ''),
                     'format': rule.get('dateFormat', '')
                 }
-            elif target == 'tags':
+            elif target == 'tags' and extraction_type == 'text':
                 if 'extracted_tags' not in backend['dynamic_metadata']:
                     backend['dynamic_metadata']['extracted_tags'] = []
                 backend['dynamic_metadata']['extracted_tags'].append({
                     'pattern': rule.get('regexPattern', ''),
                     'value': rule.get('tagValue', '')
                 })
+            elif target and target not in ['dateCreated', 'tags']:
+                # Handle custom fields (target is the actual field name like "Total Price")
+                backend['dynamic_metadata'][target] = {
+                    'pattern_before': rule.get('beforeAnchor', {}).get('pattern', ''),
+                    'pattern_after': rule.get('afterAnchor', {}).get('pattern', ''),
+                }
+                # Add format for date-type custom fields
+                if extraction_type == 'date' and rule.get('dateFormat'):
+                    backend['dynamic_metadata'][target]['format'] = rule.get('dateFormat')
     
     # Filename Patterns
     if frontend_data.get('filenamePatterns'):
@@ -2190,6 +2218,30 @@ def convert_backend_to_frontend(backend_data, rule_id):
                     'tagValue': tag_rule.get('value', ''),
                     'prefix': tag_rule.get('prefix', '')
                 })
+        
+        # Custom field extraction (any field that's not date_created or extracted_tags)
+        for field_name, field_data in dm.items():
+            if field_name not in ['date_created', 'extracted_tags'] and isinstance(field_data, dict):
+                # Determine extraction type based on whether format is present
+                extraction_type = 'date' if field_data.get('format') else 'text'
+                
+                # Handle legacy customField_* format for backward compatibility
+                # If field_name starts with "customField_", it's legacy format - keep as-is for now
+                # New format uses actual field names like "Total Price"
+                target_field_value = field_name
+                
+                extraction_rule = {
+                    'targetField': target_field_value,  # Use actual field name like "Total Price" or legacy "customField_13"
+                    'extractionType': extraction_type,
+                    'beforeAnchor': {'pattern': field_data.get('pattern_before', '')},
+                    'afterAnchor': {'pattern': field_data.get('pattern_after', '')}
+                }
+                
+                # Add dateFormat for date-type custom fields
+                if extraction_type == 'date':
+                    extraction_rule['dateFormat'] = field_data.get('format', 'DD-MM-YYYY')
+                
+                frontend['dynamicData']['extractionRules'].append(extraction_rule)
     
     # Filename patterns
     if backend_data.get('filename_patterns'):

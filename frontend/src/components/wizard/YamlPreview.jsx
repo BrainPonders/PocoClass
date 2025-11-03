@@ -110,18 +110,29 @@ static_metadata:
 ${Object.entries(ruleData.predefinedData.customFields).filter(([k, v]) => v).map(([field, value]) => `    ${field}: "${escapeYaml(value)}"`).join('\n')}` : ''}
 
 ${ruleData.dynamicData?.extractionRules?.length > 0 ? `dynamic_metadata:
-${ruleData.dynamicData.extractionRules.map((rule, idx) => {
+${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType !== 'text' || rule.targetField !== 'tags').map((rule, idx) => {
   const targetField = rule.targetField ?? '';
   const beforeAnchor = escapeYaml(rule.beforeAnchor?.pattern ?? '');
   const afterAnchor = escapeYaml(rule.afterAnchor?.pattern ?? '');
   const extractionType = rule.extractionType ?? '';
   const dateFormat = rule.dateFormat ?? 'DD-MM-YYYY';
   
-  return `  ${targetField}:
+  // Map targetField to backend YAML format
+  let backendField = targetField;
+  if (targetField === 'dateCreated') {
+    backendField = 'date_created';
+  }
+  // Custom fields use their actual name directly (e.g., "Total Price")
+  
+  return `  ${backendField}:
     pattern_before: "${beforeAnchor}"
     pattern_after: "${afterAnchor}"${extractionType === 'date' ? `
     format: ${dateFormat}` : ''}`;
-}).join('\n')}
+}).join('\n')}${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 'text' && rule.targetField === 'tags').length > 0 ? `
+  extracted_tags:
+${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 'text' && rule.targetField === 'tags').map(rule => `    - pattern: "${escapeYaml(rule.regexPattern ?? '')}"
+      value: "${escapeYaml(rule.tagValue ?? '')}"${rule.prefix ? `
+      prefix: "${escapeYaml(rule.prefix)}"` : ''}`).join('\n')}` : ''}
 ` : ''}
 # =============================
 # STEP 4: FILENAME IDENTIFICATION  

@@ -156,11 +156,32 @@ export default function DocumentClassificationsStep({
       // Auto-set extraction type based on target field
       if (field === 'targetField') {
         if (value === 'dateCreated') {
-          newRules[index].extractionType = 'dateFormat';
-          newRules[index].dateFormat = ''; // Reset dateFormat when target field changes
-        } else if (value.startsWith('customField') || value === 'documentCategory') {
-          newRules[index].extractionType = 'regex';
-          newRules[index].regexPattern = ''; // Reset regexPattern when target field changes
+          newRules[index].extractionType = 'date';
+          newRules[index].dateFormat = 'DD-MM-YYYY'; // Set default dateFormat
+        } else if (value === 'tags') {
+          // Tags extraction
+          newRules[index].extractionType = 'text';
+          newRules[index].regexPattern = '';
+          newRules[index].tagValue = '';
+        } else if (value) {
+          // Check if this is a custom field by looking it up in the placeholder list
+          // (more reliable than customFieldsData which may not be loaded yet)
+          const customFieldPlaceholder = allPlaceholders.find(p => 
+            p.is_custom_field && p.placeholder_name === value
+          );
+          
+          if (customFieldPlaceholder) {
+            // Check if it's a date-type custom field using customFieldsData if available
+            const fieldData = customFieldsData[value];
+            if (fieldData?.dataType === 'date') {
+              newRules[index].extractionType = 'date';
+              newRules[index].dateFormat = 'DD-MM-YYYY';
+            } else {
+              // Default to text-type for custom fields when dataType is unknown
+              newRules[index].extractionType = 'text';
+              newRules[index].regexPattern = '';
+            }
+          }
         }
       }
       
@@ -227,9 +248,10 @@ export default function DocumentClassificationsStep({
         // AND the field doesn't have a predefined value (conflict prevention)
         if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasPredefinedValue(fieldKey, fieldName)) {
           fields.push({ 
-            value: fieldKey, 
+            value: fieldName,  // Use actual field name as value (e.g., "Total Price")
             label: `Custom Field: ${fieldName}`, 
-            canRepeat: false 
+            canRepeat: false,
+            fieldKey: fieldKey  // Store the key for conflict checking
           });
         }
       });
@@ -259,9 +281,28 @@ export default function DocumentClassificationsStep({
   };
 
   // Check if a field has a dynamic extraction rule
-  const hasDynamicRule = (fieldKey) => {
+  const hasDynamicRule = (fieldKeyOrName) => {
     const rules = ruleData.dynamicData?.extractionRules || [];
-    return rules.some(rule => rule.targetField === fieldKey);
+    
+    // For custom fields, we need to check against the actual field name
+    // (e.g., "Total Price") since that's what we now store in targetField
+    if (fieldKeyOrName.startsWith('customField_')) {
+      // Get the actual field name from the placeholder
+      const placeholder = allPlaceholders.find(p => `customField_${p.id}` === fieldKeyOrName);
+      if (placeholder) {
+        const fieldName = placeholder.placeholder_name;
+        // Check for both new format (actual field name) and legacy format (customField_*)
+        return rules.some(rule => 
+          rule.targetField === fieldName || 
+          rule.targetField === fieldKeyOrName
+        );
+      }
+      // If placeholder not found, check for legacy format directly
+      return rules.some(rule => rule.targetField === fieldKeyOrName);
+    }
+    
+    // For non-custom fields, check directly
+    return rules.some(rule => rule.targetField === fieldKeyOrName);
   };
 
   const targetFields = getAvailableTargetFields();
@@ -271,7 +312,7 @@ export default function DocumentClassificationsStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">Step 3 of 6: Document Classifications</h2>
-          <Tooltip content="Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Configure field visibility in Settings > Step 3." />
+          <Tooltip content="Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 3." />
         </div>
         <p className="text-gray-600 mt-2">
           Configure document classification data extracted from OCR
@@ -366,14 +407,6 @@ export default function DocumentClassificationsStep({
             return (
               <div key={placeholder.id} className="form-group">
                 <label className="form-label">Custom Field: {fieldName}</label>
-                {hasConflict && (
-                  <div className="mb-2 p-3 bg-yellow-50 border border-yellow-300 rounded-lg flex items-start gap-2">
-                    <span className="text-yellow-600 text-lg">⚠️</span>
-                    <div className="text-sm text-yellow-800">
-                      <strong>Conflict:</strong> This field already has a dynamic extraction rule. You can only use predefined OR dynamic, not both. Remove the dynamic rule to enter a predefined value.
-                    </div>
-                  </div>
-                )}
                 {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
                   <select
                     value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
@@ -413,7 +446,7 @@ export default function DocumentClassificationsStep({
         <div className="flex justify-between items-center mb-4 pb-2 border-b">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-semibold">Dynamic Data Extraction</h3>
-            <Tooltip content="Define anchor points and patterns to extract variable data from documents dynamically" />
+            <Tooltip content="Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both." />
           </div>
         </div>
 

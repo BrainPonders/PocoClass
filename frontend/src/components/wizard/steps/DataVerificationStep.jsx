@@ -249,8 +249,8 @@ export default function DataVerificationStep({
         <div className={`text-sm ${summaryTextColor} space-y-1`}>
           <p><strong>Placeholders Enabled for Verification:</strong> {enabledCount} / {verificationFields.length}</p>
           <p><strong>Verification Weight:</strong> {enabledCount} points</p>
-          <p><strong>Verification Multiplier:</strong> {verificationMultiplier.toFixed(3)} (= {enabledCount} * 1/{enabledCount})</p>
-          <p><strong>Maximum Verification Weight for Poco Score:</strong> {maxVerificationWeight.toFixed(3)} points (= {enabledCount} * {enabledCount} * {verificationMultiplier.toFixed(3)})</p>
+          <p><strong>Verification Multiplier:</strong> {verificationMultiplier.toFixed(2)} (= {enabledCount} * 1/{enabledCount})</p>
+          <p><strong>Maximum Verification Weight for Poco Score:</strong> {maxVerificationWeight.toFixed(2)} points (= {enabledCount} * {enabledCount} * {verificationMultiplier.toFixed(2)})</p>
         </div>
       </div>
     </div>
