@@ -76,12 +76,22 @@ class MetadataProcessor:
                 value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
                 
                 if value:
-                    # Apply formatting if specified
-                    if field_name == 'date_created' and 'format' in field_config:
+                    # Apply extraction type filtering if specified
+                    extraction_type = field_config.get('extraction_type', '')
+                    if extraction_type:
+                        value = self.apply_extraction_type_filter(value, extraction_type, field_config.get('format', ''))
+                    
+                    # Apply formatting for dates if specified
+                    if value and extraction_type == 'date' and 'format' in field_config:
+                        formatted_value = self.parse_date_with_format(value, field_config['format'])
+                        if formatted_value:
+                            extracted[field_name] = formatted_value
+                    elif value and field_name == 'date_created' and 'format' in field_config:
+                        # Legacy support for date_created without extraction_type
                         formatted_value = self.parse_date(value, field_config['format'])
                         if formatted_value:
                             extracted[field_name] = formatted_value
-                    else:
+                    elif value:
                         extracted[field_name] = value
         
         return extracted
@@ -113,6 +123,129 @@ class MetadataProcessor:
             return None
         except Exception as e:
             self.logger.error(f"Error extracting value between anchors: {e}")
+            return None
+    
+    def apply_extraction_type_filter(self, value: str, extraction_type: str, date_format: str = '') -> Optional[str]:
+        """Apply extraction type filter to extract specific data from the raw extracted value
+        
+        Args:
+            value: The raw extracted string from between anchors
+            extraction_type: Type of data to extract ('date', 'text', 'dateFormat', etc.)
+            date_format: Date format string (e.g., 'DD-MM-YYYY')
+            
+        Returns:
+            Filtered value or None if extraction fails
+        """
+        if not value:
+            return None
+        
+        try:
+            if extraction_type == 'date' or extraction_type == 'dateFormat':
+                # Extract date pattern from the string based on the format
+                date_value = self.extract_date_from_text(value, date_format)
+                if date_value:
+                    return date_value
+                # Fallback: try common date patterns if format-based extraction fails
+                return self.extract_common_date_pattern(value)
+            
+            elif extraction_type == 'text':
+                # Return as-is for text extraction
+                return value.strip()
+            
+            else:
+                # Unknown extraction type, return as-is
+                return value.strip()
+                
+        except Exception as e:
+            self.logger.error(f"Error applying extraction type filter '{extraction_type}' to value '{value}': {e}")
+            return value.strip()
+    
+    def extract_date_from_text(self, text: str, date_format: str) -> Optional[str]:
+        """Extract a date from text using the specified date format pattern
+        
+        Args:
+            text: The text containing a date
+            date_format: Format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
+            
+        Returns:
+            Extracted date string or None
+        """
+        if not date_format:
+            return None
+        
+        try:
+            # Convert date format to regex pattern
+            # DD-MM-YYYY -> \d{2}-\d{2}-\d{4}
+            # MM/DD/YYYY -> \d{2}/\d{2}/\d{4}
+            # YYYY-MM-DD -> \d{4}-\d{2}-\d{2}
+            
+            pattern = date_format
+            pattern = pattern.replace('YYYY', r'\d{4}')
+            pattern = pattern.replace('YY', r'\d{2}')
+            pattern = pattern.replace('MM', r'\d{2}')
+            pattern = pattern.replace('DD', r'\d{2}')
+            pattern = pattern.replace('M', r'\d{1,2}')
+            pattern = pattern.replace('D', r'\d{1,2}')
+            
+            match = re.search(pattern, text)
+            if match:
+                return match.group(0)
+            
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting date with format '{date_format}' from '{text}': {e}")
+            return None
+    
+    def extract_common_date_pattern(self, text: str) -> Optional[str]:
+        """Extract common date patterns as fallback
+        
+        Supports: DD-MM-YYYY, DD/MM/YYYY, YYYY-MM-DD, MM/DD/YYYY, etc.
+        """
+        common_patterns = [
+            r'\d{2}-\d{2}-\d{4}',  # DD-MM-YYYY or MM-DD-YYYY
+            r'\d{2}/\d{2}/\d{4}',  # DD/MM/YYYY or MM/DD/YYYY
+            r'\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
+            r'\d{2}\.\d{2}\.\d{4}', # DD.MM.YYYY
+        ]
+        
+        for pattern in common_patterns:
+            match = re.search(pattern, text)
+            if match:
+                return match.group(0)
+        
+        return None
+    
+    def parse_date_with_format(self, date_str: str, date_format: str) -> Optional[str]:
+        """Parse a date string using the UI date format (DD-MM-YYYY style) and convert to ISO format
+        
+        Args:
+            date_str: The date string (e.g., '27-12-2010')
+            date_format: UI format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
+            
+        Returns:
+            ISO formatted date string (YYYY-MM-DD) or None
+        """
+        if not date_str or not date_format:
+            return None
+        
+        try:
+            # Convert UI format to strptime format
+            # DD-MM-YYYY -> %d-%m-%Y
+            # MM/DD/YYYY -> %m/%d/%Y
+            strptime_format = date_format
+            strptime_format = strptime_format.replace('YYYY', '%Y')
+            strptime_format = strptime_format.replace('YY', '%y')
+            strptime_format = strptime_format.replace('MM', '%m')
+            strptime_format = strptime_format.replace('DD', '%d')
+            strptime_format = strptime_format.replace('M', '%m')
+            strptime_format = strptime_format.replace('D', '%d')
+            
+            parsed_date = datetime.strptime(date_str, strptime_format)
+            return parsed_date.strftime('%Y-%m-%d')
+            
+        except ValueError as e:
+            self.logger.warning(f"Failed to parse date '{date_str}' with format '{date_format}': {e}")
             return None
     
     def validate_and_sanitize_value(self, value: str, data_type: str) -> Optional[str]:
