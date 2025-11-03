@@ -225,7 +225,7 @@ export default function DocumentClassificationsStep({
         
         // Only include if dataType is extractable (or unknown/null - be permissive)
         // AND the field doesn't have a predefined value (conflict prevention)
-        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasPredefinedValue(fieldKey)) {
+        if ((!fieldData || extractableTypes.includes(fieldData?.dataType)) && !hasPredefinedValue(fieldKey, fieldName)) {
           fields.push({ 
             value: fieldKey, 
             label: `Custom Field: ${fieldName}`, 
@@ -247,7 +247,13 @@ export default function DocumentClassificationsStep({
   };
 
   // Check if a field has a predefined value set
-  const hasPredefinedValue = (fieldKey) => {
+  const hasPredefinedValue = (fieldKey, fieldName = null) => {
+    // For custom fields, check the customFields object using fieldName
+    if (fieldName) {
+      const value = ruleData.predefinedData?.customFields?.[fieldName];
+      return value !== undefined && value !== null && value !== '';
+    }
+    // For non-custom fields, check directly on predefinedData
     const value = ruleData.predefinedData?.[fieldKey];
     return value !== undefined && value !== null && value !== '';
   };
@@ -345,6 +351,18 @@ export default function DocumentClassificationsStep({
             const fieldKey = `customField_${placeholder.id}`;
             const hasConflict = hasDynamicRule(fieldKey);
             
+            // Helper to update custom fields properly
+            const updateCustomField = (value) => {
+              const currentCustomFields = ruleData.predefinedData?.customFields || {};
+              updateRuleData('predefinedData', { 
+                ...ruleData.predefinedData, 
+                customFields: {
+                  ...currentCustomFields,
+                  [fieldName]: value
+                }
+              });
+            };
+            
             return (
               <div key={placeholder.id} className="form-group">
                 <label className="form-label">Custom Field: {fieldName}</label>
@@ -358,8 +376,8 @@ export default function DocumentClassificationsStep({
                 )}
                 {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
                   <select
-                    value={ruleData.predefinedData?.[fieldKey] || ''}
-                    onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
+                    value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                    onChange={(e) => updateCustomField(e.target.value)}
                     className="form-input"
                     style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                     disabled={hasConflict}
@@ -376,8 +394,8 @@ export default function DocumentClassificationsStep({
                 ) : (
                   <input
                     type="text"
-                    value={ruleData.predefinedData?.[fieldKey] || ''}
-                    onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, [fieldKey]: e.target.value })}
+                    value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                    onChange={(e) => updateCustomField(e.target.value)}
                     placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
                     className="form-input"
                     style={{ backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
@@ -406,7 +424,7 @@ export default function DocumentClassificationsStep({
         {/* Show info about filtered fields */}
         {(() => {
           const allDynamicFields = getCustomFieldPlaceholders('dynamic');
-          const filteredCount = allDynamicFields.filter(p => hasPredefinedValue(`customField_${p.id}`)).length;
+          const filteredCount = allDynamicFields.filter(p => hasPredefinedValue(`customField_${p.id}`, p.placeholder_name)).length;
           return filteredCount > 0 && (
             <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded-lg flex items-start gap-2">
               <span className="text-blue-600 text-lg">ℹ️</span>

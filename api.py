@@ -2165,6 +2165,12 @@ def convert_backend_to_frontend(backend_data, rule_id):
     if backend_data.get('filename_patterns'):
         frontend['filenamePatterns']['patterns'] = backend_data['filename_patterns']
     
+    # Verification fields
+    if backend_data.get('verification_fields'):
+        # Convert list of field names to dict with all fields enabled
+        for field in backend_data['verification_fields']:
+            frontend['verification']['enabledFields'][field] = True
+    
     return frontend
 
 # Test/Execute Endpoints
