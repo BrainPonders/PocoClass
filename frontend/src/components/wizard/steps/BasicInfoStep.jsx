@@ -159,7 +159,7 @@ export default function BasicInfoStep({
             
             {/* Scale markers */}
             <div className="relative mt-2 px-2">
-              <div className="relative">
+              <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
                 <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
                 <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
                 <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
@@ -182,7 +182,7 @@ export default function BasicInfoStep({
         </div>
       </div>
 
-      <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-8 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="col-span-2">
