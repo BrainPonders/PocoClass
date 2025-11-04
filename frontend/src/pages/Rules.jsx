@@ -14,6 +14,7 @@ import TrashCanModal from '@/components/TrashCanModal';
 import PaperlessFilterBar from '@/components/PaperlessFilterBar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import PageLayout from '@/components/PageLayout';
 
 export default function Rules() {
   const navigate = useNavigate();
@@ -494,43 +495,37 @@ export default function Rules() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <FileText className="w-8 h-8 text-blue-600" aria-hidden="true" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('rules_title')}</h1>
-              <p className="text-gray-500">{t('rules_subtitle')}</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={() => setTrashCanModal(true)}
-              className="btn btn-secondary"
-              aria-label="Open trash can"
-            >
-              <Trash2 className="w-5 h-5" />
-              Trash
-            </button>
-            <button 
-              onClick={() => navigate(createPageUrl('RuleEditor'))}
-              className="btn btn-primary"
-              aria-label="Create new rule"
-            >
-              <Plus className="w-5 h-5" />
-              {t('rules_create')}
-            </button>
-          </div>
-        </div>
-
-        {/* Warning banner about rule activation */}
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800">
-            <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
-            <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
-          </p>
-        </div>
+    <PageLayout
+      title={t('rules_title')}
+      subtitle={t('rules_subtitle')}
+      actions={
+        <>
+          <button 
+            onClick={() => setTrashCanModal(true)}
+            className="btn btn-secondary"
+            aria-label="Open trash can"
+          >
+            <Trash2 className="w-5 h-5" />
+            Trash
+          </button>
+          <button 
+            onClick={() => navigate(createPageUrl('RuleEditor'))}
+            className="btn btn-primary"
+            aria-label="Create new rule"
+          >
+            <Plus className="w-5 h-5" />
+            {t('rules_create')}
+          </button>
+        </>
+      }
+    >
+      {/* Warning banner about rule activation */}
+      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <p className="text-sm text-yellow-800">
+          <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
+          <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
+        </p>
+      </div>
 
         {/* Search, Filter, Sort Bar */}
         <div className="card mb-6">
@@ -624,7 +619,6 @@ export default function Rules() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Rules Table */}
       {filteredRules.length === 0 ? (
@@ -1010,6 +1004,6 @@ export default function Rules() {
         onClose={() => setTrashCanModal(false)}
         onRestore={reloadRules}
       />
-    </div>
+    </PageLayout>
   );
 }
