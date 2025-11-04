@@ -1898,18 +1898,24 @@ def list_documents():
                     except:
                         owner_name = f"User {doc['owner']}"
             
-            # Extract POCO Score from custom fields
+            # Extract POCO Score and Doc Category from custom fields
             poco_score = None
+            doc_category = None
             poco_score_field_id = api_client.get_custom_field_id('POCO Score')
-            if poco_score_field_id:
-                custom_fields = doc.get('custom_fields', [])
-                for cf in custom_fields:
-                    if cf.get('field') == poco_score_field_id:
-                        try:
-                            poco_score = float(cf.get('value', 0))
-                        except (ValueError, TypeError):
-                            poco_score = None
-                        break
+            doc_category_field_id = api_client.get_custom_field_id('Doc Category')
+            
+            custom_fields = doc.get('custom_fields', [])
+            for cf in custom_fields:
+                # Extract POCO Score
+                if poco_score_field_id and cf.get('field') == poco_score_field_id:
+                    try:
+                        poco_score = float(cf.get('value', 0))
+                    except (ValueError, TypeError):
+                        poco_score = None
+                
+                # Extract Doc Category
+                if doc_category_field_id and cf.get('field') == doc_category_field_id:
+                    doc_category = cf.get('value')
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
@@ -1928,7 +1934,8 @@ def list_documents():
                 'pdfUrl': pdf_url,
                 'downloadUrl': download_url,
                 'content': doc.get('content', ''),  # OCR text content
-                'pocoScore': poco_score  # POCO Score from custom fields
+                'pocoScore': poco_score,  # POCO Score from custom fields
+                'docCategory': doc_category  # Doc Category from custom fields
             })
         
         logger.info(f"Returning {len(formatted_docs)} formatted documents to frontend")
@@ -2360,10 +2367,52 @@ def execute_rule_endpoint(rule_id):
         if not content:
             return jsonify({'error': 'Could not retrieve document content'}), 500
         
-        # Convert document IDs to names for verification
-        paperless_metadata = metadata_processor.process_document_for_verification(
-            document, user_api_client
-        )
+        # Convert document IDs to names for verification using standard PocoClass pattern
+        # Create lookup dictionaries from cached database data
+        correspondents_lookup = {c['paperless_id']: c for c in db.get_all_correspondents()}
+        doc_types_lookup = {dt['paperless_id']: dt for dt in db.get_all_document_types()}
+        tags_lookup = {t['paperless_id']: t for t in db.get_all_tags()}
+        custom_fields_lookup = {cf['paperless_id']: cf for cf in db.get_all_custom_fields()}
+        
+        # Build paperless_metadata with names instead of IDs
+        paperless_metadata = {}
+        
+        # Convert correspondent ID to name
+        if document.get('correspondent'):
+            corr = correspondents_lookup.get(document['correspondent'])
+            if corr:
+                paperless_metadata['correspondent'] = corr['name']
+        
+        # Convert document_type ID to name
+        if document.get('document_type'):
+            dt = doc_types_lookup.get(document['document_type'])
+            if dt:
+                paperless_metadata['document_type'] = dt['name']
+        
+        # Convert tag IDs to tag names
+        if document.get('tags'):
+            tag_names = []
+            for tag_id in document['tags']:
+                tag = tags_lookup.get(tag_id)
+                if tag:
+                    tag_names.append(tag['name'])
+            if tag_names:
+                paperless_metadata['tags'] = tag_names
+        
+        # Extract custom fields with field names and values
+        if document.get('custom_fields'):
+            custom_fields_dict = {}
+            for cf_entry in document['custom_fields']:
+                field_id = cf_entry.get('field')
+                cf_def = custom_fields_lookup.get(field_id)
+                if cf_def:
+                    custom_fields_dict[cf_def['name']] = cf_entry.get('value')
+            if custom_fields_dict:
+                paperless_metadata['custom_fields'] = custom_fields_dict
+        
+        # Pass through date_created
+        if document.get('created'):
+            paperless_metadata['date_created'] = document['created']
         
         # Execute rule
         result = test_engine.execute_rule(
