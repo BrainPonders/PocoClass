@@ -79,9 +79,9 @@ export default function MDMultiplierSlider({
         {/* Scale labels */}
         <div className="flex justify-between text-xs text-gray-500 px-1">
           <div className="flex items-center gap-1">
-            <span>Auto</span>
+            <span className="text-orange-600 font-semibold">Auto</span>
             <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
-              <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+              <HelpCircle className="w-3 h-3 text-orange-400 hover:text-orange-600 cursor-help" />
             </Tooltip>
           </div>
           <span>1</span>
@@ -116,6 +116,9 @@ export default function MDMultiplierSlider({
           <div>
             <span className="text-gray-600">OCR weight:</span>
             <span className="ml-2 font-medium">{ocrMaxWeight < 1 ? ocrMaxWeight.toFixed(2) : Math.round(ocrMaxWeight)}</span>
+          </div>
+          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
+            <span className="text-gray-500 text-xs italic">Example: With {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} verified, max MD weight = {enabledFieldCount} × {enabledFieldCount} × {effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)} = {mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)} points.</span>
           </div>
         </div>
         {showWarning && (

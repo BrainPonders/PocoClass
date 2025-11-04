@@ -160,9 +160,9 @@ export default function BasicInfoStep({
               <span>65</span>
               <span>70</span>
               <div className="flex items-center gap-1">
-                <span>75</span>
+                <span className="text-green-600 font-semibold">75</span>
                 <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
-                  <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 text-green-400 hover:text-green-600 cursor-help" />
                 </Tooltip>
               </div>
               <span>80</span>
@@ -186,9 +186,12 @@ export default function BasicInfoStep({
             <span className="text-gray-600">Rule ID:</span>
             <span className="ml-2 font-medium">{ruleData.ruleId || 'Not set'}</span>
           </div>
-          <div>
+          <div className="col-span-2">
             <span className="text-gray-600">POCO Score Requirement:</span>
-            <span className="ml-2 font-medium">{ruleData.threshold}%</span>
+            <span className="ml-2 font-medium">{ruleData.threshold || 75}%</span>
+          </div>
+          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
+            <span className="text-gray-500 text-xs italic">Example: A document must score ≥ {ruleData.threshold || 75}% to be classified. A score of {Math.min((ruleData.threshold || 75) + 5, 100)}% would pass.</span>
           </div>
         </div>
       </div>
