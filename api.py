@@ -1857,6 +1857,7 @@ def list_documents():
         correspondents = {c['paperless_id']: c for c in db.get_all_correspondents()}
         doc_types = {dt['paperless_id']: dt for dt in db.get_all_document_types()}
         tags = {t['paperless_id']: t for t in db.get_all_tags()}
+        custom_fields_lookup = {cf['paperless_id']: cf for cf in db.get_all_custom_fields()}
         
         # Convert to frontend format
         formatted_docs = []
