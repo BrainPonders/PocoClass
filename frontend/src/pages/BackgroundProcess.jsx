@@ -10,6 +10,7 @@ import { User, Paperless } from '@/api/entities';
 import { apiClient } from "@/api/apiClient";
 import API_BASE_URL from '@/config/api';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
+import PageLayout from "@/components/PageLayout";
 
 export default function BackgroundProcess() {
   const { toast } = useToast();
@@ -400,15 +401,10 @@ export default function BackgroundProcess() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Activity className="w-8 h-8" />
-            Background Processing
-          </h1>
-          <p className="text-gray-500 mt-1">Monitor and manage automatic document classification</p>
-        </div>
+    <PageLayout 
+      title="Background Processing"
+      subtitle="Monitor and manage automatic document classification"
+      actions={
         <div className="flex flex-col items-end">
           <Button
             onClick={handleTrigger}
@@ -420,7 +416,8 @@ export default function BackgroundProcess() {
           </Button>
           <p className="text-xs text-gray-500 mt-1">Auto-discover & process documents tagged "NEW"</p>
         </div>
-      </div>
+      }
+    >
 
       {/* Info banner about Trigger Now */}
       <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -817,6 +814,6 @@ export default function BackgroundProcess() {
           </div>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }
