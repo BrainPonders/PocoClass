@@ -231,17 +231,9 @@ status: ${ruleData.status ?? 'draft'}`;
         padding: '16px',
         borderBottom: '1px solid var(--app-border)',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center'
       }}>
-        <h3 style={{
-          fontSize: '1rem',
-          fontWeight: '600',
-          color: 'var(--app-text)',
-          margin: 0
-        }}>
-          YAML Preview
-        </h3>
         <div style={{ display: 'flex', gap: '8px' }}>
           <button onClick={copyYaml} className="btn btn-ghost btn-sm">
             <Copy size={16} />
