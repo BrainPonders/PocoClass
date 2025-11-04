@@ -31,7 +31,7 @@ export default function TabbedPreviewPanel({
         >
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
-            <span>YAML</span>
+            <span>YAML Preview</span>
           </div>
         </button>
         <button
