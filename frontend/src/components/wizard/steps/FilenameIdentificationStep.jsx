@@ -155,7 +155,7 @@ export default function FilenameIdentificationStep({
         </button>
       </div>
 
-      <div className="mb-6">
+      <div>
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">Filename Weight Multiplier</h3>
           <Tooltip content="Controls how much influence filename patterns have in the final POCO score. Higher values mean filenames are more important." />
