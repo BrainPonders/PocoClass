@@ -487,7 +487,11 @@ export default function DocumentClassificationsStep({
                 type="date"
                 value={ruleData.predefinedData?.dateCreated || ''}
                 onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, dateCreated: e.target.value })}
-                className={`form-input ${hasDynamicRule('dateCreated') ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                className={`form-input ${
+                  hasDynamicRule('dateCreated') 
+                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                    : (ruleData.predefinedData?.dateCreated ? '' : 'text-gray-500')
+                }`}
                 disabled={hasDynamicRule('dateCreated')}
                 placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
               />
@@ -564,7 +568,11 @@ export default function DocumentClassificationsStep({
                     <select
                       value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
                       onChange={(e) => updateCustomField(e.target.value)}
-                      className={`form-input ${hasConflict ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                      className={`form-input ${
+                        hasConflict 
+                          ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                          : (ruleData.predefinedData?.customFields?.[fieldName] ? '' : 'text-gray-500')
+                      }`}
                       style={hasConflict ? {} : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                       disabled={hasConflict}
                     >
