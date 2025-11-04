@@ -205,17 +205,21 @@ status: ${ruleData.status ?? 'draft'}`;
     <div style={{ padding: '16px', height: '100%' }}>
       <div style={{
         background: '#1e293b',
-        padding: '20px',
-        fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
-        fontSize: '0.7rem',
-        lineHeight: '1.6',
-        overflowX: 'auto',
-        minHeight: '400px',
-        maxHeight: '800px',
-        overflowY: 'auto',
-        borderRadius: '8px'
+        borderRadius: '8px',
+        overflow: 'hidden'
       }}>
-        {generateColoredYaml()}
+        <div style={{
+          padding: '20px',
+          fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+          fontSize: '0.7rem',
+          lineHeight: '1.6',
+          overflowX: 'auto',
+          minHeight: '400px',
+          maxHeight: '800px',
+          overflowY: 'auto'
+        }}>
+          {generateColoredYaml()}
+        </div>
       </div>
     </div>
   );
