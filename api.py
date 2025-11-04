@@ -1904,12 +1904,6 @@ def list_documents():
             poco_score_field_id = api_client.get_custom_field_id('POCO Score')
             doc_category_field_id = api_client.get_custom_field_id('Doc Category')
             
-            # DEBUG: Log field IDs and custom fields for document 8
-            if doc['id'] == 8:
-                logger.info(f"Document 8 - POCO Score field ID: {poco_score_field_id}")
-                logger.info(f"Document 8 - Doc Category field ID: {doc_category_field_id}")
-                logger.info(f"Document 8 - Custom fields: {doc.get('custom_fields', [])}")
-            
             custom_fields = doc.get('custom_fields', [])
             for cf in custom_fields:
                 # Extract POCO Score
@@ -1919,12 +1913,25 @@ def list_documents():
                     except (ValueError, TypeError):
                         poco_score = None
                 
-                # Extract Doc Category
+                # Extract Doc Category (resolve select option ID to text)
                 if doc_category_field_id and cf.get('field') == doc_category_field_id:
-                    doc_category = cf.get('value')
-                    # DEBUG: Log what we extracted
-                    if doc['id'] == 8:
-                        logger.info(f"Document 8 - Found Doc Category value: {doc_category} (type: {type(doc_category)})")
+                    raw_value = cf.get('value')
+                    # Check if this is a select field with option IDs
+                    if raw_value and doc_category_field_id in custom_fields_lookup:
+                        cf_def = custom_fields_lookup[doc_category_field_id]
+                        if cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+                            # Resolve option ID to label
+                            select_options = cf_def['extra_data'].get('select_options', [])
+                            for option in select_options:
+                                if option.get('id') == raw_value:
+                                    doc_category = option.get('label', raw_value)
+                                    break
+                            if not doc_category:
+                                doc_category = raw_value  # Fallback to raw value
+                        else:
+                            doc_category = raw_value
+                    else:
+                        doc_category = raw_value
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
@@ -2408,14 +2415,25 @@ def execute_rule_endpoint(rule_id):
             if tag_names:
                 paperless_metadata['tags'] = tag_names
         
-        # Extract custom fields with field names and values
+        # Extract custom fields with field names and values (resolve select option IDs)
         if document.get('custom_fields'):
             custom_fields_dict = {}
             for cf_entry in document['custom_fields']:
                 field_id = cf_entry.get('field')
                 cf_def = custom_fields_lookup.get(field_id)
                 if cf_def:
-                    custom_fields_dict[cf_def['name']] = cf_entry.get('value')
+                    raw_value = cf_entry.get('value')
+                    # Resolve select option ID to label
+                    if cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+                        select_options = cf_def['extra_data'].get('select_options', [])
+                        resolved_value = raw_value
+                        for option in select_options:
+                            if option.get('id') == raw_value:
+                                resolved_value = option.get('label', raw_value)
+                                break
+                        custom_fields_dict[cf_def['name']] = resolved_value
+                    else:
+                        custom_fields_dict[cf_def['name']] = raw_value
             if custom_fields_dict:
                 paperless_metadata['custom_fields'] = custom_fields_dict
         
