@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Info } from 'lucide-react';
+import { AlertTriangle, HelpCircle } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 
 export default function MDMultiplierSlider({ 
@@ -66,45 +66,24 @@ export default function MDMultiplierSlider({
         <Tooltip content="Controls how strongly Paperless metadata influences the final POCO Score. Use Auto for balanced scoring, or set manually to increase metadata influence." />
       </div>
       
-      {/* Blue information banner for Auto mode */}
-      {mode === 'auto' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <div className="flex gap-2">
-            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-900">
-              <strong>Auto Mode (Neutraliser):</strong> Weight is automatically adjusted to <strong>1 ÷ {enabledFieldCount}</strong>, ensuring Paperless verification contributes exactly {enabledFieldCount} point{enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.
-            </div>
-          </div>
-        </div>
-      )}
-      
       <div className="space-y-2">
-        <div className="flex items-center gap-4">
-          <input
-            type="range"
-            min="0"
-            max={positions.length - 1}
-            value={currentIndex}
-            onChange={handleSliderChange}
-            className={`flex-1 h-2 rounded-lg appearance-none cursor-pointer ${
-              showWarning ? 'bg-red-200' : 'bg-gray-200'
-            }`}
-            style={{
-              background: showWarning 
-                ? 'linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #ef4444 50%, #ef4444 100%)'
-                : undefined
-            }}
-          />
-          <div className="w-20 text-center">
-            <div className="text-sm font-semibold text-blue-600">
-              {mode === 'auto' ? 'Auto' : `${value}×`}
-            </div>
-          </div>
-        </div>
+        <input
+          type="range"
+          min="0"
+          max={positions.length - 1}
+          value={currentIndex}
+          onChange={handleSliderChange}
+          className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-gray-200"
+        />
         
         {/* Scale labels */}
         <div className="flex justify-between text-xs text-gray-500 px-1">
-          <span>Auto</span>
+          <div className="flex items-center gap-1">
+            <span>Auto</span>
+            <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
+              <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+            </Tooltip>
+          </div>
           <span>1</span>
           <span>2</span>
           <span>3</span>
