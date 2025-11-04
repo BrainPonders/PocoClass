@@ -186,12 +186,21 @@ export default function BasicInfoStep({
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
-        <div className="text-sm text-blue-700 space-y-1">
-          <p><strong>Rule Name:</strong> {ruleData.ruleName || 'Not set'}</p>
-          <p><strong>Rule ID:</strong> {ruleData.ruleId || 'Not set'}</p>
-          <p><strong>POCO Score Requirement:</strong> {ruleData.threshold}%</p>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="col-span-2">
+            <span className="text-gray-600">Rule Name:</span>
+            <span className="ml-2 font-medium">{ruleData.ruleName || 'Not set'}</span>
+          </div>
+          <div className="col-span-2">
+            <span className="text-gray-600">Rule ID:</span>
+            <span className="ml-2 font-medium">{ruleData.ruleId || 'Not set'}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">POCO Score Requirement:</span>
+            <span className="ml-2 font-medium">{ruleData.threshold}%</span>
+          </div>
         </div>
       </div>
 

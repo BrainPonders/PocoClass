@@ -95,9 +95,9 @@ export default function MDMultiplierSlider({
                 : undefined
             }}
           />
-          <div className="w-32 text-center">
+          <div className="w-20 text-center">
             <div className="text-sm font-semibold text-blue-600">
-              {getLabel()}
+              {mode === 'auto' ? 'Auto' : `${value}×`}
             </div>
           </div>
         </div>
@@ -119,7 +119,8 @@ export default function MDMultiplierSlider({
       </div>
       
       {/* Dynamic info display */}
-      <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <span className="text-gray-600">Evaluated fields:</span>
@@ -127,15 +128,15 @@ export default function MDMultiplierSlider({
           </div>
           <div>
             <span className="text-gray-600">Current multiplier:</span>
-            <span className="ml-2 font-medium">{effectiveMultiplier.toFixed(2)}</span>
+            <span className="ml-2 font-medium">{effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)}</span>
           </div>
           <div>
             <span className="text-gray-600">Potential MD weight:</span>
-            <span className="ml-2 font-medium">{mdMaxWeight.toFixed(1)}</span>
+            <span className="ml-2 font-medium">{mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)}</span>
           </div>
           <div>
             <span className="text-gray-600">OCR weight:</span>
-            <span className="ml-2 font-medium">{ocrMaxWeight.toFixed(1)}</span>
+            <span className="ml-2 font-medium">{ocrMaxWeight < 1 ? ocrMaxWeight.toFixed(2) : Math.round(ocrMaxWeight)}</span>
           </div>
         </div>
         {showWarning && (
