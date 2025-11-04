@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Info } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 
 export default function MDMultiplierSlider({ 
@@ -57,14 +57,6 @@ export default function MDMultiplierSlider({
     return `${value}×`;
   };
   
-  // Get tooltip text
-  const getTooltip = () => {
-    if (mode === 'auto') {
-      return `Weight is automatically adjusted to neutralize the number of placeholders (1 / ${enabledFieldCount}). Paperless data contributes a maximum of ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''}.`;
-    }
-    return 'Manual trust weight. Paperless data influence increases linearly. Higher values may override OCR weighting.';
-  };
-  
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -72,13 +64,19 @@ export default function MDMultiplierSlider({
           Metadata Trust Multiplier
         </label>
         <Tooltip content="Controls how strongly Paperless metadata influences the final POCO Score. Use Auto for balanced scoring, or set manually to increase metadata influence." />
-        {showWarning && (
-          <div className="flex items-center gap-1 text-amber-600">
-            <AlertTriangle className="w-4 h-4" />
-            <Tooltip content="Warning: Paperless verification weight (MD) exceeds OCR weight. This may cause metadata to dominate classification results." />
-          </div>
-        )}
       </div>
+      
+      {/* Blue information banner for Auto mode */}
+      {mode === 'auto' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex gap-2">
+            <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-900">
+              <strong>Auto Mode (Neutraliser):</strong> Weight is automatically adjusted to <strong>1 ÷ {enabledFieldCount}</strong>, ensuring Paperless verification contributes exactly {enabledFieldCount} point{enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.
+            </div>
+          </div>
+        </div>
+      )}
       
       <div className="space-y-2">
         <div className="flex items-center gap-4">
@@ -100,9 +98,6 @@ export default function MDMultiplierSlider({
           <div className="w-32 text-center">
             <div className="text-sm font-semibold text-blue-600">
               {getLabel()}
-            </div>
-            <div className="text-xs text-gray-500">
-              {getTooltip()}
             </div>
           </div>
         </div>

@@ -303,14 +303,30 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">{t('configuration_summary')}</h4>
-        <div className={`text-sm ${summaryTextColor} space-y-1`}>
-          <p><strong>{t('logic_groups_summary')}:</strong> {ruleData.ocrIdentifiers?.length || 0} {t('with_total_identifiers', { totalIdentifiers })}</p>
-          <p><strong>{t('ocr_score_requirement_summary')}:</strong> {ocrThreshold}%</p>
-          <p><strong>{t('ocr_pattern_weight_summary')}:</strong> {totalIdentifiers} {t('points')}</p> {/* Changed from ocrWeight */}
-          <p><strong>{t('ocr_multiplier_summary')}:</strong> {ocrMultiplier}×</p>
-          <p><strong>{t('max_ocr_weight_summary')}:</strong> {maxOcrWeight} {t('points')} (= {totalIdentifiers} * {totalIdentifiers} * {ocrMultiplier})</p>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="text-gray-600">{t('logic_groups_summary')}:</span>
+            <span className="ml-2 font-medium">{ruleData.ocrIdentifiers?.length || 0} {t('with_total_identifiers', { totalIdentifiers })}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">{t('ocr_score_requirement_summary')}:</span>
+            <span className="ml-2 font-medium">{ocrThreshold}%</span>
+          </div>
+          <div>
+            <span className="text-gray-600">{t('ocr_pattern_weight_summary')}:</span>
+            <span className="ml-2 font-medium">{totalIdentifiers} {t('points')}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">{t('ocr_multiplier_summary')}:</span>
+            <span className="ml-2 font-medium">{ocrMultiplier}×</span>
+          </div>
+          <div className="col-span-2">
+            <span className="text-gray-600">{t('max_ocr_weight_summary')}:</span>
+            <span className="ml-2 font-medium">{maxOcrWeight} {t('points')}</span>
+            <span className="text-gray-500 text-xs ml-1">(= {totalIdentifiers} * {totalIdentifiers} * {ocrMultiplier})</span>
+          </div>
         </div>
       </div>
 
