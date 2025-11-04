@@ -55,6 +55,18 @@ export default function TabbedPreviewPanel({
     }
   };
 
+  const handleDownloadOcr = () => {
+    if (ocrContent) {
+      const blob = new Blob([ocrContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `ocr-content-${documentId || 'document'}.txt`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white border border-gray-200 rounded-lg">
       {/* Tab Headers */}
@@ -101,15 +113,13 @@ export default function TabbedPreviewPanel({
             >
               <Copy className="w-4 h-4 text-gray-600" />
             </button>
-            {activeTab === 'yaml' && (
-              <button 
-                onClick={handleDownloadYaml}
-                className="p-2 hover:bg-gray-200 rounded transition-colors"
-                title="Download YAML"
-              >
-                <Download className="w-4 h-4 text-gray-600" />
-              </button>
-            )}
+            <button 
+              onClick={activeTab === 'yaml' ? handleDownloadYaml : handleDownloadOcr}
+              className="p-2 hover:bg-gray-200 rounded transition-colors"
+              title={activeTab === 'yaml' ? 'Download YAML' : 'Download OCR'}
+            >
+              <Download className="w-4 h-4 text-gray-600" />
+            </button>
           </div>
         )}
       </div>
