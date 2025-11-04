@@ -209,7 +209,7 @@ export default function OcrIdentifiersStep({
         </button>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">OCR Score Requirement</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
@@ -229,8 +229,8 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2">
-            <div className="flex justify-between text-xs text-gray-500">
+          <div className="relative mt-2 px-2">
+            <div className="relative">
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
               <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
               <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
@@ -272,12 +272,12 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2">
-            <div className="flex justify-between text-xs text-gray-500">
+          <div className="relative mt-2 px-2">
+            <div className="relative">
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>1</span>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
-              <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-                <span className="text-blue-600 font-semibold">3</span>
+              <span style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">3</span>
+              <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(8px)'}}>
                 <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
                   <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                 </Tooltip>
@@ -294,7 +294,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
