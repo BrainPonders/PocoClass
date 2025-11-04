@@ -1905,19 +1905,6 @@ def list_documents():
             poco_score_field_id = api_client.get_custom_field_id('POCO Score')
             doc_category_field_id = api_client.get_custom_field_id('Document Category')
             
-            # DEBUG for doc 8
-            if doc['id'] == 8:
-                logger.info(f"DEBUG Doc 8 - Doc Category field ID from cache: {doc_category_field_id}")
-                logger.info(f"DEBUG Doc 8 - custom_fields from Paperless: {doc.get('custom_fields', [])}")
-                if doc_category_field_id and doc_category_field_id in custom_fields_lookup:
-                    cf_def = custom_fields_lookup[doc_category_field_id]
-                    logger.info(f"DEBUG Doc 8 - Cache entry for field {doc_category_field_id}: data_type={cf_def.get('data_type')}, has_extra_data={bool(cf_def.get('extra_data'))}, extra_data_type={type(cf_def.get('extra_data'))}")
-                    if cf_def.get('extra_data'):
-                        logger.info(f"DEBUG Doc 8 - extra_data content: {cf_def.get('extra_data')}")
-                else:
-                    logger.info(f"DEBUG Doc 8 - Field {doc_category_field_id} NOT FOUND in custom_fields_lookup!")
-                    logger.info(f"DEBUG Doc 8 - Available field IDs in cache: {list(custom_fields_lookup.keys())}")
-            
             custom_fields = doc.get('custom_fields', [])
             for cf in custom_fields:
                 # Extract POCO Score
@@ -1930,34 +1917,22 @@ def list_documents():
                 # Extract Doc Category (resolve select option ID to text)
                 if doc_category_field_id and cf.get('field') == doc_category_field_id:
                     raw_value = cf.get('value')
-                    if doc['id'] == 8:
-                        logger.info(f"DEBUG Doc 8 - FOUND Doc Category field! Raw value: {raw_value}")
                     # Check if this is a select field with option IDs
                     if raw_value and doc_category_field_id in custom_fields_lookup:
                         cf_def = custom_fields_lookup[doc_category_field_id]
-                        if doc['id'] == 8:
-                            logger.info(f"DEBUG Doc 8 - CF def: data_type={cf_def.get('data_type')}, has extra_data={bool(cf_def.get('extra_data'))}")
                         if cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
                             # Resolve option ID to label
                             select_options = cf_def['extra_data'].get('select_options', [])
-                            if doc['id'] == 8:
-                                logger.info(f"DEBUG Doc 8 - Searching {len(select_options)} select options for ID: {raw_value}")
                             for option in select_options:
                                 if option.get('id') == raw_value:
                                     doc_category = option.get('label', raw_value)
-                                    if doc['id'] == 8:
-                                        logger.info(f"DEBUG Doc 8 - MATCHED! Label: {doc_category}")
                                     break
                             if not doc_category:
                                 doc_category = raw_value  # Fallback to raw value
-                                if doc['id'] == 8:
-                                    logger.info(f"DEBUG Doc 8 - NO MATCH, using raw value: {raw_value}")
                         else:
                             doc_category = raw_value
                     else:
                         doc_category = raw_value
-                    if doc['id'] == 8:
-                        logger.info(f"DEBUG Doc 8 - FINAL doc_category: {doc_category}")
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
