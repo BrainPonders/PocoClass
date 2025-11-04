@@ -1,21 +1,41 @@
 """
 PocoClass - Metadata Processor
 Handles extraction and processing of metadata from various sources including content, filename, and API data
+
+V2 Format:
+- Uses beforeAnchor/afterAnchor for dynamic metadata extraction
+- Uses extraction_type field for type filtering (date, text, etc.)
+- Modern date parsing with UI-friendly format strings (DD-MM-YYYY, etc.)
 """
 
 import re
 import logging
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 
 class MetadataProcessor:
-    """Processes metadata from different sources"""
+    """Processes metadata from different sources using v2 rule format.
+    
+    V2 Format Features:
+    - beforeAnchor/afterAnchor: Define extraction boundaries in dynamic metadata
+    - extraction_type: Filter and format extracted values (date, text, dateFormat)
+    - format: UI-friendly date format strings (DD-MM-YYYY, MM/DD/YYYY, etc.)
+    """
     
     def __init__(self):
         self.logger = logging.getLogger(__name__)
     
     def extract_metadata_from_rule(self, rule: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
-        """Extract metadata from a rule, combining static and dynamic metadata"""
+        """Extract metadata from a rule using v2 format, combining static and dynamic metadata.
+        
+        Args:
+            rule: Rule configuration dict containing metadata extraction rules
+            content: Document content text to extract from
+            filename: Document filename to extract from
+            
+        Returns:
+            Dict with 'static', 'dynamic', and 'filename' metadata sections
+        """
         metadata = {
             'static': self.extract_static_metadata(rule),
             'dynamic': self.extract_dynamic_metadata(rule, content),
@@ -32,7 +52,17 @@ class MetadataProcessor:
         return metadata
     
     def extract_static_metadata(self, rule: Dict[str, Any]) -> Dict[str, Any]:
-        """Extract static metadata from rule"""
+        """Extract static metadata from rule (v2 format).
+        
+        Static metadata is fixed for all documents matching this rule.
+        Converts custom_fields from dict to list format for Paperless API.
+        
+        Args:
+            rule: Rule configuration dict with 'static_metadata' section
+            
+        Returns:
+            Processed static metadata dict
+        """
         static_metadata = rule.get('static_metadata', {})
         
         # Process static metadata
@@ -49,30 +79,26 @@ class MetadataProcessor:
         return processed
     
     def extract_dynamic_metadata(self, rule: Dict[str, Any], content: str) -> Dict[str, Any]:
-        """Extract dynamic metadata from content using rule patterns"""
+        """Extract dynamic metadata from content using v2 anchor patterns.
+        
+        V2 format uses beforeAnchor/afterAnchor to define extraction boundaries,
+        and extraction_type to filter and format the extracted value.
+        
+        Args:
+            rule: Rule configuration dict with 'dynamic_metadata' section
+            content: Document content text to extract from
+            
+        Returns:
+            Dict of extracted field names and values
+        """
         dynamic_metadata = rule.get('dynamic_metadata', {})
         extracted = {}
         
         for field_name, field_config in dynamic_metadata.items():
-            # Legacy format: pattern_after only
-            if isinstance(field_config, dict) and 'pattern_after' in field_config:
-                pattern = field_config['pattern_after']
-                value = self.extract_value_from_pattern(content, pattern)
-                
-                if value:
-                    # Apply formatting if specified
-                    if field_name == 'date_created' and 'format' in field_config:
-                        formatted_value = self.parse_date(value, field_config['format'])
-                        if formatted_value:
-                            extracted[field_name] = formatted_value
-                    else:
-                        extracted[field_name] = value
-            
-            # New format: beforeAnchor and afterAnchor (v2)
-            elif isinstance(field_config, dict) and ('beforeAnchor' in field_config or 'afterAnchor' in field_config or 'pattern_before' in field_config or 'pattern_after' in field_config):
-                # Support both v2 (beforeAnchor/afterAnchor) and legacy (pattern_before/pattern_after) keys
-                pattern_before = field_config.get('beforeAnchor', field_config.get('pattern_before', ''))
-                pattern_after = field_config.get('afterAnchor', field_config.get('pattern_after', ''))
+            # V2 format: beforeAnchor and afterAnchor
+            if isinstance(field_config, dict) and ('beforeAnchor' in field_config or 'afterAnchor' in field_config):
+                pattern_before = field_config.get('beforeAnchor', '')
+                pattern_after = field_config.get('afterAnchor', '')
                 value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
                 
                 if value:
@@ -86,18 +112,27 @@ class MetadataProcessor:
                         formatted_value = self.parse_date_with_format(value, field_config['format'])
                         if formatted_value:
                             extracted[field_name] = formatted_value
-                    elif value and field_name == 'date_created' and 'format' in field_config:
-                        # Legacy support for date_created without extraction_type
-                        formatted_value = self.parse_date(value, field_config['format'])
-                        if formatted_value:
-                            extracted[field_name] = formatted_value
                     elif value:
                         extracted[field_name] = value
         
         return extracted
     
     def extract_value_between_anchors(self, text: str, before_pattern: str, after_pattern: str) -> Optional[str]:
-        """Extract value between two anchor patterns (v2 format)"""
+        """Extract value between two anchor patterns using v2 format.
+        
+        Supports three extraction modes:
+        1. Both anchors: Extract text between beforeAnchor and afterAnchor
+        2. After anchor only: Extract text after afterAnchor until newline
+        3. Before anchor only: Extract text before beforeAnchor from line start
+        
+        Args:
+            text: Source text to extract from
+            before_pattern: Regex pattern for beforeAnchor (text before target value)
+            after_pattern: Regex pattern for afterAnchor (text after target value)
+            
+        Returns:
+            Extracted value string or None if no match found
+        """
         try:
             # Build combined pattern based on which anchors are provided
             if before_pattern and after_pattern:
@@ -127,12 +162,15 @@ class MetadataProcessor:
             return None
     
     def apply_extraction_type_filter(self, value: str, extraction_type: str, date_format: str = '') -> Optional[str]:
-        """Apply extraction type filter to extract specific data from the raw extracted value
+        """Apply v2 extraction_type filter to extract specific data from raw extracted value.
+        
+        The extraction_type field in v2 format allows filtering and formatting the raw
+        value extracted between anchors. Supports 'date', 'text', and 'dateFormat' types.
         
         Args:
             value: The raw extracted string from between anchors
-            extraction_type: Type of data to extract ('date', 'text', 'dateFormat', etc.)
-            date_format: Date format string (e.g., 'DD-MM-YYYY')
+            extraction_type: Type of data to extract ('date', 'text', 'dateFormat')
+            date_format: Date format string for date extraction (e.g., 'DD-MM-YYYY')
             
         Returns:
             Filtered value or None if extraction fails
@@ -162,11 +200,14 @@ class MetadataProcessor:
             return value.strip()
     
     def extract_date_from_text(self, text: str, date_format: str) -> Optional[str]:
-        """Extract a date from text using the specified date format pattern
+        """Extract a date from text using v2 date format pattern specification.
+        
+        Converts UI-friendly format strings (DD-MM-YYYY, MM/DD/YYYY) into regex
+        patterns and extracts matching date strings from text.
         
         Args:
             text: The text containing a date
-            date_format: Format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
+            date_format: V2 format like 'DD-MM-YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD', etc.
             
         Returns:
             Extracted date string or None
@@ -199,9 +240,18 @@ class MetadataProcessor:
             return None
     
     def extract_common_date_pattern(self, text: str) -> Optional[str]:
-        """Extract common date patterns as fallback
+        """Extract common date patterns as fallback when format-based extraction fails.
+        
+        Provides v2 compatibility with various international date formats
+        as a fallback mechanism.
         
         Supports: DD-MM-YYYY, DD/MM/YYYY, YYYY-MM-DD, MM/DD/YYYY, etc.
+        
+        Args:
+            text: Text potentially containing a date
+            
+        Returns:
+            Extracted date string or None
         """
         common_patterns = [
             r'\d{2}-\d{2}-\d{4}',  # DD-MM-YYYY or MM-DD-YYYY
@@ -218,11 +268,14 @@ class MetadataProcessor:
         return None
     
     def parse_date_with_format(self, date_str: str, date_format: str) -> Optional[str]:
-        """Parse a date string using the UI date format (DD-MM-YYYY style) and convert to ISO format
+        """Parse a date string using v2 UI date format and convert to ISO format.
+        
+        V2 format uses UI-friendly format strings (DD-MM-YYYY, MM/DD/YYYY) which
+        are converted to Python strptime format and parsed to ISO format for Paperless.
         
         Args:
             date_str: The date string (e.g., '27-12-2010')
-            date_format: UI format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
+            date_format: V2 UI format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
             
         Returns:
             ISO formatted date string (YYYY-MM-DD) or None
@@ -318,15 +371,22 @@ class MetadataProcessor:
             return None
     
     def extract_filename_metadata(self, rule: Dict[str, Any], filename: str) -> Dict[str, Any]:
-        """Extract metadata from filename using rule patterns
+        """Extract metadata from filename using v2 rule patterns.
         
-        Supports two pattern formats:
+        V2 format supports two pattern configurations:
         1. Simple string: Just a regex pattern for basic matching
            Example: "Invoice.*\.pdf"
         2. Dict config: Pattern with metadata extraction options
            Example: {"pattern": "Invoice_(\d{4})", "date_group": 1, "date_format": "%Y"}
            
         Dict configs support: date_group, year_group, account_group for metadata extraction
+        
+        Args:
+            rule: Rule configuration with 'filename_patterns' and 'filename_metadata'
+            filename: Document filename to extract from
+            
+        Returns:
+            Dict of extracted metadata from filename
         """
         filename_metadata = rule.get('filename_metadata', {})
         filename_patterns = rule.get('filename_patterns', [])
@@ -455,23 +515,20 @@ class MetadataProcessor:
         
         return extracted
     
-    def extract_value_from_pattern(self, text: str, pattern: str) -> Optional[str]:
-        """Extract a value from text using a regex pattern"""
-        try:
-            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-            if match:
-                groups = match.groups()
-                if groups:
-                    return groups[-1]
-                else:
-                    return match.group(0)
-            return None
-        except re.error as e:
-            self.logger.error(f"Invalid regex pattern '{pattern}': {e}")
-            return None
-    
     def parse_date(self, date_str: str, date_format: str) -> Optional[str]:
-        """Parse a date string using the specified format"""
+        """Parse a date string using Python strptime format and convert to ISO.
+        
+        Used for filename date parsing where format uses Python % codes.
+        For v2 dynamic metadata, use parse_date_with_format() which accepts
+        UI-friendly formats like DD-MM-YYYY.
+        
+        Args:
+            date_str: Date string to parse
+            date_format: Python strptime format (e.g., '%Y-%m-%d', '%d/%m/%Y')
+            
+        Returns:
+            ISO formatted date string (YYYY-MM-DD) or None
+        """
         try:
             parsed_date = datetime.strptime(date_str, date_format)
             # Return in ISO format (YYYY-MM-DD)
