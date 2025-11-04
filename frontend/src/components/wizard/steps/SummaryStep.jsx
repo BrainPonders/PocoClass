@@ -18,7 +18,13 @@ export default function SummaryStep({
 }) {
   const ocrMultiplier = ruleData.ocrMultiplier ?? OCR_DEFAULT_MULTIPLIER;
   const filenameMultiplier = ruleData.filenameMultiplier ?? FILENAME_DEFAULT_MULTIPLIER;
-  const verificationMultiplier = ruleData.verificationMultiplier ?? VERIFICATION_DEFAULT_MULTIPLIER;
+  
+  // Handle verification multiplier config (new format)
+  const verificationMultiplierConfig = ruleData.verificationMultiplierConfig || {
+    mode: 'auto',
+    value: ruleData.verificationMultiplier ?? VERIFICATION_DEFAULT_MULTIPLIER
+  };
+  const verificationMultiplier = verificationMultiplierConfig.value;
 
   const totalOcrIdentifiers = ruleData.ocrIdentifiers?.reduce((sum, group) => sum + (group.conditions?.length || 0), 0) || 0;
   const totalFilenamePatterns = (ruleData.filenamePatterns?.patterns?.length || 0) + (ruleData.filenamePatterns?.dateFormats?.length || 0);
@@ -169,7 +175,11 @@ export default function SummaryStep({
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Verification Multiplier:</span>
-              <span className="font-medium">{verificationMultiplier.toFixed(2)}×</span>
+              <span className="font-medium">
+                {verificationMultiplierConfig.mode === 'auto' 
+                  ? `Auto (${verificationMultiplier.toFixed(2)}×)` 
+                  : `${verificationMultiplier.toFixed(2)}×`}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Maximum Verification Weight:</span>

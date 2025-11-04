@@ -42,7 +42,12 @@ export default function YamlPreview({ ruleData, onGeneratorReady }) {
     const ocrThreshold = ruleData.ocrThreshold ?? 75;
     const ocrMultiplier = ruleData.ocrMultiplier ?? 3;
     const filenameMultiplier = ruleData.filenameMultiplier ?? 1;
-    const verificationMultiplier = ruleData.verificationMultiplier ?? 0.5;
+    
+    // Handle verification multiplier config (new format) or legacy single value
+    const verificationMultiplierConfig = ruleData.verificationMultiplierConfig || {
+      mode: 'auto',
+      value: ruleData.verificationMultiplier ?? 0.5
+    };
     
     return `# =================================================================================================
 # PocoClass Document Classification Rule
@@ -156,7 +161,9 @@ ${ruleData.filenamePatterns?.patterns?.filter(p => p).map(pattern => `  - "${esc
 # Paperless placeholder fields to verify for additional confidence
 
 # Verification Weight Multiplier: Controls importance of placeholder verification
-verification_multiplier: ${verificationMultiplier}  # ${verificationMultiplier}× weight
+# Mode: 'auto' = dynamic neutraliser (1 / number_of_enabled_fields), 'manual' = fixed multiplier
+verification_multiplier_mode: "${verificationMultiplierConfig.mode}"  # auto or manual
+verification_multiplier: ${verificationMultiplierConfig.value}  # ${verificationMultiplierConfig.mode === 'auto' ? 'Auto-adjusted (neutraliser)' : verificationMultiplierConfig.value + '× weight'}
 
 verification_fields:
 ${Object.entries(ruleData.verification?.enabledFields || {}).filter(([k, v]) => v).map(([field]) => `  - ${field}`).join('\n') || '  # No verification fields enabled'}
