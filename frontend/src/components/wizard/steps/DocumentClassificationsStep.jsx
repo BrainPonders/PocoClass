@@ -492,7 +492,11 @@ export default function DocumentClassificationsStep({
                     ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
                     : ''
                 }`}
-                style={!hasDynamicRule('dateCreated') && !ruleData.predefinedData?.dateCreated ? { color: '#6b7280' } : {}}
+                style={
+                  hasDynamicRule('dateCreated') 
+                    ? { color: '#6b7280' } 
+                    : (!ruleData.predefinedData?.dateCreated ? { color: '#6b7280' } : {})
+                }
                 disabled={hasDynamicRule('dateCreated')}
                 placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
               />
