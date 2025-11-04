@@ -328,8 +328,15 @@ class PatternMatcher:
         rule_id = rule.get('rule_id', 'Unknown')
         rule_name = rule.get('rule_name', 'Unknown')
         
+        # Get logic groups from core_identifiers (wizard format) or top-level (legacy format)
+        logic_groups = []
+        if 'core_identifiers' in rule and 'logic_groups' in rule['core_identifiers']:
+            logic_groups = rule['core_identifiers']['logic_groups']
+        elif 'logic_groups' in rule:
+            logic_groups = rule['logic_groups']
+        
         # Count OCR pattern matches
-        ocr_result = self.count_ocr_matches(rule.get('logic_groups', []), content, filename)
+        ocr_result = self.count_ocr_matches(logic_groups, content, filename)
         
         # Count filename pattern matches
         filename_result = self.count_filename_matches(rule.get('filename_patterns', []), filename)
@@ -349,6 +356,35 @@ class PatternMatcher:
             }
         }
     
+    def normalize_regex_pattern(self, pattern: str) -> Tuple[str, int]:
+        """
+        Normalize regex pattern from wizard format (/pattern/flags) to Python format
+        
+        Returns: (normalized_pattern, flags)
+        """
+        # Check if pattern is wrapped in /.../ with optional flags
+        if pattern.startswith('/') and '/' in pattern[1:]:
+            # Find the last slash
+            last_slash_idx = pattern.rfind('/')
+            if last_slash_idx > 0:
+                # Extract pattern and flags
+                raw_pattern = pattern[1:last_slash_idx]
+                flags_str = pattern[last_slash_idx + 1:]
+                
+                # Convert flags
+                flags = 0
+                if 'i' in flags_str:
+                    flags |= re.IGNORECASE
+                if 'm' in flags_str:
+                    flags |= re.MULTILINE
+                if 's' in flags_str:
+                    flags |= re.DOTALL
+                
+                return (raw_pattern, flags)
+        
+        # Plain pattern - return as-is with default flags
+        return (pattern, re.IGNORECASE | re.MULTILINE)
+    
     def count_ocr_matches(self, logic_groups: List[Dict[str, Any]], content: str, filename: str) -> Dict[str, Any]:
         """Count how many OCR patterns match"""
         total_count = 0
@@ -357,41 +393,49 @@ class PatternMatcher:
         
         for i, group in enumerate(logic_groups):
             group_type = group.get('type', 'match')
-            patterns = group.get('patterns', [])
+            # Handle both 'conditions' (wizard format) and 'patterns' (legacy)
+            conditions = group.get('conditions', group.get('patterns', []))
             is_mandatory = group.get('mandatory', False)
+            score = group.get('score', 0)
             
-            # Count patterns in this group
-            pattern_count = len(patterns)
-            total_count += pattern_count
+            # Each group counts as 1 unit for total (not individual conditions)
+            total_count += 1
             
-            # Evaluate patterns
-            group_matches = []
+            # Evaluate conditions
+            group_matched = False
             if group_type == 'match':
-                # ALL patterns must match
+                # ALL conditions must match (AND logic)
                 all_match = True
-                for pattern_config in patterns:
-                    if self.check_pattern_match(pattern_config, content, filename):
-                        group_matches.append(pattern_config.get('text', 'unknown'))
-                    else:
+                for condition in conditions:
+                    pattern_str = condition.get('pattern', '')
+                    if not self.check_pattern_match_v2(pattern_str, condition, content, filename):
                         all_match = False
-                
-                if all_match:
-                    matched_count += pattern_count
-                    all_matches.extend(group_matches)
+                        break
+                group_matched = all_match
             
             elif group_type == 'or':
-                # At least ONE pattern must match
-                any_match = False
-                for pattern_config in patterns:
-                    if self.check_pattern_match(pattern_config, content, filename):
-                        group_matches.append(pattern_config.get('text', 'unknown'))
-                        any_match = True
-                
-                if any_match:
-                    # For OR groups, count as 1 match (the group as a whole)
-                    # But still count all patterns in total
-                    matched_count += 1  # Count the group as matched
-                    all_matches.extend(group_matches)
+                # At least ONE condition must match (OR logic)
+                for condition in conditions:
+                    pattern_str = condition.get('pattern', '')
+                    if self.check_pattern_match_v2(pattern_str, condition, content, filename):
+                        group_matched = True
+                        break
+            
+            if group_matched:
+                matched_count += 1
+                group_name = group.get('title', f'Logic Group {i + 1}')
+                all_matches.append({
+                    'name': group_name,
+                    'matched': True,
+                    'score': score
+                })
+            else:
+                group_name = group.get('title', f'Logic Group {i + 1}')
+                all_matches.append({
+                    'name': group_name,
+                    'matched': False,
+                    'score': 0
+                })
         
         return {
             'total_count': total_count,
@@ -399,8 +443,44 @@ class PatternMatcher:
             'matches': all_matches
         }
     
+    def check_pattern_match_v2(self, pattern_str: str, condition: Dict[str, Any], content: str, filename: str) -> bool:
+        """Check if a single pattern matches (v2 with regex normalization)"""
+        source = condition.get('source', 'content')
+        range_str = condition.get('range', '')
+        
+        # Select text source
+        text = content if source == 'content' else filename
+        
+        # Apply range if specified and using content
+        if range_str and source == 'content' and '-' in range_str:
+            try:
+                # Parse range like "0-25" (percentiles) to actual character positions
+                parts = range_str.split('-')
+                start_pct = int(parts[0])
+                end_pct = int(parts[1])
+                
+                # Convert percentile to character position
+                text_len = len(text)
+                start_pos = (start_pct * text_len) // 100
+                end_pos = (end_pct * text_len) // 100
+                
+                text = text[start_pos:end_pos]
+            except (ValueError, IndexError):
+                pass  # Use full text if range parsing fails
+        
+        # Normalize regex pattern
+        normalized_pattern, flags = self.normalize_regex_pattern(pattern_str)
+        
+        # Check for match
+        try:
+            match = re.search(normalized_pattern, text, flags)
+            return match is not None
+        except re.error as e:
+            self.logger.error(f"Invalid regex pattern '{normalized_pattern}': {e}")
+            return False
+    
     def check_pattern_match(self, pattern_config: Dict[str, Any], content: str, filename: str) -> bool:
-        """Check if a single pattern matches"""
+        """Check if a single pattern matches (legacy)"""
         pattern_text = pattern_config.get('text', '')
         range_str = pattern_config.get('range', '')
         
@@ -437,11 +517,29 @@ class PatternMatcher:
         
         for pattern in filename_patterns:
             try:
-                if re.search(pattern, filename, re.IGNORECASE):
+                # Normalize regex pattern
+                normalized_pattern, flags = self.normalize_regex_pattern(pattern)
+                
+                if re.search(normalized_pattern, filename, flags):
                     matched_count += 1
-                    matches.append(pattern)
-            except re.error:
-                continue
+                    matches.append({
+                        'pattern': pattern,
+                        'matched': True,
+                        'score': 1
+                    })
+                else:
+                    matches.append({
+                        'pattern': pattern,
+                        'matched': False,
+                        'score': 0
+                    })
+            except re.error as e:
+                self.logger.error(f"Invalid filename pattern '{pattern}': {e}")
+                matches.append({
+                    'pattern': pattern,
+                    'matched': False,
+                    'score': 0
+                })
         
         return {
             'total_count': total_count,
