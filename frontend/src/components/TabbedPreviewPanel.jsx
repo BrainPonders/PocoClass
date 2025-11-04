@@ -74,11 +74,22 @@ export default function TabbedPreviewPanel({
         )}
 
         {activeTab === 'ocr' && (
-          <div className="h-full">
+          <div className="h-full p-4">
             {ocrContent ? (
-              <pre className="text-sm font-mono text-gray-800 whitespace-pre-wrap break-words">
-                {ocrContent}
-              </pre>
+              <div className="bg-gray-50 p-4 rounded flex h-full">
+                <div className="pr-4 border-r border-gray-300 text-right select-none">
+                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+                    {ocrContent.split('\n').map((_, i) => (
+                      <div key={i}>{i + 1}</div>
+                    ))}
+                  </pre>
+                </div>
+                <div className="flex-1 pl-4 overflow-auto">
+                  <pre className="text-sm font-mono text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
+                    {ocrContent}
+                  </pre>
+                </div>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center">
