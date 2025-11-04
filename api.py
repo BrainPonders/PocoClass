@@ -1904,6 +1904,12 @@ def list_documents():
             poco_score_field_id = api_client.get_custom_field_id('POCO Score')
             doc_category_field_id = api_client.get_custom_field_id('Doc Category')
             
+            # DEBUG: Log field IDs and custom fields for document 8
+            if doc['id'] == 8:
+                logger.info(f"Document 8 - POCO Score field ID: {poco_score_field_id}")
+                logger.info(f"Document 8 - Doc Category field ID: {doc_category_field_id}")
+                logger.info(f"Document 8 - Custom fields: {doc.get('custom_fields', [])}")
+            
             custom_fields = doc.get('custom_fields', [])
             for cf in custom_fields:
                 # Extract POCO Score
@@ -1916,6 +1922,9 @@ def list_documents():
                 # Extract Doc Category
                 if doc_category_field_id and cf.get('field') == doc_category_field_id:
                     doc_category = cf.get('value')
+                    # DEBUG: Log what we extracted
+                    if doc['id'] == 8:
+                        logger.info(f"Document 8 - Found Doc Category value: {doc_category} (type: {type(doc_category)})")
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
