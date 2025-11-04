@@ -7,7 +7,7 @@ export default function PageLayout({ title, subtitle, actions, children }) {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-            {subtitle && <p className="text-gray-500 mt-1">{subtitle}</p>}
+            {subtitle && <div className="text-gray-500 mt-1">{subtitle}</div>}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
