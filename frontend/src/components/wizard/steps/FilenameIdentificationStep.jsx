@@ -173,7 +173,7 @@ export default function FilenameIdentificationStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 px-2">
+          <div className="relative mt-2 px-2 pb-8">
             <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">1</span>
               <div style={{position: 'absolute', left: '0%', transform: 'translateX(8px)'}}>
