@@ -759,6 +759,23 @@ class Database:
         conn.close()
         return [dict(row) for row in rows]
     
+    def cache_custom_field(self, custom_field: Dict) -> None:
+        """Cache a single custom field without affecting others (for individual lookups)"""
+        import json
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        now = datetime.now().isoformat()
+        
+        extra_data_json = json.dumps(custom_field.get('extra_data', {})) if custom_field.get('extra_data') else None
+        cursor.execute("""
+            INSERT OR REPLACE INTO paperless_custom_fields (paperless_id, name, data_type, extra_data, last_synced)
+            VALUES (?, ?, ?, ?, ?)
+        """, (custom_field['id'], custom_field['name'], custom_field.get('data_type', 'string'), extra_data_json, now))
+        
+        conn.commit()
+        conn.close()
+        logger.debug(f"Cached custom field '{custom_field['name']}' (ID: {custom_field['id']})")
+    
     def sync_custom_fields(self, custom_fields: List[Dict]) -> int:
         """Sync custom fields from Paperless"""
         conn = self.get_connection()
