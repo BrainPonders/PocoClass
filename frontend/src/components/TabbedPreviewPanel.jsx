@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Eye, FileImage } from 'lucide-react';
+import { FileText, Eye, FileImage, Copy, Download } from 'lucide-react';
 import YamlPreview from './wizard/YamlPreview';
 
 export default function TabbedPreviewPanel({ 
@@ -9,6 +9,7 @@ export default function TabbedPreviewPanel({
   onTabChange 
 }) {
   const [activeTab, setActiveTab] = useState('yaml');
+  const [yamlGenerator, setYamlGenerator] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -21,39 +22,96 @@ export default function TabbedPreviewPanel({
       : 'px-4 py-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 cursor-pointer transition-colors';
   };
 
+  const handleCopyYaml = async () => {
+    if (yamlGenerator) {
+      try {
+        await navigator.clipboard.writeText(yamlGenerator());
+      } catch (err) {
+        console.error('Failed to copy YAML:', err);
+      }
+    }
+  };
+
+  const handleDownloadYaml = () => {
+    if (yamlGenerator) {
+      const yamlContent = yamlGenerator();
+      const blob = new Blob([yamlContent], { type: 'text/yaml' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${ruleData.ruleId || 'rule'}.yaml`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleCopyOcr = async () => {
+    if (ocrContent) {
+      try {
+        await navigator.clipboard.writeText(ocrContent);
+      } catch (err) {
+        console.error('Failed to copy OCR content:', err);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-white border border-gray-200 rounded-lg">
       {/* Tab Headers */}
-      <div className="flex border-b border-gray-200 bg-gray-50">
-        <button
-          onClick={() => handleTabClick('yaml')}
-          className={getTabClass('yaml')}
-        >
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            <span>YAML Preview</span>
+      <div className="flex justify-between items-center border-b border-gray-200 bg-gray-50">
+        <div className="flex">
+          <button
+            onClick={() => handleTabClick('yaml')}
+            className={getTabClass('yaml')}
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              <span>YAML Preview</span>
+            </div>
+          </button>
+          <button
+            onClick={() => handleTabClick('ocr')}
+            className={getTabClass('ocr')}
+            disabled={!ocrContent}
+          >
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              <span>OCR Content</span>
+            </div>
+          </button>
+          <button
+            onClick={() => handleTabClick('pdf')}
+            className={getTabClass('pdf')}
+            disabled={!documentId}
+          >
+            <div className="flex items-center gap-2">
+              <FileImage className="w-4 h-4" />
+              <span>PDF Preview</span>
+            </div>
+          </button>
+        </div>
+
+        {/* Action Buttons */}
+        {activeTab !== 'pdf' && (
+          <div className="flex items-center gap-2 px-4">
+            <button 
+              onClick={activeTab === 'yaml' ? handleCopyYaml : handleCopyOcr}
+              className="p-2 hover:bg-gray-200 rounded transition-colors"
+              title="Copy to clipboard"
+            >
+              <Copy className="w-4 h-4 text-gray-600" />
+            </button>
+            {activeTab === 'yaml' && (
+              <button 
+                onClick={handleDownloadYaml}
+                className="p-2 hover:bg-gray-200 rounded transition-colors"
+                title="Download YAML"
+              >
+                <Download className="w-4 h-4 text-gray-600" />
+              </button>
+            )}
           </div>
-        </button>
-        <button
-          onClick={() => handleTabClick('ocr')}
-          className={getTabClass('ocr')}
-          disabled={!ocrContent}
-        >
-          <div className="flex items-center gap-2">
-            <Eye className="w-4 h-4" />
-            <span>OCR Content</span>
-          </div>
-        </button>
-        <button
-          onClick={() => handleTabClick('pdf')}
-          className={getTabClass('pdf')}
-          disabled={!documentId}
-        >
-          <div className="flex items-center gap-2">
-            <FileImage className="w-4 h-4" />
-            <span>PDF Preview</span>
-          </div>
-        </button>
+        )}
       </div>
 
       {/* Tab Content */}
@@ -61,7 +119,7 @@ export default function TabbedPreviewPanel({
         {activeTab === 'yaml' && (
           <div className="h-full">
             {ruleData ? (
-              <YamlPreview ruleData={ruleData} />
+              <YamlPreview ruleData={ruleData} onGeneratorReady={setYamlGenerator} />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-500 p-4">
                 <div className="text-center">

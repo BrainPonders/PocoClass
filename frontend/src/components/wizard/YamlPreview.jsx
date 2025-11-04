@@ -1,14 +1,19 @@
 
 import React from 'react';
-import { Copy, Download } from 'lucide-react';
 import { User } from '@/api/entities';
 
-export default function YamlPreview({ ruleData }) {
+export default function YamlPreview({ ruleData, onGeneratorReady }) {
   const [currentUser, setCurrentUser] = React.useState(null);
 
   React.useEffect(() => {
     loadUser();
   }, []);
+
+  React.useEffect(() => {
+    if (onGeneratorReady) {
+      onGeneratorReady(() => generateYaml);
+    }
+  }, [onGeneratorReady, ruleData]);
 
   const loadUser = async () => {
     try {
@@ -196,68 +201,21 @@ status: ${ruleData.status ?? 'draft'}`;
     });
   };
 
-  const downloadYaml = () => {
-    const yamlContent = generateYaml();
-    const blob = new Blob([yamlContent], { type: 'text/yaml' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${ruleData.ruleId || 'rule'}.yaml`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const copyYaml = async () => {
-    try {
-      await navigator.clipboard.writeText(generateYaml());
-    } catch (err) {
-      console.error('Failed to copy YAML:', err);
-    }
-  };
-
   return (
-    <div style={{
-      background: 'var(--app-surface)',
-      borderRadius: '12px',
-      border: '1px solid var(--app-border)',
-      overflow: 'hidden',
-      width: '100%',
-      height: 'fit-content',
-      position: 'sticky',
-      top: '0'
-    }}>
+    <div style={{ padding: '16px', height: '100%' }}>
       <div style={{
-        background: 'var(--app-surface-light)',
-        padding: '16px',
-        borderBottom: '1px solid var(--app-border)',
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
+        background: '#1e293b',
+        padding: '20px',
+        fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
+        fontSize: '0.7rem',
+        lineHeight: '1.6',
+        overflowX: 'auto',
+        minHeight: '400px',
+        maxHeight: '800px',
+        overflowY: 'auto',
+        borderRadius: '8px'
       }}>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={copyYaml} className="btn btn-ghost btn-sm">
-            <Copy size={16} />
-          </button>
-          <button onClick={downloadYaml} className="btn btn-ghost btn-sm">
-            <Download size={16} />
-          </button>
-        </div>
-      </div>
-      <div style={{ padding: '16px' }}>
-        <div style={{
-          background: '#1e293b',
-          padding: '20px',
-          fontFamily: "'Monaco', 'Menlo', 'Ubuntu Mono', monospace",
-          fontSize: '0.7rem',
-          lineHeight: '1.6',
-          overflowX: 'auto',
-          minHeight: '400px',
-          maxHeight: '800px',
-          overflowY: 'auto',
-          borderRadius: '8px'
-        }}>
-          {generateColoredYaml()}
-        </div>
+        {generateColoredYaml()}
       </div>
     </div>
   );
