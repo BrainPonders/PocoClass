@@ -95,11 +95,16 @@ class MetadataProcessor:
         extracted = {}
         
         for field_name, field_config in dynamic_metadata.items():
-            # V2 format: beforeAnchor and afterAnchor
-            if isinstance(field_config, dict) and ('beforeAnchor' in field_config or 'afterAnchor' in field_config):
-                pattern_before = field_config.get('beforeAnchor', '')
-                pattern_after = field_config.get('afterAnchor', '')
-                value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
+            # V2 format: Support both beforeAnchor/afterAnchor AND pattern_before/pattern_after
+            if isinstance(field_config, dict):
+                # Check for both field name formats (frontend uses pattern_before/after in YAML)
+                pattern_before = field_config.get('beforeAnchor', '') or field_config.get('pattern_before', '')
+                pattern_after = field_config.get('afterAnchor', '') or field_config.get('pattern_after', '')
+                
+                # Only extract if at least one anchor is defined
+                value = None
+                if pattern_before or pattern_after:
+                    value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
                 
                 if value:
                     # Apply extraction type filtering if specified
