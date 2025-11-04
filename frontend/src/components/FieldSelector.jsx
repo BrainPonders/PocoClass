@@ -208,7 +208,7 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
             onFocus={() => setShowDropdown(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="form-input"
+            className={`form-input ${!searchTerm ? 'text-gray-500' : ''}`}
           />
 
           {showDropdown && (
