@@ -229,7 +229,7 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 px-2">
+          <div className="relative mt-2 px-2 pb-8">
             <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
               <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
@@ -272,7 +272,7 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 px-2">
+          <div className="relative mt-2 px-2 pb-8">
             <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>1</span>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
