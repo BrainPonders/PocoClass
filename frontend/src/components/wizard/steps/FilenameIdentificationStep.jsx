@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Wand2, Trash2 } from 'lucide-react'; // Import Trash2 icon
+import { Plus, Wand2, Trash2, HelpCircle } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import Tooltip from '@/components/Tooltip';
 import PatternHelperModal from '@/components/PatternHelperModal';
@@ -149,19 +149,8 @@ export default function FilenameIdentificationStep({
           <h3 className="font-semibold text-lg">Filename Weight Multiplier</h3>
           <Tooltip content="Controls how much influence filename patterns have in the final POCO score. Higher values mean filenames are more important." />
         </div>
-        <p className="text-sm text-gray-600 mb-3">
-          Controls how much weight filename patterns have in the final POCO score. Default is 1× because filenames are less reliable than OCR content.
-        </p>
         
-        {/* Current Value Display */}
-        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-          <div className="text-center">
-            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-            <div className="text-3xl font-bold text-blue-700">{filenameMultiplier}×</div>
-          </div>
-        </div>
-
-        <div className="mt-2">
+        <div className="space-y-2">
           <input
             type="range"
             min="1"
@@ -170,23 +159,25 @@ export default function FilenameIdentificationStep({
             value={filenameMultiplier}
             onChange={(e) => updateRuleData('filenameMultiplier', parseInt(e.target.value))}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((filenameMultiplier - 1) / 9) * 100}%, #e5e7eb ${((filenameMultiplier - 1) / 9) * 100}%, #e5e7eb 100%)`
-            }}
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 mb-1">
-            <div className="flex justify-between items-center">
-              <div className="text-center relative">
-                <div className="text-sm font-semibold text-green-600 leading-tight">1×</div>
-                <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
-                <div className="text-xs text-gray-600 font-medium leading-tight">High Weight</div>
-              </div>
+          <div className="flex justify-between text-xs text-gray-500 px-1">
+            <div className="flex items-center gap-1">
+              <span className="text-amber-600 font-semibold">1</span>
+              <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
+                <HelpCircle className="w-3 h-3 text-amber-400 hover:text-amber-600 cursor-help" />
+              </Tooltip>
             </div>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
           </div>
         </div>
       </div>
@@ -195,20 +186,23 @@ export default function FilenameIdentificationStep({
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="text-gray-600">Total Patterns:</span>
-            <span className="ml-2 font-medium">{totalPatterns} patterns</span>
+            <span className="text-gray-600">Total patterns:</span>
+            <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span className="text-gray-600">Pattern Weight:</span>
-            <span className="ml-2 font-medium">{totalPatterns} points</span>
+            <span className="text-gray-600">Current multiplier:</span>
+            <span className="ml-2 font-medium">{filenameMultiplier}</span>
           </div>
           <div>
-            <span className="text-gray-600">Filename Multiplier:</span>
-            <span className="ml-2 font-medium">{filenameMultiplier}×</span>
+            <span className="text-gray-600">Pattern weight:</span>
+            <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span className="text-gray-600">Max Filename Weight:</span>
-            <span className="ml-2 font-medium">{maxFilenameWeight} points</span>
+            <span className="text-gray-600">Max filename weight:</span>
+            <span className="ml-2 font-medium">{maxFilenameWeight}</span>
+          </div>
+          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
+            <span className="text-gray-500 text-xs italic">Example: With {totalPatterns} pattern{totalPatterns !== 1 ? 's' : ''} defined, max filename weight = {totalPatterns} × {totalPatterns} × {filenameMultiplier} = {maxFilenameWeight} points.</span>
           </div>
         </div>
       </div>

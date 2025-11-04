@@ -279,32 +279,35 @@ export default function OcrIdentifiersStep({
       </div>
 
       <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">{t('configuration_summary')}</h4>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          <div className="col-span-2">
-            <span className="text-gray-600">{t('logic_groups_summary')}:</span>
-            <span className="ml-2 font-medium">{ruleData.ocrIdentifiers?.length || 0} {t('with_total_identifiers', { totalIdentifiers })}</span>
+        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="text-gray-600">Logic groups:</span>
+            <span className="ml-2 font-medium">{ruleData.ocrIdentifiers?.length || 0}</span>
           </div>
           <div>
-            <span className="text-gray-600">{t('ocr_score_requirement_summary')}:</span>
+            <span className="text-gray-600">Total identifiers:</span>
+            <span className="ml-2 font-medium">{totalIdentifiers}</span>
+          </div>
+          <div>
+            <span className="text-gray-600">OCR score requirement:</span>
             <span className="ml-2 font-medium">{ocrThreshold}%</span>
           </div>
           <div>
-            <span className="text-gray-600">{t('ocr_multiplier_summary')}:</span>
+            <span className="text-gray-600">OCR multiplier:</span>
             <span className="ml-2 font-medium">{ocrMultiplier}×</span>
           </div>
           <div>
-            <span className="text-gray-600">{t('ocr_pattern_weight_summary')}:</span>
-            <span className="ml-2 font-medium">{totalIdentifiers} {t('points')}</span>
+            <span className="text-gray-600">Pattern weight:</span>
+            <span className="ml-2 font-medium">{totalIdentifiers}</span>
           </div>
-          <div className="col-span-2">
-            <span className="text-gray-600">{t('max_ocr_weight_summary')}:</span>
-            <span className="ml-2 font-medium">{maxOcrWeight} {t('points')}</span>
-            <span className="text-gray-500 text-xs ml-1">(= {totalIdentifiers} × {totalIdentifiers} × {ocrMultiplier})</span>
+          <div>
+            <span className="text-gray-600">Max OCR weight:</span>
+            <span className="ml-2 font-medium">{maxOcrWeight}</span>
           </div>
           {totalIdentifiers > 0 && (
             <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
-              <span className="text-gray-500 text-xs italic">Example: If all {totalIdentifiers} patterns match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
+              <span className="text-gray-500 text-xs italic">Example: If all {totalIdentifiers} pattern{totalIdentifiers !== 1 ? 's' : ''} match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
             </div>
           )}
         </div>
