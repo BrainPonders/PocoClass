@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, FileText, Eye } from 'lucide-react';
+import { Plus, FileText, Eye, HelpCircle } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import LogicGroupEditor from '../LogicGroupEditor';
 import Tooltip from '@/components/Tooltip';
@@ -202,19 +202,8 @@ export default function OcrIdentifiersStep({
           <h3 className="font-semibold text-lg">OCR Score Requirement</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
         </div>
-        <p className="text-sm text-gray-600 mb-3">
-          {t('ocr_score_requirement_description')}
-        </p>
         
-        {/* Current Value Display */}
-        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-          <div className="text-center">
-            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-            <div className="text-3xl font-bold text-blue-700">{tempOcrThreshold}%</div>
-          </div>
-        </div>
-
-        <div className="mt-2">
+        <div className="space-y-2">
           <input
             type="range"
             min="50"
@@ -224,28 +213,27 @@ export default function OcrIdentifiersStep({
             onChange={handleOcrThresholdSliderChange}
             onMouseUp={handleOcrThresholdSliderRelease}
             onTouchEnd={handleOcrThresholdSliderRelease}
-            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 ${((tempOcrThreshold - 50) / 50) * 100}%, #e5e7eb ${((tempOcrThreshold - 50) / 50) * 100}%)`
-            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 mb-1">
-            <div className="flex justify-between items-center">
-              <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700 leading-tight">50%</div>
-                <div className="text-xs text-gray-600 font-medium leading-tight">{t('permissive')}</div>
-              </div>
-              <div className="text-center relative">
-                <div className="text-sm font-semibold text-green-600 leading-tight">75%</div>
-                <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700 leading-tight">100%</div>
-                <div className="text-xs text-gray-600 font-medium leading-tight">{t('very_strict')}</div>
-              </div>
+          <div className="flex justify-between text-xs text-gray-500 px-1">
+            <span>50</span>
+            <span>55</span>
+            <span>60</span>
+            <span>65</span>
+            <span>70</span>
+            <div className="flex items-center gap-1">
+              <span>75</span>
+              <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
+                <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+              </Tooltip>
             </div>
+            <span>80</span>
+            <span>85</span>
+            <span>90</span>
+            <span>95</span>
+            <span>100</span>
           </div>
         </div>
       </div>
@@ -255,19 +243,8 @@ export default function OcrIdentifiersStep({
           <h3 className="font-semibold text-lg">OCR Weight Multiplier</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
         </div>
-        <p className="text-sm text-gray-600 mb-3">
-          {t('ocr_weight_multiplier_description')}
-        </p>
         
-        {/* Current Value Display */}
-        <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-          <div className="text-center">
-            <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-            <div className="text-3xl font-bold text-blue-700">{tempMultiplier}×</div>
-          </div>
-        </div>
-
-        <div className="mt-2">
+        <div className="space-y-2">
           <input
             type="range"
             min="1"
@@ -277,28 +254,26 @@ export default function OcrIdentifiersStep({
             onChange={handleMultiplierSliderChange}
             onMouseUp={handleMultiplierSliderRelease}
             onTouchEnd={handleMultiplierSliderRelease}
-            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #3b82f6 ${((tempMultiplier - 1) / 9) * 100}%, #e5e7eb ${((tempMultiplier - 1) / 9) * 100}%)`
-            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2 mb-1">
-            <div className="flex justify-between items-center">
-              <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700 leading-tight">1×</div>
-                <div className="text-xs text-gray-600 font-medium leading-tight">{t('low_weight')}</div>
-              </div>
-              <div className="absolute left-[22.2%] -translate-x-1/2 text-center">
-                <div className="text-sm font-semibold text-green-600 leading-tight">3×</div>
-                <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-semibold text-gray-700 leading-tight">10×</div>
-                <div className="text-xs text-gray-600 font-medium leading-tight">{t('high_weight')}</div>
-              </div>
+          <div className="flex justify-between text-xs text-gray-500 px-1">
+            <span>1</span>
+            <span>2</span>
+            <div className="flex items-center gap-1">
+              <span>3</span>
+              <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
+                <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+              </Tooltip>
             </div>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
           </div>
         </div>
       </div>
