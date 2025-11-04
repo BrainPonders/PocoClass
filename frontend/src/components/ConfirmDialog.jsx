@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
 export default function ConfirmDialog({ 
@@ -9,8 +9,19 @@ export default function ConfirmDialog({
   message, 
   confirmText = "Confirm", 
   cancelText = "Cancel",
-  variant = "danger"
+  variant = "danger",
+  showDontShowAgain = false,
+  warningKey = null
 }) {
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+
+  // Reset checkbox state when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setDontShowAgain(false);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const variantStyles = {
@@ -36,6 +47,13 @@ export default function ConfirmDialog({
 
   const styles = variantStyles[variant];
 
+  const handleConfirm = () => {
+    if (showDontShowAgain && dontShowAgain && warningKey) {
+      sessionStorage.setItem(`hideWarning_${warningKey}`, 'true');
+    }
+    onConfirm();
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content max-w-md" onClick={(e) => e.stopPropagation()}>
@@ -56,13 +74,28 @@ export default function ConfirmDialog({
             </button>
           </div>
         </div>
-        <div className="p-6 flex justify-end gap-3">
-          <button onClick={onClose} className="btn btn-secondary">
-            {cancelText}
-          </button>
-          <button onClick={onConfirm} className={`btn ${styles.button}`}>
-            {confirmText}
-          </button>
+        <div className="p-6">
+          {showDontShowAgain && (
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={dontShowAgain}
+                  onChange={(e) => setDontShowAgain(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span>Don't show this again during this session</span>
+              </label>
+            </div>
+          )}
+          <div className="flex justify-end gap-3">
+            <button onClick={onClose} className="btn btn-secondary">
+              {cancelText}
+            </button>
+            <button onClick={handleConfirm} className={`btn ${styles.button}`}>
+              {confirmText}
+            </button>
+          </div>
         </div>
       </div>
     </div>
