@@ -1,590 +1,1638 @@
-# PocoClass Technical Manual
+# PocoClass Technical Manual v2
 **Version:** 2.0  
-**Last Updated:** 2025-11-01  
-**Purpose:** Internal reference for developers and maintainers
+**Last Updated:** November 4, 2025  
+**Purpose:** Comprehensive technical documentation for PocoClass v2 architecture, logic, and implementation
 
 ---
 
 ## Table of Contents
-1. [Overview](#overview)
-2. [POCO Scoring System v2](#poco-scoring-system-v2)
-3. [Document Processing Workflow](#document-processing-workflow)
-4. [Tagging System](#tagging-system)
-5. [Custom Fields Architecture](#custom-fields-architecture)
-6. [Background Processing Engine](#background-processing-engine)
-7. [Document Notes Mechanism](#document-notes-mechanism)
-8. [Database Schema](#database-schema)
-9. [API Architecture](#api-architecture)
+1. [System Architecture](#1-system-architecture)
+2. [Core Principles](#2-core-principles)
+3. [POCO Scoring v2 Mechanism](#3-poco-scoring-v2-mechanism)
+4. [Pattern Matching Engine](#4-pattern-matching-engine)
+5. [Metadata Extraction System](#5-metadata-extraction-system)
+6. [Rule Evaluation Process](#6-rule-evaluation-process)
+7. [Background Processing System](#7-background-processing-system)
+8. [User Control Mechanisms](#8-user-control-mechanisms)
+9. [Data Flow Diagrams](#9-data-flow-diagrams)
+10. [API Reference](#10-api-reference)
+11. [Database Schema](#11-database-schema)
 
 ---
 
-## Overview
+## 1. System Architecture
 
-PocoClass is an automated document classification system for Paperless-ngx that uses a dual-score evaluation mechanism to classify documents based on OCR content, filename patterns, and existing Paperless metadata.
+### 1.1 Overview
 
-### Core Philosophy
-- **OCR as Source of Truth**: Pattern matching against OCR content is the primary classification mechanism
-- **Always Score, Always Tag**: Every processed document receives a score and a tag (POCO+ or POCO-), even if score is 0%
-- **No Gaps**: Once processed, documents are permanently marked to prevent re-processing loops
+PocoClass is an automated document classification system for Paperless-ngx that uses intelligent pattern matching, metadata extraction, and a dual-score evaluation mechanism to classify documents based on OCR content, filename patterns, and existing Paperless metadata.
 
----
+**Key Components:**
+- **Backend**: Python Flask REST API
+- **Frontend**: React SPA with modern UI components
+- **Database**: SQLite for configuration, sessions, and entity caching
+- **Integration**: Paperless-ngx via REST API
+- **Processing**: Background processor with debouncing and auto-pause
 
-## POCO Scoring System v2
+### 1.2 Technology Stack
 
-### Dual-Score Evaluation
+```
+Backend:
+├── Flask (REST API framework)
+├── Python 3.x
+├── SQLite (embedded database)
+├── Cryptography (token encryption)
+└── PyYAML (rule configuration)
 
-PocoClass calculates TWO scores for every document:
+Frontend:
+├── React 18+
+├── Vite (build tool)
+├── TailwindCSS (styling)
+└── Shadcn/UI (component library)
 
-#### 1. POCO OCR Score (Transparency Score)
-**Purpose**: Shows how well OCR content matched the rule patterns  
-**Formula**: `(OCR_matched / OCR_total) × 100`  
-**Range**: 0-100%  
-**Default Threshold**: 75%
-
-**Calculation**:
-```python
-ocr_weighted = ocr_matches × 3.0  # 3x multiplier (trust factor)
-ocr_max_weight = ocr_total × 3.0
-poco_ocr_score = (ocr_weighted / ocr_max_weight) × 100
+Integration:
+└── Paperless-ngx REST API
 ```
 
-**Usage**: 
-- ALWAYS calculated for every rule evaluation
-- ALWAYS written to document notes
-- OPTIONALLY written to Paperless custom field (user configurable)
+### 1.3 V2-Only Approach
 
-#### 2. POCO Score (Actionable Score)
-**Purpose**: Final classification score combining OCR, filename, and Paperless verification  
-**Formula**: `(OCR_weighted + Filename_weighted + Paperless_weighted) / Total_max_weight × 100`  
-**Range**: 0-100%  
-**Default Threshold**: 80% (configurable per rule via `threshold` field)
+PocoClass v2 has been **completely refactored** to remove all legacy v1 code. The system now operates exclusively with v2 logic:
 
-**Calculation**:
+**V2 Features:**
+- **Logic Groups**: OCR patterns organized in AND/OR logic groups
+- **Anchor-Based Extraction**: Dynamic metadata using beforeAnchor/afterAnchor patterns
+- **Dual-Score System**: Transparent POCO OCR Score + actionable POCO Score
+- **Regex Normalization**: JavaScript-style patterns (`/pattern/flags`) auto-converted to Python
+- **Trust-Based Multipliers**: OCR (3x), Filename (1x), Paperless (neutralized)
+- **Tag-Based Processing**: Discovery via NEW tag, classification via POCO+ / POCO- tags
+
+**Removed V1 Legacy:**
+- ❌ Old pattern_count and match_count logic
+- ❌ Legacy score calculation formulas
+- ❌ V1 metadata extraction methods
+- ❌ Single-score evaluation
+- ❌ Hybrid v1/v2 detection code
+
+---
+
+## 2. Core Principles
+
+### 2.1 OCR as Source of Truth
+
+**Philosophy**: Pattern matching against OCR content is the primary classification mechanism.
+
+- OCR patterns receive **3x trust multiplier** (highest weight)
+- OCR threshold (default 75%) acts as a **gate** - must pass before final classification
+- Filename and Paperless verification are **supporting data sources**, not primary classifiers
+
+### 2.2 Dual-Score Evaluation System
+
+PocoClass calculates **TWO** scores for every document:
+
+#### POCO OCR Score (Transparency Score)
+- **Purpose**: Shows how well OCR content matched the rule patterns
+- **Range**: 0-100%
+- **Default Threshold**: 75%
+- **Always Calculated**: Yes
+- **Written to Custom Field**: Optional (user configurable)
+
+#### POCO Score (Actionable Score)
+- **Purpose**: Final classification score combining OCR, filename, and Paperless verification
+- **Range**: 0-100%
+- **Default Threshold**: 80% (configurable per rule)
+- **Always Calculated**: Yes
+- **Written to Custom Field**: Mandatory
+
+### 2.3 Trust-Based Multipliers
+
+Each data source has a **trust multiplier** reflecting its reliability:
+
+| Source | Multiplier | Rationale |
+|--------|------------|-----------|
+| OCR Patterns | 3.0x | Most reliable - actual document content |
+| Filename Patterns | 1.0x | Moderate reliability - user-controlled |
+| Paperless Verification | 1/n | Neutralized - prevents field-count inflation |
+
+### 2.4 Tag-Based Processing
+
+**Always Tag, Always Score**: Every processed document receives:
+1. **POCO Score** and **POCO OCR** custom fields (even if 0%)
+2. **POCO+ tag** (if classified) or **POCO- tag** (if not classified)
+3. **Scoring table** in document notes
+
+**Tag-Based Discovery**:
+- Documents marked with **NEW** tag are discovered for processing
+- Documents with **POCO+** or **POCO-** tags are skipped (already processed)
+- No gaps - once processed, permanently marked
+
+### 2.5 No Gaps Philosophy
+
+**Guarantee**: Every document that enters the processing pipeline gets scored and tagged, ensuring:
+- No infinite re-processing loops
+- Clear audit trail of classification attempts
+- Transparent scoring even for non-matches
+
+---
+
+## 3. POCO Scoring v2 Mechanism
+
+### 3.1 Algorithm Overview
+
+The POCO Scoring v2 system implements a **weighted, multi-source evaluation** mechanism with two distinct scores.
+
 ```python
-# OCR Component (3x multiplier)
-ocr_weighted = ocr_matches × 3.0
-ocr_max_weight = ocr_total × 3.0
+# Scoring Components
+ocr_weighted = ocr_matches × 3.0          # OCR trust multiplier
+filename_weighted = filename_matches × 1.0 # Filename trust multiplier
+paperless_weighted = paperless_matches / paperless_total  # Neutralized
 
-# Filename Component (1x multiplier)
-filename_weighted = filename_matches × 1.0
-filename_max_weight = filename_total × 1.0
+# POCO OCR Score (transparency)
+poco_ocr_score = (ocr_weighted / ocr_max_weight) × 100
 
-# Paperless Component (neutralized to prevent inflation)
-paperless_multiplier = 1.0 / paperless_total  # Auto-calculated
-paperless_weighted = paperless_matches × paperless_multiplier
-paperless_max_weight = 1.0  # Always 1.0 due to neutralization
-
-# Final Score
+# POCO Score (actionable)
 total_weighted = ocr_weighted + filename_weighted + paperless_weighted
-total_max_weight = ocr_max_weight + filename_max_weight + paperless_max_weight
+total_max_weight = ocr_max_weight + filename_max_weight + 1.0
 poco_score = (total_weighted / total_max_weight) × 100
 ```
 
-**Usage**:
-- Determines POCO+ vs POCO- tag assignment
-- ALWAYS written to document notes
-- ALWAYS written to Paperless custom field "POCO Score" (mandatory)
+### 3.2 Detailed Formula Breakdown
 
-### Classification Decision
+#### 3.2.1 OCR Component
 
-A document is classified (POCO+) if **BOTH** thresholds are met:
+**Input**:
+- `ocr_matches`: Number of logic groups matched
+- `ocr_total`: Total number of logic groups defined
+- `ocr_multiplier`: 3.0 (default trust weight)
+
+**Calculation**:
 ```python
-if poco_ocr_score >= ocr_threshold AND poco_score >= threshold:
-    # Classified - apply metadata, assign POCO+ tag
+ocr_weighted = ocr_matches × 3.0
+ocr_max_weight = ocr_total × 3.0
+poco_ocr_percentage = (ocr_weighted / ocr_max_weight) × 100
+```
+
+**Example**:
+- 8 out of 10 logic groups matched
+- `ocr_weighted = 8 × 3.0 = 24.0`
+- `ocr_max_weight = 10 × 3.0 = 30.0`
+- `poco_ocr_score = (24.0 / 30.0) × 100 = 80%`
+
+#### 3.2.2 Filename Component
+
+**Input**:
+- `filename_matches`: Number of filename patterns matched
+- `filename_total`: Total number of filename patterns defined
+- `filename_multiplier`: 1.0 (default trust weight)
+
+**Calculation**:
+```python
+filename_weighted = filename_matches × 1.0
+filename_max_weight = filename_total × 1.0
+filename_percentage = (filename_matches / filename_total) × 100
+```
+
+**Example**:
+- 2 out of 3 filename patterns matched
+- `filename_weighted = 2 × 1.0 = 2.0`
+- `filename_max_weight = 3 × 1.0 = 3.0`
+- `filename_percentage = 66.67%`
+
+#### 3.2.3 Paperless Verification Component
+
+**Input**:
+- `paperless_matches`: Number of metadata fields verified
+- `paperless_total`: Total number of verification fields evaluated
+- `paperless_multiplier`: `1 / paperless_total` (auto-calculated, neutralized)
+
+**Calculation**:
+```python
+paperless_multiplier = 1.0 / paperless_total  # Neutralization
+paperless_weighted = paperless_matches × paperless_multiplier
+paperless_max_weight = 1.0  # Always 1.0 due to neutralization
+paperless_percentage = (paperless_matches / paperless_total) × 100
+```
+
+**Example**:
+- 3 out of 5 verification fields matched
+- `paperless_multiplier = 1.0 / 5 = 0.2`
+- `paperless_weighted = 3 × 0.2 = 0.6`
+- `paperless_max_weight = 1.0` (fixed)
+- `paperless_percentage = 60%`
+
+**Why Neutralization?**  
+Without neutralization, rules with more verification fields would artificially inflate scores. By setting `max_weight = 1.0`, verification contributes **at most 1 point** to the final score regardless of field count.
+
+#### 3.2.4 Combined POCO Score
+
+**Calculation**:
+```python
+total_weighted = ocr_weighted + filename_weighted + paperless_weighted
+total_max_weight = ocr_max_weight + filename_max_weight + 1.0
+poco_score = (total_weighted / total_max_weight) × 100
+```
+
+**Complete Example**:
+```
+OCR: 8/10 matched → weighted 24.0 / 30.0
+Filename: 2/3 matched → weighted 2.0 / 3.0
+Paperless: 3/5 verified → weighted 0.6 / 1.0
+
+Total Weighted: 24.0 + 2.0 + 0.6 = 26.6
+Total Max Weight: 30.0 + 3.0 + 1.0 = 34.0
+
+POCO OCR Score = (24.0 / 30.0) × 100 = 80.0%
+POCO Score = (26.6 / 34.0) × 100 = 78.24%
+```
+
+### 3.3 Threshold Evaluation
+
+Classification requires **BOTH** thresholds to pass:
+
+```python
+ocr_passes = poco_ocr_score >= ocr_threshold  # Default: 75%
+poco_passes = poco_score >= poco_threshold     # Default: 80%
+
+classification_allowed = ocr_passes AND poco_passes
+```
+
+**Decision Matrix**:
+
+| POCO OCR | POCO Score | Result | Rationale |
+|----------|------------|--------|-----------|
+| 80% | 85% | ✅ CLASSIFIED | Both pass |
+| 70% | 85% | ❌ REJECTED | OCR below gate |
+| 80% | 75% | ❌ REJECTED | POCO below threshold |
+| 60% | 60% | ❌ REJECTED | Both fail |
+
+### 3.4 Status Categories
+
+Based on combined scores, documents receive a **status**:
+
+```python
+if poco_score == 0:
+    status = 'FAIL'
+    reason = 'OCR failed mandatory identifiers'
+elif poco_ocr_score < ocr_threshold:
+    status = 'FAIL'
+    reason = f'OCR score {poco_ocr_score}% below threshold {ocr_threshold}%'
+elif poco_score < poco_threshold:
+    status = 'BORDERLINE'
+    reason = f'POCO score {poco_score}% below threshold {poco_threshold}%'
+elif poco_score >= 90:
+    status = 'EXCELLENT'
+    reason = 'Very high confidence; all sources aligned'
+elif poco_score >= 80:
+    status = 'CONFIDENT'
+    reason = 'Confident classification'
 else:
-    # Not classified - assign POCO- tag, no metadata changes
+    status = 'PASS'
+    reason = 'Classification acceptable'
 ```
 
-**Key Points**:
-- OCR threshold acts as a "gate" - if OCR patterns don't match well enough, classification fails immediately
-- POCO threshold determines final classification after considering all data sources
-- Thresholds are **per-rule** (not global)
+### 3.5 Implementation Reference
+
+**File**: `scoring_calculator_v2.py`
+
+**Key Methods**:
+- `calculate_scores()`: Computes both POCO OCR and POCO scores
+- `evaluate_thresholds()`: Determines classification_allowed status
+- `calculate_full_evaluation()`: Complete scoring + threshold evaluation
 
 ---
 
-## Document Processing Workflow
+## 4. Pattern Matching Engine
 
-### Complete Processing Flow
+### 4.1 Logic Group Architecture
 
-```
-1. Document Discovery
-   ↓
-2. Fetch Document Content (OCR)
-   ↓
-3. Test Against All Active Rules
-   ↓
-4. Select Best Match (highest POCO Score)
-   ↓
-5. Calculate Scores (POCO Score + POCO OCR)
-   ↓
-6. Determine Classification (compare to thresholds)
-   ↓
-7. Apply Metadata (if classified)
-   ↓
-8. Write Scores to Custom Fields
-   ↓
-9. Add POCO Tag (+ or -)
-   ↓
-10. Write Scoring Table to Notes
-    ↓
-11. Log Result
-```
+**Logic Groups** are the fundamental unit of OCR pattern matching in v2. Each group:
+- Counts as **1 unit** for scoring (not individual patterns)
+- Contains one or more **conditions** (patterns)
+- Has a **type** (AND or OR logic)
 
-### Step-by-Step Details
+**Group Types**:
+1. **`match` (AND)**: ALL conditions must match
+2. **`or` (OR)**: At least ONE condition must match
 
-#### 1. Document Discovery
-**Location**: `background_processor.py::_discover_documents()`
-
-Documents are discovered using tag-based filtering:
-```python
-# Include: Documents with NEW tag
-# Exclude: Documents with POCO+ or POCO- tags
-tags = [new_tag_id]
-exclude_tags = [poco_plus_tag_id, poco_minus_tag_id]
-```
-
-**Result**: Only unprocessed documents are discovered (prevents infinite loops)
-
-#### 2. Fetch Document Content
-**Location**: `api_client.py::get_document_content()`
-
-Fetches OCR text from Paperless-ngx:
-```
-GET /api/documents/{doc_id}/
-→ Extract doc['content'] field
-```
-
-#### 3-4. Rule Testing
-**Location**: `background_processor.py::_process_single_document()`
-
-Tests document against ALL active rules:
-```python
-best_result = None
-best_score = 0
-
-for rule in active_rules:
-    result = test_engine.test_rule(rule, doc_id, content, filename, doc)
-    poco_score = result.get('poco_score', 0)
+**Structure**:
+```yaml
+core_identifiers:
+  logic_groups:
+    - title: "Bank Identifier"
+      type: "match"  # AND logic
+      conditions:
+        - pattern: "/ExampleBank/i"
+          source: "content"
+        - pattern: "/IBAN.*NL/i"
+          source: "content"
     
-    if poco_score > best_score:
-        best_score = poco_score
-        best_result = result
-        best_rule = rule
+    - title: "Account Type"
+      type: "or"  # OR logic
+      conditions:
+        - pattern: "/Checking Account/i"
+          source: "content"
+        - pattern: "/Savings Account/i"
+          source: "content"
 ```
 
-**Result**: Best matching rule is selected (or None if no matches)
+### 4.2 Regex Normalization
 
-#### 5. Score Calculation
-Performed by `scoring_calculator_v2.py::POCOScoringV2`
+**Challenge**: Frontend wizard saves patterns in JavaScript format (`/pattern/flags`), but Python uses different regex syntax.
 
-Even if no rules match, scores are calculated (will be 0):
+**Solution**: `normalize_regex_pattern()` auto-converts JavaScript patterns to Python.
+
+**Conversion Logic**:
 ```python
-poco_score = best_score if best_result else 0
-poco_ocr = best_result.get('poco_ocr', 0) if best_result else 0
+def normalize_regex_pattern(pattern: str) -> Tuple[str, int]:
+    # JavaScript format: /pattern/flags
+    if pattern.startswith('/') and '/' in pattern[1:]:
+        last_slash_idx = pattern.rfind('/')
+        raw_pattern = pattern[1:last_slash_idx]
+        flags_str = pattern[last_slash_idx + 1:]
+        
+        # Convert flags
+        flags = 0
+        if 'i' in flags_str:  # Case insensitive
+            flags |= re.IGNORECASE
+        if 'm' in flags_str:  # Multiline
+            flags |= re.MULTILINE
+        if 's' in flags_str:  # Dotall
+            flags |= re.DOTALL
+        
+        return (raw_pattern, flags)
+    
+    # Plain pattern - default flags
+    return (pattern, re.IGNORECASE | re.MULTILINE)
 ```
 
-#### 6. Classification Decision
+**Examples**:
+
+| Input Pattern | Normalized Pattern | Flags |
+|---------------|-------------------|-------|
+| `/ExampleBank/i` | `ExampleBank` | `IGNORECASE \| MULTILINE` |
+| `/Invoice\s+\d+/im` | `Invoice\s+\d+` | `IGNORECASE \| MULTILINE` |
+| `IBAN` | `IBAN` | `IGNORECASE \| MULTILINE` (default) |
+
+### 4.3 Pattern Matching with Source and Range
+
+Each condition supports:
+- **Source**: `content` (OCR text) or `filename`
+- **Range**: Percentile-based text slicing (e.g., "0-25" = first 25% of document)
+
+**Range Filtering**:
 ```python
-threshold = best_rule.get('threshold', 75) if best_rule else 75
-classified = (
-    best_result and 
-    best_result.get('match', False) and 
-    best_score >= threshold
-)
+def check_pattern_match(pattern_str, condition, content, filename):
+    source = condition.get('source', 'content')
+    range_str = condition.get('range', '')
+    
+    # Select text source
+    text = content if source == 'content' else filename
+    
+    # Apply range if specified
+    if range_str and source == 'content' and '-' in range_str:
+        parts = range_str.split('-')
+        start_pct = int(parts[0])  # e.g., 0
+        end_pct = int(parts[1])    # e.g., 25
+        
+        # Convert percentile to character position
+        text_len = len(text)
+        start_pos = (start_pct * text_len) // 100
+        end_pos = (end_pct * text_len) // 100
+        
+        text = text[start_pos:end_pos]  # Slice document
+    
+    # Check for match
+    normalized_pattern, flags = normalize_regex_pattern(pattern_str)
+    match = re.search(normalized_pattern, text, flags)
+    return match is not None
 ```
 
-#### 7. Apply Metadata
-**Location**: `background_processor.py::_build_metadata_updates()`
+**Use Case**: Bank statements often have account info in the first 25% of the document.
 
-If classified, extract and apply:
-- Title
-- Created date
-- Correspondent
-- Document type
-- Tags
-- Custom fields
+### 4.4 OCR Match Counting
 
-#### 8. Write Scores to Custom Fields
-**Location**: `background_processor.py::_add_poco_scores()`
-
+**Algorithm**:
 ```python
-# POCO Score field (MANDATORY)
-custom_fields.append({
-    'field': poco_score_field_id,
-    'value': str(round(poco_score, 1))
-})
-
-# POCO OCR field (OPTIONAL - only if field exists)
-if poco_ocr_field_id:
-    custom_fields.append({
-        'field': poco_ocr_field_id,
-        'value': str(round(poco_ocr, 1))
-    })
+def count_ocr_matches(logic_groups, content, filename):
+    total_count = 0
+    matched_count = 0
+    all_matches = []
+    
+    for group in logic_groups:
+        group_type = group.get('type', 'match')
+        conditions = group.get('conditions', [])
+        
+        # Each group counts as 1 unit
+        total_count += 1
+        
+        # Evaluate based on group type
+        group_matched = False
+        
+        if group_type == 'match':  # AND logic
+            all_match = True
+            for condition in conditions:
+                if not check_pattern_match(condition['pattern'], condition, content, filename):
+                    all_match = False
+                    break
+            group_matched = all_match
+        
+        elif group_type == 'or':  # OR logic
+            for condition in conditions:
+                if check_pattern_match(condition['pattern'], condition, content, filename):
+                    group_matched = True
+                    break
+        
+        # Record result
+        if group_matched:
+            matched_count += 1
+            all_matches.append({
+                'name': group.get('title', f'Logic Group {i+1}'),
+                'matched': True,
+                'score': group.get('score', 0)
+            })
+        else:
+            all_matches.append({
+                'name': group.get('title', f'Logic Group {i+1}'),
+                'matched': False,
+                'score': 0
+            })
+    
+    return {
+        'total_count': total_count,
+        'matched_count': matched_count,
+        'matches': all_matches
+    }
 ```
 
-**Result**: Scores visible in Paperless UI
+### 4.5 Filename Pattern Matching
 
-#### 9. Add POCO Tag
-**Location**: `background_processor.py::_add_poco_tag()`
-
+**Simple Counting**:
 ```python
-tag_name = 'POCO+' if classified else 'POCO-'
-# Add tag to document
+def count_filename_matches(filename_patterns, filename):
+    total_count = len(filename_patterns)
+    matched_count = 0
+    matches = []
+    
+    for pattern in filename_patterns:
+        normalized_pattern, flags = normalize_regex_pattern(pattern)
+        
+        if re.search(normalized_pattern, filename, flags):
+            matched_count += 1
+            matches.append({'pattern': pattern, 'matched': True})
+        else:
+            matches.append({'pattern': pattern, 'matched': False})
+    
+    return {
+        'total_count': total_count,
+        'matched_count': matched_count,
+        'matches': matches
+    }
 ```
 
-**Tags**:
-- **POCO+** (Green #10b981): Document matched rule, metadata applied
-- **POCO-** (Red #ef4444): Document processed but no match found
+### 4.6 Implementation Reference
 
-#### 10. Write Scoring Table to Notes
-**Location**: `background_processor.py::_add_scoring_note()`
+**File**: `pattern_matcher.py`
 
-Creates detailed scoring table in Paperless document notes:
-```
-=== PocoClass Scoring Report ===
-Processed: 2025-11-01 14:30:45
-Rule: Invoice_Processor_v2
-Result: ✓ CLASSIFIED
-
---- Score Breakdown ---
-POCO Score: 85.3% (Minimum 80.0%)
-POCO OCR: 92.1% (Minimum 75.0%, Multiplier: 3.0x)
-
-Metric          Matched  Total  Weighted  Max Weight  Multiplier
-OCR Patterns    12       13     36.0      39.0        3.0x
-Filename        2        2      2.0       2.0         1.0x
-Paperless       3        4      0.75      1.0         0.25x
-```
-
-**Key Points**:
-- ALWAYS written (even for POCO- documents)
-- Old PocoClass notes are deleted before writing new one
-- Includes timestamp, rule name, all scores, and detailed breakdown
-
-#### 11. Log Result
-**Location**: `database.py::add_log()`
-
-Stores processing result in SQLite logs table for audit trail.
+**Key Methods**:
+- `evaluate_rule_v2()`: Main entry point for pattern matching
+- `normalize_regex_pattern()`: JavaScript → Python regex conversion
+- `count_ocr_matches()`: Logic group evaluation
+- `count_filename_matches()`: Filename pattern evaluation
+- `check_pattern_match()`: Single pattern match with source/range support
 
 ---
 
-## Tagging System
+## 5. Metadata Extraction System
 
-### Tag Architecture
+### 5.1 Extraction Types Overview
 
-PocoClass uses a **tri-tag system**:
+PocoClass v2 supports three types of metadata:
 
-#### 1. NEW Tag
-- **Color**: Blue (#3b82f6)
-- **Purpose**: Marks documents for processing
-- **Assignment**: Manual (user adds via Paperless UI or consumption template)
-- **Removal**: Never removed by PocoClass
+1. **Static Metadata**: Fixed values for all documents matching the rule
+2. **Dynamic Metadata**: Extracted from document content using anchor patterns
+3. **Filename Metadata**: Extracted from document filename using regex groups
 
-#### 2. POCO+ Tag
-- **Color**: Green (#10b981)
-- **Purpose**: Document matched a rule and was classified
-- **Assignment**: Automatic (background processor)
-- **Criteria**: `poco_score >= rule.threshold AND poco_ocr_score >= rule.ocr_threshold`
+### 5.2 Static Metadata
 
-#### 3. POCO- Tag
-- **Color**: Red (#ef4444)
-- **Purpose**: Document processed but no rule matched
-- **Assignment**: Automatic (background processor)
-- **Criteria**: Processed but did not meet classification thresholds
+**Definition**: Metadata that is the same for all documents classified by a rule.
 
-### Tag Lifecycle
-
-```
-1. User adds document to Paperless
-   ↓
-2. User/system adds NEW tag
-   ↓
-3. Background processor discovers document (has NEW, no POCO+/-)
-   ↓
-4. Document processed against all rules
-   ↓
-5a. Match found → Add POCO+ tag
-5b. No match → Add POCO- tag
-   ↓
-6. NEW tag remains (for user reference)
+**Format**:
+```yaml
+static_metadata:
+  correspondent: "ExampleBank"
+  document_type: "Bank Statement"
+  tags:
+    - "Financial"
+    - "Banking"
+  custom_fields:
+    Account Type: "Checking"
+    Bank Name: "ExampleBank NL"
 ```
 
-**Important**: 
-- NEW tag is NEVER removed (indicates "processed at least once")
-- POCO+/POCO- tags prevent re-processing
-- A document can only have ONE POCO tag (+ or -)
+**Processing**:
+```python
+def extract_static_metadata(rule):
+    static_metadata = rule.get('static_metadata', {})
+    processed = {}
+    
+    for field, value in static_metadata.items():
+        if field == 'custom_fields' and isinstance(value, dict):
+            # Convert to Paperless API format
+            processed[field] = [
+                {'name': k, 'value': v} 
+                for k, v in value.items()
+            ]
+        elif field == 'tags' and isinstance(value, list):
+            processed[field] = value
+        else:
+            processed[field] = value
+    
+    return processed
+```
 
-### Discovery Logic
+### 5.3 Dynamic Metadata - Anchor-Based Extraction
+
+**V2 Feature**: Extract values from document content using **beforeAnchor** and **afterAnchor** patterns.
+
+**Extraction Modes**:
+
+1. **Both Anchors**: Extract text between two patterns
+   ```yaml
+   field_name:
+     beforeAnchor: "Invoice Date:"
+     afterAnchor: "Due Date:"
+     extraction_type: "date"
+     format: "DD-MM-YYYY"
+   ```
+
+2. **After Anchor Only**: Extract text after pattern until newline
+   ```yaml
+   field_name:
+     afterAnchor: "Total Amount:"
+     extraction_type: "monetary"
+   ```
+
+3. **Before Anchor Only**: Extract text before pattern from line start
+   ```yaml
+   field_name:
+     beforeAnchor: "EUR"
+     extraction_type: "monetary"
+   ```
+
+**Anchor Pattern Matching**:
+```python
+def extract_value_between_anchors(text, before_pattern, after_pattern):
+    try:
+        if before_pattern and after_pattern:
+            # Both anchors: extract between
+            pattern = f"{before_pattern}\\s*([\\s\\S]+?)\\s*{after_pattern}"
+        elif after_pattern:
+            # After anchor only
+            pattern = f"{after_pattern}\\s*([^\\n]+)"
+        elif before_pattern:
+            # Before anchor only
+            pattern = f"([^\\n]+?)\\s*{before_pattern}"
+        else:
+            return None
+        
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            return match.groups()[0].strip()
+        return None
+    except Exception as e:
+        logger.error(f"Error extracting value: {e}")
+        return None
+```
+
+### 5.4 Extraction Types
+
+**V2 Enhancement**: The `extraction_type` field filters and formats extracted values.
+
+#### 5.4.1 Date Extraction
+
+**Supports UI-Friendly Formats**:
+- `DD-MM-YYYY` → `\d{2}-\d{2}-\d{4}`
+- `MM/DD/YYYY` → `\d{2}/\d{2}/\d{4}`
+- `YYYY-MM-DD` → `\d{4}-\d{2}-\d{2}`
+- `DD.MM.YYYY` → `\d{2}\.\d{2}\.\d{4}`
+
+**Process**:
+```python
+def extract_date_from_text(text, date_format):
+    # Convert UI format to regex pattern
+    pattern = date_format
+    pattern = pattern.replace('YYYY', r'\d{4}')
+    pattern = pattern.replace('MM', r'\d{2}')
+    pattern = pattern.replace('DD', r'\d{2}')
+    
+    match = re.search(pattern, text)
+    if match:
+        return match.group(0)
+    return None
+
+def parse_date_with_format(date_str, date_format):
+    # Convert UI format to strptime format
+    strptime_format = date_format
+    strptime_format = strptime_format.replace('YYYY', '%Y')
+    strptime_format = strptime_format.replace('MM', '%m')
+    strptime_format = strptime_format.replace('DD', '%d')
+    
+    try:
+        parsed_date = datetime.strptime(date_str, strptime_format)
+        return parsed_date.strftime('%Y-%m-%d')  # ISO format for Paperless
+    except ValueError:
+        return None
+```
+
+**Example**:
+```
+Raw Text: "Invoice Date: 27-12-2024"
+Format: "DD-MM-YYYY"
+
+Step 1: Extract → "27-12-2024"
+Step 2: Parse → date(2024, 12, 27)
+Step 3: Convert → "2024-12-27" (ISO)
+```
+
+#### 5.4.2 Text Extraction
+
+**Simple**: Return extracted value as-is after stripping whitespace.
 
 ```python
-def _discover_documents():
-    # Include documents with NEW tag
-    tags = [new_tag_id]
-    
-    # Exclude documents already processed (have POCO+ or POCO-)
-    exclude_tags = [poco_plus_tag_id, poco_minus_tag_id]
-    
-    # Result: Only unprocessed documents
+if extraction_type == 'text':
+    return value.strip()
 ```
 
-This ensures:
-- No infinite processing loops
-- Once tagged with POCO+/-, document is never re-processed
-- Clear separation between "new" and "processed" states
+#### 5.4.3 Numeric Extraction (Integer, Float, Monetary)
 
----
+**Sanitization** removes separators and currency symbols:
 
-## Custom Fields Architecture
+```python
+def validate_and_sanitize_value(value, data_type):
+    if data_type == 'integer':
+        cleaned = re.sub(r'[,\s]', '', value)
+        match = re.search(r'-?\d+', cleaned)
+        return str(int(match.group())) if match else None
+    
+    elif data_type == 'float':
+        cleaned = value.replace(',', '.')
+        cleaned = re.sub(r'(?<=\d)\s(?=\d)', '', cleaned)
+        match = re.search(r'-?\d+\.?\d*', cleaned)
+        return str(float(match.group())) if match else None
+    
+    elif data_type == 'monetary':
+        cleaned = value.replace(',', '.')
+        cleaned = re.sub(r'[^\d.-]', '', cleaned)
+        match = re.search(r'-?\d+\.?\d*', cleaned)
+        if match:
+            return f"{float(match.group()):.2f}"
+        return None
+```
 
-### POCO Score Field (MANDATORY)
+**Example**:
+```
+Input: "€ 1.250,50"
+Type: monetary
 
-**Name**: `POCO Score`  
-**Type**: String  
-**Purpose**: Stores final actionable score  
-**Range**: "0.0" to "100.0"  
-**Required**: Yes (system fails validation without it)
+Step 1: Replace comma → "€ 1.250.50"
+Step 2: Remove non-numeric → "1.250.50"
+Step 3: Parse → 1250.50
+Step 4: Format → "1250.50"
+```
 
-**Creation**: 
-- Auto-created during sync via `sync_service.py::_ensure_mandatory_data()`
-- Can be manually created via Settings > Data Validation > Fix Missing Data
+### 5.5 Filename Metadata Extraction
 
-**Usage**:
-- ALWAYS written by background processor
-- Displayed in Dashboard and RuleReviewer document lists
-- Used for filtering and sorting (via API extraction)
-
-### POCO OCR Field (OPTIONAL)
-
-**Name**: `POCO OCR`  
-**Type**: String  
-**Purpose**: Stores OCR transparency score for advanced users  
-**Range**: "0.0" to "100.0"  
-**Required**: No (controlled by `poco_ocr_enabled` config)
+**V2 Feature**: Extract metadata from filename using **regex capture groups**.
 
 **Configuration**:
-- Toggle: Settings > Optional Features > "POCO OCR Transparency Score Field"
-- Default: Disabled (false)
-- Admin-only setting
+```yaml
+filename_patterns:
+  - pattern: "Invoice_(\d{4})_(\d{2})_(.+)\.pdf"
+    date_group: "1-2"  # Concatenate groups 1 and 2
+    date_format: "%Y-%m"
+    account_group: "3"
 
-**Behavior When Disabled**:
-- POCO OCR score is STILL calculated
-- POCO OCR score is STILL written to document notes
-- POCO OCR field is NOT created in Paperless
-- Background processor does NOT write to custom field (field doesn't exist)
+# Example filename: Invoice_2024_12_ACC12345.pdf
+# Extracted: date_created = "2024-12", Account = "ACC12345"
+```
 
-**Behavior When Enabled**:
-- POCO OCR field is created during next sync
-- Background processor writes POCO OCR to custom field
-- Score visible in Paperless UI alongside POCO Score
+**Extraction Logic**:
+```python
+def extract_filename_metadata(rule, filename):
+    filename_patterns = rule.get('filename_patterns', [])
+    extracted = {}
+    
+    for pattern_config in filename_patterns:
+        if isinstance(pattern_config, dict):
+            pattern = pattern_config['pattern']
+            match = re.search(pattern, filename, re.IGNORECASE)
+            
+            if match:
+                # Extract date if specified
+                if 'date_group' in pattern_config:
+                    date_group_config = pattern_config['date_group']
+                    
+                    if '-' in str(date_group_config):
+                        # Group range: concatenate
+                        start, end = map(int, str(date_group_config).split('-'))
+                        date_str = ''.join(match.group(g) for g in range(start, end + 1))
+                    else:
+                        # Single group
+                        date_str = match.group(int(date_group_config))
+                    
+                    # Parse date
+                    date_format = pattern_config.get('date_format', '%Y-%m')
+                    parsed_date = datetime.strptime(date_str, date_format)
+                    extracted['date_created'] = parsed_date.strftime('%Y-%m-%d')
+                
+                # Extract account if specified
+                if 'account_group' in pattern_config:
+                    account_group = int(pattern_config['account_group'])
+                    extracted['account'] = match.group(account_group)
+                
+                break  # Use first matching pattern
+    
+    return extracted
+```
 
-**Rationale for Optional**:
-- Most users only need final POCO Score
-- OCR score is always in notes for reference
-- Reduces Paperless custom field clutter
-- Advanced users can enable for additional visibility
+### 5.6 Implementation Reference
 
-### Custom Field Creation Flow
+**File**: `metadata_processor.py`
+
+**Key Methods**:
+- `extract_metadata_from_rule()`: Main entry point
+- `extract_static_metadata()`: Process static fields
+- `extract_dynamic_metadata()`: Anchor-based extraction
+- `extract_value_between_anchors()`: Pattern matching for anchors
+- `apply_extraction_type_filter()`: Type-specific filtering
+- `extract_filename_metadata()`: Filename regex group extraction
+- `validate_and_sanitize_value()`: Numeric sanitization
+
+---
+
+## 6. Rule Evaluation Process
+
+### 6.1 End-to-End Flow
+
+**Complete Rule Test Execution**:
+
+```
+1. Input
+   ├─ Rule (YAML config)
+   ├─ Document Content (OCR text)
+   ├─ Document Filename
+   └─ Paperless Metadata (optional)
+
+2. Pattern Matching (PatternMatcher)
+   ├─ Evaluate OCR logic groups
+   ├─ Evaluate filename patterns
+   └─ Return match counts
+
+3. Metadata Extraction (MetadataProcessor)
+   ├─ Extract static metadata
+   ├─ Extract dynamic metadata (content)
+   └─ Extract filename metadata
+
+4. Paperless Verification (TestEngine)
+   ├─ Compare extracted vs. Paperless metadata
+   └─ Return verification match counts
+
+5. Score Calculation (POCOScoringV2)
+   ├─ Calculate POCO OCR Score
+   ├─ Calculate POCO Score
+   └─ Evaluate thresholds
+
+6. Build Response (TestEngine)
+   ├─ Combine all results
+   ├─ Format for frontend
+   └─ Return JSON response
+```
+
+### 6.2 TestEngine Logic
+
+**File**: `test_engine.py`
+
+**Main Method**: `test_rule()`
 
 ```python
-# sync_service.py::_ensure_mandatory_data()
+def test_rule(rule, document_content, document_filename, paperless_metadata=None):
+    # 1. Pattern matching
+    match_result = pattern_matcher.evaluate_rule_v2(
+        rule, document_content, document_filename
+    )
+    
+    # 2. Metadata extraction
+    metadata = metadata_processor.extract_metadata_from_rule(
+        rule, document_content, document_filename
+    )
+    
+    # 3. Paperless verification
+    verification_result = verify_paperless_metadata(
+        rule, metadata, paperless_metadata
+    ) if paperless_metadata else {'matched': 0, 'total': 0, 'matches': []}
+    
+    # 4. Score calculation
+    score_result = scorer.calculate_full_evaluation(
+        ocr_matches=match_result['ocr']['matched'],
+        ocr_total=match_result['ocr']['total'],
+        filename_matches=match_result['filename']['matched'],
+        filename_total=match_result['filename']['total'],
+        paperless_matches=verification_result['matched'],
+        paperless_total=verification_result['total'],
+        ocr_multiplier=rule.get('ocr_multiplier', 3.0),
+        filename_multiplier=rule.get('filename_multiplier', 1.0),
+        ocr_threshold=rule.get('ocr_threshold', 75.0),
+        poco_threshold=rule.get('threshold', 80.0)
+    )
+    
+    # 5. Build comprehensive result
+    return {
+        'success': True,
+        'rule_id': rule.get('rule_id'),
+        'rule_name': rule.get('rule_name'),
+        'classification_allowed': score_result['summary']['classification_allowed'],
+        'status': score_result['evaluation']['status'],
+        'scores': {
+            'poco_ocr_score': score_result['summary']['poco_ocr_score'],
+            'poco_score': score_result['summary']['poco_score']
+        },
+        'breakdown': {
+            'ocr': {
+                'matched': match_result['ocr']['matched'],
+                'total': match_result['ocr']['total'],
+                'groups': match_result['ocr']['matches']
+            },
+            'filename': {
+                'matched': match_result['filename']['matched'],
+                'total': match_result['filename']['total'],
+                'patterns': match_result['filename']['matches']
+            },
+            'verification': {
+                'matched': verification_result['matched'],
+                'total': verification_result['total'],
+                'matches': verification_result['matches']
+            }
+        },
+        'extracted_metadata': metadata
+    }
+```
 
-# Check setting
-poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
+### 6.3 Frontend Transformation
 
-# POCO Score (always required)
-required_fields = [{'name': 'POCO Score', 'data_type': 'string'}]
+**Response Structure for UI**:
 
-# POCO OCR (conditional)
-if poco_ocr_enabled:
-    required_fields.append({'name': 'POCO OCR', 'data_type': 'string'})
+```json
+{
+  "success": true,
+  "rule_id": "rule_001",
+  "rule_name": "ExampleBank Statement",
+  "classification_allowed": true,
+  "status": "CONFIDENT",
+  "threshold": 80.0,
+  "ocr_threshold": 75.0,
+  "scores": {
+    "poco_ocr_score": 85.0,
+    "poco_score": 82.5
+  },
+  "breakdown": {
+    "ocr": {
+      "matched": 8,
+      "total": 10,
+      "weighted": 24.0,
+      "max_weight": 30.0,
+      "percentage": 80.0,
+      "groups": [
+        {
+          "name": "Bank Identifier",
+          "matched": true,
+          "score": 1
+        },
+        {
+          "name": "Account Type",
+          "matched": false,
+          "score": 0
+        }
+      ]
+    },
+    "filename": {
+      "matched": 2,
+      "total": 3,
+      "weighted": 2.0,
+      "max_weight": 3.0,
+      "percentage": 66.67,
+      "patterns": [
+        {
+          "pattern": "/ExampleBank/i",
+          "matched": true
+        }
+      ]
+    },
+    "verification": {
+      "matched": 3,
+      "total": 5,
+      "matches": [
+        {
+          "field": "correspondent",
+          "extracted": "ExampleBank",
+          "paperless": "ExampleBank",
+          "match": true
+        }
+      ]
+    }
+  },
+  "extracted_metadata": {
+    "static": {
+      "correspondent": "ExampleBank",
+      "tags": ["Financial"]
+    },
+    "dynamic": {
+      "date_created": "2024-12-27",
+      "account_number": "NL91RABO0315273637"
+    },
+    "filename": {}
+  }
+}
+```
 
-# Create missing fields
-for field in required_fields:
-    if not api_client.get_custom_field_id(field['name']):
-        api_client.create_custom_field(field['name'], field['data_type'])
+**Frontend Usage**:
+- Display scores in **circular progress indicators**
+- Show breakdown in **expandable sections**
+- Highlight matched/unmatched patterns with **color coding**
+- Display extracted metadata in **preview cards**
+
+### 6.4 Verification Logic
+
+**Paperless Metadata Verification**:
+
+```python
+def verify_paperless_metadata(rule, extracted_metadata, paperless_metadata):
+    verification_fields = rule.get('verification_fields', [
+        'correspondent', 'document_type', 'date_created', 'tags'
+    ])
+    
+    matched = 0
+    total = len(verification_fields)
+    matches = []
+    
+    # Combine all extracted sources
+    all_extracted = {}
+    all_extracted.update(extracted_metadata.get('static', {}))
+    all_extracted.update(extracted_metadata.get('dynamic', {}))
+    all_extracted.update(extracted_metadata.get('filename', {}))
+    
+    for field in verification_fields:
+        extracted_value = all_extracted.get(field)
+        paperless_value = paperless_metadata.get(field)
+        
+        if extracted_value and paperless_value:
+            if values_match(extracted_value, paperless_value):
+                matched += 1
+                matches.append({
+                    'field': field,
+                    'extracted': extracted_value,
+                    'paperless': paperless_value,
+                    'match': True
+                })
+            else:
+                matches.append({
+                    'field': field,
+                    'extracted': extracted_value,
+                    'paperless': paperless_value,
+                    'match': False
+                })
+    
+    return {
+        'matched': matched,
+        'total': total,
+        'matches': matches
+    }
+
+def values_match(extracted, paperless):
+    # Handle tags (list comparison)
+    if isinstance(extracted, list) and isinstance(paperless, list):
+        return set(extracted) == set(paperless)
+    
+    # Handle strings (case-insensitive)
+    if isinstance(extracted, str) and isinstance(paperless, str):
+        return extracted.lower().strip() == paperless.lower().strip()
+    
+    # Handle other types
+    return str(extracted).strip() == str(paperless).strip()
 ```
 
 ---
 
-## Background Processing Engine
+## 7. Background Processing System
 
-### Architecture Overview
+### 7.1 Architecture Overview
 
-**Location**: `background_processor.py`  
-**Pattern**: Module-level singleton  
-**Initialization**: On API startup via `api.py`
+**Components**:
+1. **Trigger System**: Debounced trigger via webhooks or manual activation
+2. **Document Discovery**: Tag-based filtering (NEW tag)
+3. **Processing Lock**: Prevents concurrent processing runs
+4. **Auto-Pause**: Skips processing when Web UI is active
+5. **Processing History**: Audit trail of all runs
+6. **Rerun Flag**: Queues another run if triggered during processing
 
-### Key Components
+### 7.2 Tag-Based Discovery
 
-#### 1. Debounced Triggering
+**Discovery Query**:
 ```python
-trigger_processing() → _debounced_trigger() → process_batch()
+def _discover_documents(api_client):
+    # Get tag IDs
+    tag_new = db.get_config('bg_tag_new') or 'NEW'
+    new_tag_id = api_client.get_tag_id(tag_new)
+    poco_plus_tag_id = api_client.get_tag_id('POCO+')
+    poco_minus_tag_id = api_client.get_tag_id('POCO-')
+    
+    # Get all documents
+    all_docs = api_client.get_documents(ignore_tags=True)
+    
+    # Filter for documents with NEW tag but without POCO tags
+    filtered_docs = []
+    for doc in all_docs:
+        doc_tags = doc.get('tags', [])
+        has_new = new_tag_id in doc_tags
+        has_poco_plus = poco_plus_tag_id and poco_plus_tag_id in doc_tags
+        has_poco_minus = poco_minus_tag_id and poco_minus_tag_id in doc_tags
+        
+        if has_new and not has_poco_plus and not has_poco_minus:
+            filtered_docs.append(doc)
+    
+    return filtered_docs
 ```
 
-**Debounce Settings**:
-- Default: 30 seconds
-- Configurable: `bg_debounce_seconds` config
-- Cancels previous trigger if new one arrives
+**Tag Meanings**:
+- **NEW**: Document ready for classification (user-controlled)
+- **POCO+**: Document classified successfully
+- **POCO-**: Document processed but not classified
+- **POCO+ or POCO-**: Skip - already processed
 
-**Purpose**: Prevents rapid-fire processing when multiple documents added
+### 7.3 Debounced Triggering
 
-#### 2. Auto-Pause with Web UI
+**Problem**: Multiple rapid triggers (e.g., post-consumption webhook spam) cause unnecessary processing.
+
+**Solution**: Debounce timer that **cancels and restarts** on each trigger.
+
 ```python
-if self._is_session_active():
-    logger.info("Web UI active - auto-pausing background processing")
-    return
+class BackgroundProcessor:
+    def __init__(self):
+        self.debounce_timer = None
+        self.debounce_lock = threading.Lock()
+    
+    def trigger_processing(self, delay_seconds=None):
+        # Check if enabled
+        enabled = db.get_config('bg_enabled') == 'true'
+        if not enabled:
+            return {'status': 'disabled'}
+        
+        # Get delay from config or parameter
+        if delay_seconds is None:
+            delay_seconds = int(db.get_config('bg_debounce_seconds') or '30')
+        
+        with self.debounce_lock:
+            # Cancel existing timer
+            if self.debounce_timer and self.debounce_timer.is_alive():
+                self.debounce_timer.cancel()
+                logger.info(f"Cancelled existing timer, restarting with {delay_seconds}s delay")
+            
+            # Create new timer
+            self.debounce_timer = threading.Timer(delay_seconds, self._execute_processing)
+            self.debounce_timer.daemon = True
+            self.debounce_timer.start()
+            
+            return {
+                'status': 'scheduled',
+                'delay_seconds': delay_seconds
+            }
 ```
 
-**Purpose**: Prevents unwanted processing while users are testing/viewing
+**Flow**:
+```
+Trigger 1 (t=0s)   → Schedule execution at t=30s
+Trigger 2 (t=5s)   → Cancel previous, schedule at t=35s
+Trigger 3 (t=10s)  → Cancel previous, schedule at t=40s
+...
+Final trigger (t=20s) → Schedule at t=50s
+                      → Executes at t=50s (30s after last trigger)
+```
 
-#### 3. Processing Lock
+### 7.4 Processing Lock Mechanism
+
+**Purpose**: Prevent concurrent processing runs that could cause race conditions.
+
+**Implementation**:
 ```python
-if db.get_processing_lock():
-    return {'status': 'locked', 'message': 'Processing already running'}
-
-db.set_processing_lock(True)
-try:
-    # Process documents
-finally:
-    db.set_processing_lock(False)
+def _execute_processing():
+    try:
+        # Check lock
+        if db.get_processing_lock():
+            logger.warning("Processing already running, setting needs_rerun flag")
+            db.set_needs_rerun(True)
+            return
+        
+        # Acquire lock
+        db.set_processing_lock(True)
+        db.set_needs_rerun(False)
+        
+        # Execute processing
+        result = process_batch()
+        
+    except Exception as e:
+        logger.error(f"Processing failed: {e}")
+    finally:
+        # Always release lock
+        db.set_processing_lock(False)
+        
+        # Check if another run is needed
+        if db.get_needs_rerun():
+            logger.info("needs_rerun flag set, triggering another run")
+            db.set_needs_rerun(False)
+            trigger_processing(delay_seconds=5)
 ```
 
-**Purpose**: Prevents concurrent processing runs
+**Database Fields**:
+```sql
+-- config table
+bg_processing_lock: 'true' | 'false'
+bg_needs_rerun: 'true' | 'false'
+```
 
-#### 4. Needs Rerun Flag
+### 7.5 Needs Rerun Flag
+
+**Scenario**: Processing is running when another trigger arrives.
+
+**Behavior**:
+1. New trigger checks lock → **locked**
+2. Sets `needs_rerun = true`
+3. Returns immediately
+4. When current run finishes:
+   - Releases lock
+   - Checks `needs_rerun` flag
+   - If true, triggers new run with 5s delay
+
+**Guarantees**:
+- No missed processing requests
+- No concurrent runs
+- Automatic queue management
+
+### 7.6 Auto-Pause for Session Activity
+
+**Purpose**: Pause background processing when users are actively using the Web UI to prevent sync conflicts.
+
+**Detection**:
 ```python
-if documents_arrive_during_processing:
-    db.set_needs_rerun(True)
+def _is_web_ui_active():
+    # Check for sessions active in last 5 minutes
+    cutoff_time = (datetime.now() - timedelta(minutes=5)).isoformat()
+    
+    cursor.execute("""
+        SELECT COUNT(*) as count FROM sessions 
+        WHERE last_activity > ?
+    """, (cutoff_time,))
+    
+    active_count = cursor.fetchone()['count']
+    return active_count > 0
 
-if db.get_needs_rerun():
-    db.set_needs_rerun(False)
-    trigger_processing()  # Start new cycle
+def process_batch(user_session=None):
+    # Skip auto-pause if manual processing
+    if user_session is None and _is_web_ui_active():
+        logger.info("Web UI active, skipping (auto-pause)")
+        return {
+            'success': True,
+            'skipped': True,
+            'reason': 'auto-pause'
+        }
+    
+    # Continue processing...
 ```
 
-**Purpose**: Ensures documents arriving during processing are caught in next cycle
+**Session Activity Tracking**:
+- Every API request updates `sessions.last_activity`
+- Background processor checks for sessions active in last 5 minutes
+- If active, skip processing and return early
 
-### Processing Modes
+### 7.7 Processing Flow
 
-#### Automatic (Debounced)
-- Triggered by: NEW tag addition in Paperless
-- Trigger endpoint: `POST /api/background/trigger`
-- Respects: Auto-pause, debounce, processing lock
+**Complete Batch Process**:
 
-#### Manual
-- Triggered by: User via Background Process page
-- Endpoint: `POST /api/background/process`
-- Bypasses: Auto-pause (user override)
-- Respects: Processing lock
-
-### Processing History Tracking
-
-**Table**: `processing_history`  
-**Fields**:
-- `started_at`: Processing start time
-- `completed_at`: Processing end time
-- `status`: success | failed | cancelled
-- `trigger_type`: auto | manual | scheduled
-- `documents_processed`: Count
-- `documents_classified`: Count
-- `rules_applied`: Count
-- `error_message`: If failed
-
-**Purpose**: Audit trail, performance monitoring, debugging
-
----
-
-## Document Notes Mechanism
-
-### Purpose
-Document notes provide a detailed, human-readable scoring report that is:
-- Always present (even for non-matches)
-- Permanent (until next processing)
-- Visible in Paperless UI
-- Independent of custom fields
-
-### Note Structure
-
-```
-=== PocoClass Scoring Report ===
-Processed: 2025-11-01 14:30:45 UTC
-Rule: Invoice_Processor_v2
-Result: ✓ CLASSIFIED
-
---- Score Breakdown ---
-POCO Score: 85.3% (Minimum 80.0%)
-POCO OCR: 92.1% (Minimum 75.0%, Multiplier: 3.0x)
-
-Metric           Matched  Total  Weighted  Max Weight  Multiplier
-OCR Patterns     12       13     36.0      39.0        3.0x
-Filename         2        2      2.0       2.0         1.0x
-Paperless        3        4      0.75      1.0         0.25x
-
-Total Weighted:  38.75
-Total Max:       42.0
-Final Score:     85.3%
-
-Status: ✓ CLASSIFIED (Threshold: 80.0%)
-```
-
-### Note Management
-
-#### Creation
 ```python
-# background_processor.py::_add_scoring_note()
+def process_batch(user_session=None):
+    # 1. Auto-pause check
+    if user_session is None and _is_web_ui_active():
+        return {'success': True, 'skipped': True, 'reason': 'auto-pause'}
+    
+    # 2. Sync Paperless data
+    sync_service.sync_all(paperless_token, paperless_url)
+    
+    # 3. Discover documents
+    documents = _discover_documents(api_client)
+    
+    # 4. Load rules
+    rules = rule_loader.load_all_rules()
+    
+    # 5. Process each document
+    processed = 0
+    classified = 0
+    
+    for doc in documents:
+        result = _process_document(doc, rules, api_client)
+        processed += 1
+        if result['classified']:
+            classified += 1
+    
+    # 6. Return summary
+    return {
+        'success': True,
+        'documents_found': len(documents),
+        'documents_processed': processed,
+        'documents_classified': classified
+    }
+```
 
-# 1. Delete old PocoClass notes
-for note in existing_notes:
-    if 'PocoClass Scoring Report' in note['note']:
-        delete_note(note['id'])
+### 7.8 Single Document Processing
 
-# 2. Create new note
-requests.post(
-    f'{paperless_url}/api/documents/{doc_id}/notes/',
-    json={'note': scoring_table, 'document': doc_id}
+**Always Tag, Always Score**:
+
+```python
+def _process_document(doc, rules, api_client):
+    doc_id = doc['id']
+    content = api_client.get_document_content(doc_id)
+    
+    # Test all rules, find best match
+    best_score = 0
+    best_result = None
+    best_rule = None
+    
+    for rule in rules:
+        result = test_engine.test_rule(rule, doc_id, content, doc['original_file_name'], doc)
+        poco_score = result.get('poco_score', 0)
+        
+        if poco_score > best_score:
+            best_score = poco_score
+            best_result = result
+            best_rule = rule
+    
+    # Determine classification
+    threshold = best_rule.get('threshold', 75) if best_rule else 75
+    classified = best_result and best_result.get('match') and best_score >= threshold
+    
+    # Get scores (default to 0 if no match)
+    poco_score = best_score if best_result else 0
+    poco_ocr = best_result.get('poco_ocr', 0) if best_result else 0
+    
+    # Apply metadata if classified
+    if classified and best_result:
+        updates = _build_metadata_updates(best_result, api_client)
+        api_client.update_document(doc_id, updates)
+    
+    # ALWAYS add scores to custom fields
+    _add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
+    
+    # ALWAYS add POCO tag (+ or -)
+    _add_poco_tag(doc_id, doc, classified, api_client)
+    
+    # ALWAYS add scoring note
+    _add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
+    
+    return {'classified': classified, 'rules_applied': 1 if classified else 0}
+```
+
+### 7.9 Processing History
+
+**Database Table**: `processing_history`
+
+**Schema**:
+```sql
+CREATE TABLE processing_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    started_at TEXT NOT NULL,
+    completed_at TEXT,
+    status TEXT NOT NULL,
+    trigger_type TEXT NOT NULL,
+    documents_found INTEGER DEFAULT 0,
+    documents_processed INTEGER DEFAULT 0,
+    documents_classified INTEGER DEFAULT 0,
+    documents_skipped INTEGER DEFAULT 0,
+    rules_applied INTEGER DEFAULT 0,
+    error_message TEXT,
+    user_id INTEGER,
+    details TEXT
 )
 ```
 
-**Key Points**:
-- Old notes are deleted to prevent clutter
-- Each processing creates ONE note
-- Notes are permanent until next processing
+**Lifecycle**:
+```python
+# 1. Create run record
+run_id = db.create_processing_run(trigger_type='post-consumption')
 
-#### Note Content
+# 2. Execute processing
+result = process_batch()
 
-**For Classified Documents (POCO+)**:
-- Shows which rule matched
-- Displays both scores with thresholds
-- Includes detailed breakdown table
-- Status: ✓ CLASSIFIED
-
-**For Non-Matches (POCO-)**:
-```
-=== PocoClass Scoring Report ===
-Processed: 2025-11-01 14:30:45 UTC
-Rule: Best_Match_Rule_Name (or "None" if no rules tested)
-Result: ✗ NO MATCH
-
---- Score Breakdown ---
-POCO Score: 42.3% (Minimum 80.0%)
-POCO OCR: 58.1% (Minimum 75.0%, Multiplier: 3.0x)
-
-[Same table structure]
-
-Status: ✗ NO MATCH (Threshold: 80.0%)
+# 3. Update run record
+db.update_processing_run(
+    run_id=run_id,
+    status='completed' if result['success'] else 'failed',
+    documents_found=result.get('documents_found', 0),
+    documents_processed=result.get('documents_processed', 0),
+    documents_classified=result.get('documents_classified', 0),
+    documents_skipped=result.get('documents_skipped', 0),
+    rules_applied=result.get('rules_applied', 0),
+    error_message=result.get('error')
+)
 ```
 
-**Purpose of Notes for POCO-**:
-- Shows why document didn't match (scores too low)
-- Helps identify rule problems (close but not quite)
-- Provides audit trail for manual review
-- Score of 0% = absolutely no pattern matches
-- Score > 0% but < threshold = possible faulty rule
+**Trigger Types**:
+- `post-consumption`: Automatic trigger via webhook
+- `manual`: User-initiated via dashboard
+- `scheduled`: Future feature for cron-like scheduling
+
+### 7.10 Implementation Reference
+
+**File**: `background_processor.py`
+
+**Key Methods**:
+- `trigger_processing()`: Debounced trigger entry point
+- `_execute_processing()`: Timer callback with lock management
+- `process_batch()`: Main batch processing with auto-pause
+- `_discover_documents()`: Tag-based document discovery
+- `_process_document()`: Single document classification
+- `_is_web_ui_active()`: Session activity detection
+
+**Configuration Settings** (database config table):
+- `bg_enabled`: 'true' | 'false'
+- `bg_debounce_seconds`: '30' (default)
+- `bg_tag_new`: 'NEW' (default)
+- `bg_processing_lock`: 'true' | 'false'
+- `bg_needs_rerun`: 'true' | 'false'
 
 ---
 
-## Database Schema
+## 8. User Control Mechanisms
 
-### Core Tables
+### 8.1 Dashboard Controls
+
+**Background Processing Panel** (`/dashboard`):
+
+**Features**:
+- **Enable/Disable Toggle**: Master switch for background processing
+- **Trigger Now Button**: Manual trigger with immediate execution
+- **Status Indicator**: Shows current state (idle, scheduled, running, paused)
+- **Last Run Summary**: Displays results of most recent run
+- **Processing History Table**: Shows last 10 runs with details
+
+### 8.2 Settings Page
+
+**Background Processing Settings** (`/settings`):
+
+**Configurable Options**:
+1. **Debounce Delay** (seconds): Time to wait before executing after last trigger
+2. **Discovery Tag**: Tag name for document discovery (default: NEW)
+3. **Auto-Pause**: Enable/disable auto-pause on Web UI activity
+
+### 8.3 Rule Management
+
+**Rule Editor** (`/rules/:id/edit`):
+
+**Key Controls**:
+1. **Test Rule**: Test against a specific document
+2. **Save Rule**: Save changes to YAML file
+3. **Delete Rule**: Move rule to deleted folder
+4. **Clone Rule**: Create copy with new ID
+
+**Rule Reviewer** (`/reviewer`):
+
+**Bulk Operations**:
+- Test rule against multiple documents
+- Compare rule performance
+- Export test results to CSV
+
+### 8.4 Session Tracking
+
+**Session Management**:
+
+**Database**: `sessions` table tracks:
+- `session_token`: Unique session identifier
+- `user_id`: User ID
+- `created_at`: Session creation time
+- `expires_at`: Session expiration time (24 hours default, configurable)
+- `last_activity`: Updated on each API request
+
+**Activity Tracking**:
+```python
+@app.route('/api/*', methods=['*'])
+@require_auth
+def api_endpoint(*args, **kwargs):
+    session_token = request.headers.get('Authorization').replace('Bearer ', '')
+    
+    # Update last_activity on every request
+    db.update_session_activity(session_token)
+    
+    # Continue with request handling
+    ...
+```
+
+### 8.5 Log Viewer
+
+**Logs Page** (`/logs`):
+
+**Features**:
+- **Filtering**: By type, level, source, date range
+- **Search**: Full-text search across messages
+- **Export**: Download logs as CSV
+- **Real-time**: Auto-refresh every 10 seconds
+
+**Log Types**:
+- `system`: Authentication, config changes
+- `classification`: Document classification events
+- `processing`: Background processing runs
+- `api`: API errors and warnings
+
+---
+
+## 9. Data Flow Diagrams
+
+### 9.1 Rule Execution Flow
+
+```
+Input → PatternMatcher → MetadataProcessor → TestEngine → POCOScoringV2 → Response
+  ↓           ↓                  ↓                ↓             ↓
+Rule YAML   OCR Logic        Static           Verify      Calculate
+Document    Filename         Dynamic          Paperless   Scores
+Content     Patterns         Filename         Metadata    Thresholds
+```
+
+### 9.2 Background Processing Flow
+
+```
+Trigger → Debounce → Check Lock → Auto-Pause? → Sync → Discover → Process → Update History
+                                        ↓
+                                   Check Activity
+                                   Last 5 minutes?
+                                        ↓
+                                   Skip if active
+```
+
+---
+
+## 10. API Reference
+
+### 10.1 Authentication Endpoints
+
+#### POST /api/auth/setup
+**Description**: Initial setup - connect to Paperless and create first admin user.
+
+**Request**:
+```json
+{
+  "paperlessUrl": "https://paperless.example.com",
+  "username": "admin",
+  "password": "secure_password"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "sessionToken": "abc123...",
+  "user": {
+    "id": 1,
+    "username": "admin",
+    "role": "admin"
+  }
+}
+```
+
+#### POST /api/auth/login
+**Description**: Login with Paperless credentials.
+
+**Request**:
+```json
+{
+  "username": "user",
+  "password": "password"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "sessionToken": "xyz789...",
+  "user": {
+    "id": 2,
+    "username": "user",
+    "role": "user"
+  }
+}
+```
+
+#### POST /api/auth/logout
+**Description**: Logout and destroy session.
+
+**Headers**:
+```
+Authorization: Bearer {sessionToken}
+```
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
+
+### 10.2 Rule Management Endpoints
+
+#### GET /api/rules
+**Description**: List all rules.
+
+**Response**:
+```json
+{
+  "rules": [
+    {
+      "id": "rule_001",
+      "name": "ExampleBank Statement",
+      "enabled": true,
+      "created_at": "2024-11-01T10:00:00",
+      "modified_at": "2024-11-02T15:30:00"
+    }
+  ]
+}
+```
+
+#### POST /api/rules/:id/test
+**Description**: Test rule against a document.
+
+**Request**:
+```json
+{
+  "document_id": 12345
+}
+```
+
+**Response**: See [Section 6.3](#63-frontend-transformation) for complete structure.
+
+### 10.3 Background Processing Endpoints
+
+#### GET /api/background/status
+**Description**: Get current background processing status.
+
+**Response**:
+```json
+{
+  "enabled": true,
+  "locked": false,
+  "needs_rerun": false,
+  "last_run": {
+    "id": 42,
+    "started_at": "2024-11-04T08:00:00",
+    "completed_at": "2024-11-04T08:02:30",
+    "status": "completed",
+    "documents_found": 15,
+    "documents_processed": 15,
+    "documents_classified": 12,
+    "documents_skipped": 3,
+    "rules_applied": 12
+  },
+  "config": {
+    "debounce_seconds": 30,
+    "tag_new": "NEW",
+    "auto_pause": true
+  }
+}
+```
+
+#### POST /api/background/trigger
+**Description**: Manually trigger background processing.
+
+**Request**:
+```json
+{
+  "delay_seconds": 5
+}
+```
+
+**Response**:
+```json
+{
+  "status": "scheduled",
+  "message": "Processing scheduled in 5 seconds",
+  "delay_seconds": 5
+}
+```
+
+**Possible Status Values**:
+- `disabled`: Background processing not enabled
+- `scheduled`: Processing queued with debounce
+- `running`: Processing currently executing
+- `locked`: Another run is active, needs_rerun flag set
+
+---
+
+## 11. Database Schema
+
+### 11.1 Core Tables
 
 #### config
 ```sql
@@ -592,613 +1640,123 @@ CREATE TABLE config (
     key TEXT PRIMARY KEY,
     value TEXT,
     updated_at TEXT
-)
+);
 ```
 
-**Key Settings**:
-- `setup_completed`: boolean (true/false)
-- `paperless_url`: string
-- `poco_ocr_enabled`: boolean (true/false) - Controls POCO OCR custom field
-- `bg_enabled`: boolean (true/false) - Background processing enabled
-- `bg_debounce_seconds`: integer (default 30)
-- `bg_tag_new`: string (default "NEW")
-- `bg_tag_poco`: string (default "POCO")
-- `bg_processing_lock`: boolean (true/false) - Processing lock flag
-- `bg_needs_rerun`: boolean (true/false) - Rerun needed flag
+**Key Fields**:
+- `setup_completed`: 'true' | 'false'
+- `paperless_url`: Paperless-ngx base URL
+- `bg_enabled`: Background processing enabled
+- `bg_debounce_seconds`: Debounce delay
+- `bg_tag_new`: Discovery tag name
+- `bg_processing_lock`: Processing lock status
+- `bg_needs_rerun`: Rerun flag status
+- `poco_ocr_enabled`: POCO OCR custom field enabled
 
 #### users
 ```sql
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_username TEXT UNIQUE,
-    paperless_user_id INTEGER,
-    role TEXT DEFAULT 'user',
-    is_enabled INTEGER DEFAULT 1,
-    encrypted_token BLOB,
-    created_at TEXT,
+    paperless_username TEXT UNIQUE NOT NULL,
+    paperless_user_id INTEGER UNIQUE NOT NULL,
+    paperless_groups TEXT,
+    pococlass_role TEXT NOT NULL DEFAULT 'user',
+    is_enabled INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL,
     last_login TEXT
-)
+);
 ```
 
-**Roles**: `admin` | `user`  
-**Token Encryption**: Fernet (AES-128) using `POCOCLASS_SECRET_KEY`
+**Roles**:
+- `admin`: Full access including user management, settings
+- `user`: Rule creation, testing, viewing logs
 
 #### sessions
 ```sql
 CREATE TABLE sessions (
-    session_token TEXT PRIMARY KEY,
-    user_id INTEGER,
-    paperless_token TEXT,
-    created_at TEXT,
-    expires_at TEXT,
-    last_activity TEXT
-)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_token TEXT UNIQUE NOT NULL,
+    user_id INTEGER NOT NULL,
+    paperless_token TEXT NOT NULL,  -- Encrypted
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    last_activity TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 ```
 
-**Timeout**: 24 hours (configurable via `session_timeout_hours`)
+**Notes**:
+- `paperless_token` is encrypted using Fernet (symmetric encryption)
+- `last_activity` updated on every API request (for auto-pause detection)
+- `expires_at` refreshed on activity (sliding window)
+
+### 11.2 Entity Cache Tables
+
+#### paperless_correspondents
+```sql
+CREATE TABLE paperless_correspondents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paperless_id INTEGER UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    last_synced TEXT NOT NULL
+);
+```
+
+**Similar Tables**:
+- `paperless_tags` (adds `color` field)
+- `paperless_document_types`
+- `paperless_custom_fields` (adds `data_type`, `extra_data`)
+- `paperless_users`
+
+### 11.3 Logging Tables
 
 #### logs
 ```sql
 CREATE TABLE logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT,
-    type TEXT,
-    level TEXT,
-    message TEXT,
+    timestamp TEXT NOT NULL,
+    type TEXT NOT NULL,  -- system, classification, processing, api
+    level TEXT NOT NULL,  -- info, warning, error, critical
+    source TEXT,
+    message TEXT NOT NULL,
     rule_name TEXT,
     rule_id TEXT,
     document_id INTEGER,
     document_name TEXT,
     poco_score REAL,
     poco_ocr REAL,
-    source TEXT
-)
+    user_id INTEGER,
+    details TEXT,  -- JSON blob for additional data
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 CREATE INDEX idx_logs_timestamp ON logs(timestamp DESC);
 CREATE INDEX idx_logs_type ON logs(type);
 CREATE INDEX idx_logs_level ON logs(level);
 ```
-
-**Types**: classification | processing | system | error  
-**Levels**: debug | info | warning | error
 
 #### processing_history
 ```sql
 CREATE TABLE processing_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    started_at TEXT,
+    started_at TEXT NOT NULL,
     completed_at TEXT,
-    status TEXT,
-    trigger_type TEXT,
+    status TEXT NOT NULL,  -- running, completed, failed
+    trigger_type TEXT NOT NULL,  -- post-consumption, manual, scheduled
+    documents_found INTEGER DEFAULT 0,
     documents_processed INTEGER DEFAULT 0,
     documents_classified INTEGER DEFAULT 0,
+    documents_skipped INTEGER DEFAULT 0,
     rules_applied INTEGER DEFAULT 0,
-    error_message TEXT
-)
+    error_message TEXT,
+    user_id INTEGER,
+    details TEXT,  -- JSON blob
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 CREATE INDEX idx_processing_history_started ON processing_history(started_at DESC);
 CREATE INDEX idx_processing_history_status ON processing_history(status);
 ```
-
-### Cached Data Tables
-
-#### paperless_correspondents
-```sql
-CREATE TABLE paperless_correspondents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_id INTEGER UNIQUE,
-    name TEXT,
-    last_sync TEXT
-)
-```
-
-#### paperless_document_types
-```sql
-CREATE TABLE paperless_document_types (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_id INTEGER UNIQUE,
-    name TEXT,
-    last_sync TEXT
-)
-```
-
-#### paperless_tags
-```sql
-CREATE TABLE paperless_tags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_id INTEGER UNIQUE,
-    name TEXT,
-    color TEXT,
-    last_sync TEXT
-)
-```
-
-#### paperless_custom_fields
-```sql
-CREATE TABLE paperless_custom_fields (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_id INTEGER UNIQUE,
-    name TEXT,
-    data_type TEXT,
-    extra_data TEXT,
-    last_sync TEXT
-)
-```
-
-**Note**: `extra_data` stores JSON for select field options
-
-#### paperless_users
-```sql
-CREATE TABLE paperless_users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    paperless_id INTEGER UNIQUE,
-    username TEXT,
-    last_sync TEXT
-)
-```
-
-**Purpose**: Username lookup for document owner display
-
----
-
-## API Architecture
-
-### Authentication
-
-**Method**: Session-based with encrypted Paperless tokens  
-**Storage**: SQLite sessions table  
-**Encryption**: Fernet (AES-128)  
-**Timeout**: 24 hours (configurable)
-
-#### Decorators
-```python
-@require_auth       # Any authenticated user
-@require_admin      # Admin users only
-```
-
-### Key Endpoints
-
-#### Authentication
-```
-POST /api/auth/login
-POST /api/auth/logout
-GET  /api/auth/status
-```
-
-#### Documents
-```
-GET  /api/documents
-  Parameters:
-    - limit: int
-    - title: string
-    - tags: comma-separated IDs
-    - tags_mode: include|exclude
-    - exclude_tags: comma-separated IDs
-    - correspondents: comma-separated IDs
-    - correspondents_mode: include|exclude
-    - doc_types: comma-separated IDs
-    - doc_types_mode: include|exclude
-    - date_from: ISO date
-    - date_to: ISO date
-  
-  Response:
-    [{
-      id: int,
-      title: string,
-      created: ISO date,
-      added: ISO date,
-      correspondent: string,
-      documentType: string,
-      tags: [string],
-      owner: string,
-      originalFileName: string,
-      pdfUrl: string,
-      downloadUrl: string,
-      content: string,
-      pocoScore: float | null  // POCO Score from custom fields
-    }]
-```
-
-#### Rules
-```
-GET    /api/rules
-GET    /api/rules/:id
-POST   /api/rules
-PUT    /api/rules/:id
-DELETE /api/rules/:id
-POST   /api/rules/test       # Test rule against content
-POST   /api/rules/execute    # Execute rule on document
-```
-
-#### Validation
-```
-GET  /api/validation/mandatory-data
-  Response:
-    {
-      valid: boolean,
-      missing_fields: [string],
-      missing_tags: [string],
-      poco_ocr_enabled: boolean,
-      fields: {
-        poco_score: boolean,
-        poco_ocr: boolean
-      },
-      tags: {
-        poco_plus: boolean,
-        poco_minus: boolean,
-        new: boolean
-      }
-    }
-
-POST /api/validation/fix-mandatory-data (admin only)
-  Creates missing fields/tags based on poco_ocr_enabled setting
-```
-
-#### Settings
-```
-GET /api/settings/poco-ocr-enabled
-  Response: { enabled: boolean }
-
-PUT /api/settings/poco-ocr-enabled (admin only)
-  Body: { enabled: boolean }
-  Response: {
-    success: boolean,
-    enabled: boolean,
-    field_exists?: boolean,
-    message?: string
-  }
-```
-
-#### Background Processing
-```
-POST /api/background/trigger
-  Triggers debounced processing (respects auto-pause)
-
-POST /api/background/process
-  Body: {
-    dry_run?: boolean,
-    filters?: {
-      tags?: [string],
-      exclude_tags?: [string],
-      date_from?: ISO date,
-      date_to?: ISO date,
-      limit?: int
-    }
-  }
-  
-  Manual processing (bypasses auto-pause)
-
-GET /api/background/status
-  Response: {
-    is_running: boolean,
-    processing_lock: boolean,
-    needs_rerun: boolean,
-    last_run?: ISO datetime
-  }
-
-GET /api/background/history?limit=10
-  Response: [processing_history records]
-
-POST /api/background/settings (admin only)
-  Body: {
-    enabled?: boolean,
-    debounce_seconds?: int,
-    tag_new?: string,
-    tag_poco?: string
-  }
-```
-
-#### Sync
-```
-POST /api/sync (admin only)
-  Manual sync of Paperless data
-
-GET /api/sync/status
-  Response: {
-    correspondents: { last_sync: ISO datetime, count: int },
-    tags: { ... },
-    document_types: { ... },
-    custom_fields: { ... },
-    users: { ... }
-  }
-
-GET /api/sync/history?limit=10 (admin only)
-  Response: [{ timestamp, operation, counts, errors }]
-```
-
-### API Client (Paperless Communication)
-
-**Location**: `api_client.py::PaperlessAPIClient`
-
-**Features**:
-- Cache-first lookups for correspondents, tags, doc types
-- 30-second timeouts for all requests (10s for auth)
-- Automatic token management
-- Pagination handling
-
-**Key Methods**:
-```python
-get_documents(filters) → [dict]
-get_document_content(doc_id) → str
-get_custom_field_id(name) → int | None
-get_tag_id(name) → int | None
-create_custom_field(name, type) → bool
-create_tag(name, color, is_inbox) → bool
-update_document(doc_id, updates) → bool
-```
-
----
-
-## Error Handling
-
-### Validation Guards
-
-#### Mandatory Data Check
-```python
-# Before processing
-if not poco_score_exists or (poco_ocr_enabled and not poco_ocr_exists):
-    return {'error': 'Missing required custom fields'}
-
-if not (poco_plus_exists and poco_minus_exists and new_tag_exists):
-    return {'error': 'Missing required tags'}
-```
-
-#### Global Warning Banner
-- Displayed when mandatory data missing
-- Auto-navigates to Settings > Data Validation
-- Blocks background processing until fixed
-
-### Processing Error Handling
-
-```python
-try:
-    result = process_document(doc_id)
-except Exception as e:
-    logger.error(f"Processing failed for {doc_id}: {e}")
-    db.add_log(
-        type='error',
-        level='error',
-        message=f"Processing error: {e}",
-        document_id=doc_id
-    )
-    # Continue with next document (don't fail entire batch)
-```
-
----
-
-## Configuration Reference
-
-### Environment Variables
-
-**Required**:
-- `POCOCLASS_SECRET_KEY`: Encryption key for API tokens (32 bytes, base64)
-  - Generate: `python generate_secret_key.py`
-  - Must be set in production
-  - Validated on startup (fail-fast)
-
-**Optional**:
-- `DATABASE_URL`: PostgreSQL connection string (Replit only)
-- `PAPERLESS_URL`: Default Paperless URL (can be set via UI)
-- `PAPERLESS_TOKEN`: Default Paperless token (can be set via UI)
-
-### Database Configuration Keys
-
-**System**:
-- `setup_completed`: "true" | "false"
-- `paperless_url`: Full URL including protocol
-- `session_timeout_hours`: Default "24"
-
-**Optional Features**:
-- `poco_ocr_enabled`: "true" | "false" (default: "false")
-
-**Background Processing**:
-- `bg_enabled`: "true" | "false" (default: "false")
-- `bg_debounce_seconds`: "30" (default)
-- `bg_tag_new`: "NEW" (default)
-- `bg_tag_poco`: "POCO" (legacy, not used in v2)
-- `bg_processing_lock`: "true" | "false" (runtime state)
-- `bg_needs_rerun`: "true" | "false" (runtime state)
-
----
-
-## Troubleshooting
-
-### Document Not Processing
-
-**Symptoms**: Document has NEW tag but not being discovered
-
-**Check**:
-1. Does document already have POCO+ or POCO- tag? (prevents re-processing)
-2. Is background processing enabled? (Settings > Background Processing)
-3. Is background processing paused? (auto-pauses when Web UI active)
-4. Check processing lock: `SELECT value FROM config WHERE key='bg_processing_lock'`
-
-**Solution**:
-- Remove POCO+/POCO- tags to allow re-processing
-- Trigger manual processing from Background Process page
-- Check logs: `GET /api/logs?type=processing&level=error`
-
-### Scores Not Appearing
-
-**Symptoms**: Document processed but POCO Score missing
-
-**Check**:
-1. Validation status: `GET /api/validation/mandatory-data`
-2. Custom field exists: Check Paperless UI > Settings > Custom Fields
-3. Check logs: Search for "Failed to add POCO scores"
-
-**Solution**:
-- Settings > Data Validation > Fix Missing Data
-- Manually create "POCO Score" field in Paperless
-- Re-process document
-
-### POCO OCR Field Issues
-
-**Symptoms**: POCO OCR not appearing in Paperless
-
-**Check**:
-1. Is POCO OCR enabled? Settings > Optional Features
-2. Check config: `SELECT value FROM config WHERE key='poco_ocr_enabled'`
-3. Does field exist in Paperless?
-
-**Remember**:
-- POCO OCR is ALWAYS in document notes (regardless of field)
-- Field is optional - only for visibility in Paperless UI
-- Enable via Settings > Optional Features
-
-### Processing Loops
-
-**Symptoms**: Document being processed repeatedly
-
-**Check**:
-1. Is POCO tag being applied? Check document tags
-2. Are tags in exclude list? Check `_discover_documents()` logic
-3. Check processing history: `GET /api/background/history?limit=20`
-
-**Solution**:
-- Ensure POCO+/POCO- tags are being written
-- Check tag IDs match cached IDs (sync may be needed)
-- Review processing logs for errors
-
----
-
-## Performance Considerations
-
-### Caching Strategy
-
-**Correspondents, Tags, Doc Types**:
-- Cached in SQLite on sync
-- Cache-first lookups (no API call if in cache)
-- Sync frequency: Manual or on-demand
-
-**Custom Field IDs**:
-- Looked up once per processing batch
-- Stored in memory for duration of batch
-- Re-fetched on API restart
-
-### API Timeouts
-
-**Standard**: 30 seconds  
-**Auth**: 10 seconds  
-**Rationale**: Prevents indefinite hangs, fast-fail on network issues
-
-### Background Processing
-
-**Debounce**: 30 seconds (reduces rapid-fire triggers)  
-**Batch Size**: Configurable via limit parameter  
-**Concurrency**: Single-threaded (processing lock prevents parallel runs)
-
-### Database Indexes
-
-**Optimized Queries**:
-```sql
--- Logs
-CREATE INDEX idx_logs_timestamp ON logs(timestamp DESC);
-CREATE INDEX idx_logs_type ON logs(type);
-CREATE INDEX idx_logs_level ON logs(level);
-
--- Processing History
-CREATE INDEX idx_processing_history_started ON processing_history(started_at DESC);
-CREATE INDEX idx_processing_history_status ON processing_history(status);
-```
-
----
-
-## Security
-
-### Token Encryption
-
-**Method**: Fernet (AES-128)  
-**Key Source**: `POCOCLASS_SECRET_KEY` environment variable  
-**Storage**: Encrypted tokens in `users.encrypted_token` (BLOB)
-
-**Encryption Flow**:
-```python
-from cryptography.fernet import Fernet
-
-# On login
-cipher = Fernet(POCOCLASS_SECRET_KEY)
-encrypted_token = cipher.encrypt(paperless_token.encode())
-db.store_encrypted_token(user_id, encrypted_token)
-
-# On API call
-encrypted_token = db.get_encrypted_token(user_id)
-paperless_token = cipher.decrypt(encrypted_token).decode()
-```
-
-### Session Management
-
-**Token**: Random 32-char hex string  
-**Storage**: SQLite sessions table  
-**Cleanup**: Expired sessions automatically excluded from queries  
-**Timeout**: Configurable (default 24h)
-
-### SQL Injection Protection
-
-**Logs Endpoint**: Whitelisted ORDER BY fields
-```python
-ALLOWED_SORT_FIELDS = ['timestamp', 'type', 'level']
-if order_by not in ALLOWED_SORT_FIELDS:
-    order_by = 'timestamp'  # Safe default
-```
-
-**General**: Parameterized queries throughout
-
----
-
-## Deployment
-
-### Docker Installation
-
-See `README.md` for Docker setup instructions.
-
-### Bare Metal Installation
-
-1. Generate encryption key: `python generate_secret_key.py`
-2. Set environment variable: `export POCOCLASS_SECRET_KEY="..."`
-3. Install dependencies: `pip install -r requirements.txt`
-4. Build frontend: `cd frontend && npm install && npm run build`
-5. Run: `./start.sh`
-
-### Replit Deployment
-
-1. Set secret `POCOCLASS_SECRET_KEY` in Secrets tab
-2. Database automatically provisioned (PostgreSQL via DATABASE_URL)
-3. Workflow auto-runs on fork
-
----
-
-## Version History
-
-### v2.0 (2025-11-01)
-- Dual-score system (POCO Score + POCO OCR)
-- Mandatory tagging (POCO+/POCO-)
-- Background processing with tag-based discovery
-- Optional POCO OCR custom field
-- Comprehensive document notes
-- Validation system with auto-remediation
-
-### v1.x (Legacy)
-- Single score system
-- Manual processing only
-- Optional tagging
-- Basic notes
-
----
-
-## Glossary
-
-**POCO**: Post-Consumption Classification  
-**POCO Score**: Final actionable score (OCR + filename + Paperless)  
-**POCO OCR**: Transparency score (OCR pattern matching only)  
-**POCO+**: Tag indicating document matched a rule  
-**POCO-**: Tag indicating document processed but no match  
-**NEW**: Tag indicating document ready for processing  
-**Classified**: Document that met both POCO and OCR thresholds  
-**Processed**: Document that was evaluated (may or may not be classified)  
-**Threshold**: Minimum score required for classification (per-rule)  
-**Multiplier**: Trust factor applied to matching components  
-**Debounce**: Delay before processing to batch multiple triggers
 
 ---
 
