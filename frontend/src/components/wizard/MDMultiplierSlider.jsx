@@ -78,7 +78,7 @@ export default function MDMultiplierSlider({
         
         {/* Scale labels */}
         <div className="relative mt-2 px-2">
-          <div className="relative">
+          <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
             <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">Auto</span>
             <div style={{position: 'absolute', left: '0%', transform: 'translateX(22px)'}}>
               <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
@@ -100,7 +100,7 @@ export default function MDMultiplierSlider({
       </div>
       
       {/* Dynamic info display */}
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+      <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
