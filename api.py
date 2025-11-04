@@ -1905,6 +1905,15 @@ def list_documents():
             poco_score_field_id = api_client.get_custom_field_id('POCO Score')
             doc_category_field_id = api_client.get_custom_field_id('Doc Category')
             
+            # DEBUG for document ID 8
+            if doc['id'] == 8:
+                logger.info(f"Doc 8 - POCO Score field ID: {poco_score_field_id}")
+                logger.info(f"Doc 8 - Doc Category field ID: {doc_category_field_id}")
+                logger.info(f"Doc 8 - custom_fields: {doc.get('custom_fields', [])}")
+                logger.info(f"Doc 8 - custom_fields_lookup keys: {list(custom_fields_lookup.keys())}")
+                if doc_category_field_id and doc_category_field_id in custom_fields_lookup:
+                    logger.info(f"Doc 8 - CF def: {custom_fields_lookup[doc_category_field_id]}")
+            
             custom_fields = doc.get('custom_fields', [])
             for cf in custom_fields:
                 # Extract POCO Score
@@ -1917,15 +1926,21 @@ def list_documents():
                 # Extract Doc Category (resolve select option ID to text)
                 if doc_category_field_id and cf.get('field') == doc_category_field_id:
                     raw_value = cf.get('value')
+                    if doc['id'] == 8:
+                        logger.info(f"Doc 8 - Found Doc Category field! Raw value: {raw_value}")
                     # Check if this is a select field with option IDs
                     if raw_value and doc_category_field_id in custom_fields_lookup:
                         cf_def = custom_fields_lookup[doc_category_field_id]
                         if cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
                             # Resolve option ID to label
                             select_options = cf_def['extra_data'].get('select_options', [])
+                            if doc['id'] == 8:
+                                logger.info(f"Doc 8 - Select options: {select_options[:2]}...")  # First 2
                             for option in select_options:
                                 if option.get('id') == raw_value:
                                     doc_category = option.get('label', raw_value)
+                                    if doc['id'] == 8:
+                                        logger.info(f"Doc 8 - Matched option! Label: {doc_category}")
                                     break
                             if not doc_category:
                                 doc_category = raw_value  # Fallback to raw value
@@ -1933,6 +1948,9 @@ def list_documents():
                             doc_category = raw_value
                     else:
                         doc_category = raw_value
+                    
+                    if doc['id'] == 8:
+                        logger.info(f"Doc 8 - Final doc_category value: {doc_category}")
             
             # Build URLs for document viewing
             pdf_url = f"{paperless_url}/api/documents/{doc['id']}/preview/"
