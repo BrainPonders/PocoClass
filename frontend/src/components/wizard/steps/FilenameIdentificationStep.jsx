@@ -176,9 +176,9 @@ export default function FilenameIdentificationStep({
           <div className="relative mt-2">
             <div className="flex justify-between text-xs text-gray-500">
               <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-                <span className="text-amber-600 font-semibold">1</span>
+                <span className="text-blue-600 font-semibold">1</span>
                 <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
-                  <HelpCircle className="w-3 h-3 text-amber-400 hover:text-amber-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                 </Tooltip>
               </div>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
