@@ -5,7 +5,7 @@ import ValidatedInput from '@/components/ValidatedInput';
 import ValidatedTextarea from '@/components/ValidatedTextarea';
 import Tooltip from '@/components/Tooltip';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, AlertTriangle } from 'lucide-react';
 
 export default function BasicInfoStep({ 
   ruleData, 
@@ -158,23 +158,25 @@ export default function BasicInfoStep({
             />
             
             {/* Scale markers */}
-            <div className="flex justify-between text-xs text-gray-500 px-1">
-              <span>50</span>
-              <span>55</span>
-              <span>60</span>
-              <span>65</span>
-              <span>70</span>
-              <div className="flex items-center gap-1">
-                <span className="text-green-600 font-semibold">75</span>
-                <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
-                  <HelpCircle className="w-3 h-3 text-green-400 hover:text-green-600 cursor-help" />
-                </Tooltip>
+            <div className="relative mt-2">
+              <div className="flex justify-between text-xs text-gray-500">
+                <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
+                <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
+                <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
+                <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
+                <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
+                <div style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
+                  <span className="text-green-600 font-semibold">75</span>
+                  <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
+                    <HelpCircle className="w-3 h-3 text-green-400 hover:text-green-600 cursor-help" />
+                  </Tooltip>
+                </div>
+                <span style={{position: 'absolute', left: '60%', transform: 'translateX(-50%)'}}>80</span>
+                <span style={{position: 'absolute', left: '70%', transform: 'translateX(-50%)'}}>85</span>
+                <span style={{position: 'absolute', left: '80%', transform: 'translateX(-50%)'}}>90</span>
+                <span style={{position: 'absolute', left: '90%', transform: 'translateX(-50%)'}}>95</span>
+                <span style={{position: 'absolute', left: '100%', transform: 'translateX(-50%)'}}>100</span>
               </div>
-              <span>80</span>
-              <span>85</span>
-              <span>90</span>
-              <span>95</span>
-              <span>100</span>
             </div>
           </div>
         </div>
@@ -199,6 +201,12 @@ export default function BasicInfoStep({
             <span className="text-gray-500 text-xs italic">Example: A document must score ≥ {ruleData.threshold || 75}% to be classified. A score of {Math.min((ruleData.threshold || 75) + 5, 100)}% would pass.</span>
           </div>
         </div>
+        {(ruleData.threshold || 75) !== 75 && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>POCO Score requirement changed from default (75%).</span>
+          </div>
+        )}
       </div>
 
       <ConfirmDialog

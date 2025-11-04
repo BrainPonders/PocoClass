@@ -77,23 +77,25 @@ export default function MDMultiplierSlider({
         />
         
         {/* Scale labels */}
-        <div className="flex justify-between text-xs text-gray-500 px-1">
-          <div className="flex items-center gap-1">
-            <span className="text-orange-600 font-semibold">Auto</span>
-            <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
-              <HelpCircle className="w-3 h-3 text-orange-400 hover:text-orange-600 cursor-help" />
-            </Tooltip>
+        <div className="relative mt-2">
+          <div className="flex justify-between text-xs text-gray-500">
+            <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
+              <span className="text-orange-600 font-semibold">Auto</span>
+              <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
+                <HelpCircle className="w-3 h-3 text-orange-400 hover:text-orange-600 cursor-help" />
+              </Tooltip>
+            </div>
+            <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>1</span>
+            <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>2</span>
+            <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>3</span>
+            <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>4</span>
+            <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}}>5</span>
+            <span style={{position: 'absolute', left: '60%', transform: 'translateX(-50%)'}}>6</span>
+            <span style={{position: 'absolute', left: '70%', transform: 'translateX(-50%)'}}>7</span>
+            <span style={{position: 'absolute', left: '80%', transform: 'translateX(-50%)'}}>8</span>
+            <span style={{position: 'absolute', left: '90%', transform: 'translateX(-50%)'}}>9</span>
+            <span style={{position: 'absolute', left: '100%', transform: 'translateX(-50%)'}}>10</span>
           </div>
-          <span>1</span>
-          <span>2</span>
-          <span>3</span>
-          <span>4</span>
-          <span>5</span>
-          <span>6</span>
-          <span>7</span>
-          <span>8</span>
-          <span>9</span>
-          <span>10</span>
         </div>
       </div>
       
@@ -121,6 +123,12 @@ export default function MDMultiplierSlider({
             <span className="text-gray-500 text-xs italic">Example: With {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} verified, max MD weight = {enabledFieldCount} × {enabledFieldCount} × {effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)} = {mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)} points.</span>
           </div>
         </div>
+        {mode !== 'auto' && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Metadata multiplier changed from default (Auto).</span>
+          </div>
+        )}
         {showWarning && (
           <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
