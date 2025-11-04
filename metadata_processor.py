@@ -107,14 +107,21 @@ class MetadataProcessor:
                     value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
                 
                 if value:
-                    # Apply extraction type filtering if specified
+                    # Infer extraction_type from format field if not explicitly set
                     extraction_type = field_config.get('extraction_type', '')
+                    date_format = field_config.get('format', '')
+                    
+                    # If format is specified but no extraction_type, assume 'date'
+                    if not extraction_type and date_format:
+                        extraction_type = 'date'
+                    
+                    # Apply extraction type filtering if specified
                     if extraction_type:
-                        value = self.apply_extraction_type_filter(value, extraction_type, field_config.get('format', ''))
+                        value = self.apply_extraction_type_filter(value, extraction_type, date_format)
                     
                     # Apply formatting for dates if specified
-                    if value and extraction_type == 'date' and 'format' in field_config:
-                        formatted_value = self.parse_date_with_format(value, field_config['format'])
+                    if value and extraction_type == 'date' and date_format:
+                        formatted_value = self.parse_date_with_format(value, date_format)
                         if formatted_value:
                             extracted[field_name] = formatted_value
                     elif value:
