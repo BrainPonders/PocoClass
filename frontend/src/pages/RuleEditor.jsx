@@ -513,7 +513,7 @@ export default function RuleEditor() {
 
   return (
     <PageLayout
-      headerPadding="py-[18.5px]"
+      headerPadding="py-[14px]"
       title={ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
       subtitle={
         <div className="space-y-1">
