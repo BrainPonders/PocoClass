@@ -5,6 +5,7 @@ import ValidatedInput from '@/components/ValidatedInput';
 import ValidatedTextarea from '@/components/ValidatedTextarea';
 import Tooltip from '@/components/Tooltip';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { HelpCircle } from 'lucide-react';
 
 export default function BasicInfoStep({ 
   ruleData, 
@@ -137,19 +138,8 @@ export default function BasicInfoStep({
             POCO Score Requirement
             <Tooltip content="The minimum overall confidence score required for a document to be classified by this rule. The POCO score combines OCR content matching, filename patterns, and metadata verification. 75% is recommended for balanced accuracy." />
           </label>
-          <p className="text-sm text-gray-600 mb-3">
-            Minimum confidence score needed to classify a document with this rule (combines OCR, filename, and metadata scores)
-          </p>
           
-          {/* Current Value Display */}
-          <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-            <div className="text-center">
-              <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-              <div className="text-3xl font-bold text-blue-700">{tempThreshold}%</div>
-            </div>
-          </div>
-
-          <div className="mt-2">
+          <div className="space-y-2">
             <input
               type="range"
               min="50"
@@ -160,27 +150,26 @@ export default function BasicInfoStep({
               onMouseUp={handleThresholdSliderRelease}
               onTouchEnd={handleThresholdSliderRelease}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-              style={{
-                background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((tempThreshold - 50) / 50) * 100}%, #e5e7eb ${((tempThreshold - 50) / 50) * 100}%, #e5e7eb 100%)`
-              }}
             />
             
             {/* Scale markers */}
-            <div className="relative mt-2 mb-1">
-              <div className="flex justify-between items-center">
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-gray-700 leading-tight">50%</div>
-                  <div className="text-xs text-gray-600 font-medium leading-tight">Permissive</div>
-                </div>
-                <div className="text-center relative">
-                  <div className="text-sm font-semibold text-green-600 leading-tight">75%</div>
-                  <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-sm font-semibold text-gray-700 leading-tight">100%</div>
-                  <div className="text-xs text-gray-600 font-medium leading-tight">Very Strict</div>
-                </div>
+            <div className="flex justify-between text-xs text-gray-500 px-1">
+              <span>50</span>
+              <span>55</span>
+              <span>60</span>
+              <span>65</span>
+              <span>70</span>
+              <div className="flex items-center gap-1">
+                <span>75</span>
+                <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
+                  <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+                </Tooltip>
               </div>
+              <span>80</span>
+              <span>85</span>
+              <span>90</span>
+              <span>95</span>
+              <span>100</span>
             </div>
           </div>
         </div>
