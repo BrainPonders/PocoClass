@@ -941,7 +941,7 @@ export default function Settings() {
                 {tabs.map(tab => {
                   const Icon = tab.icon;
                   const isDisabled = tab.adminOnly && !isAdmin;
-                  const showWarning = tab.id === 'fieldVisibility' && hasMissingFields;
+                  const showWarning = tab.id === 'validation' && hasMissingFields;
 
                   return (
                     <button
@@ -1300,11 +1300,8 @@ export default function Settings() {
               {activeTab === 'fieldVisibility' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">
                       Field Visibility Settings
-                      {hasMissingFields && (
-                        <AlertTriangle className="w-5 h-5 text-amber-500" title="POCO fields missing" />
-                      )}
                     </h2>
                     <p className="text-sm text-gray-600 mb-4">
                       Control which fields appear in the wizard and how they behave
