@@ -2360,13 +2360,18 @@ def execute_rule_endpoint(rule_id):
         if not content:
             return jsonify({'error': 'Could not retrieve document content'}), 500
         
+        # Convert document IDs to names for verification
+        paperless_metadata = metadata_processor.process_document_for_verification(
+            document, user_api_client
+        )
+        
         # Execute rule
         result = test_engine.execute_rule(
             rule_data,
             document_id,
             content,
             document.get('original_file_name', 'unknown.pdf'),
-            document,
+            paperless_metadata,
             dry_run
         )
         
