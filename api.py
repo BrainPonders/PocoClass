@@ -1391,7 +1391,16 @@ def generate_formatted_yaml(frontend_data, user_name='System'):
     ocr_threshold = frontend_data.get('ocrThreshold', 75)
     ocr_multiplier = frontend_data.get('ocrMultiplier', 3)
     filename_multiplier = frontend_data.get('filenameMultiplier', 1)
-    verification_multiplier = frontend_data.get('verificationMultiplier', 0.5)
+    
+    # Handle verification multiplier config (new format) or legacy single value
+    verification_multiplier_config = frontend_data.get('verificationMultiplierConfig')
+    if verification_multiplier_config:
+        verification_multiplier_mode = verification_multiplier_config.get('mode', 'auto')
+        verification_multiplier = verification_multiplier_config.get('value', 0.5)
+    else:
+        # Legacy format: single value defaults to auto mode
+        verification_multiplier = frontend_data.get('verificationMultiplier', 0.5)
+        verification_multiplier_mode = 'auto'
     
     yaml_content = f"""# =================================================================================================
 # PocoClass Document Classification Rule
@@ -1601,7 +1610,10 @@ filename_patterns:
 # =============================
 # Paperless placeholder fields to verify for additional confidence
 
-verification_multiplier: {verification_multiplier}  # {verification_multiplier}× weight
+# Verification Weight Multiplier: Controls importance of placeholder verification
+# Mode: 'auto' = dynamic neutraliser (1 / number_of_enabled_fields), 'manual' = fixed multiplier
+verification_multiplier_mode: "{verification_multiplier_mode}"  # auto or manual
+verification_multiplier: {verification_multiplier}  # {'Auto-adjusted (neutraliser)' if verification_multiplier_mode == 'auto' else f'{verification_multiplier}× weight'}
 
 verification_fields:
 """
@@ -2047,7 +2059,8 @@ def convert_frontend_to_backend(frontend_data):
         'ocr_threshold': frontend_data.get('ocrThreshold', 75),
         'ocr_multiplier': frontend_data.get('ocrMultiplier', 3),
         'filename_multiplier': frontend_data.get('filenameMultiplier', 1),
-        'verification_multiplier': frontend_data.get('verificationMultiplier', 0.5),
+        'verification_multiplier': frontend_data.get('verificationMultiplierConfig', {}).get('value', frontend_data.get('verificationMultiplier', 0.5)),
+        'verification_multiplier_mode': frontend_data.get('verificationMultiplierConfig', {}).get('mode', 'auto'),
         'status': frontend_data.get('status', 'draft'),
     }
     
@@ -2146,6 +2159,10 @@ def convert_backend_to_frontend(backend_data, rule_id):
         'ocrMultiplier': backend_data.get('ocr_multiplier', 3),
         'filenameMultiplier': backend_data.get('filename_multiplier', 1),
         'verificationMultiplier': backend_data.get('verification_multiplier', 0.5),
+        'verificationMultiplierConfig': {
+            'mode': backend_data.get('verification_multiplier_mode', 'auto'),
+            'value': backend_data.get('verification_multiplier', 0.5)
+        },
         'status': backend_data.get('status', 'draft'),
         'ocrIdentifiers': [],
         'predefinedData': {},
