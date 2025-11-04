@@ -124,7 +124,7 @@ export default function MDMultiplierSlider({
         {showWarning && (
           <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
-            <span>⚠️ Paperless verification weight exceeds OCR.</span>
+            <span>Paperless verification weight exceeds OCR.</span>
           </div>
         )}
       </div>
