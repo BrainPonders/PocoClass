@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, FileText, Eye, HelpCircle } from 'lucide-react';
+import { Plus, FileText, Eye, HelpCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import LogicGroupEditor from '../LogicGroupEditor';
 import Tooltip from '@/components/Tooltip';
@@ -237,7 +237,7 @@ export default function OcrIdentifiersStep({
               <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
               <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
               <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">75</span>
-              <div style={{position: 'absolute', left: '50%', transform: 'translateX(5px)'}}>
+              <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
                 <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
                   <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                 </Tooltip>
