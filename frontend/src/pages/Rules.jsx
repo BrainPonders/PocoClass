@@ -696,7 +696,7 @@ export default function Rules() {
                         rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {t(`status_${rule.status}`)}
+                        {rule.status ? rule.status.charAt(0).toUpperCase() + rule.status.slice(1) : 'Unknown'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-700">
