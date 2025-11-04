@@ -533,51 +533,6 @@ export default function BackgroundProcess() {
             allCustomFields={[]}
           />
 
-          {/* Action Buttons */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Processing Actions</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              {/* Dry Run Button */}
-              <div className="flex flex-col">
-                <Button
-                  onClick={() => handleManualProcess(true)}
-                  disabled={loading || matchingDocuments.length === 0}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
-                >
-                  <Play className="w-4 h-4" />
-                  {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
-                </Button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
-                  Test all rules without changing Paperless
-                </p>
-              </div>
-
-              {/* Run Button */}
-              <div className="flex flex-col">
-                <Button
-                  onClick={() => {
-                    if (window.confirm('⚠️ WARNING: This will apply active rules to your Paperless documents and make real changes. Are you sure you want to proceed?')) {
-                      handleManualProcess(false);
-                    }
-                  }}
-                  disabled={loading || matchingDocuments.length === 0}
-                  className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700"
-                >
-                  <Play className="w-4 h-4" />
-                  {loading && currentDryRun === false ? 'Running...' : 'Run'}
-                </Button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
-                  ⚠️ Apply active rules to Paperless
-                </p>
-              </div>
-            </div>
-            
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-              <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
-            </div>
-          </div>
-
           {/* Matching Documents List */}
           <div className="mt-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">
@@ -627,9 +582,7 @@ export default function BackgroundProcess() {
                         <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
                         <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
                         <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">
-                          {doc.custom_fields?.find(cf => cf.field === 'Document Category')?.value || '-'}
-                        </td>
+                        <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
                         <td className="px-2 py-1 whitespace-nowrap">
                           <div className="flex gap-1 flex-wrap">
                             {doc.tags && doc.tags.length > 0 ? (
@@ -706,6 +659,51 @@ export default function BackgroundProcess() {
                 </table>
               </div>
             )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3">Processing Actions</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              {/* Dry Run Button */}
+              <div className="flex flex-col">
+                <Button
+                  onClick={() => handleManualProcess(true)}
+                  disabled={loading || matchingDocuments.length === 0}
+                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Play className="w-4 h-4" />
+                  {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
+                </Button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Test all rules without changing Paperless
+                </p>
+              </div>
+
+              {/* Run Button */}
+              <div className="flex flex-col">
+                <Button
+                  onClick={() => {
+                    if (window.confirm('⚠️ WARNING: This will apply active rules to your Paperless documents and make real changes. Are you sure you want to proceed?')) {
+                      handleManualProcess(false);
+                    }
+                  }}
+                  disabled={loading || matchingDocuments.length === 0}
+                  className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700"
+                >
+                  <Play className="w-4 h-4" />
+                  {loading && currentDryRun === false ? 'Running...' : 'Run'}
+                </Button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  ⚠️ Apply active rules to Paperless
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+              <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
+            </div>
           </div>
         </CardContent>
       </Card>
