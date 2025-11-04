@@ -77,7 +77,7 @@ export default function MDMultiplierSlider({
         />
         
         {/* Scale labels */}
-        <div className="relative mt-2 px-2 pb-7">
+        <div className="relative mt-2 px-2 pb-8">
           <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
             <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">Auto</span>
             <div style={{position: 'absolute', left: '0%', transform: 'translateX(22px)'}}>
