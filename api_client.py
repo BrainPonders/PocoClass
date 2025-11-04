@@ -209,8 +209,8 @@ class PaperlessAPIClient:
             
             results = response.json().get('results', [])
             if results:
-                # Cache it for next time
-                self.db.sync_custom_fields([results[0]])
+                # Cache it for next time (without deleting other cached fields)
+                self.db.cache_custom_field(results[0])
                 return results[0]['id']
             
             # Create custom field if it doesn't exist
@@ -228,8 +228,8 @@ class PaperlessAPIClient:
             field_id = cf_data['id']
             self.logger.info(f"Created new custom field '{field_name}' with ID {field_id}")
             
-            # Cache the new custom field
-            self.db.sync_custom_fields([cf_data])
+            # Cache the new custom field (without deleting other cached fields)
+            self.db.cache_custom_field(cf_data)
             
             return field_id
             
