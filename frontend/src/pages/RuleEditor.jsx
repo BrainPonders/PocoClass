@@ -255,19 +255,19 @@ export default function RuleEditor() {
         );
         return hasOcrData || false;
       case 3:
+        const hasPatterns = (ruleData.filenamePatterns?.patterns?.length || 0) > 0;
+        const hasFormats = (ruleData.filenamePatterns?.dateFormats?.length || 0) > 0;
+        return hasPatterns || hasFormats;
+      case 4:
+        const enabledFields = ruleData.verification?.enabledFields || {};
+        return Object.values(enabledFields).some(Boolean);
+      case 5:
         return !!(
           ruleData.predefinedData?.correspondent || 
           ruleData.predefinedData?.documentType ||
           (ruleData.predefinedData?.tags?.length || 0) > 0 ||
           (ruleData.dynamicData?.extractionRules?.length || 0) > 0
         );
-      case 4:
-        const hasPatterns = (ruleData.filenamePatterns?.patterns?.length || 0) > 0;
-        const hasFormats = (ruleData.filenamePatterns?.dateFormats?.length || 0) > 0;
-        return hasPatterns || hasFormats;
-      case 5:
-        const enabledFields = ruleData.verification?.enabledFields || {};
-        return Object.values(enabledFields).some(Boolean);
       case 6:
         return true;
       default:
@@ -285,11 +285,11 @@ export default function RuleEditor() {
         ).length || 0;
         return filledGroups >= 3;
       case 3:
-        return !!(ruleData.predefinedData?.correspondent || ruleData.predefinedData?.documentType);
-      case 4:
         return true; // Filename step is optional
-      case 5:
+      case 4:
         return true; // Verification step is optional
+      case 5:
+        return !!(ruleData.predefinedData?.correspondent || ruleData.predefinedData?.documentType);
       case 6:
         return true;
       default:
@@ -492,9 +492,9 @@ export default function RuleEditor() {
     switch (currentStep) {
       case 1: return <BasicInfoStep {...stepProps} />;
       case 2: return <OcrIdentifiersStep {...stepProps} />;
-      case 3: return <DocumentClassificationsStep {...stepProps} />;
-      case 4: return <FilenameIdentificationStep {...stepProps} />;
-      case 5: return <DataVerificationStep {...stepProps} />;
+      case 3: return <FilenameIdentificationStep {...stepProps} />;
+      case 4: return <DataVerificationStep {...stepProps} />;
+      case 5: return <DocumentClassificationsStep {...stepProps} />;
       case 6: return <SummaryStep {...stepProps} />;
       default: return <BasicInfoStep {...stepProps} />;
     }
