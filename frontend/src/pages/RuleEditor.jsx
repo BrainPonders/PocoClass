@@ -20,6 +20,8 @@ import DocumentClassificationsStep from '../components/wizard/steps/DocumentClas
 import FilenameIdentificationStep from '../components/wizard/steps/FilenameIdentificationStep';
 import DataVerificationStep from '../components/wizard/steps/DataVerificationStep';
 import SummaryStep from '../components/wizard/steps/SummaryStep';
+import PageLayout from '@/components/PageLayout';
+import TabbedPreviewPanel from '@/components/TabbedPreviewPanel';
 
 // Helper hook for debouncing values
 function useDebounce(value, delay) {
@@ -493,80 +495,50 @@ export default function RuleEditor() {
   }
 
   return (
-    <div className="h-full flex flex-col" style={{backgroundColor: 'var(--app-bg)'}}>
-      <div style={{
-        backgroundColor: 'var(--app-surface)',
-        borderBottom: '1px solid var(--app-border)',
-        padding: '16px 24px'
-      }}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => handleNavigation(createPageUrl('Rules'))}
-              className="btn btn-ghost"
-            >
-              <ArrowLeft size={16} />
-            </button>
-            <div>
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold">
-                  {ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
-                </h1>
-                {ruleData.sourceDocumentId && (
-                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                    <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
-                    <code className="font-mono text-blue-800 font-semibold">{ruleData.sourceDocumentId}</code>
-                  </span>
-                )}
-              </div>
-              {selectedFile && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {t('editor_selected_file')} <span className="font-medium">{selectedFile}</span>
-                </p>
-              )}
-              {hasUnsavedChanges && (
-                <p className="text-sm text-yellow-600 mt-1">
-                  ● Unsaved changes
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="flex gap-3">
-            {(ruleData.sourceDocumentId || selectedDocumentId) && (
-              <>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={handleViewOcr}
-                  disabled={!ruleData.sourceDocumentId && !selectedDocumentId}
-                >
-                  <FileText size={16} />
-                  {t('editor_view_ocr')}
-                </button>
-                <button 
-                  className="btn btn-secondary"
-                  onClick={() => setShowPdfViewer(true)}
-                  disabled={!ruleData.sourceDocumentId && !selectedDocumentId}
-                >
-                  <Eye size={16} />
-                  {t('editor_view_pdf')}
-                </button>
-              </>
-            )}
-            <LoadingButton 
-              onClick={handleSave}
-              loading={isSaving}
-              disabled={!canFinish()}
-              className={`btn btn-primary ${!canFinish() ? 'opacity-50 cursor-not-allowed' : ''}`}
-              loadingText={t('common_saving')}
-            >
-              {t('common_save')}
-            </LoadingButton>
-          </div>
+    <PageLayout
+      title={ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
+      subtitle={
+        <div className="space-y-1">
+          {ruleData.sourceDocumentId && (
+            <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
+              <FileText className="w-4 h-4 text-blue-600" />
+              <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
+              <code className="font-mono text-blue-800 font-semibold">{ruleData.sourceDocumentId}</code>
+            </span>
+          )}
+          {selectedFile && (
+            <p className="text-sm text-gray-600">
+              {t('editor_selected_file')} <span className="font-medium">{selectedFile}</span>
+            </p>
+          )}
+          {hasUnsavedChanges && (
+            <p className="text-sm text-yellow-600">
+              ● Unsaved changes
+            </p>
+          )}
         </div>
-      </div>
-
-      <div className="flex-1 p-6 overflow-auto">
+      }
+      actions={
+        <>
+          <button 
+            onClick={() => handleNavigation(createPageUrl('Rules'))}
+            className="btn btn-ghost"
+          >
+            <ArrowLeft size={16} />
+            Back
+          </button>
+          <LoadingButton 
+            onClick={handleSave}
+            loading={isSaving}
+            disabled={!canFinish()}
+            className={`btn btn-primary ${!canFinish() ? 'opacity-50 cursor-not-allowed' : ''}`}
+            loadingText={t('common_saving')}
+          >
+            {t('common_save')}
+          </LoadingButton>
+        </>
+      }
+    >
         <div className="max-w-[1800px] mx-auto" style={{paddingLeft: '24px', paddingRight: '24px'}}>
           <div style={{marginLeft: '30px'}}>
             <StepProgress 
@@ -613,14 +585,16 @@ export default function RuleEditor() {
             </div>
 
             {showYamlPreview && (
-              <div style={{marginTop: '24px'}}>
-                {/* Use the debounced ruleData for YamlPreview */}
-                <YamlPreview ruleData={debouncedRuleData} />
+              <div style={{height: '100%', marginTop: '24px'}}>
+                <TabbedPreviewPanel 
+                  ruleData={debouncedRuleData}
+                  ocrContent={ocrContent}
+                  documentId={ruleData.sourceDocumentId || selectedDocumentId}
+                />
               </div>
             )}
           </div>
         </div>
-      </div>
 
       {/* PDF Viewer Modal */}
       <PdfViewerModal
@@ -681,6 +655,6 @@ export default function RuleEditor() {
         cancelText={t('common_cancel')}
         variant="warning"
       />
-    </div>
+    </PageLayout>
   );
 }
