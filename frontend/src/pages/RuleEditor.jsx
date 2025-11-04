@@ -131,6 +131,23 @@ export default function RuleEditor() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
+  // Load OCR content automatically when there's a source document
+  useEffect(() => {
+    const docId = ruleData.sourceDocumentId || selectedDocumentId;
+    if (!docId || ocrContent) return; // Skip if already loaded
+    
+    const loadOcr = async () => {
+      try {
+        const response = await apiClient.get(`/documents/${docId}/content`);
+        setOcrContent(response.content || '');
+      } catch (error) {
+        console.error('Error loading OCR content:', error);
+      }
+    };
+    
+    loadOcr();
+  }, [ruleData.sourceDocumentId, selectedDocumentId, ocrContent]);
+
   // Load rule only once on mount if ruleId exists
   useEffect(() => {
     if (!ruleId) return;
