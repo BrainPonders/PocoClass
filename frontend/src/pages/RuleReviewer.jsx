@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 import API_BASE_URL from '@/config/api';
+import PageLayout from "@/components/PageLayout";
 
 export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
@@ -360,13 +361,10 @@ export default function RuleReviewer() {
   }));
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Rule Evaluation</h1> {/* Renamed */}
-          <p className="text-gray-500 mt-1">Test and evaluate document classification rules</p> {/* Renamed */}
-        </div>
-      </div>
+    <PageLayout 
+      title="Rule Evaluation"
+      subtitle="Test and evaluate document classification rules"
+    >
 
       {/* Guide Section for Beginners */}
       {!hasRun && (
@@ -825,6 +823,6 @@ export default function RuleReviewer() {
           </div>
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }

@@ -3,6 +3,7 @@ import { FileStack, Download, RefreshCw } from 'lucide-react';
 import { Log } from '@/api/entities';
 import { useTranslation } from '@/components/translations';
 import LogFilterBar from '@/components/LogFilterBar';
+import PageLayout from '@/components/PageLayout';
 
 export default function Logs() {
   const { t } = useTranslation();
@@ -148,28 +149,22 @@ export default function Logs() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <FileStack className="w-8 h-8 text-blue-600" />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('logs_title')}</h1>
-              <p className="text-gray-500">{t('logs_subtitle')}</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={loadLogs} className="btn btn-secondary">
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </button>
-            <button onClick={exportLogs} className="btn btn-primary">
-              <Download className="w-4 h-4" />
-              Export CSV
-            </button>
-          </div>
-        </div>
-      </div>
+    <PageLayout 
+      title={t('logs_title')}
+      subtitle={t('logs_subtitle')}
+      actions={
+        <>
+          <button onClick={loadLogs} className="btn btn-secondary">
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </button>
+          <button onClick={exportLogs} className="btn btn-primary">
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
+        </>
+      }
+    >
 
       <LogFilterBar 
         filters={filters}
@@ -234,6 +229,6 @@ export default function Logs() {
           </div>
         )}
       </div>
-    </div>
+    </PageLayout>
   );
 }

@@ -6,6 +6,7 @@ import { createPageUrl } from "@/utils";
 import { FileText, Plus, Settings, BarChart3, Activity, CheckCircle, XCircle, Users, Tag, FileType, Database } from "lucide-react";
 import API_BASE_URL from '@/config/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PageLayout from "@/components/PageLayout";
 
 export default function Dashboard() {
   const [rules, setRules] = useState([]);
@@ -66,17 +67,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">PocoClass Dashboard</h1>
-          <p className="text-gray-500 mt-1">View and manage documents</p>
-        </div>
+    <PageLayout 
+      title="PocoClass Dashboard" 
+      subtitle="View and manage documents"
+      actions={
         <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
           <Plus className="w-5 h-5" />
           Create New Rule
         </Link>
-      </div>
+      }
+    >
 
       {/* PocoClass Status Section */}
       {(backgroundSettings || backgroundStatus || syncStatus) && (
@@ -299,6 +299,6 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageLayout>
   );
 }
