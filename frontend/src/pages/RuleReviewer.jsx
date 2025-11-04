@@ -279,7 +279,7 @@ export default function RuleReviewer() {
       // Filename breakdown
       const filenameBreakdown = breakdown.filename || {};
       const filenameResults = (filenameBreakdown.patterns || []).map((pattern, idx) => ({
-        name: pattern.pattern || `Pattern ${idx + 1}`,
+        name: pattern.extracted_value || pattern.pattern || `Pattern ${idx + 1}`,
         matched: pattern.matched || false,
         score: pattern.score || 0
       }));
