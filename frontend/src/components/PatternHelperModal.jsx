@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import API_BASE_URL from '@/config/api';
 
 export default function PatternHelperModal({ isOpen, onClose, onUsePattern, initialValue = '', restrictToDateOnly = false }) {
   const [patternType, setPatternType] = useState('string');
@@ -13,25 +14,51 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   ]);
   const [testString, setTestString] = useState('');
   const [testResult, setTestResult] = useState(null);
-
-  useEffect(() => {
-    if (isOpen && initialValue) {
-      setStringPattern(initialValue);
-      if (restrictToDateOnly) {
-        setPatternType('date');
-        setDatePattern(initialValue);
-      }
-    }
-  }, [isOpen, initialValue, restrictToDateOnly]);
-
-  const dateFormatExamples = [
+  const [dateFormatExamples, setDateFormatExamples] = useState([
     { format: 'DD-MM-YYYY', example: '15-04-2024' },
     { format: 'DD/MM/YYYY', example: '15/04/2024' },
     { format: 'MM/DD/YYYY', example: '04/15/2024' },
     { format: 'YYYY-MM-DD', example: '2024-04-15' },
     { format: 'DD MMMM YYYY', example: '15 April 2024' },
     { format: 'MMMM DD, YYYY', example: 'April 15, 2024' }
-  ];
+  ]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadDateFormats();
+      if (initialValue) {
+        setStringPattern(initialValue);
+        if (restrictToDateOnly) {
+          setPatternType('date');
+          setDatePattern(initialValue);
+        }
+      }
+    }
+  }, [isOpen, initialValue, restrictToDateOnly]);
+
+  const loadDateFormats = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/settings/date-formats/selected`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const formats = Array.isArray(data) ? data : (data.formats || []);
+        
+        if (Array.isArray(formats) && formats.length > 0) {
+          const formattedOptions = formats.map(fmt => ({
+            format: fmt.format_pattern,
+            example: fmt.example
+          }));
+          setDateFormatExamples(formattedOptions);
+        }
+      }
+    } catch (e) {
+      console.error('Error loading date formats from API:', e);
+    }
+  };
 
   const generateRegexPattern = () => {
     if (patternType === 'string') {
