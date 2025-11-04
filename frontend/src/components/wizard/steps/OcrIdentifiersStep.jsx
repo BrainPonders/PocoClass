@@ -209,7 +209,7 @@ export default function OcrIdentifiersStep({
         </button>
       </div>
 
-      <div className="mb-10">
+      <div>
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">OCR Score Requirement</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
@@ -252,7 +252,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mb-6">
+      <div>
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">OCR Weight Multiplier</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
