@@ -856,6 +856,7 @@ export default function Rules() {
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
                     <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
@@ -875,6 +876,9 @@ export default function Rules() {
                       <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">
+                        {doc.custom_fields?.find(cf => cf.field === 'Document Category')?.value || '-'}
+                      </td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-1 flex-wrap">
                           {doc.tags && doc.tags.length > 0 ? (
