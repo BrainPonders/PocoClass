@@ -482,9 +482,7 @@ export default function RuleReviewer() {
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.added || doc.created}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">
-                        {doc.custom_fields?.find(cf => cf.field === 'Document Category')?.value || '-'}
-                      </td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         {doc.tags && doc.tags.length > 0 ? (
                           doc.tags.map((tag, i) => {
