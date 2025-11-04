@@ -25,56 +25,6 @@ class MetadataProcessor:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
     
-    def process_document_for_verification(self, document: Dict[str, Any], api_client) -> Dict[str, Any]:
-        """Convert Paperless document with IDs to metadata dict with names for verification.
-        
-        Converts:
-        - correspondent ID → name
-        - document_type ID → name
-        - tag IDs → tag names
-        - custom_fields structure (keeps as-is with field names and values)
-        
-        Args:
-            document: Raw document dict from Paperless API (with IDs)
-            api_client: API client for ID→name lookups
-            
-        Returns:
-            Dict with names instead of IDs for verification
-        """
-        metadata = {}
-        
-        # Convert correspondent ID to name
-        if 'correspondent' in document and document['correspondent']:
-            corr_id = document['correspondent']
-            correspondents = api_client.get_all_correspondents()
-            # correspondents is {name: id}, need to reverse it
-            id_to_name = {v: k for k, v in correspondents.items()}
-            metadata['correspondent'] = id_to_name.get(corr_id, str(corr_id))
-        
-        # Convert document_type ID to name
-        if 'document_type' in document and document['document_type']:
-            doctype_id = document['document_type']
-            doc_types = api_client.get_all_document_types()
-            id_to_name = {v: k for k, v in doc_types.items()}
-            metadata['document_type'] = id_to_name.get(doctype_id, str(doctype_id))
-        
-        # Convert tag IDs to names
-        if 'tags' in document and document['tags']:
-            tag_ids = document['tags']
-            all_tags = api_client.get_all_tags()
-            id_to_name = {v: k for k, v in all_tags.items()}
-            metadata['tags'] = [id_to_name.get(tid, str(tid)) for tid in tag_ids]
-        
-        # Handle custom fields (already has field names and values)
-        if 'custom_fields' in document:
-            metadata['custom_fields'] = document['custom_fields']
-        
-        # Pass through other fields
-        if 'date_created' in document:
-            metadata['date_created'] = document['date_created']
-        
-        return metadata
-    
     def extract_metadata_from_rule(self, rule: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
         """Extract metadata from a rule using v2 format, combining static and dynamic metadata.
         
