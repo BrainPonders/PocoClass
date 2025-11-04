@@ -166,7 +166,7 @@ export default function BasicInfoStep({
                 <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
                 <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
                 <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">75</span>
-                <div style={{position: 'absolute', left: '50%', transform: 'translateX(5px)'}}>
+                <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
                   <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
                     <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                   </Tooltip>
@@ -182,7 +182,7 @@ export default function BasicInfoStep({
         </div>
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="col-span-2">
