@@ -236,25 +236,31 @@ class PatternMatcher:
                 # Normalize regex pattern
                 normalized_pattern, flags = self.normalize_regex_pattern(pattern)
                 
-                if re.search(normalized_pattern, filename, flags):
+                match = re.search(normalized_pattern, filename, flags)
+                if match:
                     matched_count += 1
+                    # Extract the matched value (first group if exists, otherwise full match)
+                    extracted_value = match.group(1) if match.groups() else match.group(0)
                     matches.append({
                         'pattern': pattern,
                         'matched': True,
-                        'score': 1
+                        'score': 1,
+                        'extracted_value': extracted_value
                     })
                 else:
                     matches.append({
                         'pattern': pattern,
                         'matched': False,
-                        'score': 0
+                        'score': 0,
+                        'extracted_value': None
                     })
             except re.error as e:
                 self.logger.error(f"Invalid filename pattern '{pattern}': {e}")
                 matches.append({
                     'pattern': pattern,
                     'matched': False,
-                    'score': 0
+                    'score': 0,
+                    'extracted_value': None
                 })
         
         return {
