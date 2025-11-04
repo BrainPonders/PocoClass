@@ -191,13 +191,25 @@ export default function FilenameIdentificationStep({
         </div>
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
-        <div className={`text-sm ${summaryTextColor} space-y-1`}>
-          <p><strong>Total Patterns:</strong> {totalPatterns} patterns</p>
-          <p><strong>Filename Pattern Weight:</strong> {totalPatterns} points</p>
-          <p><strong>Filename Multiplier:</strong> {filenameMultiplier}×</p>
-          <p><strong>Maximum Filename Weight for Poco Score:</strong> {maxFilenameWeight} points (= {totalPatterns} * {totalPatterns} * {filenameMultiplier})</p>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div>
+            <span className="text-gray-600">Total Patterns:</span>
+            <span className="ml-2 font-medium">{totalPatterns} patterns</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Pattern Weight:</span>
+            <span className="ml-2 font-medium">{totalPatterns} points</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Filename Multiplier:</span>
+            <span className="ml-2 font-medium">{filenameMultiplier}×</span>
+          </div>
+          <div>
+            <span className="text-gray-600">Max Filename Weight:</span>
+            <span className="ml-2 font-medium">{maxFilenameWeight} points</span>
+          </div>
         </div>
       </div>
 
