@@ -224,9 +224,9 @@ export default function OcrIdentifiersStep({
             <span>65</span>
             <span>70</span>
             <div className="flex items-center gap-1">
-              <span>75</span>
+              <span className="text-blue-600 font-semibold">75</span>
               <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
-                <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+                <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
               </Tooltip>
             </div>
             <span>80</span>
@@ -262,9 +262,9 @@ export default function OcrIdentifiersStep({
             <span>1</span>
             <span>2</span>
             <div className="flex items-center gap-1">
-              <span>3</span>
+              <span className="text-purple-600 font-semibold">3</span>
               <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
-                <HelpCircle className="w-3 h-3 text-gray-400 hover:text-blue-600 cursor-help" />
+                <HelpCircle className="w-3 h-3 text-purple-400 hover:text-purple-600 cursor-help" />
               </Tooltip>
             </div>
             <span>4</span>
@@ -300,8 +300,13 @@ export default function OcrIdentifiersStep({
           <div className="col-span-2">
             <span className="text-gray-600">{t('max_ocr_weight_summary')}:</span>
             <span className="ml-2 font-medium">{maxOcrWeight} {t('points')}</span>
-            <span className="text-gray-500 text-xs ml-1">(= {totalIdentifiers} * {totalIdentifiers} * {ocrMultiplier})</span>
+            <span className="text-gray-500 text-xs ml-1">(= {totalIdentifiers} × {totalIdentifiers} × {ocrMultiplier})</span>
           </div>
+          {totalIdentifiers > 0 && (
+            <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
+              <span className="text-gray-500 text-xs italic">Example: If all {totalIdentifiers} patterns match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
+            </div>
+          )}
         </div>
       </div>
 
