@@ -131,31 +131,6 @@ export default function SummaryStep({
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">Document Classifications</h3>
-          </div>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Correspondent:</span>
-              <span className="font-medium">{ruleData.predefinedData?.correspondent || 'Not set'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Document Type:</span>
-              <span className="font-medium">{ruleData.predefinedData?.documentType || 'Not set'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tags:</span>
-              <span className="font-medium">{ruleData.predefinedData?.tags?.length || 0} tags</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Dynamic Extraction Rules:</span>
-              <span className="font-medium">{ruleData.dynamicData?.extractionRules?.length || 0}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle className="w-5 h-5 text-green-600" />
             <h3 className="font-semibold text-lg">Filename Identification</h3>
           </div>
           <div className="space-y-2 text-sm">
@@ -199,6 +174,31 @@ export default function SummaryStep({
             <div className="flex justify-between">
               <span className="text-gray-600">Maximum Verification Weight:</span>
               <span className="font-medium text-blue-600">{weights.verificationMax.toFixed(1)} points</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <h3 className="font-semibold text-lg">Document Classifications</h3>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Correspondent:</span>
+              <span className="font-medium">{ruleData.predefinedData?.correspondent || 'Not set'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Document Type:</span>
+              <span className="font-medium">{ruleData.predefinedData?.documentType || 'Not set'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Tags:</span>
+              <span className="font-medium">{ruleData.predefinedData?.tags?.length || 0} tags</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Dynamic Extraction Rules:</span>
+              <span className="font-medium">{ruleData.dynamicData?.extractionRules?.length || 0}</span>
             </div>
           </div>
         </div>
