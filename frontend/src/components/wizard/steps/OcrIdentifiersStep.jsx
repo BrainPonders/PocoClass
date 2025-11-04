@@ -287,7 +287,7 @@ export default function OcrIdentifiersStep({
           </div>
           <div>
             <span className="text-gray-600">Total identifiers:</span>
-            <span className="ml-2 font-medium">{totalIdentifiers}</span>
+            <span className="ml-2 font-medium">{totalIdentifiers} <span className="text-gray-500 text-xs">(including AND)</span></span>
           </div>
           <div>
             <span className="text-gray-600">OCR score requirement:</span>
