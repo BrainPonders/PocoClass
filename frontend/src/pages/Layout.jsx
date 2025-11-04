@@ -500,7 +500,7 @@ export default function Layout({ children }) {
             `}</style>
             <div className="min-h-screen flex w-full">
               <Sidebar className="border-r border-gray-200">
-                <SidebarHeader className="border-b border-gray-200 px-4 py-6">
+                <SidebarHeader className="border-b border-gray-200 px-6 py-4">
                   <div className="flex items-center gap-3">
                     <img src="/logo.png" alt="PocoClass Logo" className="h-10 w-auto" />
                     <div>
