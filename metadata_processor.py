@@ -103,7 +103,8 @@ class MetadataProcessor:
             if before_pattern and after_pattern:
                 # Both anchors: extract between them
                 # Pattern: {before}...VALUE...{after}
-                pattern = f"{before_pattern}\\s*(.+?)\\s*{after_pattern}"
+                # Use [\s\S]+? to match across newlines (equivalent to DOTALL)
+                pattern = f"{before_pattern}\\s*([\\s\\S]+?)\\s*{after_pattern}"
             elif after_pattern:
                 # Only after anchor: extract value after it
                 # Pattern: {after}...VALUE (capture until newline or reasonable boundary)
