@@ -229,23 +229,25 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="flex justify-between text-xs text-gray-500 px-1">
-            <span>50</span>
-            <span>55</span>
-            <span>60</span>
-            <span>65</span>
-            <span>70</span>
-            <div className="flex items-center gap-1">
-              <span className="text-blue-600 font-semibold">75</span>
-              <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
-                <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
-              </Tooltip>
+          <div className="relative mt-2">
+            <div className="flex justify-between text-xs text-gray-500">
+              <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
+              <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
+              <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
+              <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
+              <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
+              <div style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
+                <span className="text-blue-600 font-semibold">75</span>
+                <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
+                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
+                </Tooltip>
+              </div>
+              <span style={{position: 'absolute', left: '60%', transform: 'translateX(-50%)'}}>80</span>
+              <span style={{position: 'absolute', left: '70%', transform: 'translateX(-50%)'}}>85</span>
+              <span style={{position: 'absolute', left: '80%', transform: 'translateX(-50%)'}}>90</span>
+              <span style={{position: 'absolute', left: '90%', transform: 'translateX(-50%)'}}>95</span>
+              <span style={{position: 'absolute', left: '100%', transform: 'translateX(-50%)'}}>100</span>
             </div>
-            <span>80</span>
-            <span>85</span>
-            <span>90</span>
-            <span>95</span>
-            <span>100</span>
           </div>
         </div>
       </div>
@@ -270,22 +272,24 @@ export default function OcrIdentifiersStep({
           />
           
           {/* Scale markers */}
-          <div className="flex justify-between text-xs text-gray-500 px-1">
-            <span>1</span>
-            <span>2</span>
-            <div className="flex items-center gap-1">
-              <span className="text-purple-600 font-semibold">3</span>
-              <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
-                <HelpCircle className="w-3 h-3 text-purple-400 hover:text-purple-600 cursor-help" />
-              </Tooltip>
+          <div className="relative mt-2">
+            <div className="flex justify-between text-xs text-gray-500">
+              <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>1</span>
+              <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
+              <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
+                <span className="text-purple-600 font-semibold">3</span>
+                <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
+                  <HelpCircle className="w-3 h-3 text-purple-400 hover:text-purple-600 cursor-help" />
+                </Tooltip>
+              </div>
+              <span style={{position: 'absolute', left: '33.33%', transform: 'translateX(-50%)'}}>4</span>
+              <span style={{position: 'absolute', left: '44.44%', transform: 'translateX(-50%)'}}>5</span>
+              <span style={{position: 'absolute', left: '55.56%', transform: 'translateX(-50%)'}}>6</span>
+              <span style={{position: 'absolute', left: '66.67%', transform: 'translateX(-50%)'}}>7</span>
+              <span style={{position: 'absolute', left: '77.78%', transform: 'translateX(-50%)'}}>8</span>
+              <span style={{position: 'absolute', left: '88.89%', transform: 'translateX(-50%)'}}>9</span>
+              <span style={{position: 'absolute', left: '100%', transform: 'translateX(-50%)'}}>10</span>
             </div>
-            <span>4</span>
-            <span>5</span>
-            <span>6</span>
-            <span>7</span>
-            <span>8</span>
-            <span>9</span>
-            <span>10</span>
           </div>
         </div>
       </div>
@@ -323,6 +327,18 @@ export default function OcrIdentifiersStep({
             </div>
           )}
         </div>
+        {ocrThreshold !== 75 && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>OCR Score requirement changed from default (75%).</span>
+          </div>
+        )}
+        {ocrMultiplier !== 3 && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>OCR multiplier changed from default (3×).</span>
+          </div>
+        )}
       </div>
 
       <ConfirmDialog

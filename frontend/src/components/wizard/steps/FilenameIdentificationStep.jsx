@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, Wand2, Trash2, HelpCircle } from 'lucide-react';
+import { Plus, Wand2, Trash2, HelpCircle, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/components/translations';
 import Tooltip from '@/components/Tooltip';
 import PatternHelperModal from '@/components/PatternHelperModal';
@@ -69,6 +69,17 @@ export default function FilenameIdentificationStep({
   const patterns = ruleData.filenamePatterns?.patterns || [];
   const totalPatterns = patterns.filter(p => p && typeof p === 'string' && p.trim()).length;
   const maxFilenameWeight = totalPatterns * totalPatterns * filenameMultiplier;
+
+  // Calculate OCR weight for comparison
+  const ocrMultiplier = ruleData.ocrMultiplier || 3;
+  const totalIdentifiers = ruleData.ocrIdentifiers?.reduce((sum, group) => {
+    if (group.type === 'match_all') {
+      return sum + (group.conditions?.length || 0);
+    } else {
+      return sum + 1;
+    }
+  }, 0) || 0;
+  const maxOcrWeight = totalIdentifiers * totalIdentifiers * ocrMultiplier;
 
   const isStepEnabled = () => {
     return patterns.filter(p => p && typeof p === 'string' && p.trim()).length > 0;
@@ -162,22 +173,24 @@ export default function FilenameIdentificationStep({
           />
           
           {/* Scale markers */}
-          <div className="flex justify-between text-xs text-gray-500 px-1">
-            <div className="flex items-center gap-1">
-              <span className="text-amber-600 font-semibold">1</span>
-              <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
-                <HelpCircle className="w-3 h-3 text-amber-400 hover:text-amber-600 cursor-help" />
-              </Tooltip>
+          <div className="relative mt-2">
+            <div className="flex justify-between text-xs text-gray-500">
+              <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
+                <span className="text-amber-600 font-semibold">1</span>
+                <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
+                  <HelpCircle className="w-3 h-3 text-amber-400 hover:text-amber-600 cursor-help" />
+                </Tooltip>
+              </div>
+              <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
+              <span style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}}>3</span>
+              <span style={{position: 'absolute', left: '33.33%', transform: 'translateX(-50%)'}}>4</span>
+              <span style={{position: 'absolute', left: '44.44%', transform: 'translateX(-50%)'}}>5</span>
+              <span style={{position: 'absolute', left: '55.56%', transform: 'translateX(-50%)'}}>6</span>
+              <span style={{position: 'absolute', left: '66.67%', transform: 'translateX(-50%)'}}>7</span>
+              <span style={{position: 'absolute', left: '77.78%', transform: 'translateX(-50%)'}}>8</span>
+              <span style={{position: 'absolute', left: '88.89%', transform: 'translateX(-50%)'}}>9</span>
+              <span style={{position: 'absolute', left: '100%', transform: 'translateX(-50%)'}}>10</span>
             </div>
-            <span>2</span>
-            <span>3</span>
-            <span>4</span>
-            <span>5</span>
-            <span>6</span>
-            <span>7</span>
-            <span>8</span>
-            <span>9</span>
-            <span>10</span>
           </div>
         </div>
       </div>
@@ -205,6 +218,18 @@ export default function FilenameIdentificationStep({
             <span className="text-gray-500 text-xs italic">Example: With {totalPatterns} pattern{totalPatterns !== 1 ? 's' : ''} defined, max filename weight = {totalPatterns} × {totalPatterns} × {filenameMultiplier} = {maxFilenameWeight} points.</span>
           </div>
         </div>
+        {filenameMultiplier > 1 && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Filename multiplier increased from default (1×).</span>
+          </div>
+        )}
+        {maxFilenameWeight > maxOcrWeight && totalPatterns > 0 && (
+          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Filename weight exceeds OCR weight.</span>
+          </div>
+        )}
       </div>
 
       {showPatternHelper && (
