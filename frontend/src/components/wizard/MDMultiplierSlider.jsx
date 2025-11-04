@@ -77,10 +77,10 @@ export default function MDMultiplierSlider({
         />
         
         {/* Scale labels */}
-        <div className="relative mt-2">
-          <div className="flex justify-between text-xs text-gray-500">
-            <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-              <span className="text-blue-600 font-semibold">Auto</span>
+        <div className="relative mt-2 px-2">
+          <div className="relative">
+            <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">Auto</span>
+            <div style={{position: 'absolute', left: '0%', transform: 'translateX(22px)'}}>
               <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
                 <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
               </Tooltip>
@@ -100,7 +100,7 @@ export default function MDMultiplierSlider({
       </div>
       
       {/* Dynamic info display */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -112,12 +112,12 @@ export default function MDMultiplierSlider({
             <span className="ml-2 font-medium">{effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)}</span>
           </div>
           <div>
-            <span className="text-gray-600">Potential MD weight:</span>
-            <span className="ml-2 font-medium">{mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)}</span>
+            <span className="text-gray-600">Verification weight:</span>
+            <span className="ml-2 font-medium">{enabledFieldCount * enabledFieldCount}</span>
           </div>
           <div>
-            <span className="text-gray-600">OCR weight:</span>
-            <span className="ml-2 font-medium">{ocrMaxWeight < 1 ? ocrMaxWeight.toFixed(2) : Math.round(ocrMaxWeight)}</span>
+            <span className="text-gray-600">Potential MD weight:</span>
+            <span className="ml-2 font-medium">{mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)}</span>
           </div>
           <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
             <span className="text-gray-500 text-xs italic">Example: With {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} verified, max MD weight = {enabledFieldCount} × {enabledFieldCount} × {effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)} = {mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)} points.</span>

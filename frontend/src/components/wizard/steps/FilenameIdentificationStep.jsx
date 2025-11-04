@@ -173,10 +173,10 @@ export default function FilenameIdentificationStep({
           />
           
           {/* Scale markers */}
-          <div className="relative mt-2">
-            <div className="flex justify-between text-xs text-gray-500">
-              <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-                <span className="text-blue-600 font-semibold">1</span>
+          <div className="relative mt-2 px-2">
+            <div className="relative">
+              <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">1</span>
+              <div style={{position: 'absolute', left: '0%', transform: 'translateX(8px)'}}>
                 <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
                   <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                 </Tooltip>
@@ -195,7 +195,7 @@ export default function FilenameIdentificationStep({
         </div>
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>

@@ -158,8 +158,8 @@ export default function BasicInfoStep({
             />
             
             {/* Scale markers */}
-            <div className="relative mt-2">
-              <div className="flex justify-between text-xs text-gray-500">
+            <div className="relative mt-2 px-2">
+              <div className="relative">
                 <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
                 <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
                 <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
