@@ -689,10 +689,10 @@ export default function RuleReviewer() {
                   </div>
 
                   <div className="grid grid-cols-4 gap-4">
-                    {/* OCR Identifiers */}
+                    {/* 1. OCR Pattern Matching */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">OCR Identifiers</span>
+                        <span className="text-xs font-semibold text-gray-700">OCR Patterns</span>
                         <span className="text-xs text-gray-600">
                           {data.ocrMatched}/{data.ocrTotal} ({data.ocrPercentage}%)
                         </span>
@@ -712,36 +712,10 @@ export default function RuleReviewer() {
                       </div>
                     </div>
 
-                    {/* Dynamic Data Extraction */}
+                    {/* 2. Filename Verification */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">Dynamic Data</span>
-                        <span className="text-xs text-gray-600">
-                          {data.dynamicDataExtracted}/{data.dynamicDataTotal} ({data.dynamicDataPercentage}%)
-                        </span>
-                      </div>
-                      <div className="space-y-1 mt-3">
-                        {data.dynamicDataResults.length > 0 ? (
-                          data.dynamicDataResults.map((field, idx) => (
-                            <div key={idx} className="text-xs">
-                              <span className={field.extracted ? 'text-green-600' : 'text-red-600'}>
-                                {field.extracted ? '✓' : '✗'} {field.name}
-                              </span>
-                              {field.extracted && field.value && (
-                                <div className="text-gray-600 ml-3 truncate">{field.value}</div>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-xs text-gray-500 italic">No rules defined</div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Filename Patterns */}
-                    <div className="bg-gray-50 p-3 rounded">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">Filename Patterns</span>
+                        <span className="text-xs font-semibold text-gray-700">Filename</span>
                         <span className="text-xs text-gray-600">
                           {data.filenameMatched}/{data.filenameTotal} ({data.filenamePercentage}%)
                         </span>
@@ -761,7 +735,7 @@ export default function RuleReviewer() {
                       </div>
                     </div>
 
-                    {/* Verification */}
+                    {/* 3. Paperless Verification */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-xs font-semibold text-gray-700">Verification</span>
@@ -780,6 +754,32 @@ export default function RuleReviewer() {
                           ))
                         ) : (
                           <div className="text-xs text-gray-500 italic">No fields enabled</div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 4. Metadata Extraction */}
+                    <div className="bg-gray-50 p-3 rounded">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-semibold text-gray-700">Metadata</span>
+                        <span className="text-xs text-gray-600">
+                          {data.dynamicDataExtracted}/{data.dynamicDataTotal} ({data.dynamicDataPercentage}%)
+                        </span>
+                      </div>
+                      <div className="space-y-1 mt-3">
+                        {data.dynamicDataResults.length > 0 ? (
+                          data.dynamicDataResults.map((field, idx) => (
+                            <div key={idx} className="text-xs">
+                              <span className={field.extracted ? 'text-green-600' : 'text-red-600'}>
+                                {field.extracted ? '✓' : '✗'} {field.name}
+                              </span>
+                              {field.extracted && field.value && (
+                                <div className="text-gray-600 ml-3 truncate">{field.value}</div>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-xs text-gray-500 italic">No rules defined</div>
                         )}
                       </div>
                     </div>
