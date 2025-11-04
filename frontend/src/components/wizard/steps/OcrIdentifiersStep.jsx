@@ -294,7 +294,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mt-8 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>

@@ -100,7 +100,7 @@ export default function MDMultiplierSlider({
       </div>
       
       {/* Dynamic info display */}
-      <div className="mt-10 bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
         <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
