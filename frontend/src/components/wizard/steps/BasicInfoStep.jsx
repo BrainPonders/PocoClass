@@ -44,8 +44,13 @@ export default function BasicInfoStep({
   const handleThresholdSliderRelease = () => {
     const numValue = tempThreshold;
     if (numValue !== 75 && numValue !== ruleData.threshold) {
-      setPendingThreshold(numValue);
-      setShowThresholdWarning(true);
+      const hideWarning = sessionStorage.getItem('hideWarning_pocoThreshold') === 'true';
+      if (hideWarning) {
+        updateRuleData('threshold', numValue);
+      } else {
+        setPendingThreshold(numValue);
+        setShowThresholdWarning(true);
+      }
     } else if (numValue !== ruleData.threshold) {
       updateRuleData('threshold', numValue);
     }
@@ -205,6 +210,8 @@ export default function BasicInfoStep({
         confirmText="Yes, Change It"
         cancelText="Cancel"
         variant="warning"
+        showDontShowAgain={true}
+        warningKey="pocoThreshold"
       />
     </div>
   );

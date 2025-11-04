@@ -78,8 +78,14 @@ export default function OcrIdentifiersStep({
   const handleOcrThresholdSliderRelease = () => {
     const numValue = tempOcrThreshold;
     if (numValue !== 75 && numValue !== ruleData.ocrThreshold) {
-      setPendingOcrThreshold(numValue);
-      setShowOcrThresholdWarning(true);
+      const hideWarning = sessionStorage.getItem('hideWarning_ocrThreshold') === 'true';
+      if (hideWarning) {
+        updateRuleData('ocrThreshold', numValue);
+        setTempOcrThreshold(numValue);
+      } else {
+        setPendingOcrThreshold(numValue);
+        setShowOcrThresholdWarning(true);
+      }
     } else if (numValue !== ruleData.ocrThreshold) {
       updateRuleData('ocrThreshold', numValue);
     }
@@ -92,8 +98,14 @@ export default function OcrIdentifiersStep({
   const handleMultiplierSliderRelease = () => {
     const numValue = tempMultiplier;
     if (numValue !== 3 && numValue !== ruleData.ocrMultiplier) {
-      setPendingMultiplier(numValue);
-      setShowMultiplierWarning(true);
+      const hideWarning = sessionStorage.getItem('hideWarning_ocrMultiplier') === 'true';
+      if (hideWarning) {
+        updateRuleData('ocrMultiplier', numValue);
+        setTempMultiplier(numValue);
+      } else {
+        setPendingMultiplier(numValue);
+        setShowMultiplierWarning(true);
+      }
     } else if (numValue !== ruleData.ocrMultiplier) {
       updateRuleData('ocrMultiplier', numValue);
     }
@@ -322,6 +334,8 @@ export default function OcrIdentifiersStep({
         confirmText={t('yes_change_it')}
         cancelText={t('cancel')}
         variant="warning"
+        showDontShowAgain={true}
+        warningKey="ocrThreshold"
       />
 
       <ConfirmDialog
@@ -333,6 +347,8 @@ export default function OcrIdentifiersStep({
         confirmText={t('yes_change_it')}
         cancelText={t('cancel')}
         variant="warning"
+        showDontShowAgain={true}
+        warningKey="ocrMultiplier"
       />
     </div>
   );
