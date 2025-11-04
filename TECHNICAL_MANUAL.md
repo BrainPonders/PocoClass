@@ -154,9 +154,105 @@ total_max_weight = ocr_max_weight + filename_max_weight + 1.0
 poco_score = (total_weighted / total_max_weight) × 100
 ```
 
-### 3.2 Detailed Formula Breakdown
+### 3.2 Canonical Formula Reference
 
-#### 3.2.1 OCR Component
+**This section documents the official POCO Scoring formulas using standard notation for transparency and auditability.**
+
+#### Variable Notation
+
+| Symbol | Meaning | Type |
+|--------|---------|------|
+| `m_ocr` | OCR identifiers (logic groups) matched | Integer |
+| `t_ocr` | OCR identifiers (logic groups) defined | Integer (3-10) |
+| `m_fn` | Filename patterns matched | Integer |
+| `t_fn` | Filename patterns defined | Integer (1-5) |
+| `m_md` | Metadata fields matching expected values | Integer |
+| `t_md` | Metadata fields evaluated | Integer |
+| `t_w` | Filename trust multiplier | Float (default: 1.0) |
+
+#### Formula 1: OCR Weighted Score
+
+```
+OCR_weighted = (m_ocr / t_ocr) × t_ocr × 3
+             = m_ocr × 3
+```
+
+**Displayed POCO OCR Score** (transparency):
+```
+POCO_OCR = (m_ocr / t_ocr) × 100
+```
+
+**Trust Multiplier**: `3` (fixed, very high reliability)
+
+#### Formula 2: Filename Weighted Score
+
+```
+FN_weighted = (m_fn / t_fn) × t_fn × t_w
+            = m_fn × t_w
+```
+
+**Trust Multiplier**: `t_w` (default: `1.0`, user-adjustable)
+
+#### Formula 3: Metadata Weighted Score
+
+```
+MD_weighted = (m_md / t_md) × t_md × (1 / t_md)
+            = m_md × (1 / t_md)
+```
+
+**Trust Multiplier**: `1 / t_md` (auto-calculated, neutralizes total weight)
+
+**Maximum Weight**: Always `1.0` regardless of field count
+
+**Rationale**: Ensures metadata can contribute at most 1 point of weight, preventing field-count inflation.
+
+#### Formula 4: Final POCO Score
+
+```
+POCO = ((m_ocr × 3) + (m_fn × t_w) + (m_md × (1/t_md))) / ((t_ocr × 3) + (t_fn × t_w) + 1) × 100
+```
+
+**Expanded**:
+```
+Numerator   = (m_ocr × 3) + (m_fn × t_w) + (m_md / t_md)
+Denominator = (t_ocr × 3) + (t_fn × t_w) + 1
+POCO        = (Numerator / Denominator) × 100
+```
+
+#### Complete Example (Matching Summary Document)
+
+**Input**:
+- OCR: 8 out of 10 logic groups matched
+- Filename: 2 out of 3 patterns matched  
+- Metadata: 3 out of 5 fields verified
+- Filename trust multiplier: 1.0
+
+**Calculations**:
+
+| Domain | Formula | Weighted | Max Weight |
+|--------|---------|----------|------------|
+| OCR | `8 × 3` | 24.0 | 30.0 |
+| Filename | `2 × 1.0` | 2.0 | 3.0 |
+| Metadata | `3 × (1/5)` | 0.6 | 1.0 |
+| **Totals** | - | **26.6** | **34.0** |
+
+**Results**:
+```
+POCO_OCR = (8 / 10) × 100 = 80.0%
+POCO     = (26.6 / 34.0) × 100 = 78.24%
+```
+
+#### Design Principles
+
+1. **Uniform Mathematics**: All domains use the same `(matched / total) × total × multiplier` pattern
+2. **Scaling Fairness**: More identifiers = more influence (proportional weighting)
+3. **Neutralized Metadata**: Paperless data can never dominate (max weight = 1)
+4. **Transparency**: Both POCO OCR and POCO Final scores displayed
+5. **Simplicity**: No damping factors, penalties, or hidden coefficients
+
+### 3.3 Detailed Formula Breakdown
+
+#### 3.3.1 OCR Component
 
 **Input**:
 - `ocr_matches`: Number of logic groups matched
@@ -176,7 +272,7 @@ poco_ocr_percentage = (ocr_weighted / ocr_max_weight) × 100
 - `ocr_max_weight = 10 × 3.0 = 30.0`
 - `poco_ocr_score = (24.0 / 30.0) × 100 = 80%`
 
-#### 3.2.2 Filename Component
+#### 3.3.2 Filename Component
 
 **Input**:
 - `filename_matches`: Number of filename patterns matched
@@ -196,7 +292,7 @@ filename_percentage = (filename_matches / filename_total) × 100
 - `filename_max_weight = 3 × 1.0 = 3.0`
 - `filename_percentage = 66.67%`
 
-#### 3.2.3 Paperless Verification Component
+#### 3.3.3 Paperless Verification Component
 
 **Input**:
 - `paperless_matches`: Number of metadata fields verified
@@ -221,7 +317,7 @@ paperless_percentage = (paperless_matches / paperless_total) × 100
 **Why Neutralization?**  
 Without neutralization, rules with more verification fields would artificially inflate scores. By setting `max_weight = 1.0`, verification contributes **at most 1 point** to the final score regardless of field count.
 
-#### 3.2.4 Combined POCO Score
+#### 3.3.4 Combined POCO Score
 
 **Calculation**:
 ```python
@@ -243,7 +339,7 @@ POCO OCR Score = (24.0 / 30.0) × 100 = 80.0%
 POCO Score = (26.6 / 34.0) × 100 = 78.24%
 ```
 
-### 3.3 Threshold Evaluation
+### 3.4 Threshold Evaluation
 
 Classification requires **BOTH** thresholds to pass:
 
@@ -263,7 +359,19 @@ classification_allowed = ocr_passes AND poco_passes
 | 80% | 75% | ❌ REJECTED | POCO below threshold |
 | 60% | 60% | ❌ REJECTED | Both fail |
 
-### 3.4 Status Categories
+**Critical Rule**: If `POCO_OCR < 75%`, rule fails immediately regardless of final POCO score.
+
+#### Score Interpretation Guide
+
+| Range | Meaning | Action |
+|-------|---------|--------|
+| 0-70% | Low confidence | Classification fails |
+| 70-80% | Borderline | Filename/Metadata may tip the scale |
+| 80-90% | Confident | Classification applied |
+| > 90% | Strongly validated | High confidence match |
+| 100% | Perfect alignment | All identifiers matched |
+
+### 3.5 Status Categories
 
 Based on combined scores, documents receive a **status**:
 
@@ -288,7 +396,7 @@ else:
     reason = 'Classification acceptable'
 ```
 
-### 3.5 Implementation Reference
+### 3.6 Implementation Reference
 
 **File**: `scoring_calculator_v2.py`
 
