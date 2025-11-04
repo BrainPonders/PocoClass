@@ -252,7 +252,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div>
+      <div className="mt-8">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">OCR Weight Multiplier</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
