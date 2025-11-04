@@ -277,9 +277,9 @@ export default function OcrIdentifiersStep({
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>1</span>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
               <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-                <span className="text-purple-600 font-semibold">3</span>
+                <span className="text-blue-600 font-semibold">3</span>
                 <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
-                  <HelpCircle className="w-3 h-3 text-purple-400 hover:text-purple-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
                 </Tooltip>
               </div>
               <span style={{position: 'absolute', left: '33.33%', transform: 'translateX(-50%)'}}>4</span>

@@ -80,9 +80,9 @@ export default function MDMultiplierSlider({
         <div className="relative mt-2">
           <div className="flex justify-between text-xs text-gray-500">
             <div style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="flex items-center gap-1">
-              <span className="text-orange-600 font-semibold">Auto</span>
+              <span className="text-blue-600 font-semibold">Auto</span>
               <Tooltip content={`Auto Mode (Neutraliser): Weight is automatically adjusted to 1 ÷ ${enabledFieldCount}, ensuring Paperless verification contributes exactly ${enabledFieldCount} point${enabledFieldCount !== 1 ? 's' : ''} to the max weight. This prevents metadata from dominating OCR scoring.`}>
-                <HelpCircle className="w-3 h-3 text-orange-400 hover:text-orange-600 cursor-help" />
+                <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
               </Tooltip>
             </div>
             <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>1</span>
