@@ -2323,6 +2323,7 @@ def test_rule_endpoint():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>/execute', methods=['POST'])
+@require_auth
 def execute_rule_endpoint(rule_id):
     """Execute a rule against a Paperless document"""
     try:
@@ -2333,6 +2334,14 @@ def execute_rule_endpoint(rule_id):
         if not document_id:
             return jsonify({'error': 'Document ID is required'}), 400
         
+        # Create user-specific API client
+        session = request.current_user
+        paperless_url = db.get_config('paperless_url')
+        config = Config()
+        config.paperless_token = session['paperless_token']
+        config.paperless_url = paperless_url
+        user_api_client = PaperlessAPIClient(config, db)
+        
         # Load rule
         rule_file = Path('rules') / f'{rule_id}.yaml'
         rule_data = rule_loader.load_rule_file(rule_file)
@@ -2340,14 +2349,14 @@ def execute_rule_endpoint(rule_id):
             return jsonify({'error': 'Rule not found'}), 404
         
         # Get document from Paperless
-        documents = paperless_api.get_documents(document_id=document_id)
+        documents = user_api_client.get_documents(document_id=document_id)
         if not documents or len(documents) == 0:
             return jsonify({'error': 'Document not found in Paperless'}), 404
         
         document = documents[0]
         
         # Get document content
-        content = paperless_api.get_document_content(document_id)
+        content = user_api_client.get_document_content(document_id)
         if not content:
             return jsonify({'error': 'Could not retrieve document content'}), 500
         
