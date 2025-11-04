@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Tooltip from '@/components/Tooltip';
+import MDMultiplierSlider from '../MDMultiplierSlider';
+import { calculateOcrMaxWeight } from '@/components/utils/pocoCalculations';
 
 export default function DataVerificationStep({ 
   ruleData, 
@@ -15,17 +17,36 @@ export default function DataVerificationStep({
   }, []);
 
   React.useEffect(() => {
-    // Update verification multiplier when enabled fields change
+    // Initialize or update verification multiplier config based on enabled fields
     const enabledCount = getEnabledCount();
+    const currentConfig = ruleData.verificationMultiplierConfig;
+    
     if (enabledCount > 0) {
-      const dynamicDefault = 1 / enabledCount;
-      // For 1 field, default is 1; for 2+ fields, default is the fraction
-      const defaultValue = enabledCount === 1 ? 1 : dynamicDefault;
-      // Always update to the new dynamic default when field count changes
-      updateRuleData('verificationMultiplier', defaultValue, false);
+      if (!currentConfig) {
+        // Initialize with auto mode
+        const newConfig = { 
+          mode: 'auto', 
+          value: 1 / enabledCount 
+        };
+        updateRuleData('verificationMultiplierConfig', newConfig, false);
+        updateRuleData('verificationMultiplier', newConfig.value, false);
+      } else if (currentConfig.mode === 'auto') {
+        // Auto mode: Dynamically recalculate when field count changes
+        const newValue = 1 / enabledCount;
+        if (Math.abs(currentConfig.value - newValue) > 0.001) {
+          const newConfig = { mode: 'auto', value: newValue };
+          updateRuleData('verificationMultiplierConfig', newConfig, false);
+          updateRuleData('verificationMultiplier', newValue, false);
+        }
+      }
+      // Manual mode: Keep existing value (no recalculation)
     } else {
-      // Reset to 1 when no fields enabled
-      updateRuleData('verificationMultiplier', 1, false);
+      // No fields enabled: reset to default
+      if (currentConfig) {
+        const newConfig = { mode: 'auto', value: 1 };
+        updateRuleData('verificationMultiplierConfig', newConfig, false);
+        updateRuleData('verificationMultiplier', 1, false);
+      }
     }
   }, [ruleData.verification?.enabledFields]);
 
@@ -87,34 +108,29 @@ export default function DataVerificationStep({
   };
 
   const enabledCount = getEnabledCount();
-  const dynamicDefault = enabledCount > 0 ? (enabledCount === 1 ? 1 : 1 / enabledCount) : 1;
-  const verificationMultiplier = ruleData.verificationMultiplier !== undefined ? ruleData.verificationMultiplier : dynamicDefault;
   
-  // Create array of discrete values: [1/n, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] or [1, 2, 3...10] for n=1
-  const sliderValues = enabledCount === 1 
-    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    : [1 / enabledCount, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  
-  // Find current slider index
-  const currentSliderIndex = sliderValues.findIndex(val => Math.abs(val - verificationMultiplier) < 0.01);
-  const sliderIndex = currentSliderIndex >= 0 ? currentSliderIndex : 0;
-  
-  // Format display value
-  const formatValue = (value) => {
-    if (value < 1) {
-      return `1/${enabledCount}`;
-    }
-    return `${Math.round(value)}`;
+  // Get multiplier config or use defaults
+  const multiplierConfig = ruleData.verificationMultiplierConfig || { 
+    mode: 'auto', 
+    value: enabledCount > 0 ? (1 / enabledCount) : 1 
   };
   
-  const maxVerificationWeight = enabledCount * enabledCount * verificationMultiplier;
+  // Calculate OCR max weight for warning system
+  const ocrMaxWeight = calculateOcrMaxWeight(
+    ruleData.ocrIdentifiers,
+    ruleData.ocrMultiplier || 3
+  );
+  
+  // Handle multiplier change from slider
+  const handleMultiplierChange = (newConfig) => {
+    updateRuleData('verificationMultiplierConfig', newConfig);
+    // Also update legacy verificationMultiplier for backward compatibility
+    updateRuleData('verificationMultiplier', newConfig.value, false);
+  };
 
   const isStepEnabled = () => {
     return getEnabledCount() > 0;
   };
-
-  const isMultiplierDefault = Math.abs(verificationMultiplier - dynamicDefault) < 0.01;
-  const summaryTextColor = isMultiplierDefault ? 'text-blue-700' : 'text-gray-600';
 
   return (
     <div className="wizard-container">
@@ -184,74 +200,14 @@ export default function DataVerificationStep({
         </div>
 
         {enabledCount > 0 && (
-          <div>
-            <h3 className="font-semibold text-lg mb-2">Verification Multiplier</h3>
-            <p className="text-sm text-gray-600 mb-3">
-              Controls how much weight Paperless metadata verification has in the final POCO score.{' '}
-              {enabledCount === 1 
-                ? `Default is 1 for ${enabledCount} enabled field.`
-                : `Default is 1/${enabledCount} for ${enabledCount} enabled fields.`
-              }
-            </p>
-            
-            {/* Current Value Display */}
-            <div className="mb-4 p-3 bg-blue-50 border-2 border-blue-200 rounded-lg">
-              <div className="text-center">
-                <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">Current Value</div>
-                <div className="text-3xl font-bold text-blue-700">
-                  {formatValue(verificationMultiplier)}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-2">
-              <input
-                type="range"
-                min="0"
-                max={sliderValues.length - 1}
-                step="1"
-                value={sliderIndex}
-                onChange={(e) => {
-                  const newIndex = parseInt(e.target.value);
-                  updateRuleData('verificationMultiplier', sliderValues[newIndex]);
-                }}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-                style={{
-                  background: `linear-gradient(to right, #3b82f6 ${(sliderIndex / (sliderValues.length - 1)) * 100}%, #e5e7eb ${(sliderIndex / (sliderValues.length - 1)) * 100}%)`
-                }}
-              />
-              
-              {/* Scale markers */}
-              <div className="relative mt-2 mb-1">
-                <div className="flex justify-between items-center">
-                  <div className="text-center relative">
-                    <div className="text-sm font-semibold text-green-600 leading-tight">
-                      {formatValue(sliderValues[0])}
-                    </div>
-                    <div className="text-xs text-green-600 font-medium leading-tight">Default</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700 leading-tight">5</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-gray-700 leading-tight">10</div>
-                    <div className="text-xs text-gray-600 font-medium leading-tight">High Weight</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MDMultiplierSlider
+            mode={multiplierConfig.mode}
+            value={multiplierConfig.value}
+            enabledFieldCount={enabledCount}
+            ocrMaxWeight={ocrMaxWeight}
+            onChange={handleMultiplierChange}
+          />
         )}
-      </div>
-
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">Verification Summary</h4>
-        <div className={`text-sm ${summaryTextColor} space-y-1`}>
-          <p><strong>Placeholders Enabled for Verification:</strong> {enabledCount} / {verificationFields.length}</p>
-          <p><strong>Verification Weight:</strong> {enabledCount} points</p>
-          <p><strong>Verification Multiplier:</strong> {verificationMultiplier.toFixed(2)} (= {enabledCount} * 1/{enabledCount})</p>
-          <p><strong>Maximum Verification Weight for Poco Score:</strong> {maxVerificationWeight.toFixed(2)} points (= {enabledCount} * {enabledCount} * {verificationMultiplier.toFixed(2)})</p>
-        </div>
       </div>
     </div>
   );
