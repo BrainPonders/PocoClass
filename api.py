@@ -2340,9 +2340,11 @@ def execute_rule_endpoint(rule_id):
             return jsonify({'error': 'Rule not found'}), 404
         
         # Get document from Paperless
-        document = paperless_api.get_document(document_id)
-        if not document:
+        documents = paperless_api.get_documents(document_id=document_id)
+        if not documents or len(documents) == 0:
             return jsonify({'error': 'Document not found in Paperless'}), 404
+        
+        document = documents[0]
         
         # Get document content
         content = paperless_api.get_document_content(document_id)
