@@ -456,8 +456,8 @@ export default function DocumentClassificationsStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">Step 3 of 6: Document Classifications</h2>
-          <Tooltip content="Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 3." />
+          <h2 className="text-2xl font-bold">Step 5 of 6: Document Classifications</h2>
+          <Tooltip content="Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5." />
         </div>
         <p className="text-gray-600 mt-2">
           Configure document classification data extracted from OCR

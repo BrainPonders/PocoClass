@@ -137,7 +137,7 @@ export default function DataVerificationStep({
       <div className="mb-6">
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold">Step 5 of 6: Paperless Verification</h2>
+            <h2 className="text-2xl font-bold">Step 4 of 6: Paperless Verification</h2>
             <Tooltip content="Verify that extracted data matches existing Paperless metadata. This adds confidence to the classification by checking if the document's placeholders align with what was extracted from OCR." />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -161,7 +161,7 @@ export default function DataVerificationStep({
           <h3 className="font-semibold text-lg mb-4">Select Placeholders for Verification</h3>
           {verificationFields.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-              <p className="text-gray-500">No placeholders enabled. Enable placeholders in Settings &gt; Step 3.</p>
+              <p className="text-gray-500">No placeholders enabled. Enable placeholders in Settings &gt; Step 5.</p>
             </div>
           ) : (
             <div className="space-y-2">
