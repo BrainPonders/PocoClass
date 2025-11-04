@@ -490,8 +490,9 @@ export default function DocumentClassificationsStep({
                 className={`form-input ${
                   hasDynamicRule('dateCreated') 
                     ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                    : (ruleData.predefinedData?.dateCreated ? '' : 'text-gray-500')
+                    : ''
                 }`}
+                style={!hasDynamicRule('dateCreated') && !ruleData.predefinedData?.dateCreated ? { color: '#6b7280' } : {}}
                 disabled={hasDynamicRule('dateCreated')}
                 placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
               />
@@ -571,9 +572,17 @@ export default function DocumentClassificationsStep({
                       className={`form-input ${
                         hasConflict 
                           ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                          : (ruleData.predefinedData?.customFields?.[fieldName] ? '' : 'text-gray-500')
+                          : ''
                       }`}
-                      style={hasConflict ? {} : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      style={
+                        hasConflict 
+                          ? {} 
+                          : { 
+                              backgroundColor: '#f3e8ff', 
+                              borderColor: '#a855f7',
+                              color: ruleData.predefinedData?.customFields?.[fieldName] ? '#000000' : '#6b7280'
+                            }
+                      }
                       disabled={hasConflict}
                     >
                       <option value="">Select an option...</option>
