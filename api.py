@@ -2142,9 +2142,10 @@ def convert_frontend_to_backend(frontend_data):
     if frontend_data.get('filenamePatterns'):
         backend['filename_patterns'] = frontend_data['filenamePatterns'].get('patterns', [])
     
-    # Verification
+    # Verification - Only include fields that are actually enabled (value = True)
     if frontend_data.get('verification'):
-        backend['verification_fields'] = list(frontend_data['verification'].get('enabledFields', {}).keys())
+        enabled_fields = frontend_data['verification'].get('enabledFields', {})
+        backend['verification_fields'] = [k for k, v in enabled_fields.items() if v]
     
     return backend
 
