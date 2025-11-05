@@ -702,24 +702,32 @@ export default function RuleReviewer() {
                         <span className="text-gray-600">Threshold: </span>
                         <span className="font-semibold">{data.ocrThreshold}%</span>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {data.ocrGroupResults.map((group, idx) => (
-                          <div key={idx} className="text-xs">
-                            <div className="flex items-center">
-                              <span className={group.matched ? 'text-green-600' : 'text-red-600'}>
-                                {group.matched ? '✓' : '✗'} {group.name}
-                              </span>
-                            </div>
-                            {group.conditions && group.conditions.length > 0 && (
-                              <div className="ml-3 mt-1 space-y-0.5">
-                                {group.conditions.map((cond, condIdx) => (
-                                  <div key={condIdx} className="text-[10px] text-gray-500">
+                          <div key={idx}>
+                            {group.conditions && group.conditions.length > 0 ? (
+                              group.conditions.map((cond, condIdx) => (
+                                <div key={condIdx} className="text-xs">
+                                  <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
                                     {cond.matched ? '✓' : '✗'} {cond.pattern}
-                                    {cond.matched && cond.matched_text && (
-                                      <span className="ml-1 italic">→ "{cond.matched_text}"</span>
-                                    )}
-                                  </div>
-                                ))}
+                                  </span>
+                                  {cond.matched && cond.matched_text && (
+                                    <span className="text-gray-500 text-[10px] ml-1">
+                                      (Matched: "{cond.matched_text}")
+                                    </span>
+                                  )}
+                                  {!cond.matched && (
+                                    <span className="text-gray-500 text-[10px] ml-1">
+                                      (Not matched)
+                                    </span>
+                                  )}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="text-xs">
+                                <span className={group.matched ? 'text-green-600' : 'text-red-600'}>
+                                  {group.matched ? '✓' : '✗'} {group.name}
+                                </span>
                               </div>
                             )}
                           </div>
