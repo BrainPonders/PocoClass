@@ -112,6 +112,9 @@ class PatternMatcher:
             # Each group counts as 1 unit for total (not individual conditions)
             total_count += 1
             
+            # Track condition results for detailed breakdown
+            condition_results = []
+            
             # Evaluate conditions
             group_matched = False
             if group_type == 'match':
@@ -119,33 +122,37 @@ class PatternMatcher:
                 all_match = True
                 for condition in conditions:
                     pattern_str = condition.get('pattern', '')
-                    if not self.check_pattern_match(pattern_str, condition, content, filename):
+                    match_result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
+                    condition_results.append(match_result)
+                    if not match_result['matched']:
                         all_match = False
-                        break
                 group_matched = all_match
             
             elif group_type == 'or':
                 # At least ONE condition must match (OR logic)
                 for condition in conditions:
                     pattern_str = condition.get('pattern', '')
-                    if self.check_pattern_match(pattern_str, condition, content, filename):
+                    match_result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
+                    condition_results.append(match_result)
+                    if match_result['matched']:
                         group_matched = True
-                        break
             
-            # Record match result
+            # Record match result with condition details
             group_name = group.get('title', f'Logic Group {i + 1}')
             if group_matched:
                 matched_count += 1
                 all_matches.append({
                     'name': group_name,
                     'matched': True,
-                    'score': score
+                    'score': score,
+                    'conditions': condition_results
                 })
             else:
                 all_matches.append({
                     'name': group_name,
                     'matched': False,
-                    'score': 0
+                    'score': 0,
+                    'conditions': condition_results
                 })
         
         return {
@@ -156,7 +163,23 @@ class PatternMatcher:
     
     def check_pattern_match(self, pattern_str: str, condition: Dict[str, Any], content: str, filename: str) -> bool:
         """
-        Check if a single pattern matches
+        Check if a single pattern matches (boolean only, for backward compatibility)
+        
+        Args:
+            pattern_str: Pattern to match (e.g., '/ExampleBank/i')
+            condition: Condition config with source and range
+            content: Document OCR content
+            filename: Document filename
+            
+        Returns:
+            True if pattern matches, False otherwise
+        """
+        result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
+        return result['matched']
+    
+    def check_pattern_match_detailed(self, pattern_str: str, condition: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
+        """
+        Check if a single pattern matches and return detailed match information
         
         Supports:
         - Regex patterns in wizard format (/pattern/flags)
@@ -170,7 +193,7 @@ class PatternMatcher:
             filename: Document filename
             
         Returns:
-            True if pattern matches, False otherwise
+            Dict with matched (bool), pattern (str), and matched_text (str or None)
         """
         source = condition.get('source', 'content')
         range_str = condition.get('range', '')
@@ -201,10 +224,30 @@ class PatternMatcher:
         # Check for match
         try:
             match = re.search(normalized_pattern, text, flags)
-            return match is not None
+            if match:
+                matched_text = match.group(0)
+                # Truncate if too long
+                if len(matched_text) > 50:
+                    matched_text = matched_text[:47] + '...'
+                return {
+                    'matched': True,
+                    'pattern': pattern_str,
+                    'matched_text': matched_text
+                }
+            else:
+                return {
+                    'matched': False,
+                    'pattern': pattern_str,
+                    'matched_text': None
+                }
         except re.error as e:
             self.logger.error(f"Invalid regex pattern '{normalized_pattern}': {e}")
-            return False
+            return {
+                'matched': False,
+                'pattern': pattern_str,
+                'matched_text': None,
+                'error': str(e)
+            }
     
     def count_filename_matches(self, filename_patterns: List[str], filename: str) -> Dict[str, Any]:
         """
