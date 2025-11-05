@@ -388,9 +388,9 @@ export default function RuleReviewer() {
               <div className="text-sm text-gray-700">
                 <p className="mb-2"><strong>Quick Steps:</strong></p>
                 <ol className="list-decimal list-inside space-y-1">
-                  <li>1. Select a Rule from the dropdown.</li>
-                  <li>2. Choose documents from the list below.</li>
-                  <li>3. Click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button to see performance results.</li>
+                  <li>Select a Rule from the dropdown.</li>
+                  <li>Choose documents from the list below.</li>
+                  <li>Click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button to see performance results.</li>
                 </ol>
               </div>
             ) : (
@@ -398,16 +398,16 @@ export default function RuleReviewer() {
                 <p className="mb-2">Welcome to the Rule Evaluation tool! This helps you test how effectively your classification rules work on a set of documents.</p>
                 <ol className="list-decimal list-inside space-y-2">
                   <li>
-                    <strong>1. Select a Rule:</strong> Use the "Select a rule..." dropdown in the "Test Documents" section below to choose the rule you want to evaluate. Ensure your rule has been properly configured with OCR Identifiers, Filename Patterns, Verification fields, and Dynamic Data Extraction rules.
+                    <strong>Select a Rule:</strong> Use the "Select a rule..." dropdown in the "Test Documents" section below to choose the rule you want to evaluate. Ensure your rule has been properly configured with OCR Identifiers, Filename Patterns, Verification fields, and Dynamic Data Extraction rules.
                   </li>
                   <li>
-                    <strong>2. Choose Documents:</strong> Select one or more documents from the list below. You can click on individual document rows to toggle selection or use the checkbox in the table header to "Select All". The selected documents will be used as the test set for your chosen rule.
+                    <strong>Choose Documents:</strong> Select one or more documents from the list below. You can click on individual document rows to toggle selection or use the checkbox in the table header to "Select All". The selected documents will be used as the test set for your chosen rule.
                   </li>
                   <li>
-                    <strong>3. Run the Evaluation:</strong> Once you've selected a rule and at least one document, click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button. The system will then process the selected documents against the chosen rule.
+                    <strong>Run the Evaluation:</strong> Once you've selected a rule and at least one document, click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button. The system will then process the selected documents against the chosen rule.
                   </li>
                   <li>
-                    <strong>4. Review Results:</strong> After the evaluation, the "Rule Performance Results" section will appear, displaying a summary and detailed breakdown of how each document performed against the rule's criteria (OCR, Filename, Verification, Dynamic Data, and overall POCO Score).
+                    <strong>Review Results:</strong> After the evaluation, the "Rule Performance Results" section will appear, displaying a summary and detailed breakdown of how each document performed against the rule's criteria (OCR, Filename, Verification, Dynamic Data, and overall POCO Score).
                   </li>
                 </ol>
                 <p className="mt-4 text-xs italic text-gray-500">
