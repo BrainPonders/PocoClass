@@ -385,6 +385,9 @@ class BackgroundProcessor:
             logger.warning(f"No content for document {doc_id}, skipping")
             return {'classified': False, 'rules_applied': 0}
         
+        # Log content length for debugging
+        logger.info(f"Document {doc_id} content: {len(content)} chars, {len(content.splitlines())} lines")
+        
         # Convert document IDs to names for proper verification
         paperless_metadata = self._convert_document_ids_to_names(doc)
         
