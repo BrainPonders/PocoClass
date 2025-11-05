@@ -369,52 +369,17 @@ export default function RuleReviewer() {
       subtitle="Test and evaluate document classification rules"
     >
 
-      {/* Guide Section for Beginners */}
+      {/* Info Section */}
       {!hasRun && (
         <Card className="mb-6 bg-blue-50 border-blue-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold text-blue-800 flex items-center gap-2">
-              <Info className="w-5 h-5" /> Getting Started with Rule Evaluation
-            </CardTitle>
-            <button
-              onClick={() => setShowQuickGuide(!showQuickGuide)}
-              className="btn btn-sm btn-ghost text-blue-600 hover:text-blue-800"
-            >
-              {showQuickGuide ? 'Show Detailed Guide' : 'Show Quick Guide'}
-            </button>
-          </CardHeader>
-          <CardContent>
-            {showQuickGuide ? (
+          <CardContent className="pt-4">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-gray-700">
-                <p className="mb-2"><strong>Quick Steps:</strong></p>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Select a Rule from the dropdown.</li>
-                  <li>Choose documents from the list below.</li>
-                  <li>Click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button to see performance results.</li>
-                </ol>
+                <p className="font-medium text-blue-900 mb-1">What is this section for?</p>
+                <p>Test how your classification rules perform on documents. Select a rule, pick documents to test, and click Run to see detailed results showing POCO scores, pattern matches, and extracted metadata. Use this to fine-tune your rules before applying them in production.</p>
               </div>
-            ) : (
-              <div className="text-sm text-gray-700">
-                <p className="mb-2">Welcome to the Rule Evaluation tool! This helps you test how effectively your classification rules work on a set of documents.</p>
-                <ol className="list-decimal list-inside space-y-2">
-                  <li>
-                    <strong>Select a Rule:</strong> Use the "Select a rule..." dropdown in the "Test Documents" section below to choose the rule you want to evaluate. Ensure your rule has been properly configured with OCR Identifiers, Filename Patterns, Verification fields, and Dynamic Data Extraction rules.
-                  </li>
-                  <li>
-                    <strong>Choose Documents:</strong> Select one or more documents from the list below. You can click on individual document rows to toggle selection or use the checkbox in the table header to "Select All". The selected documents will be used as the test set for your chosen rule.
-                  </li>
-                  <li>
-                    <strong>Run the Evaluation:</strong> Once you've selected a rule and at least one document, click the '<Play className="inline-block w-3 h-3 relative -top-0.5" /> Run' button. The system will then process the selected documents against the chosen rule.
-                  </li>
-                  <li>
-                    <strong>Review Results:</strong> After the evaluation, the "Rule Performance Results" section will appear, displaying a summary and detailed breakdown of how each document performed against the rule's criteria (OCR, Filename, Verification, Dynamic Data, and overall POCO Score).
-                  </li>
-                </ol>
-                <p className="mt-4 text-xs italic text-gray-500">
-                  Tip: The overall POCO Score indicates the confidence level of the rule's match. A higher score generally means a better match.
-                </p>
-              </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       )}
