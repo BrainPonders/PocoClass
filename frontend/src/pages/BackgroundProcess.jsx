@@ -818,9 +818,26 @@ export default function BackgroundProcess() {
                                   {detail.metadata_applied && detail.metadata_applied.length > 0 && (
                                     <>
                                       <span className="text-gray-400">•</span>
-                                      <span className="text-blue-700 font-medium">
-                                        {detail.metadata_applied.join(' | ')}
-                                      </span>
+                                      {detail.metadata_applied.map((item, idx) => {
+                                        // Parse metadata item for color coding
+                                        const getMetadataStyle = (text) => {
+                                          if (text.startsWith('Title:')) return 'text-purple-700 font-medium';
+                                          if (text.startsWith('Correspondent:')) return 'text-green-700 font-medium';
+                                          if (text.startsWith('Doc Type:')) return 'text-orange-700 font-medium';
+                                          if (text.startsWith('Tags:')) return 'text-blue-700 font-medium';
+                                          if (text.startsWith('Date:')) return 'text-indigo-700 font-medium';
+                                          return 'text-teal-700 font-medium'; // Custom fields
+                                        };
+                                        
+                                        return (
+                                          <span key={idx}>
+                                            {idx > 0 && <span className="text-gray-400 mx-1">|</span>}
+                                            <span className={getMetadataStyle(item)}>
+                                              {item}
+                                            </span>
+                                          </span>
+                                        );
+                                      })}
                                     </>
                                   )}
                                 </div>

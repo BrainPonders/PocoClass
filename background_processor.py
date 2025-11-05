@@ -211,14 +211,16 @@ class BackgroundProcessor:
             processed = 0
             classified = 0
             skipped = 0
-            total_rules_applied = 0
+            unique_rules_used = set()  # Track unique rule IDs that were actually used
             
             for doc in documents:
                 result = self._process_document(doc, rules, api_client, dry_run=dry_run, run_id=run_id)
                 processed += 1
                 if result['classified']:
                     classified += 1
-                    total_rules_applied += result['rules_applied']
+                    # Track which rule was used
+                    if result.get('rule_id'):
+                        unique_rules_used.add(result['rule_id'])
                 else:
                     skipped += 1
                 
@@ -229,6 +231,9 @@ class BackgroundProcessor:
                     except Exception as e:
                         logger.error(f"Failed to save processing detail for document {doc['id']}: {e}")
             
+            # Count unique rules used (not number of documents)
+            rules_applied_count = len(unique_rules_used)
+            
             # Update run record with final stats
             self.db.update_processing_run(
                 run_id=run_id,
@@ -237,7 +242,7 @@ class BackgroundProcessor:
                 documents_processed=processed,
                 documents_classified=classified,
                 documents_skipped=skipped,
-                rules_applied=total_rules_applied
+                rules_applied=rules_applied_count
             )
             
             return {
@@ -246,7 +251,7 @@ class BackgroundProcessor:
                 'documents_processed': processed,
                 'documents_classified': classified,
                 'documents_skipped': skipped,
-                'rules_applied': total_rules_applied,
+                'rules_applied': rules_applied_count,
                 'run_id': run_id
             }
             
@@ -553,6 +558,7 @@ class BackgroundProcessor:
         return {
             'classified': classified,
             'rules_applied': rules_applied,
+            'rule_id': best_rule.get('rule_id') if best_rule else None,
             'detail': detail
         }
     
