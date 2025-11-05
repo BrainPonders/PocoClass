@@ -76,6 +76,53 @@ export default function BackgroundProcess() {
     }
   }, [currentUser, navigate, toast]);
 
+  // Polling: Auto-refresh when processing completes
+  useEffect(() => {
+    if (!currentUser || currentUser.role !== 'admin') return;
+    
+    let timeoutId = null;
+    let previousStatus = processingStatus?.status;
+    
+    const pollStatus = async () => {
+      try {
+        const sessionToken = localStorage.getItem('pococlass_session');
+        const response = await fetch(`${API_BASE_URL}/api/background/status`, {
+          headers: { 'Authorization': `Bearer ${sessionToken}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          const newStatus = data.status;
+          
+          // Detect transition from running to idle
+          if (previousStatus === 'running' && newStatus === 'idle') {
+            // Processing just completed - refresh history
+            loadHistory();
+          }
+          
+          previousStatus = newStatus;
+          setProcessingStatus(data);
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+      
+      // Continue polling every 3 seconds
+      timeoutId = setTimeout(pollStatus, 3000);
+    };
+    
+    // Start polling when processing is active
+    if (processingStatus?.status === 'running') {
+      timeoutId = setTimeout(pollStatus, 3000);
+    }
+    
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [processingStatus?.status, currentUser]);
+
   const loadUser = async () => {
     try {
       const user = await User.me();
@@ -819,21 +866,31 @@ export default function BackgroundProcess() {
                                     <>
                                       <span className="text-gray-400">•</span>
                                       {detail.metadata_applied.map((item, idx) => {
-                                        // Parse metadata item for color coding
-                                        const getMetadataStyle = (text) => {
-                                          if (text.startsWith('Title:')) return 'text-purple-700 font-medium';
-                                          if (text.startsWith('Correspondent:')) return 'text-green-700 font-medium';
-                                          if (text.startsWith('Doc Type:')) return 'text-orange-700 font-medium';
-                                          if (text.startsWith('Tags:')) return 'text-blue-700 font-medium';
-                                          if (text.startsWith('Date:')) return 'text-indigo-700 font-medium';
-                                          return 'text-teal-700 font-medium'; // Custom fields
+                                        // Parse metadata item: label in grey, value in color
+                                        const colonIndex = item.indexOf(':');
+                                        if (colonIndex === -1) {
+                                          return <span key={idx} className="text-gray-600">{item}</span>;
+                                        }
+                                        
+                                        const label = item.substring(0, colonIndex + 1); // Include colon
+                                        const value = item.substring(colonIndex + 1).trim();
+                                        
+                                        const getValueColor = (labelText) => {
+                                          if (labelText.startsWith('Title:')) return 'text-purple-700';
+                                          if (labelText.startsWith('Correspondent:')) return 'text-green-700';
+                                          if (labelText.startsWith('Doc Type:')) return 'text-orange-700';
+                                          if (labelText.startsWith('Tags:')) return 'text-blue-700';
+                                          if (labelText.startsWith('Date:')) return 'text-indigo-700';
+                                          return 'text-teal-700'; // Custom fields
                                         };
                                         
                                         return (
                                           <span key={idx}>
                                             {idx > 0 && <span className="text-gray-400 mx-1">|</span>}
-                                            <span className={getMetadataStyle(item)}>
-                                              {item}
+                                            <span className="text-gray-500">{label}</span>
+                                            <span className="text-gray-500"> </span>
+                                            <span className={`${getValueColor(label)} font-medium`}>
+                                              {value}
                                             </span>
                                           </span>
                                         );
