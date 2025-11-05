@@ -713,7 +713,7 @@ export default function RuleReviewer() {
                                   </span>
                                   {cond.matched && cond.matched_text && (
                                     <span className="text-gray-500 text-[10px] ml-1">
-                                      (Matched: "{cond.matched_text}")
+                                      ("{cond.matched_text}")
                                     </span>
                                   )}
                                   {!cond.matched && (
