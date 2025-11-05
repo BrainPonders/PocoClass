@@ -46,9 +46,6 @@ class POCOScoringV2:
             Dictionary with scores and details
         """
         
-        # DEBUG: Log input values
-        self.logger.info(f"DEBUG SCORING: ocr_matches={ocr_matches}, ocr_total={ocr_total}, filename_matches={filename_matches}, filename_total={filename_total}")
-        
         # Calculate Paperless multiplier (neutralized to prevent field-count inflation)
         if paperless_multiplier is None:
             paperless_multiplier = (1.0 / paperless_total) if paperless_total > 0 else 0
@@ -76,9 +73,6 @@ class POCOScoringV2:
         total_max_weight = ocr_max_weight + filename_max_weight + paperless_max_weight
         
         poco_score = (total_weighted / total_max_weight * 100) if total_max_weight > 0 else 0
-        
-        # DEBUG: Log calculated scores
-        self.logger.info(f"DEBUG SCORING: poco_ocr_score={poco_ocr_score:.2f}%, poco_score={poco_score:.2f}%")
         
         return {
             'poco_ocr_score': round(poco_ocr_score, 2),

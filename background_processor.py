@@ -403,7 +403,7 @@ class BackgroundProcessor:
             try:
                 # Evaluate rule with converted metadata
                 result = test_engine.test_rule(rule, content, doc.get('original_file_name', ''), paperless_metadata)
-                poco_score = result.get('poco_score', 0)
+                poco_score = result.get('scores', {}).get('poco_score', 0)
                 
                 # Track best match
                 if poco_score > best_score:
@@ -416,11 +416,11 @@ class BackgroundProcessor:
         
         # Determine if document matched based on threshold
         threshold = best_rule.get('threshold', 75) if best_rule else 75
-        classified = best_result and best_result.get('match', False) and best_score >= threshold
+        classified = best_result and best_result.get('classification_allowed', False)
         
         # Get POCO Score and POCO OCR (default to 0 if no match)
         poco_score = best_score if best_result else 0
-        poco_ocr = best_result.get('poco_ocr', 0) if best_result else 0
+        poco_ocr = best_result.get('scores', {}).get('poco_ocr_score', 0) if best_result else 0
         
         # Log result
         if classified:
