@@ -276,6 +276,7 @@ export default function BackgroundProcess() {
             doc_types_mode: filters.docTypesMode,
             date_from: filters.dateFrom || null,
             date_to: filters.dateTo || null,
+            document_ids: selectedDocuments.length > 0 ? selectedDocuments : null,
           },
           dry_run: dryRunMode
         })
