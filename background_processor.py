@@ -296,6 +296,70 @@ class BackgroundProcessor:
         
         return documents
     
+    def _convert_document_ids_to_names(self, doc: Dict) -> Dict:
+        """
+        Convert document IDs to names for verification using database lookups.
+        This matches the same conversion done in the execute_rule endpoint.
+        """
+        # Create lookup dictionaries from cached database data
+        correspondents_lookup = {c['paperless_id']: c for c in self.db.get_all_correspondents()}
+        doc_types_lookup = {dt['paperless_id']: dt for dt in self.db.get_all_document_types()}
+        tags_lookup = {t['paperless_id']: t for t in self.db.get_all_tags()}
+        custom_fields_lookup = {cf['paperless_id']: cf for cf in self.db.get_all_custom_fields()}
+        
+        # Build paperless_metadata with names instead of IDs
+        paperless_metadata = {}
+        
+        # Convert correspondent ID to name
+        if doc.get('correspondent'):
+            corr = correspondents_lookup.get(doc['correspondent'])
+            if corr:
+                paperless_metadata['correspondent'] = corr['name']
+        
+        # Convert document_type ID to name
+        if doc.get('document_type'):
+            dt = doc_types_lookup.get(doc['document_type'])
+            if dt:
+                paperless_metadata['document_type'] = dt['name']
+        
+        # Convert tag IDs to tag names
+        if doc.get('tags'):
+            tag_names = []
+            for tag_id in doc['tags']:
+                tag = tags_lookup.get(tag_id)
+                if tag:
+                    tag_names.append(tag['name'])
+            if tag_names:
+                paperless_metadata['tags'] = tag_names
+        
+        # Extract custom fields with field names and values (resolve select option IDs)
+        if doc.get('custom_fields'):
+            custom_fields_dict = {}
+            for cf_entry in doc['custom_fields']:
+                field_id = cf_entry.get('field')
+                cf_def = custom_fields_lookup.get(field_id)
+                if cf_def:
+                    raw_value = cf_entry.get('value')
+                    # Resolve select option ID to label
+                    if cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+                        select_options = cf_def['extra_data'].get('select_options', [])
+                        resolved_value = raw_value
+                        for option in select_options:
+                            if option.get('id') == raw_value:
+                                resolved_value = option.get('label', raw_value)
+                                break
+                        custom_fields_dict[cf_def['name']] = resolved_value
+                    else:
+                        custom_fields_dict[cf_def['name']] = raw_value
+            if custom_fields_dict:
+                paperless_metadata['custom_fields'] = custom_fields_dict
+        
+        # Pass through date_created
+        if doc.get('created'):
+            paperless_metadata['date_created'] = doc['created']
+        
+        return paperless_metadata
+    
     def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient, dry_run: bool = False) -> Dict[str, Any]:
         """
         Process a single document by testing all rules and applying the best match.
@@ -315,6 +379,9 @@ class BackgroundProcessor:
             logger.warning(f"No content for document {doc_id}, skipping")
             return {'classified': False, 'rules_applied': 0}
         
+        # Convert document IDs to names for proper verification
+        paperless_metadata = self._convert_document_ids_to_names(doc)
+        
         # Create test engine
         test_engine = TestEngine()
         
@@ -325,8 +392,8 @@ class BackgroundProcessor:
         
         for rule in rules:
             try:
-                # Evaluate rule
-                result = test_engine.test_rule(rule, content, doc.get('original_file_name', ''), doc)
+                # Evaluate rule with converted metadata
+                result = test_engine.test_rule(rule, content, doc.get('original_file_name', ''), paperless_metadata)
                 poco_score = result.get('poco_score', 0)
                 
                 # Track best match
