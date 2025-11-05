@@ -800,32 +800,32 @@ export default function BackgroundProcess() {
                         </div>
                         <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
                           {entry.details.map((detail) => (
-                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded p-3">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-sm font-medium text-gray-900 truncate">
+                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                              <div className="flex items-center justify-between gap-3">
+                                {/* Left side: Document info in one compact line */}
+                                <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap text-xs">
+                                  <span className="font-medium text-gray-900 truncate max-w-xs">
                                     {detail.document_title || `Document #${detail.document_id}`}
-                                  </div>
-                                  <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                    <span className="text-xs text-gray-600">
-                                      {detail.rule_name || 'No Match'}
-                                    </span>
-                                    <span className="text-xs text-gray-400">•</span>
-                                    <span className="text-xs text-gray-600">
-                                      POCO: {detail.poco_score?.toFixed(1) || 0}%
-                                    </span>
-                                    <span className="text-xs text-gray-400">•</span>
-                                    <span className="text-xs text-gray-600">
-                                      OCR: {detail.ocr_score?.toFixed(1) || 0}%
-                                    </span>
-                                  </div>
+                                  </span>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="text-gray-600">
+                                    {detail.rule_name || 'No Match'}
+                                  </span>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="text-gray-600">
+                                    POCO: {detail.poco_score?.toFixed(1) || 0}% / OCR: {detail.ocr_score?.toFixed(1) || 0}%
+                                  </span>
                                   {detail.metadata_applied && detail.metadata_applied.length > 0 && (
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      Metadata: {detail.metadata_applied.join(', ')}
-                                    </div>
+                                    <>
+                                      <span className="text-gray-400">•</span>
+                                      <span className="text-blue-700 font-medium">
+                                        {detail.metadata_applied.join(' | ')}
+                                      </span>
+                                    </>
                                   )}
                                 </div>
-                                <div className="flex items-center gap-2">
+                                {/* Right side: Badges */}
+                                <div className="flex items-center gap-2 flex-shrink-0">
                                   {getClassificationBadge(detail.classification)}
                                   {detail.status === 'simulated' && (
                                     <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
