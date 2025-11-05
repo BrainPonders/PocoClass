@@ -142,12 +142,8 @@ class PatternMatcher:
             # Record match result with condition details
             group_name = group.get('title', f'Logic Group {i + 1}')
             
-            # DEBUG: Log group match result
-            self.logger.info(f"DEBUG: Group '{group_name}' matched={group_matched}, type={group_type}, conditions={len(condition_results)}")
-            
             if group_matched:
                 matched_count += 1
-                self.logger.info(f"DEBUG: Incrementing matched_count to {matched_count}")
                 all_matches.append({
                     'name': group_name,
                     'matched': True,
@@ -161,9 +157,6 @@ class PatternMatcher:
                     'score': 0,
                     'conditions': condition_results
                 })
-        
-        # DEBUG: Log final counts
-        self.logger.info(f"DEBUG: count_ocr_matches() returning total={total_count}, matched={matched_count}")
         
         return {
             'total_count': total_count,
@@ -248,31 +241,9 @@ class PatternMatcher:
         text_preview = text[:200].replace('\n', ' ') if text else '(empty)'
         self.logger.info(f"Searching pattern '{pattern_str}' in text preview: '{text_preview}...'")
         
-        # DEBUG: Log all lines if range is small (0-25)
-        if range_str and range_str == '0-25':
-            lines = text.splitlines()
-            self.logger.info(f"DEBUG: Searching '{pattern_str}' in {len(lines)} lines:")
-            for i, line in enumerate(lines):
-                if pattern_str.lower() in line.lower():
-                    self.logger.info(f"  Line {i}: FOUND '{pattern_str}' in: {line[:80]}")
-            
-            # Log the actual regex being used
-            flag_names = []
-            if flags & re.IGNORECASE: flag_names.append('IGNORECASE')
-            if flags & re.MULTILINE: flag_names.append('MULTILINE')
-            if flags & re.DOTALL: flag_names.append('DOTALL')
-            self.logger.info(f"DEBUG: Using regex pattern='{normalized_pattern}', flags={flag_names}")
-        
         # Check for match
         try:
             match = re.search(normalized_pattern, text, flags)
-            
-            # DEBUG: Log regex result
-            if range_str and range_str == '0-25':
-                if match:
-                    self.logger.info(f"DEBUG: re.search() FOUND match: '{match.group(0)[:50]}'")
-                else:
-                    self.logger.info(f"DEBUG: re.search() returned NO MATCH")
             
             if match:
                 matched_text = match.group(0)
