@@ -5,7 +5,7 @@ import { apiClient } from "@/api/apiClient";
 import { FileText, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
@@ -630,7 +630,7 @@ export default function RuleReviewer() {
                   />
                   <YAxis
                     label={{ value: 'Score (%)', angle: -90, position: 'insideLeft' }}
-                    domain={[0, 200]}
+                    domain={[0, 100]}
                   />
                   <Tooltip
                     content={({ active, payload }) => {
@@ -650,12 +650,20 @@ export default function RuleReviewer() {
                       return null;
                     }}
                   />
-                  <Bar dataKey="ocrScore" stackId="a" name="OCR Score">
+                  <ReferenceLine 
+                    y={performanceData.length > 0 ? performanceData[0].threshold : 80} 
+                    stroke="#f59e0b" 
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    label={{ value: 'POCO Threshold', position: 'right', fill: '#f59e0b', fontSize: 12 }}
+                  />
+                  <Legend />
+                  <Bar dataKey="ocrScore" name="OCR Score" fill="#3b82f6">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-ocr-${index}`} fill={entry.passed ? '#86efac' : '#fca5a5'} />
+                      <Cell key={`cell-ocr-${index}`} fill="#3b82f6" />
                     ))}
                   </Bar>
-                  <Bar dataKey="pocoScore" stackId="a" name="POCO Score">
+                  <Bar dataKey="pocoScore" name="POCO Score">
                     {chartData.map((entry, index) => (
                       <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#dc2626'} />
                     ))}
