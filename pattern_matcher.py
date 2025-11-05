@@ -247,6 +247,13 @@ class PatternMatcher:
             for i, line in enumerate(lines):
                 if pattern_str.lower() in line.lower():
                     self.logger.info(f"  Line {i}: FOUND '{pattern_str}' in: {line[:80]}")
+            
+            # Log the actual regex being used
+            flag_names = []
+            if flags & re.IGNORECASE: flag_names.append('IGNORECASE')
+            if flags & re.MULTILINE: flag_names.append('MULTILINE')
+            if flags & re.DOTALL: flag_names.append('DOTALL')
+            self.logger.info(f"DEBUG: Using regex pattern='{normalized_pattern}', flags={flag_names}")
         
         # Check for match
         try:
