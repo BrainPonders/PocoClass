@@ -693,14 +693,12 @@ export default function RuleReviewer() {
                     {/* 1. OCR Pattern Matching */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">OCR Patterns</span>
+                        <span className="text-xs font-semibold text-gray-700">
+                          OCR Patterns <span className="text-gray-600 font-normal">(Threshold: {data.ocrThreshold}%)</span>
+                        </span>
                         <span className="text-xs text-gray-600">
                           {data.ocrMatched}/{data.ocrTotal} ({data.ocrPercentage}%)
                         </span>
-                      </div>
-                      <div className="text-xs mb-2">
-                        <span className="text-gray-600">Threshold: </span>
-                        <span className="font-semibold">{data.ocrThreshold}%</span>
                       </div>
                       <div className="space-y-1">
                         {data.ocrGroupResults.map((group, idx) => (
