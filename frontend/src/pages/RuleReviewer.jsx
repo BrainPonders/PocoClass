@@ -274,7 +274,8 @@ export default function RuleReviewer() {
       const ocrGroupResults = (ocrBreakdown.groups || []).map((group, idx) => ({
         name: group.name || `Logic Group ${idx + 1}`,
         matched: group.matched || false,
-        score: group.score || 0
+        score: group.score || 0,
+        conditions: group.conditions || []
       }));
       
       // Filename breakdown
@@ -701,12 +702,26 @@ export default function RuleReviewer() {
                         <span className="text-gray-600">Threshold: </span>
                         <span className="font-semibold">{data.ocrThreshold}%</span>
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {data.ocrGroupResults.map((group, idx) => (
-                          <div key={idx} className="flex items-center text-xs">
-                            <span className={group.matched ? 'text-green-600' : 'text-red-600'}>
-                              {group.matched ? '✓' : '✗'} {group.name}
-                            </span>
+                          <div key={idx} className="text-xs">
+                            <div className="flex items-center">
+                              <span className={group.matched ? 'text-green-600' : 'text-red-600'}>
+                                {group.matched ? '✓' : '✗'} {group.name}
+                              </span>
+                            </div>
+                            {group.conditions && group.conditions.length > 0 && (
+                              <div className="ml-3 mt-1 space-y-0.5">
+                                {group.conditions.map((cond, condIdx) => (
+                                  <div key={condIdx} className="text-[10px] text-gray-500">
+                                    {cond.matched ? '✓' : '✗'} {cond.pattern}
+                                    {cond.matched && cond.matched_text && (
+                                      <span className="ml-1 italic">→ "{cond.matched_text}"</span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -743,24 +758,25 @@ export default function RuleReviewer() {
                           {data.verificationMatched}/{data.verificationTotal} ({data.verificationPercentage}%)
                         </span>
                       </div>
-                      <div className="space-y-2 mt-3">
+                      <div className="space-y-1 mt-3">
                         {data.verificationResults.length > 0 ? (
                           <>
-                            {data.verificationResults.map((field, idx) => (
-                              <div key={idx} className="text-xs">
-                                <div className="flex items-center">
+                            {data.verificationResults.map((field, idx) => {
+                              const extractedDisplay = Array.isArray(field.extracted) ? field.extracted.join(', ') : field.extracted;
+                              const paperlessDisplay = Array.isArray(field.paperless) ? field.paperless.join(', ') : field.paperless;
+                              return (
+                                <div key={idx} className="text-xs">
                                   <span className={field.matched ? 'text-green-600' : 'text-red-600'}>
                                     {field.matched ? '✓' : '✗'} {field.name}
                                   </span>
+                                  {field.extracted !== undefined && field.paperless !== undefined && (
+                                    <span className="text-gray-500 text-[10px] ml-1">
+                                      (Rule: {extractedDisplay} vs Doc: {paperlessDisplay})
+                                    </span>
+                                  )}
                                 </div>
-                                {field.extracted !== undefined && field.paperless !== undefined && (
-                                  <div className="ml-3 text-gray-500 text-[10px] mt-0.5">
-                                    Rule: {Array.isArray(field.extracted) ? field.extracted.join(', ') : field.extracted} 
-                                    {' '} vs Doc: {Array.isArray(field.paperless) ? field.paperless.join(', ') : field.paperless}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                              );
+                            })}
                             <div className="mt-2 pt-2 border-t border-gray-300 text-[10px] text-gray-500 italic">
                               Note: NEW tag is automatically ignored in tag comparisons
                             </div>
