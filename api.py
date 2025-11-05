@@ -1306,26 +1306,29 @@ def list_rules():
         rules = rule_loader.load_all_rules()
         order_by = request.args.get('order_by', '-created_date')
         
-        # Convert rules to API format
+        # Convert rules to frontend format (same as get_rule endpoint)
         rules_list = []
         for rule_id, rule_data in rules.items():
-            rules_list.append({
-                'id': rule_id,
-                'ruleName': rule_data.get('rule_name', rule_id),
-                'ruleId': rule_id,
-                'description': rule_data.get('description', ''),
-                'status': rule_data.get('status', 'draft'),
-                'threshold': rule_data.get('threshold', 75),
-                'ocrThreshold': rule_data.get('ocr_threshold', 75),
-                'created_date': rule_data.get('created_date', datetime.now().isoformat()),
-                **rule_data
-            })
+            # Convert to frontend format to ensure consistency with get_rule endpoint
+            frontend_rule = convert_backend_to_frontend(rule_data, rule_id)
+            # Add id and created_date for list display
+            frontend_rule['id'] = rule_id
+            frontend_rule['created_date'] = rule_data.get('created_date', datetime.now().isoformat())
+            rules_list.append(frontend_rule)
         
-        # Sort rules
-        if order_by.startswith('-'):
-            rules_list.sort(key=lambda x: x.get(order_by[1:], ''), reverse=True)
-        else:
-            rules_list.sort(key=lambda x: x.get(order_by, ''))
+        # Sort rules (convert snake_case to camelCase for sorting)
+        sort_field_map = {
+            'created_date': 'created_date',
+            'rule_name': 'ruleName',
+            'status': 'status',
+            'threshold': 'threshold'
+        }
+        
+        sort_field = order_by.lstrip('-')
+        sort_field = sort_field_map.get(sort_field, sort_field)
+        reverse = order_by.startswith('-')
+        
+        rules_list.sort(key=lambda x: x.get(sort_field, ''), reverse=reverse)
         
         return jsonify(rules_list)
     except Exception as e:
