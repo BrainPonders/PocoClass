@@ -2584,12 +2584,21 @@ def manual_processing():
 @app.route('/api/background/history', methods=['GET'])
 @require_auth
 def get_processing_history():
-    """Get processing history"""
+    """Get processing history with optional document details"""
     try:
         limit = request.args.get('limit', 100, type=int)
+        offset = request.args.get('offset', 0, type=int)
         status = request.args.get('status', None)
+        include_details = request.args.get('include_details', 'true').lower() == 'true'
+        details_limit = request.args.get('details_limit', 100, type=int)
         
-        history = db.get_processing_history(limit=limit, status=status)
+        history = db.get_processing_history(limit=limit, status=status, offset=offset)
+        
+        # Optionally include document details for each run (limited to first N per run)
+        if include_details:
+            for run in history:
+                run_id = run['id']
+                run['details'] = db.get_processing_details(run_id, limit=details_limit)
         
         return jsonify({
             'history': history,
@@ -2597,6 +2606,25 @@ def get_processing_history():
         })
     except Exception as e:
         logger.error(f"Error getting processing history: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/background/history/<int:run_id>/details', methods=['GET'])
+@require_auth
+def get_processing_run_details(run_id):
+    """Get detailed processing information for a specific run"""
+    try:
+        limit = request.args.get('limit', None, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        details = db.get_processing_details(run_id, limit=limit, offset=offset)
+        
+        return jsonify({
+            'run_id': run_id,
+            'details': details,
+            'count': len(details)
+        })
+    except Exception as e:
+        logger.error(f"Error getting processing run details: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/background/settings', methods=['GET'])
