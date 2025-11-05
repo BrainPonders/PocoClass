@@ -206,17 +206,24 @@ class PatternMatcher:
         # Apply range if specified and using content
         if range_str and source == 'content' and '-' in range_str:
             try:
-                # Parse range like "0-25" (percentiles) to actual character positions
+                # Parse range like "0-25" (line numbers) to extract specific lines
                 parts = range_str.split('-')
-                start_pct = int(parts[0])
-                end_pct = int(parts[1])
+                start_line = int(parts[0])
+                end_line = int(parts[1])
                 
-                # Convert percentile to character position
-                text_len = len(text)
-                start_pos = (start_pct * text_len) // 100
-                end_pos = (end_pct * text_len) // 100
+                # Split content into lines
+                lines = text.splitlines()
+                total_lines = len(lines)
                 
-                text = text[start_pos:end_pos]
+                # Clamp line numbers to valid range
+                start_line = max(0, min(start_line, total_lines))
+                end_line = max(0, min(end_line, total_lines))
+                
+                # Extract the requested line range (inclusive)
+                if start_line < end_line:
+                    selected_lines = lines[start_line:end_line]
+                    text = '\n'.join(selected_lines)
+                # If range is invalid, use full text
             except (ValueError, IndexError):
                 pass  # Use full text if range parsing fails
         
