@@ -185,7 +185,8 @@ class BackgroundProcessor:
             
             # Load all rules
             rule_loader = RuleLoader('rules')
-            rules = rule_loader.load_all_rules()
+            rules_dict = rule_loader.load_all_rules()
+            rules = list(rules_dict.values())  # Convert dict to list of rule objects
             logger.info(f"Loaded {len(rules)} rules")
             
             # Process each document
