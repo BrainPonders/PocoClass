@@ -2562,8 +2562,16 @@ def manual_processing():
                 'validation_required': True
             }), 400
         
-        # Manual processing bypasses auto-pause check
-        result = background_processor.process_batch(user_session=session)
+        # Extract filters and dry_run mode from request
+        filters = data.get('filters', {})
+        dry_run = data.get('dry_run', False)
+        
+        # Manual processing bypasses auto-pause check and uses provided filters
+        result = background_processor.process_batch(
+            user_session=session,
+            filters=filters,
+            dry_run=dry_run
+        )
         
         return jsonify(result)
     except Exception as e:
