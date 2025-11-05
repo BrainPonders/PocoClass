@@ -289,7 +289,9 @@ export default function RuleReviewer() {
       const verificationBreakdown = breakdown.verification || {};
       const verificationResults = (verificationBreakdown.matches || []).map(match => ({
         name: match.field || 'Unknown',
-        matched: match.match || false
+        matched: match.match || false,
+        extracted: match.extracted,
+        paperless: match.paperless
       }));
       
       // Dynamic data (from extracted metadata)
@@ -741,15 +743,28 @@ export default function RuleReviewer() {
                           {data.verificationMatched}/{data.verificationTotal} ({data.verificationPercentage}%)
                         </span>
                       </div>
-                      <div className="space-y-1 mt-3">
+                      <div className="space-y-2 mt-3">
                         {data.verificationResults.length > 0 ? (
-                          data.verificationResults.map((field, idx) => (
-                            <div key={idx} className="flex items-center text-xs">
-                              <span className={field.matched ? 'text-green-600' : 'text-red-600'}>
-                                {field.matched ? '✓' : '✗'} {field.name}
-                              </span>
+                          <>
+                            {data.verificationResults.map((field, idx) => (
+                              <div key={idx} className="text-xs">
+                                <div className="flex items-center">
+                                  <span className={field.matched ? 'text-green-600' : 'text-red-600'}>
+                                    {field.matched ? '✓' : '✗'} {field.name}
+                                  </span>
+                                </div>
+                                {field.extracted !== undefined && field.paperless !== undefined && (
+                                  <div className="ml-3 text-gray-500 text-[10px] mt-0.5">
+                                    Rule: {Array.isArray(field.extracted) ? field.extracted.join(', ') : field.extracted} 
+                                    {' '} vs Doc: {Array.isArray(field.paperless) ? field.paperless.join(', ') : field.paperless}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            <div className="mt-2 pt-2 border-t border-gray-300 text-[10px] text-gray-500 italic">
+                              Note: NEW tag is automatically ignored in tag comparisons
                             </div>
-                          ))
+                          </>
                         ) : (
                           <div className="text-xs text-gray-500 italic">No fields enabled</div>
                         )}
