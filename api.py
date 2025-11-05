@@ -2636,7 +2636,9 @@ def get_sync_counts():
     try:
         session = request.current_user
         paperless_url = db.get_config('paperless_url')
-        config = Config(paperless_url=paperless_url, paperless_token=session['paperless_token'])
+        config = Config()
+        config.paperless_url = paperless_url
+        config.paperless_token = session['paperless_token']
         api_client = PaperlessAPIClient(config, db)
         
         # Get counts from Paperless (using page_size=1 for lightweight queries)
