@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square } from 'lucide-react';
+import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square, ChevronDown, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { User, Paperless } from '@/api/entities';
 import { apiClient } from "@/api/apiClient";
 import API_BASE_URL from '@/config/api';
@@ -382,6 +383,28 @@ export default function BackgroundProcess() {
     window.open(url, '_blank');
   };
 
+  const getTriggerTypeBadge = (triggerType) => {
+    switch (triggerType) {
+      case 'manual_dry_run':
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Dry Run</Badge>;
+      case 'manual_run':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
+      case 'automatic':
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Automatic</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">{triggerType || 'Unknown'}</Badge>;
+    }
+  };
+
+  const getClassificationBadge = (classification) => {
+    if (classification === 'POCO+') {
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">POCO+</Badge>;
+    } else if (classification === 'POCO-') {
+      return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">POCO-</Badge>;
+    }
+    return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">{classification}</Badge>;
+  };
+
   const isAdmin = currentUser?.role === 'admin';
 
   // Don't render until we know the user role
@@ -717,65 +740,104 @@ export default function BackgroundProcess() {
               <p className="text-gray-500">Background processing runs will appear here</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Started</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documents Found</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classified</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rules Applied</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {processingHistory.map((entry, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {formatDate(entry.started_at)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {formatDate(entry.completed_at)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {formatDuration(entry.duration_seconds)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {entry.documents_found || 0}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {entry.documents_classified || 0}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {entry.rules_applied || 0}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          {entry.status === 'success' ? (
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          ) : entry.status === 'error' ? (
-                            <XCircle className="w-4 h-4 text-red-600" />
-                          ) : (
-                            <AlertCircle className="w-4 h-4 text-yellow-600" />
-                          )}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            entry.status === 'success' 
-                              ? 'bg-green-100 text-green-800'
-                              : entry.status === 'error'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {entry.status}
-                          </span>
+            <Accordion type="multiple" className="space-y-2">
+              {processingHistory.map((entry) => (
+                <AccordionItem key={entry.id} value={`run-${entry.id}`} className="border rounded-lg">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-gray-50">
+                    <div className="flex items-center gap-4 flex-1 text-left">
+                      <div className="flex items-center gap-2">
+                        {getTriggerTypeBadge(entry.trigger_type)}
+                        {entry.status === 'completed' ? (
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        ) : entry.status === 'failed' ? (
+                          <XCircle className="w-4 h-4 text-red-600" />
+                        ) : (
+                          <AlertCircle className="w-4 h-4 text-yellow-600" />
+                        )}
+                      </div>
+                      <div className="flex-1 grid grid-cols-6 gap-4">
+                        <div>
+                          <div className="text-xs text-gray-500">Started</div>
+                          <div className="text-sm font-medium">{formatDate(entry.started_at)}</div>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Documents</div>
+                          <div className="text-sm font-medium">{entry.documents_found || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Classified</div>
+                          <div className="text-sm font-medium text-green-600">{entry.documents_classified || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Skipped</div>
+                          <div className="text-sm font-medium text-gray-600">{entry.documents_skipped || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Rules Applied</div>
+                          <div className="text-sm font-medium">{entry.rules_applied || 0}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">Status</div>
+                          <div className="text-sm font-medium">{entry.status}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    {entry.details && entry.details.length > 0 ? (
+                      <div className="space-y-2 mt-2">
+                        <div className="text-sm font-medium text-gray-700 mb-3">
+                          Document Details ({entry.details.length} documents)
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
+                          {entry.details.map((detail) => (
+                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded p-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-medium text-gray-900 truncate">
+                                    {detail.document_title || `Document #${detail.document_id}`}
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                    <span className="text-xs text-gray-600">
+                                      {detail.rule_name || 'No Match'}
+                                    </span>
+                                    <span className="text-xs text-gray-400">•</span>
+                                    <span className="text-xs text-gray-600">
+                                      POCO: {detail.poco_score?.toFixed(1) || 0}%
+                                    </span>
+                                    <span className="text-xs text-gray-400">•</span>
+                                    <span className="text-xs text-gray-600">
+                                      OCR: {detail.ocr_score?.toFixed(1) || 0}%
+                                    </span>
+                                  </div>
+                                  {detail.metadata_applied && detail.metadata_applied.length > 0 && (
+                                    <div className="text-xs text-gray-500 mt-1">
+                                      Metadata: {detail.metadata_applied.join(', ')}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {getClassificationBadge(detail.classification)}
+                                  {detail.status === 'simulated' && (
+                                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
+                                      Simulated
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-gray-500 text-center py-4">
+                        No document details available
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           )}
         </CardContent>
       </Card>

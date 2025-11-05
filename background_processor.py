@@ -70,26 +70,13 @@ class BackgroundProcessor:
             self.db.set_processing_lock(True)
             self.db.set_needs_rerun(False)
             
-            # Create processing run record
-            run_id = self.db.create_processing_run(trigger_type='post-consumption')
+            # Create processing run record with automatic trigger type
+            run_id = self.db.create_processing_run(trigger_type='automatic')
             
             logger.info(f"Starting background processing run #{run_id}")
             
-            # Execute processing
-            result = self.process_batch()
-            
-            # Update run record
-            self.db.update_processing_run(
-                run_id=run_id,
-                status='completed' if result['success'] else 'failed',
-                documents_found=result.get('documents_found', 0),
-                documents_processed=result.get('documents_processed', 0),
-                documents_classified=result.get('documents_classified', 0),
-                documents_skipped=result.get('documents_skipped', 0),
-                rules_applied=result.get('rules_applied', 0),
-                error_message=result.get('error'),
-                details=result.get('details')
-            )
+            # Execute processing with run_id
+            result = self.process_batch(run_id=run_id)
             
             logger.info(f"Background processing run #{run_id} completed: {result}")
             
@@ -111,7 +98,7 @@ class BackgroundProcessor:
                 self.db.set_needs_rerun(False)
                 self.trigger_processing(delay_seconds=5)
     
-    def process_batch(self, user_session: Dict = None, filters: Dict = None, dry_run: bool = False) -> Dict[str, Any]:
+    def process_batch(self, user_session: Dict = None, filters: Dict = None, dry_run: bool = False, run_id: int = None) -> Dict[str, Any]:
         """
         Process a batch of documents with sync safety guarantees
         
@@ -119,19 +106,40 @@ class BackgroundProcessor:
             user_session: Optional user session for manual processing (bypasses auto-pause check)
             filters: Optional filters for manual processing (title, tags, correspondents, doc_types, dates)
             dry_run: If True, only simulate processing without making changes
+            run_id: Optional existing run_id (for internal use by _execute_processing)
         
         Returns:
-            Dictionary with processing results
+            Dictionary with processing results including run_id
         """
         try:
+            # Determine trigger_type based on parameters
+            if dry_run:
+                trigger_type = 'manual_dry_run'
+            elif filters or user_session:
+                trigger_type = 'manual_run'
+            else:
+                trigger_type = 'automatic'
+            
+            # Create processing run if not provided
+            if run_id is None:
+                user_id = user_session.get('user_id') if user_session else None
+                run_id = self.db.create_processing_run(trigger_type=trigger_type, user_id=user_id)
+                logger.info(f"Created processing run #{run_id} with trigger_type={trigger_type}")
+            
             # Auto-pause check: skip if Web UI is active (unless manual processing)
             if user_session is None and self._is_web_ui_active():
                 logger.info("Web UI is active, skipping background processing (auto-pause)")
+                self.db.update_processing_run(
+                    run_id=run_id,
+                    status='skipped',
+                    error_message='Processing paused while Web UI is active'
+                )
                 return {
                     'success': True,
                     'skipped': True,
                     'reason': 'auto-pause',
-                    'message': 'Processing paused while Web UI is active'
+                    'message': 'Processing paused while Web UI is active',
+                    'run_id': run_id
                 }
             
             # Get Paperless URL and create API client
@@ -174,13 +182,23 @@ class BackgroundProcessor:
                 logger.info(f"Discovered {len(documents)} documents to process")
             
             if not documents:
+                self.db.update_processing_run(
+                    run_id=run_id,
+                    status='completed',
+                    documents_found=0,
+                    documents_processed=0,
+                    documents_classified=0,
+                    documents_skipped=0,
+                    rules_applied=0
+                )
                 return {
                     'success': True,
                     'documents_found': 0,
                     'documents_processed': 0,
                     'documents_classified': 0,
                     'documents_skipped': 0,
-                    'rules_applied': 0
+                    'rules_applied': 0,
+                    'run_id': run_id
                 }
             
             # Load all rules
@@ -196,13 +214,31 @@ class BackgroundProcessor:
             total_rules_applied = 0
             
             for doc in documents:
-                result = self._process_document(doc, rules, api_client, dry_run=dry_run)
+                result = self._process_document(doc, rules, api_client, dry_run=dry_run, run_id=run_id)
                 processed += 1
                 if result['classified']:
                     classified += 1
                     total_rules_applied += result['rules_applied']
                 else:
                     skipped += 1
+                
+                # Save per-document details to database
+                if result.get('detail'):
+                    try:
+                        self.db.add_processing_detail(run_id, result['detail'])
+                    except Exception as e:
+                        logger.error(f"Failed to save processing detail for document {doc['id']}: {e}")
+            
+            # Update run record with final stats
+            self.db.update_processing_run(
+                run_id=run_id,
+                status='completed',
+                documents_found=len(documents),
+                documents_processed=processed,
+                documents_classified=classified,
+                documents_skipped=skipped,
+                rules_applied=total_rules_applied
+            )
             
             return {
                 'success': True,
@@ -210,14 +246,23 @@ class BackgroundProcessor:
                 'documents_processed': processed,
                 'documents_classified': classified,
                 'documents_skipped': skipped,
-                'rules_applied': total_rules_applied
+                'rules_applied': total_rules_applied,
+                'run_id': run_id
             }
             
         except Exception as e:
             logger.error(f"Batch processing failed: {e}", exc_info=True)
+            # Update run record with error
+            if 'run_id' in locals() and run_id:
+                self.db.update_processing_run(
+                    run_id=run_id,
+                    status='failed',
+                    error_message=str(e)
+                )
             return {
                 'success': False,
-                'error': str(e)
+                'error': str(e),
+                'run_id': run_id if 'run_id' in locals() else None
             }
     
     def _discover_documents(self, api_client: PaperlessAPIClient) -> List[Dict]:
@@ -366,13 +411,20 @@ class BackgroundProcessor:
         
         return paperless_metadata
     
-    def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient, dry_run: bool = False) -> Dict[str, Any]:
+    def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient, dry_run: bool = False, run_id: int = None) -> Dict[str, Any]:
         """
         Process a single document by testing all rules and applying the best match.
         ALWAYS adds POCO scores and tags (POCO+ or POCO-) regardless of match status.
         
+        Args:
+            doc: Document dictionary from Paperless
+            rules: List of rule objects
+            api_client: PaperlessAPIClient instance
+            dry_run: If True, simulate processing without making changes
+            run_id: Optional processing run ID for tracking
+        
         Returns:
-            Dict with classified status and rules_applied count
+            Dict with classified status, rules_applied count, and detail dict
         """
         doc_id = doc['id']
         doc_title = doc.get('title', 'Unknown')
@@ -383,7 +435,7 @@ class BackgroundProcessor:
         content = api_client.get_document_content(doc_id)
         if not content:
             logger.warning(f"No content for document {doc_id}, skipping")
-            return {'classified': False, 'rules_applied': 0}
+            return {'classified': False, 'rules_applied': 0, 'detail': None}
         
         # Log content length for debugging
         logger.info(f"Document {doc_id} content: {len(content)} chars, {len(content.splitlines())} lines")
@@ -428,17 +480,24 @@ class BackgroundProcessor:
         else:
             logger.info(f"Document {doc_id} no match (best score: {poco_score:.1f}%)")
         
+        # Build metadata_applied list for tracking
+        metadata_applied = []
+        
         # Apply metadata updates (only if not dry run)
         rules_applied = 0
         if not dry_run:
             if classified and best_result:
                 updates = self._build_metadata_updates(best_result, api_client)
                 if updates:
+                    # Track what metadata will be applied
+                    metadata_applied = self._build_metadata_applied_list(updates, best_result)
+                    
                     success = api_client.update_document(doc_id, updates)
                     if success:
                         rules_applied = 1
                     else:
                         logger.error(f"Failed to update metadata for document {doc_id}")
+                        metadata_applied = []  # Clear if update failed
             
             # ALWAYS add POCO scores to custom fields (even if 0)
             self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
@@ -449,9 +508,12 @@ class BackgroundProcessor:
             # ALWAYS add scoring table to document notes
             self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
         else:
-            # In dry run mode, just count what would be applied
+            # In dry run mode, build what would be applied
             if classified and best_result:
                 rules_applied = 1
+                updates = self._build_metadata_updates(best_result, api_client)
+                if updates:
+                    metadata_applied = self._build_metadata_applied_list(updates, best_result)
             logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing
@@ -468,7 +530,24 @@ class BackgroundProcessor:
             source='background_processor'
         )
         
-        return {'classified': classified, 'rules_applied': rules_applied}
+        # Build detail dict for database tracking
+        detail = {
+            'document_id': doc_id,
+            'document_title': doc_title,
+            'rule_id': best_rule.get('rule_id') if best_rule else None,
+            'rule_name': best_rule.get('rule_name') if best_rule else None,
+            'poco_score': round(poco_score, 1),
+            'ocr_score': round(poco_ocr, 1),
+            'classification': 'POCO+' if classified else 'POCO-',
+            'metadata_applied': metadata_applied,
+            'status': 'simulated' if dry_run else 'applied'
+        }
+        
+        return {
+            'classified': classified,
+            'rules_applied': rules_applied,
+            'detail': detail
+        }
     
     def _build_metadata_updates(self, result: Dict, api_client: PaperlessAPIClient) -> Dict[str, Any]:
         """Build metadata updates dictionary from rule evaluation result"""
@@ -517,6 +596,48 @@ class BackgroundProcessor:
             updates['custom_fields'] = custom_fields
         
         return updates
+    
+    def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict) -> List[str]:
+        """
+        Build human-readable list of metadata fields that were applied
+        
+        Args:
+            updates: Metadata updates dictionary from _build_metadata_updates
+            result: Test engine result with extracted_metadata
+        
+        Returns:
+            List of strings like ["title", "correspondent", "tags:3", "Invoice Number"]
+        """
+        applied = []
+        extracted = result.get('extracted_metadata', {})
+        
+        # Standard fields
+        if 'title' in updates:
+            applied.append('title')
+        
+        if 'created_date' in updates:
+            applied.append('date created')
+        
+        if 'correspondent' in updates:
+            applied.append('correspondent')
+        
+        if 'document_type' in updates:
+            applied.append('document type')
+        
+        # Tags with count
+        if 'tags' in updates:
+            tag_count = len(updates['tags'])
+            applied.append(f'tags:{tag_count}')
+        
+        # Custom fields by name
+        if 'custom_fields' in updates:
+            for cf in updates['custom_fields']:
+                # Find the field name from extracted metadata
+                for field_name, value in extracted.items():
+                    if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
+                        applied.append(field_name)
+        
+        return applied
     
     def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
         """Add POCO Score and POCO OCR to document custom fields"""
