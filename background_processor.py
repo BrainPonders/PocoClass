@@ -111,12 +111,14 @@ class BackgroundProcessor:
                 self.db.set_needs_rerun(False)
                 self.trigger_processing(delay_seconds=5)
     
-    def process_batch(self, user_session: Dict = None) -> Dict[str, Any]:
+    def process_batch(self, user_session: Dict = None, filters: Dict = None, dry_run: bool = False) -> Dict[str, Any]:
         """
         Process a batch of documents with sync safety guarantees
         
         Args:
             user_session: Optional user session for manual processing (bypasses auto-pause check)
+            filters: Optional filters for manual processing (title, tags, correspondents, doc_types, dates)
+            dry_run: If True, only simulate processing without making changes
         
         Returns:
             Dictionary with processing results
@@ -160,9 +162,16 @@ class BackgroundProcessor:
             sync_result = sync_service.sync_all(paperless_token, paperless_url)
             logger.info(f"Sync completed: {sync_result}")
             
-            # Discover documents to process (tag-based)
-            documents = self._discover_documents(api_client)
-            logger.info(f"Discovered {len(documents)} documents to process")
+            # Discover documents to process
+            # If filters provided (manual mode), use them; otherwise auto-discover (trigger mode)
+            if filters:
+                logger.info(f"Manual processing with filters: {filters}")
+                documents = self._fetch_filtered_documents(api_client, filters)
+                logger.info(f"Found {len(documents)} documents matching filters")
+            else:
+                logger.info("Auto-discovery mode (trigger)")
+                documents = self._discover_documents(api_client)
+                logger.info(f"Discovered {len(documents)} documents to process")
             
             if not documents:
                 return {
@@ -186,7 +195,7 @@ class BackgroundProcessor:
             total_rules_applied = 0
             
             for doc in documents:
-                result = self._process_document(doc, rules, api_client)
+                result = self._process_document(doc, rules, api_client, dry_run=dry_run)
                 processed += 1
                 if result['classified']:
                     classified += 1
@@ -244,7 +253,49 @@ class BackgroundProcessor:
         logger.info(f"Found {len(filtered_docs)} documents with '{tag_new}' tag (not yet processed by PocoClass)")
         return filtered_docs
     
-    def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient) -> Dict[str, Any]:
+    def _fetch_filtered_documents(self, api_client: PaperlessAPIClient, filters: Dict) -> List[Dict]:
+        """
+        Fetch documents from Paperless using provided filters (for manual processing)
+        
+        Args:
+            api_client: PaperlessAPIClient instance
+            filters: Dictionary with title, tags, correspondents, doc_types, dates filters
+        
+        Returns:
+            List of documents matching the filters
+        """
+        logger.info(f"Fetching documents with filters: {filters}")
+        
+        # Extract filter parameters
+        title = filters.get('title')
+        tags = filters.get('tags')  # List of tag names to include
+        tags_mode = filters.get('tags_mode', 'any')
+        exclude_tags = filters.get('exclude_tags')  # List of tag names to exclude
+        correspondents = filters.get('correspondents')  # List of correspondent IDs
+        correspondents_mode = filters.get('correspondents_mode', 'include')
+        doc_types = filters.get('doc_types')  # List of doc type IDs
+        doc_types_mode = filters.get('doc_types_mode', 'include')
+        date_from = filters.get('date_from')
+        date_to = filters.get('date_to')
+        
+        # Fetch documents from Paperless using API client
+        documents = api_client.get_documents(
+            title=title,
+            tags=tags,
+            tags_mode=tags_mode,
+            exclude_tags=exclude_tags,
+            correspondents=correspondents,
+            correspondents_mode=correspondents_mode,
+            doc_types=doc_types,
+            doc_types_mode=doc_types_mode,
+            date_from=date_from,
+            date_to=date_to,
+            ignore_tags=False  # Respect user's tag filters in manual mode
+        )
+        
+        return documents
+    
+    def _process_document(self, doc: Dict, rules: List[Dict], api_client: PaperlessAPIClient, dry_run: bool = False) -> Dict[str, Any]:
         """
         Process a single document by testing all rules and applying the best match.
         ALWAYS adds POCO scores and tags (POCO+ or POCO-) regardless of match status.
@@ -264,7 +315,7 @@ class BackgroundProcessor:
             return {'classified': False, 'rules_applied': 0}
         
         # Create test engine
-        test_engine = TestEngine(api_client, self.db)
+        test_engine = TestEngine()
         
         # Test all rules and find best match
         best_result = None
@@ -300,25 +351,31 @@ class BackgroundProcessor:
         else:
             logger.info(f"Document {doc_id} no match (best score: {poco_score:.1f}%)")
         
-        # Apply metadata updates if classified
+        # Apply metadata updates (only if not dry run)
         rules_applied = 0
-        if classified and best_result:
-            updates = self._build_metadata_updates(best_result, api_client)
-            if updates:
-                success = api_client.update_document(doc_id, updates)
-                if success:
-                    rules_applied = 1
-                else:
-                    logger.error(f"Failed to update metadata for document {doc_id}")
-        
-        # ALWAYS add POCO scores to custom fields (even if 0)
-        self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
-        
-        # ALWAYS add POCO+ or POCO- tag
-        self._add_poco_tag(doc_id, doc, classified, api_client)
-        
-        # ALWAYS add scoring table to document notes
-        self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
+        if not dry_run:
+            if classified and best_result:
+                updates = self._build_metadata_updates(best_result, api_client)
+                if updates:
+                    success = api_client.update_document(doc_id, updates)
+                    if success:
+                        rules_applied = 1
+                    else:
+                        logger.error(f"Failed to update metadata for document {doc_id}")
+            
+            # ALWAYS add POCO scores to custom fields (even if 0)
+            self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
+            
+            # ALWAYS add POCO+ or POCO- tag
+            self._add_poco_tag(doc_id, doc, classified, api_client)
+            
+            # ALWAYS add scoring table to document notes
+            self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
+        else:
+            # In dry run mode, just count what would be applied
+            if classified and best_result:
+                rules_applied = 1
+            logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing
         self.db.add_log(
