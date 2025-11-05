@@ -215,7 +215,7 @@ class PatternMatcher:
                 lines = text.splitlines()
                 total_lines = len(lines)
                 
-                self.logger.debug(f"Range filter: '{range_str}' on {total_lines} lines")
+                self.logger.info(f"Range filter: '{range_str}' on {total_lines} lines")
                 
                 # Clamp line numbers to valid range
                 start_line = max(0, min(start_line, total_lines))
@@ -225,12 +225,12 @@ class PatternMatcher:
                 if start_line < end_line:
                     selected_lines = lines[start_line:end_line]
                     text = '\n'.join(selected_lines)
-                    self.logger.debug(f"Applied range filter: lines {start_line}-{end_line-1}, extracted {len(selected_lines)} lines, {len(text)} chars")
+                    self.logger.info(f"Applied range filter: lines {start_line}-{end_line-1}, extracted {len(selected_lines)} lines, {len(text)} chars")
                 else:
-                    self.logger.debug(f"Range invalid after clamping ({start_line} to {end_line}), using full text")
+                    self.logger.info(f"Range invalid after clamping ({start_line} to {end_line}), using full text")
                 # If range is invalid, use full text
             except (ValueError, IndexError) as e:
-                self.logger.warning(f"Range parsing failed for '{range_str}': {e}, using full text")
+                self.logger.info(f"Range parsing failed for '{range_str}': {e}, using full text")
                 pass  # Use full text if range parsing fails
         
         # Normalize regex pattern
