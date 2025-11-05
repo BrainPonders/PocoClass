@@ -400,8 +400,8 @@ class MetadataProcessor:
         Returns:
             Dict of extracted metadata from filename
         """
-        filename_metadata = rule.get('filename_metadata', {})
-        filename_patterns = rule.get('filename_patterns', [])
+        filename_metadata = rule.get('filename_metadata', {}) or {}
+        filename_patterns = rule.get('filename_patterns', []) or []
         
         extracted = {}
         has_pattern_match = False

@@ -25,13 +25,15 @@ class PatternMatcher:
         rule_name = rule.get('rule_name', 'Unknown')
         
         # Get logic groups from core_identifiers (v2 wizard format)
-        logic_groups = rule.get('core_identifiers', {}).get('logic_groups', [])
+        core_identifiers = rule.get('core_identifiers', {}) or {}
+        logic_groups = core_identifiers.get('logic_groups', []) or []
         
         # Count OCR pattern matches
         ocr_result = self.count_ocr_matches(logic_groups, content, filename)
         
         # Count filename pattern matches
-        filename_result = self.count_filename_matches(rule.get('filename_patterns', []), filename)
+        filename_patterns = rule.get('filename_patterns', []) or []
+        filename_result = self.count_filename_matches(filename_patterns, filename)
         
         return {
             'rule_id': rule_id,
