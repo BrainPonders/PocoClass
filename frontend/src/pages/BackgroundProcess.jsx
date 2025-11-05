@@ -257,7 +257,7 @@ export default function BackgroundProcess() {
         .filter(([_, state]) => state === 'exclude')
         .map(([tag, _]) => tag);
       
-      const response = await fetch(`${API_BASE_URL}/api/background/process-manual`, {
+      const response = await fetch(`${API_BASE_URL}/api/background/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
