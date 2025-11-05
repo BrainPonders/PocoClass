@@ -325,7 +325,7 @@ class BackgroundProcessor:
         for rule in rules:
             try:
                 # Evaluate rule
-                result = test_engine.test_rule(rule, doc_id, content, doc.get('original_file_name', ''), doc)
+                result = test_engine.test_rule(rule, content, doc.get('original_file_name', ''), doc)
                 poco_score = result.get('poco_score', 0)
                 
                 # Track best match
