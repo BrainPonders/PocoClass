@@ -497,7 +497,7 @@ class BackgroundProcessor:
                 updates = self._build_metadata_updates(best_result, api_client)
                 if updates:
                     # Track what metadata will be applied
-                    metadata_applied = self._build_metadata_applied_list(updates, best_result)
+                    metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
                     
                     success = api_client.update_document(doc_id, updates)
                     if success:
@@ -520,7 +520,7 @@ class BackgroundProcessor:
                 rules_applied = 1
                 updates = self._build_metadata_updates(best_result, api_client)
                 if updates:
-                    metadata_applied = self._build_metadata_applied_list(updates, best_result)
+                    metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
             logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing
@@ -604,45 +604,60 @@ class BackgroundProcessor:
         
         return updates
     
-    def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict) -> List[str]:
+    def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict, api_client: PaperlessAPIClient) -> List[str]:
         """
-        Build human-readable list of metadata fields that were applied
+        Build human-readable list of metadata with actual values that were applied
         
         Args:
             updates: Metadata updates dictionary from _build_metadata_updates
             result: Test engine result with extracted_metadata
+            api_client: API client to resolve custom field IDs to names
         
         Returns:
-            List of strings like ["title", "correspondent", "tags:3", "Invoice Number"]
+            List of strings like ["Title: Bank Statement", "Correspondent: ExampleBank", "Tags: Bank, NEW"]
         """
         applied = []
         extracted = result.get('extracted_metadata', {})
         
-        # Standard fields
+        # Standard fields with actual values
         if 'title' in updates:
-            applied.append('title')
+            applied.append(f"Title: {extracted.get('title', updates['title'])}")
         
         if 'created_date' in updates:
-            applied.append('date created')
+            applied.append(f"Date: {extracted.get('created_date', updates['created_date'])}")
         
         if 'correspondent' in updates:
-            applied.append('correspondent')
+            applied.append(f"Correspondent: {extracted.get('correspondent', 'Unknown')}")
         
         if 'document_type' in updates:
-            applied.append('document type')
+            applied.append(f"Doc Type: {extracted.get('document_type', 'Unknown')}")
         
-        # Tags with count
-        if 'tags' in updates:
+        # Tags with names
+        if 'tags' in updates and 'tags' in extracted:
+            tags_str = ', '.join(extracted['tags'])
+            applied.append(f"Tags: {tags_str}")
+        elif 'tags' in updates:
             tag_count = len(updates['tags'])
-            applied.append(f'tags:{tag_count}')
+            applied.append(f"Tags: {tag_count} added")
         
-        # Custom fields by name
+        # Custom fields - only include fields that were actually updated
         if 'custom_fields' in updates:
+            # Build set of updated field names by resolving IDs
+            updated_field_names = set()
             for cf in updates['custom_fields']:
-                # Find the field name from extracted metadata
-                for field_name, value in extracted.items():
+                field_id = cf['field']
+                # Resolve field ID to name using api_client's cached data
+                for field_name in extracted.keys():
                     if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
-                        applied.append(field_name)
+                        # Check if this field name matches this field ID
+                        if api_client.get_custom_field_id(field_name) == field_id:
+                            updated_field_names.add(field_name)
+                            break
+            
+            # Now add only the updated custom fields with their values
+            for field_name in updated_field_names:
+                if field_name in extracted:
+                    applied.append(f"{field_name}: {extracted[field_name]}")
         
         return applied
     
