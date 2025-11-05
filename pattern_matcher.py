@@ -240,6 +240,14 @@ class PatternMatcher:
         text_preview = text[:200].replace('\n', ' ') if text else '(empty)'
         self.logger.info(f"Searching pattern '{pattern_str}' in text preview: '{text_preview}...'")
         
+        # DEBUG: Log all lines if range is small (0-25)
+        if range_str and range_str == '0-25':
+            lines = text.splitlines()
+            self.logger.info(f"DEBUG: Searching '{pattern_str}' in {len(lines)} lines:")
+            for i, line in enumerate(lines):
+                if pattern_str.lower() in line.lower():
+                    self.logger.info(f"  Line {i}: FOUND '{pattern_str}' in: {line[:80]}")
+        
         # Check for match
         try:
             match = re.search(normalized_pattern, text, flags)
