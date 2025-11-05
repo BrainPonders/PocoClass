@@ -148,7 +148,9 @@ class BackgroundProcessor:
                     raise ValueError("No admin session available for background processing")
                 paperless_token = admin_session['paperless_token']
             
-            config = Config(paperless_url=paperless_url, paperless_token=paperless_token)
+            config = Config()
+            config.paperless_url = paperless_url
+            config.paperless_token = paperless_token
             api_client = PaperlessAPIClient(config, self.db)
             
             # Sync data from Paperless ONCE before processing
