@@ -310,6 +310,35 @@ class Database:
             CREATE INDEX IF NOT EXISTS idx_processing_history_status ON processing_history(status)
         """)
         
+        # Processing history details table for per-document tracking
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS processing_history_details (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                run_id INTEGER NOT NULL,
+                document_id INTEGER NOT NULL,
+                document_title TEXT,
+                rule_id TEXT,
+                rule_name TEXT,
+                poco_score REAL,
+                ocr_score REAL,
+                classification TEXT,
+                metadata_applied TEXT,
+                status TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (run_id) REFERENCES processing_history(id)
+            )
+        """)
+        
+        # Create composite index for faster queries
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_processing_details_run_doc 
+            ON processing_history_details(run_id, document_id)
+        """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_processing_details_run 
+            ON processing_history_details(run_id)
+        """)
+        
         # Migration: Add extra_data column to paperless_custom_fields if it doesn't exist
         cursor.execute("PRAGMA table_info(paperless_custom_fields)")
         columns = [col[1] for col in cursor.fetchall()]
@@ -1265,7 +1294,7 @@ class Database:
         conn.commit()
         conn.close()
     
-    def get_processing_history(self, limit: int = 100, status: str = None) -> List[Dict]:
+    def get_processing_history(self, limit: int = 100, status: str = None, offset: int = 0) -> List[Dict]:
         """Get processing history with optional filtering"""
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -1280,10 +1309,103 @@ class Database:
         query += " ORDER BY started_at DESC"
         
         if limit:
-            query += " LIMIT ?"
-            params.append(limit)
+            query += " LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
         
         cursor.execute(query, params)
         rows = cursor.fetchall()
         conn.close()
         return [dict(row) for row in rows]
+    
+    def add_processing_detail(self, run_id: int, detail_dict: Dict) -> int:
+        """
+        Add a processing detail record for a single document
+        
+        Args:
+            run_id: The processing run ID
+            detail_dict: Dictionary with document processing details
+                - document_id (int, required)
+                - document_title (str, optional)
+                - rule_id (str, optional)
+                - rule_name (str, optional)
+                - poco_score (float, optional)
+                - ocr_score (float, optional)
+                - classification (str, optional): "POCO+" or "POCO-"
+                - metadata_applied (list, optional): List of fields updated
+                - status (str, required): "applied" or "simulated"
+        
+        Returns:
+            The detail record ID
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        # Convert metadata_applied list to JSON string
+        metadata_applied = detail_dict.get('metadata_applied', [])
+        if isinstance(metadata_applied, list):
+            metadata_applied = json.dumps(metadata_applied)
+        
+        cursor.execute("""
+            INSERT INTO processing_history_details 
+            (run_id, document_id, document_title, rule_id, rule_name, 
+             poco_score, ocr_score, classification, metadata_applied, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            run_id,
+            detail_dict['document_id'],
+            detail_dict.get('document_title'),
+            detail_dict.get('rule_id'),
+            detail_dict.get('rule_name'),
+            detail_dict.get('poco_score'),
+            detail_dict.get('ocr_score'),
+            detail_dict.get('classification'),
+            metadata_applied,
+            detail_dict['status'],
+            datetime.now().isoformat()
+        ))
+        
+        conn.commit()
+        detail_id = cursor.lastrowid
+        conn.close()
+        return detail_id
+    
+    def get_processing_details(self, run_id: int, limit: int = None, offset: int = 0) -> List[Dict]:
+        """
+        Get processing details for a specific run
+        
+        Args:
+            run_id: The processing run ID
+            limit: Maximum number of records to return
+            offset: Number of records to skip
+        
+        Returns:
+            List of detail records with metadata_applied as parsed JSON list
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        query = "SELECT * FROM processing_history_details WHERE run_id = ? ORDER BY created_at"
+        params = [run_id]
+        
+        if limit:
+            query += " LIMIT ? OFFSET ?"
+            params.extend([limit, offset])
+        
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        conn.close()
+        
+        # Parse JSON metadata_applied field
+        details = []
+        for row in rows:
+            detail = dict(row)
+            if detail.get('metadata_applied'):
+                try:
+                    detail['metadata_applied'] = json.loads(detail['metadata_applied'])
+                except json.JSONDecodeError:
+                    detail['metadata_applied'] = []
+            else:
+                detail['metadata_applied'] = []
+            details.append(detail)
+        
+        return details
