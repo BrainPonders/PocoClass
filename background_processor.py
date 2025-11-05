@@ -175,7 +175,7 @@ class BackgroundProcessor:
                 }
             
             # Load all rules
-            rule_loader = RuleLoader()
+            rule_loader = RuleLoader('rules')
             rules = rule_loader.load_all_rules()
             logger.info(f"Loaded {len(rules)} rules")
             
