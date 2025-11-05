@@ -311,7 +311,7 @@ class BackgroundProcessor:
         
         Args:
             api_client: PaperlessAPIClient instance
-            filters: Dictionary with title, tags, correspondents, doc_types, dates filters
+            filters: Dictionary with title, tags, correspondents, doc_types, dates filters, and optional document_ids
         
         Returns:
             List of documents matching the filters
@@ -329,6 +329,7 @@ class BackgroundProcessor:
         doc_types_mode = filters.get('doc_types_mode', 'include')
         date_from = filters.get('date_from')
         date_to = filters.get('date_to')
+        document_ids = filters.get('document_ids')  # List of specific document IDs to process
         
         # Fetch documents from Paperless using API client
         documents = api_client.get_documents(
@@ -344,6 +345,12 @@ class BackgroundProcessor:
             date_to=date_to,
             ignore_tags=False  # Respect user's tag filters in manual mode
         )
+        
+        # If specific document IDs are provided, filter to only those documents
+        if document_ids:
+            logger.info(f"Filtering documents to only include IDs: {document_ids}")
+            documents = [doc for doc in documents if doc['id'] in document_ids]
+            logger.info(f"After document_ids filter: {len(documents)} documents")
         
         return documents
     
