@@ -236,6 +236,10 @@ class PatternMatcher:
         # Normalize regex pattern
         normalized_pattern, flags = self.normalize_regex_pattern(pattern_str)
         
+        # Log first 200 chars of text being searched
+        text_preview = text[:200].replace('\n', ' ') if text else '(empty)'
+        self.logger.info(f"Searching pattern '{pattern_str}' in text preview: '{text_preview}...'")
+        
         # Check for match
         try:
             match = re.search(normalized_pattern, text, flags)
