@@ -141,8 +141,13 @@ class PatternMatcher:
             
             # Record match result with condition details
             group_name = group.get('title', f'Logic Group {i + 1}')
+            
+            # DEBUG: Log group match result
+            self.logger.info(f"DEBUG: Group '{group_name}' matched={group_matched}, type={group_type}, conditions={len(condition_results)}")
+            
             if group_matched:
                 matched_count += 1
+                self.logger.info(f"DEBUG: Incrementing matched_count to {matched_count}")
                 all_matches.append({
                     'name': group_name,
                     'matched': True,
@@ -156,6 +161,9 @@ class PatternMatcher:
                     'score': 0,
                     'conditions': condition_results
                 })
+        
+        # DEBUG: Log final counts
+        self.logger.info(f"DEBUG: count_ocr_matches() returning total={total_count}, matched={matched_count}")
         
         return {
             'total_count': total_count,
