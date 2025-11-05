@@ -62,31 +62,68 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
 
   const generateRegexPattern = () => {
     if (patternType === 'string') {
-      let pattern = stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      
-      if (spaceFlexibility === 'flexible') {
-        // Make existing spaces optional (zero or more)
+      if (spaceFlexibility === 'exact') {
+        // Escape special characters
+        return stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      } else if (spaceFlexibility === 'flexible') {
+        // Escape special characters first, then make spaces optional
+        let pattern = stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         pattern = pattern.replace(/ /g, '\\s*');
+        return pattern;
       } else if (spaceFlexibility === 'very-flexible') {
-        // Allow spaces anywhere between any characters by removing spaces then re-adding flexible space regex
-        pattern = pattern.replace(/ /g, '').split('').join('\\s*');
+        // For very-flexible, insert \s* between each character
+        // First escape special regex characters, then split ONLY on non-escaped characters
+        const escaped = stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Split into logical units (handles multi-char escapes like \. as single units)
+        const parts = [];
+        let i = 0;
+        while (i < escaped.length) {
+          if (escaped[i] === '\\' && i + 1 < escaped.length) {
+            // Escaped character - take both the backslash and the next char
+            parts.push(escaped.substring(i, i + 2));
+            i += 2;
+          } else if (escaped[i] === ' ') {
+            // Skip spaces in very-flexible mode
+            i++;
+          } else {
+            // Regular character
+            parts.push(escaped[i]);
+            i++;
+          }
+        }
+        return parts.join('\\s*');
       }
       
-      return pattern;
+      return stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     } else if (patternType === 'date') {
       return convertDateFormatToRegex(datePattern);
     } else if (patternType === 'complex') {
       const parts = complexElements.map(el => {
         if (el.type === 'string') {
-          let pattern = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          
-          if (el.spaceFlexibility === 'flexible') {
-            pattern = pattern.replace(/ /g, '\\s*');
+          if (el.spaceFlexibility === 'exact') {
+            return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          } else if (el.spaceFlexibility === 'flexible') {
+            let pattern = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return pattern.replace(/ /g, '\\s*');
           } else if (el.spaceFlexibility === 'very-flexible') {
-            pattern = pattern.replace(/ /g, '').split('').join('\\s*');
+            const escaped = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const parts = [];
+            let i = 0;
+            while (i < escaped.length) {
+              if (escaped[i] === '\\' && i + 1 < escaped.length) {
+                parts.push(escaped.substring(i, i + 2));
+                i += 2;
+              } else if (escaped[i] === ' ') {
+                i++;
+              } else {
+                parts.push(escaped[i]);
+                i++;
+              }
+            }
+            return parts.join('\\s*');
           }
           
-          return pattern;
+          return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         } else if (el.type === 'date') {
           return convertDateFormatToRegex(el.value);
         } else if (el.type === 'wildcard') {
@@ -707,8 +744,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
             <div>
               <label className="form-label">Generated Regex Expression</label>
               <div className="regex-display">
-                {currentRegex || '(empty pattern)'}
-                {regexFlags && <span className="ml-2 text-purple-600">/{regexFlags}</span>}
+                {currentRegex ? `/${currentRegex}/${regexFlags}` : '(empty pattern)'}
               </div>
             </div>
 
