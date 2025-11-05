@@ -242,14 +242,20 @@ class BackgroundProcessor:
         
         # Filter for documents with NEW tag but without POCO+ or POCO- tags
         filtered_docs = []
+        logger.info(f"Filtering {len(all_docs)} total documents for NEW tag (ID={new_tag_id}) without POCO tags")
         for doc in all_docs:
             doc_tags = doc.get('tags', [])
             has_new = new_tag_id in doc_tags
             has_poco_plus = poco_plus_tag_id and poco_plus_tag_id in doc_tags
             has_poco_minus = poco_minus_tag_id and poco_minus_tag_id in doc_tags
             
+            doc_id = doc.get('id')
+            doc_title = doc.get('title', 'Unknown')
+            logger.info(f"Doc {doc_id} ({doc_title}): tags={doc_tags}, has_new={has_new}, has_poco+={has_poco_plus}, has_poco-={has_poco_minus}")
+            
             if has_new and not has_poco_plus and not has_poco_minus:
                 filtered_docs.append(doc)
+                logger.info(f"  ✓ Doc {doc_id} included for processing")
         
         logger.info(f"Found {len(filtered_docs)} documents with '{tag_new}' tag (not yet processed by PocoClass)")
         return filtered_docs
