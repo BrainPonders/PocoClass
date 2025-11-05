@@ -258,6 +258,14 @@ class PatternMatcher:
         # Check for match
         try:
             match = re.search(normalized_pattern, text, flags)
+            
+            # DEBUG: Log regex result
+            if range_str and range_str == '0-25':
+                if match:
+                    self.logger.info(f"DEBUG: re.search() FOUND match: '{match.group(0)[:50]}'")
+                else:
+                    self.logger.info(f"DEBUG: re.search() returned NO MATCH")
+            
             if match:
                 matched_text = match.group(0)
                 # Truncate if too long
