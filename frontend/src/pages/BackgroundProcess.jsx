@@ -870,30 +870,41 @@ export default function BackgroundProcess() {
                                     <>
                                       <span className="text-gray-400">•</span>
                                       {detail.metadata_applied.map((item, idx) => {
-                                        // Render metadata with color-coded values
-                                        const colonIndex = item.indexOf(':');
-                                        if (colonIndex === -1) {
-                                          return <span key={idx} className="text-gray-600">{item}</span>;
+                                        // Handle both new object format and old string format
+                                        let label, value, needsUpdate;
+                                        
+                                        if (typeof item === 'object' && item.label && item.value !== undefined) {
+                                          // New structured format
+                                          label = item.label;
+                                          value = item.value;
+                                          needsUpdate = item.needsUpdate;
+                                        } else {
+                                          // Old string format (backward compatibility)
+                                          const colonIndex = item.indexOf(':');
+                                          if (colonIndex === -1) {
+                                            return <span key={idx} className="text-gray-600">{item}</span>;
+                                          }
+                                          label = item.substring(0, colonIndex);
+                                          value = item.substring(colonIndex + 1).trim();
+                                          needsUpdate = true; // Assume old format always needs update
                                         }
                                         
-                                        const label = item.substring(0, colonIndex + 1);
-                                        const value = item.substring(colonIndex + 1).trim();
-                                        
+                                        // Get color based on label (only used if needsUpdate is true)
                                         const getValueColor = (labelText) => {
-                                          if (labelText.startsWith('Title:')) return 'text-purple-700';
-                                          if (labelText.startsWith('Correspondent:')) return 'text-green-700';
-                                          if (labelText.startsWith('Doc Type:')) return 'text-orange-700';
-                                          if (labelText.startsWith('Tags:')) return 'text-blue-700';
-                                          if (labelText.startsWith('Date:')) return 'text-indigo-700';
+                                          if (labelText.includes('Title')) return 'text-purple-700';
+                                          if (labelText.includes('Correspondent')) return 'text-green-700';
+                                          if (labelText.includes('Doc Type')) return 'text-orange-700';
+                                          if (labelText.includes('Tags')) return 'text-blue-700';
+                                          if (labelText.includes('Date')) return 'text-indigo-700';
                                           return 'text-teal-700';
                                         };
                                         
                                         return (
                                           <span key={idx}>
                                             {idx > 0 && <span className="text-gray-400 mx-1">|</span>}
-                                            <span className="text-gray-500">{label}</span>
+                                            <span className="text-gray-500">{label}:</span>
                                             <span className="text-gray-500"> </span>
-                                            <span className={`${getValueColor(label)} font-medium`}>
+                                            <span className={needsUpdate ? `${getValueColor(label)} font-medium` : 'text-gray-500'}>
                                               {value}
                                             </span>
                                           </span>
