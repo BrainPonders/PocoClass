@@ -874,13 +874,78 @@ export default function BackgroundProcess() {
                                     <>
                                       <span className="text-gray-400">•</span>
                                       {detail.metadata_applied.map((item, idx) => {
-                                        // Parse metadata item: label in grey, value in color
+                                        // Helper function to render colored values in old format (dict strings)
+                                        const renderOldFormat = (text) => {
+                                          const parts = [];
+                                          let currentPos = 0;
+                                          
+                                          // Regex to match quoted strings: 'value' or "value"
+                                          const valueRegex = /(['"])([^'"]+)\1/g;
+                                          let match;
+                                          
+                                          while ((match = valueRegex.exec(text)) !== null) {
+                                            // Add grey text before the value
+                                            if (match.index > currentPos) {
+                                              parts.push(
+                                                <span key={`grey-${currentPos}`} className="text-gray-500">
+                                                  {text.substring(currentPos, match.index)}
+                                                </span>
+                                              );
+                                            }
+                                            
+                                            // Add colored value (without quotes)
+                                            const value = match[2];
+                                            let colorClass = 'text-teal-700'; // Default for custom fields
+                                            
+                                            // Determine color based on context
+                                            const beforeValue = text.substring(Math.max(0, match.index - 20), match.index);
+                                            if (beforeValue.includes('correspondent')) colorClass = 'text-green-700';
+                                            else if (beforeValue.includes('document_type')) colorClass = 'text-orange-700';
+                                            else if (beforeValue.includes('tags')) colorClass = 'text-blue-700';
+                                            else if (beforeValue.includes('title')) colorClass = 'text-purple-700';
+                                            
+                                            parts.push(
+                                              <span key={`value-${match.index}`} className={`${colorClass} font-medium`}>
+                                                {value}
+                                              </span>
+                                            );
+                                            
+                                            currentPos = match.index + match[0].length;
+                                          }
+                                          
+                                          // Add remaining grey text
+                                          if (currentPos < text.length) {
+                                            parts.push(
+                                              <span key={`grey-end`} className="text-gray-500">
+                                                {text.substring(currentPos)}
+                                              </span>
+                                            );
+                                          }
+                                          
+                                          return parts.length > 0 ? parts : <span className="text-gray-500">{text}</span>;
+                                        };
+                                        
+                                        // Detect old format (contains dict-like structure or specific keywords)
+                                        const isOldFormat = item.includes('{') || item.includes('[') || 
+                                                          item.startsWith('static:') || item.startsWith('dynamic:') || 
+                                                          item.startsWith('filename:');
+                                        
+                                        if (isOldFormat) {
+                                          return (
+                                            <span key={idx}>
+                                              {idx > 0 && <span className="text-gray-400 mx-1">|</span>}
+                                              {renderOldFormat(item)}
+                                            </span>
+                                          );
+                                        }
+                                        
+                                        // New format: label in grey, value in color
                                         const colonIndex = item.indexOf(':');
                                         if (colonIndex === -1) {
                                           return <span key={idx} className="text-gray-600">{item}</span>;
                                         }
                                         
-                                        const label = item.substring(0, colonIndex + 1); // Include colon
+                                        const label = item.substring(0, colonIndex + 1);
                                         const value = item.substring(colonIndex + 1).trim();
                                         
                                         const getValueColor = (labelText) => {
@@ -889,7 +954,7 @@ export default function BackgroundProcess() {
                                           if (labelText.startsWith('Doc Type:')) return 'text-orange-700';
                                           if (labelText.startsWith('Tags:')) return 'text-blue-700';
                                           if (labelText.startsWith('Date:')) return 'text-indigo-700';
-                                          return 'text-teal-700'; // Custom fields
+                                          return 'text-teal-700';
                                         };
                                         
                                         return (
