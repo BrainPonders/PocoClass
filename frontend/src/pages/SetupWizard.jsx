@@ -374,13 +374,13 @@ export default function SetupWizard() {
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">•</span>
                     <div>
-                      <strong>POCO+</strong>
+                      <strong>POCO+</strong> - Automatically applied to documents that successfully match a rule and pass classification.
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">•</span>
                     <div>
-                      <strong>POCO-</strong>
+                      <strong>POCO-</strong> - Automatically applied to processed documents that don't match any rule.
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
