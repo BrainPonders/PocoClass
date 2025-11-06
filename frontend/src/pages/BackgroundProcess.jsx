@@ -25,6 +25,7 @@ export default function BackgroundProcess() {
   const [matchingDocuments, setMatchingDocuments] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
   const [currentDryRun, setCurrentDryRun] = useState(null);
+  const [backgroundSettings, setBackgroundSettings] = useState(null);
   
   const [allTags, setAllTags] = useState([]);
   const [allCorrespondents, setAllCorrespondents] = useState([]);
@@ -72,6 +73,7 @@ export default function BackgroundProcess() {
         loadStatus();
         loadHistory();
         loadCacheData();
+        loadBackgroundSettings();
       }
     }
   }, [currentUser, navigate, toast]);
@@ -168,6 +170,22 @@ export default function BackgroundProcess() {
       }
     } catch (error) {
       console.error('Error loading history:', error);
+    }
+  };
+
+  const loadBackgroundSettings = async () => {
+    try {
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setBackgroundSettings(data);
+      }
+    } catch (error) {
+      console.error('Error loading background settings:', error);
     }
   };
 
@@ -804,7 +822,16 @@ export default function BackgroundProcess() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Processing History</CardTitle>
+          <CardTitle>
+            Processing History
+            {backgroundSettings && (
+              <span className="text-sm font-normal text-gray-500 ml-2">
+                (Retention: {backgroundSettings.history_retention_type === 'days' 
+                  ? `${backgroundSettings.history_retention_days || 365} days`
+                  : `${backgroundSettings.history_retention_count || 100} runs`})
+              </span>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {processingHistory.length === 0 ? (
@@ -814,55 +841,55 @@ export default function BackgroundProcess() {
               <p className="text-gray-500">Background processing runs will appear here</p>
             </div>
           ) : (
-            <Accordion type="multiple" className="space-y-2">
+            <Accordion type="multiple" className="space-y-1">
               {processingHistory.map((entry) => (
                 <AccordionItem key={entry.id} value={`run-${entry.id}`} className="border rounded-lg">
-                  <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-gray-50">
-                    <div className="flex items-center gap-4 flex-1 text-left">
-                      <div className="flex items-center gap-2">
+                  <AccordionTrigger className="px-3 py-1.5 hover:no-underline hover:bg-gray-50">
+                    <div className="flex items-center gap-3 flex-1 text-left">
+                      <div className="flex items-center gap-1.5">
                         {getTriggerTypeBadge(entry.trigger_type)}
                         {entry.status === 'completed' ? (
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <CheckCircle className="w-3.5 h-3.5 text-green-600" />
                         ) : entry.status === 'failed' ? (
-                          <XCircle className="w-4 h-4 text-red-600" />
+                          <XCircle className="w-3.5 h-3.5 text-red-600" />
                         ) : (
-                          <AlertCircle className="w-4 h-4 text-yellow-600" />
+                          <AlertCircle className="w-3.5 h-3.5 text-yellow-600" />
                         )}
                       </div>
-                      <div className="flex-1 grid grid-cols-6 gap-4">
+                      <div className="flex-1 grid grid-cols-6 gap-2 text-xs">
                         <div>
-                          <div className="text-xs text-gray-500">Started</div>
-                          <div className="text-sm font-medium">{formatDateTime(entry.started_at)}</div>
+                          <div className="text-gray-500">Started</div>
+                          <div className="font-medium">{formatDateTime(entry.started_at)}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500">Documents</div>
-                          <div className="text-sm font-medium">{entry.documents_found || 0}</div>
+                          <div className="text-gray-500">Documents</div>
+                          <div className="font-medium">{entry.documents_found || 0}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500">Classified</div>
-                          <div className="text-sm font-medium text-green-600">{entry.documents_classified || 0}</div>
+                          <div className="text-gray-500">Classified</div>
+                          <div className="font-medium text-green-600">{entry.documents_classified || 0}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500">Skipped</div>
-                          <div className="text-sm font-medium text-gray-600">{entry.documents_skipped || 0}</div>
+                          <div className="text-gray-500">Skipped</div>
+                          <div className="font-medium text-gray-600">{entry.documents_skipped || 0}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500">Rules Applied</div>
-                          <div className="text-sm font-medium">{entry.rules_applied || 0}</div>
+                          <div className="text-gray-500">Rules Applied</div>
+                          <div className="font-medium">{entry.rules_applied || 0}</div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500">Status</div>
-                          <div className="text-sm font-medium">{entry.status}</div>
+                          <div className="text-gray-500">Status</div>
+                          <div className="font-medium">{entry.status}</div>
                         </div>
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4">
+                  <AccordionContent className="px-3 pb-2">
                     {entry.details && entry.details.length > 0 ? (
-                      <div className="space-y-2 mt-2">
-                        <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
+                      <div className="space-y-1 mt-1">
+                        <div className="grid grid-cols-1 gap-1 max-h-96 overflow-y-auto">
                           {entry.details.map((detail) => (
-                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded px-3 py-2">
+                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded px-2 py-1">
                               <div className="flex items-center justify-between gap-3">
                                 {/* Left side: Document info in one compact line */}
                                 <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap text-xs">
