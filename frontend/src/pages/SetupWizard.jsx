@@ -199,35 +199,35 @@ export default function SetupWizard() {
                 </p>
               </div>
 
-              <div className="space-y-4 text-center mb-8">
-                <div className="flex flex-col items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <div>
+              <div className="space-y-4 mb-8">
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                      Login with your existing Paperless-ngx credentials - no new passwords to remember
-                    </p>
                   </div>
+                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
+                    Login with your existing Paperless-ngx credentials - no new passwords to remember
+                  </p>
                 </div>
 
-                <div className="flex flex-col items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <div>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                      Each user operates with their own Paperless permissions - no shared admin tokens
-                    </p>
                   </div>
+                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
+                    Each user operates with their own Paperless permissions - no shared admin tokens
+                  </p>
                 </div>
 
-                <div className="flex flex-col items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                  <div>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                      Simple wizard-based interface for creating classification rules
-                    </p>
                   </div>
+                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
+                    Simple wizard-based interface for creating classification rules
+                  </p>
                 </div>
               </div>
 
