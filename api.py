@@ -1166,6 +1166,13 @@ def check_mandatory_data():
         config.paperless_url = paperless_url
         api_client = PaperlessAPIClient(config, db)
         
+        # Force a fresh sync to ensure cache is up-to-date before checking
+        try:
+            sync_service.sync_all(session['paperless_token'], paperless_url)
+            logger.info("Synced data before mandatory data check")
+        except Exception as e:
+            logger.warning(f"Sync failed before validation (non-critical): {e}")
+        
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
         
