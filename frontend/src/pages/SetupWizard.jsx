@@ -193,8 +193,6 @@ export default function SetupWizard() {
                 <h3 className="font-semibold mb-2">What is PocoClass?</h3>
                 <p className="text-sm">
                   PocoClass automatically classifies and enriches your Paperless-ngx documents using intelligent pattern rules.
-                </p>
-                <p className="text-sm mt-2">
                   Ideal for bulk imports when Paperless isn't trained yet, and for daily imports to ensure consistent, reliable classification.
                 </p>
               </div>
