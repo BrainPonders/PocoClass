@@ -63,9 +63,9 @@ export default function SetupWizard() {
     }
   };
 
-  // Load validation data when reaching step 4
+  // Load validation data when reaching step 3
   useEffect(() => {
-    if (step === 4) {
+    if (step === 3) {
       loadValidationData();
     }
   }, [step]);
@@ -335,86 +335,15 @@ export default function SetupWizard() {
             </div>
           )}
 
-          {/* Step 3: Information About Validation */}
+          {/* Step 3: Validate System Requirements (Merged Information + Validation) */}
           {step === 3 && (
-            <div className="text-center">
-              <div className="flex justify-center mb-6">
-                <Database className="w-16 h-16 text-blue-600" />
-              </div>
-
-              <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
-                System Requirements Check
-              </h2>
-              
-              <p className="text-lg mb-8" style={{ color: 'var(--app-text-secondary)' }}>
-                PocoClass needs specific tags and custom fields in Paperless-ngx to work correctly
-              </p>
-
-              <div className="info-box info-box-blue mb-6 text-left">
-                <h3 className="font-semibold mb-3">Required Custom Fields:</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">•</span>
-                    <div>
-                      <strong>POCO Score</strong> (Required) - Stores the overall classification score (0-100%)
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-bold">•</span>
-                    <div>
-                      <strong>POCO OCR</strong> (Optional) - Stores the OCR transparency score. You can choose to include this field or skip it. This setting can be changed later in Settings → Data Validation.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="info-box info-box-green mb-6 text-left">
-                <h3 className="font-semibold mb-3">Required Tags:</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">•</span>
-                    <div>
-                      <strong>POCO+</strong> - Automatically applied to documents that successfully match a rule and pass classification.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">•</span>
-                    <div>
-                      <strong>POCO-</strong> - Automatically applied to processed documents that don't match any rule.
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold">•</span>
-                    <div>
-                      <strong>NEW</strong> - <strong className="text-orange-700">Important:</strong> You must apply this tag to all newly imported documents in Paperless-ngx.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="info-box info-box-yellow mb-8 text-left">
-                <h3 className="font-semibold mb-2">What Happens Next:</h3>
-                <p className="text-sm">
-                  We'll check your Paperless-ngx instance for these items. If any are missing, 
-                  we'll show you exactly what's needed and offer to create them automatically for you.
-                </p>
-              </div>
-
-              <Button onClick={() => setStep(4)} className="btn btn-primary btn-lg w-full">
-                Check System Requirements
-              </Button>
-            </div>
-          )}
-
-          {/* Step 4: Validate/Create Mandatory Data */}
-          {step === 4 && (
             <div>
               <div className="flex justify-center mb-6">
                 <Database className="w-16 h-16 text-blue-600" />
               </div>
 
               <h2 className="text-3xl font-bold text-center mb-2" style={{ color: 'var(--app-text)' }}>
-                Validate System Requirements
+                System Requirements Check
               </h2>
               
               <p className="text-center mb-8" style={{ color: 'var(--app-text-secondary)' }}>
@@ -428,49 +357,20 @@ export default function SetupWizard() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span className="text-sm text-blue-700 font-medium">Checking mandatory data...</span>
+                    <span className="text-sm text-blue-700 font-medium">Validating requirements...</span>
                   </div>
                 </div>
               ) : validationData && !validationData.valid ? (
                 <>
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
                     <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
-                        <h3 className="text-sm font-semibold text-red-900 mb-2">Missing Required Data</h3>
-                        <p className="text-sm text-red-800 mb-3">
-                          PocoClass requires specific custom fields and tags to function. Click the button below to create them automatically.
+                        <h3 className="text-sm font-semibold text-orange-900 mb-1">Missing Required Items</h3>
+                        <p className="text-sm text-orange-800">
+                          Some custom fields or tags are missing. Review the items below and click "Create Missing Items" to set them up in Paperless-ngx.
                         </p>
-                        {validationData.missing_fields.length > 0 && (
-                          <div className="mb-3">
-                            <p className="text-xs font-semibold text-red-900 mb-1">Missing Custom Fields:</p>
-                            <ul className="list-disc list-inside text-sm text-red-800 ml-2">
-                              {validationData.missing_fields.map(field => (
-                                <li key={field}>{field}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {validationData.missing_tags.length > 0 && (
-                          <div>
-                            <p className="text-xs font-semibold text-red-900 mb-1">Missing Tags:</p>
-                            <ul className="list-disc list-inside text-sm text-red-800 ml-2">
-                              {validationData.missing_tags.map(tag => (
-                                <li key={tag}>{tag}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                    <div className="mt-4">
-                      <Button
-                        onClick={handleFixMandatoryData}
-                        disabled={fixingMandatoryData}
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                      >
-                        {fixingMandatoryData ? 'Creating...' : 'Create Missing Data'}
-                      </Button>
                     </div>
                   </div>
                 </>
@@ -481,7 +381,7 @@ export default function SetupWizard() {
                     <div>
                       <h3 className="text-sm font-semibold text-green-900 mb-1">All Requirements Met</h3>
                       <p className="text-sm text-green-800">
-                        All mandatory custom fields and tags are configured correctly in Paperless-ngx.
+                        All required custom fields and tags are properly configured.
                       </p>
                     </div>
                   </div>
@@ -499,7 +399,7 @@ export default function SetupWizard() {
                     )}
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">POCO Score</div>
-                      <div className="text-xs text-gray-500">Stores the overall POCO score (0-100%)</div>
+                      <div className="text-xs text-gray-500">Stores the overall classification score (0-100%)</div>
                     </div>
                     <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {validationData?.fields?.poco_score ? 'Present' : 'Missing'}
@@ -510,11 +410,11 @@ export default function SetupWizard() {
                     {validationData?.fields?.poco_ocr ? (
                       <CheckCircle className="w-5 h-5 text-green-600" />
                     ) : (
-                      <XCircle className="w-5 h-5 text-red-600" />
+                      <XCircle className="w-5 h-5 text-gray-400" />
                     )}
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">POCO OCR</div>
-                      <div className="text-xs text-gray-500">Optional transparency field (can be enabled in Settings)</div>
+                      <div className="text-xs text-gray-500">Stores the OCR transparency score. Can be changed later in Settings → Data Validation.</div>
                     </div>
                     <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_ocr ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
                       {validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
@@ -534,7 +434,7 @@ export default function SetupWizard() {
                     )}
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">POCO+</div>
-                      <div className="text-xs text-gray-500">Green tag indicating document matched a rule</div>
+                      <div className="text-xs text-gray-500">Automatically applied when documents successfully match a rule</div>
                     </div>
                     <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
@@ -549,7 +449,7 @@ export default function SetupWizard() {
                     )}
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">POCO-</div>
-                      <div className="text-xs text-gray-500">Red tag indicating document did not match any rule</div>
+                      <div className="text-xs text-gray-500">Automatically applied to processed documents that don't match any rule</div>
                     </div>
                     <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
@@ -564,7 +464,7 @@ export default function SetupWizard() {
                     )}
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-900">NEW</div>
-                      <div className="text-xs text-gray-500">Blue tag marking documents not yet processed</div>
+                      <div className="text-xs text-gray-500"><strong className="text-orange-700">Important:</strong> You must apply this tag to all newly imported documents</div>
                     </div>
                     <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {validationData?.tags?.new ? 'Present' : 'Missing'}
@@ -574,13 +474,23 @@ export default function SetupWizard() {
               </div>
 
               <div className="flex gap-3 mt-8">
-                <Button 
-                  onClick={handleContinueToDashboard}
-                  className="btn btn-primary flex-1"
-                  disabled={!validationData?.valid}
-                >
-                  Continue to Dashboard
-                </Button>
+                {validationData && !validationData.valid ? (
+                  <Button
+                    onClick={handleFixMandatoryData}
+                    disabled={fixingMandatoryData}
+                    className="btn btn-primary flex-1"
+                  >
+                    {fixingMandatoryData ? 'Creating Missing Items...' : 'Create Missing Items'}
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={handleContinueToDashboard}
+                    className="btn btn-primary flex-1"
+                    disabled={!validationData?.valid}
+                  >
+                    Continue to Dashboard
+                  </Button>
+                )}
               </div>
             </div>
           )}
