@@ -1181,27 +1181,28 @@ def check_mandatory_data():
         if poco_ocr_enabled:
             required_fields.append('POCO OCR')
         
+        # Use check_custom_field_exists to avoid auto-creating during validation
         missing_fields = []
         for field_name in required_fields:
-            field_id = api_client.get_custom_field_id(field_name)
+            field_id = api_client.check_custom_field_exists(field_name)
             if not field_id:
                 missing_fields.append(field_name)
         
-        # Required tags
+        # Required tags - use check_tag_exists to avoid auto-creating during validation
         required_tags = ['POCO+', 'POCO-', 'NEW']
         missing_tags = []
         
         for tag_name in required_tags:
-            tag_id = api_client.get_tag_id(tag_name)
+            tag_id = api_client.check_tag_exists(tag_name)
             if not tag_id:
                 missing_tags.append(tag_name)
         
         # Check if all mandatory data exists
         has_all_data = len(missing_fields) == 0 and len(missing_tags) == 0
         
-        # Check field existence
-        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
-        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+        # Check field existence for UI display (use check methods to avoid auto-creating)
+        poco_score_exists = api_client.check_custom_field_exists('POCO Score') is not None
+        poco_ocr_exists = api_client.check_custom_field_exists('POCO OCR') is not None
         
         return jsonify({
             'valid': has_all_data,
