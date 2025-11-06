@@ -881,26 +881,26 @@ export default function BackgroundProcess() {
                                           let keyCounter = 0;
                                           
                                           // Define patterns to match and color
-                                          // Helper: match value until we hit a known key or closing bracket/brace
-                                          // Use negative lookahead to not stop at commas within values
-                                          const knownKeys = 'correspondent|document_type|title|tags|custom_fields|name|value';
-                                          const valuePattern = `(?:(?!,\\s*(?:${knownKeys}):)[^}\\]])+`;
-                                          
+                                          // Patterns handle both quoted ("Value") and unquoted (Value) formats
                                           const patterns = [
                                             // POCO: Value%
                                             { regex: /(POCO:\s*)(\d+\.?\d*%)/g, color: 'text-green-600' },
                                             // OCR: Value%
                                             { regex: /(OCR:\s*)(\d+\.?\d*%)/g, color: 'text-blue-600' },
-                                            // correspondent: Value (stops at comma before known key or closing bracket/brace)
-                                            { regex: new RegExp(`(correspondent:\\s*)(${valuePattern})`, 'g'), color: 'text-green-700' },
-                                            // document_type: Value
-                                            { regex: new RegExp(`(document_type:\\s*)(${valuePattern})`, 'g'), color: 'text-orange-700' },
-                                            // tags: [Value, Value]
+                                            // correspondent: "Value" or correspondent: Value
+                                            { regex: /(correspondent:\s*)"([^"]+)"/g, color: 'text-green-700' },
+                                            { regex: /(correspondent:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-green-700' },
+                                            // document_type: "Value" or document_type: Value
+                                            { regex: /(document_type:\s*)"([^"]+)"/g, color: 'text-orange-700' },
+                                            { regex: /(document_type:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-orange-700' },
+                                            // tags: ["Value", "Value2"] or tags: [Value, Value2]
                                             { regex: /(tags:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700' },
-                                            // title: Value
-                                            { regex: new RegExp(`(title:\\s*)(${valuePattern})`, 'g'), color: 'text-purple-700' },
-                                            // value: Value (for custom fields)
-                                            { regex: new RegExp(`(value:\\s*)(${valuePattern})`, 'g'), color: 'text-teal-700' }
+                                            // title: "Value" or title: Value
+                                            { regex: /(title:\s*)"([^"]+)"/g, color: 'text-purple-700' },
+                                            { regex: /(title:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-purple-700' },
+                                            // value: "Value" or value: Value (for custom fields)
+                                            { regex: /(value:\s*)"([^"]+)"/g, color: 'text-teal-700' },
+                                            { regex: /(value:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-teal-700' }
                                           ];
                                           
                                           // Replace each pattern with markers
@@ -908,10 +908,12 @@ export default function BackgroundProcess() {
                                           patterns.forEach((pattern, patternIdx) => {
                                             processedText = processedText.replace(pattern.regex, (match, prefix, value, suffix = '') => {
                                               const markerId = `__MARKER_${keyCounter++}__`;
+                                              // Strip quotes from value if present
+                                              const cleanValue = value.trim().replace(/^["']|["']$/g, '');
                                               markers.push({
                                                 id: markerId,
                                                 prefix: prefix,
-                                                value: value.trim(),
+                                                value: cleanValue,
                                                 suffix: suffix,
                                                 color: pattern.color
                                               });
@@ -945,7 +947,10 @@ export default function BackgroundProcess() {
                                               // Add colored value(s)
                                               // For tags (array), split by comma and color each item
                                               if (marker.color === 'text-blue-700' && marker.value.includes(',')) {
-                                                const tagItems = marker.value.split(',').map(t => t.trim());
+                                                const tagItems = marker.value.split(',').map(t => {
+                                                  // Strip quotes and whitespace from each tag
+                                                  return t.trim().replace(/^["']|["']$/g, '');
+                                                });
                                                 tagItems.forEach((tag, tagIdx) => {
                                                   if (tagIdx > 0) {
                                                     parts.push(
