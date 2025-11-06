@@ -612,8 +612,9 @@ class BackgroundProcessor:
                             })
         
         # Handle flattened custom fields from dynamic extraction (e.g., 'documentCategory': 'FINANCE')
+        # IMPORTANT: Skip structural metadata keys (static, dynamic, filename)
         for field_name, value in extracted.items():
-            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields', 'static', 'dynamic', 'filename']:
                 field_id = api_client.get_custom_field_id(field_name)
                 logger.info(f"Processing flattened custom field '{field_name}' -> ID={field_id}")
                 if field_id:
@@ -718,8 +719,9 @@ class BackgroundProcessor:
                         })
         
         # Also check for flattened custom fields (from dynamic extraction)
+        # IMPORTANT: Skip structural metadata keys (static, dynamic, filename) - they shouldn't be in extracted but be safe
         for field_name, value in extracted.items():
-            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields', 'static', 'dynamic', 'filename']:
                 # This is a flattened custom field (e.g., 'documentCategory': 'FINANCE')
                 needs_update = False
                 if 'custom_fields' in updates:
