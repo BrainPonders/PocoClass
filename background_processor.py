@@ -594,10 +594,25 @@ class BackgroundProcessor:
             if tag_ids:
                 updates['tags'] = tag_ids
         
-        # Handle custom fields
+        # Handle custom fields - both nested and flattened formats
         custom_fields = []
+        
+        # Handle nested custom_fields structure from static metadata
+        if 'custom_fields' in extracted:
+            cf_list = extracted['custom_fields']
+            if isinstance(cf_list, list):
+                for cf in cf_list:
+                    if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
+                        field_id = api_client.get_custom_field_id(cf['name'])
+                        if field_id:
+                            custom_fields.append({
+                                'field': field_id,
+                                'value': str(cf['value'])
+                            })
+        
+        # Handle flattened custom fields from dynamic extraction (e.g., 'documentCategory': 'FINANCE')
         for field_name, value in extracted.items():
-            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
                 field_id = api_client.get_custom_field_id(field_name)
                 if field_id:
                     custom_fields.append({

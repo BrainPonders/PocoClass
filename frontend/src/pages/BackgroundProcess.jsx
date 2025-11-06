@@ -345,9 +345,8 @@ export default function BackgroundProcess() {
         duration: 5000,
       });
 
-      if (!dryRunMode) {
-        await loadHistory();
-      }
+      // Refresh history immediately after processing completes (both dry run and real run)
+      await loadHistory();
     } catch (error) {
       toast({
         title: 'Processing Failed',
