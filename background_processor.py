@@ -610,9 +610,9 @@ class BackgroundProcessor:
         
         return updates
     
-    def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict, api_client: PaperlessAPIClient) -> List[str]:
+    def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict, api_client: PaperlessAPIClient) -> List[Dict[str, Any]]:
         """
-        Build human-readable list of metadata that was extracted/matched by the rule
+        Build structured list of metadata that was extracted/matched by the rule
         
         Args:
             updates: Metadata updates dictionary from _build_metadata_updates
@@ -620,7 +620,10 @@ class BackgroundProcessor:
             api_client: API client to resolve custom field IDs to names
         
         Returns:
-            List of strings like ["Correspondent: ExampleBank", "Doc Type: Bank Statement", "Tags: Check Account", "documentCategory: FINANCE"]
+            List of dicts like [
+                {"label": "Correspondent", "value": "ExampleBank", "needsUpdate": false},
+                {"label": "documentCategory", "value": "FINANCE", "needsUpdate": true}
+            ]
         """
         applied = []
         extracted_metadata = result.get('extracted_metadata', {})
@@ -631,30 +634,63 @@ class BackgroundProcessor:
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
         
-        # Show ALL extracted fields, not just ones that would be updated
-        # This gives a complete picture of what the rule matched
+        # Show ALL extracted fields with flag indicating if they need updating
+        # This allows frontend to color-code only values that will be written
         
         if 'correspondent' in extracted:
-            applied.append(f"Correspondent: {extracted['correspondent']}")
+            applied.append({
+                'label': 'Correspondent',
+                'value': extracted['correspondent'],
+                'needsUpdate': 'correspondent' in updates
+            })
         
         if 'document_type' in extracted:
-            applied.append(f"Doc Type: {extracted['document_type']}")
+            applied.append({
+                'label': 'Doc Type',
+                'value': extracted['document_type'],
+                'needsUpdate': 'document_type' in updates
+            })
         
         if 'tags' in extracted:
             tags_list = extracted['tags'] if isinstance(extracted['tags'], list) else [extracted['tags']]
             tags_str = ', '.join(str(t) for t in tags_list)
-            applied.append(f"Tags: {tags_str}")
+            applied.append({
+                'label': 'Tags',
+                'value': tags_str,
+                'needsUpdate': 'tags' in updates
+            })
         
         if 'title' in extracted:
-            applied.append(f"Title: {extracted['title']}")
+            applied.append({
+                'label': 'Title',
+                'value': extracted['title'],
+                'needsUpdate': 'title' in updates
+            })
         
         if 'created_date' in extracted:
-            applied.append(f"Date: {extracted['created_date']}")
+            applied.append({
+                'label': 'Date',
+                'value': extracted['created_date'],
+                'needsUpdate': 'created_date' in updates
+            })
         
         # Custom fields - show all extracted custom fields
         for field_name, value in extracted.items():
             if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
-                applied.append(f"{field_name}: {value}")
+                # Check if this custom field is in updates by matching field IDs
+                needs_update = False
+                if 'custom_fields' in updates:
+                    field_id = api_client.get_custom_field_id(field_name)
+                    for cf in updates['custom_fields']:
+                        if cf['field'] == field_id:
+                            needs_update = True
+                            break
+                
+                applied.append({
+                    'label': field_name,
+                    'value': value,
+                    'needsUpdate': needs_update
+                })
         
         return applied
     
@@ -846,9 +882,13 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         history = self.db.get_processing_history(limit=1)
         latest_run = history[0] if history else None
         
+        # Determine overall status for frontend polling
+        status = 'running' if locked else 'idle'
+        
         return {
             'enabled': enabled,
             'processing_locked': locked,
+            'status': status,
             'needs_rerun': needs_rerun,
             'timer_active': timer_active,
             'debounce_seconds': int(debounce_seconds),
