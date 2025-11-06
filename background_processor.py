@@ -612,7 +612,7 @@ class BackgroundProcessor:
     
     def _build_metadata_applied_list(self, updates: Dict[str, Any], result: Dict, api_client: PaperlessAPIClient) -> List[str]:
         """
-        Build human-readable list of metadata with actual values that were applied
+        Build human-readable list of metadata that was extracted/matched by the rule
         
         Args:
             updates: Metadata updates dictionary from _build_metadata_updates
@@ -620,7 +620,7 @@ class BackgroundProcessor:
             api_client: API client to resolve custom field IDs to names
         
         Returns:
-            List of strings like ["Title: Bank Statement", "Correspondent: Rabobank", "Tags: Bank, NEW"]
+            List of strings like ["Correspondent: Rabobank", "Doc Type: Bank Statement", "Tags: Check Account", "documentCategory: FINANCE"]
         """
         applied = []
         extracted_metadata = result.get('extracted_metadata', {})
@@ -631,52 +631,31 @@ class BackgroundProcessor:
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
         
-        logger.info(f"=== Building metadata list ===")
-        logger.info(f"Extracted metadata: {extracted}")
-        logger.info(f"Updates keys: {list(updates.keys())}")
+        # Show ALL extracted fields, not just ones that would be updated
+        # This gives a complete picture of what the rule matched
         
-        # Standard fields with actual values
-        if 'title' in updates:
-            applied.append(f"Title: {extracted.get('title', updates.get('title', 'Unknown'))}")
+        if 'correspondent' in extracted:
+            applied.append(f"Correspondent: {extracted['correspondent']}")
         
-        if 'created_date' in updates:
-            applied.append(f"Date: {extracted.get('created_date', updates.get('created_date', 'Unknown'))}")
+        if 'document_type' in extracted:
+            applied.append(f"Doc Type: {extracted['document_type']}")
         
-        if 'correspondent' in updates:
-            applied.append(f"Correspondent: {extracted.get('correspondent', 'Unknown')}")
-        
-        if 'document_type' in updates:
-            applied.append(f"Doc Type: {extracted.get('document_type', 'Unknown')}")
-        
-        # Tags with names
-        if 'tags' in updates and 'tags' in extracted:
+        if 'tags' in extracted:
             tags_list = extracted['tags'] if isinstance(extracted['tags'], list) else [extracted['tags']]
             tags_str = ', '.join(str(t) for t in tags_list)
             applied.append(f"Tags: {tags_str}")
-        elif 'tags' in updates:
-            tag_count = len(updates['tags'])
-            applied.append(f"Tags: {tag_count} added")
         
-        # Custom fields - only include fields that were actually updated
-        if 'custom_fields' in updates:
-            # Build set of updated field names by resolving IDs
-            updated_field_names = set()
-            for cf in updates['custom_fields']:
-                field_id = cf['field']
-                # Resolve field ID to name using api_client's cached data
-                for field_name in extracted.keys():
-                    if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
-                        # Check if this field name matches this field ID
-                        if api_client.get_custom_field_id(field_name) == field_id:
-                            updated_field_names.add(field_name)
-                            break
-            
-            # Now add only the updated custom fields with their values
-            for field_name in updated_field_names:
-                if field_name in extracted:
-                    applied.append(f"{field_name}: {extracted[field_name]}")
+        if 'title' in extracted:
+            applied.append(f"Title: {extracted['title']}")
         
-        logger.info(f"Final metadata_applied list: {applied}")
+        if 'created_date' in extracted:
+            applied.append(f"Date: {extracted['created_date']}")
+        
+        # Custom fields - show all extracted custom fields
+        for field_name, value in extracted.items():
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
+                applied.append(f"{field_name}: {value}")
+        
         return applied
     
     def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
