@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Server, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileText, Server, CheckCircle, AlertCircle, XCircle, Database } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
@@ -15,6 +15,9 @@ export default function SetupWizard() {
     username: '',
     password: ''
   });
+  const [validationData, setValidationData] = useState(null);
+  const [loadingValidation, setLoadingValidation] = useState(false);
+  const [fixingMandatoryData, setFixingMandatoryData] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -44,12 +47,8 @@ export default function SetupWizard() {
       localStorage.setItem('pococlass_session', data.sessionToken);
       localStorage.setItem('pococlass_user', JSON.stringify(data.user));
 
+      // Go to validation step instead of success
       setStep(3);
-      
-      setTimeout(() => {
-        navigate('/');
-        window.location.reload();
-      }, 2000);
 
     } catch (error) {
       console.error('Setup error:', error);
@@ -62,6 +61,80 @@ export default function SetupWizard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Load validation data when reaching step 3
+  useEffect(() => {
+    if (step === 3) {
+      loadValidationData();
+    }
+  }, [step]);
+
+  const loadValidationData = async () => {
+    try {
+      setLoadingValidation(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setValidationData(data);
+      }
+    } catch (error) {
+      console.error('Error loading validation data:', error);
+    } finally {
+      setLoadingValidation(false);
+    }
+  };
+
+  const handleFixMandatoryData = async () => {
+    try {
+      setFixingMandatoryData(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/validation/fix-mandatory-data`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.success) {
+          const createdCount = data.created_fields.length + data.created_tags.length;
+          toast({
+            title: 'Missing Data Created',
+            description: `Successfully created ${createdCount} missing ${createdCount === 1 ? 'item' : 'items'}`,
+            duration: 3000,
+          });
+          
+          // Reload validation data
+          await loadValidationData();
+        } else {
+          toast({
+            title: 'Fix Failed',
+            description: data.errors.join(', '),
+            variant: 'destructive',
+            duration: 5000,
+          });
+        }
+      }
+    } catch (error) {
+      toast({
+        title: 'Fix Failed',
+        description: error.message || 'Failed to fix missing data',
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setFixingMandatoryData(false);
+    }
+  };
+
+  const handleContinueToDashboard = () => {
+    navigate('/');
+    window.location.reload();
   };
 
   return (
@@ -262,32 +335,181 @@ export default function SetupWizard() {
             </div>
           )}
 
-          {/* Step 3: Success */}
+          {/* Step 3: Validate/Create Mandatory Data */}
           {step === 3 && (
-            <div className="text-center">
+            <div>
               <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-12 h-12 text-white" />
+                <Database className="w-16 h-16 text-blue-600" />
+              </div>
+
+              <h2 className="text-3xl font-bold text-center mb-2" style={{ color: 'var(--app-text)' }}>
+                Validate System Requirements
+              </h2>
+              
+              <p className="text-center mb-8" style={{ color: 'var(--app-text-secondary)' }}>
+                Checking for required custom fields and tags in Paperless-ngx
+              </p>
+
+              {loadingValidation ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3 mb-6">
+                  <div className="flex items-center gap-3">
+                    <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span className="text-sm text-blue-700 font-medium">Checking mandatory data...</span>
+                  </div>
+                </div>
+              ) : validationData && !validationData.valid ? (
+                <>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-red-900 mb-2">Missing Required Data</h3>
+                        <p className="text-sm text-red-800 mb-3">
+                          PocoClass requires specific custom fields and tags to function. Click the button below to create them automatically.
+                        </p>
+                        {validationData.missing_fields.length > 0 && (
+                          <div className="mb-3">
+                            <p className="text-xs font-semibold text-red-900 mb-1">Missing Custom Fields:</p>
+                            <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                              {validationData.missing_fields.map(field => (
+                                <li key={field}>{field}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {validationData.missing_tags.length > 0 && (
+                          <div>
+                            <p className="text-xs font-semibold text-red-900 mb-1">Missing Tags:</p>
+                            <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                              {validationData.missing_tags.map(tag => (
+                                <li key={tag}>{tag}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <Button
+                        onClick={handleFixMandatoryData}
+                        disabled={fixingMandatoryData}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        {fixingMandatoryData ? 'Creating...' : 'Create Missing Data'}
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              ) : validationData && validationData.valid ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-green-900 mb-1">All Requirements Met</h3>
+                      <p className="text-sm text-green-800">
+                        All mandatory custom fields and tags are configured correctly in Paperless-ngx.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="border-t pt-6 mb-6">
+                <h3 className="text-md font-semibold text-gray-900 mb-4">Required Custom Fields</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {validationData?.fields?.poco_score ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">POCO Score</div>
+                      <div className="text-xs text-gray-500">Stores the overall POCO score (0-100%)</div>
+                    </div>
+                    <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {validationData?.fields?.poco_score ? 'Present' : 'Missing'}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {validationData?.fields?.poco_ocr ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">POCO OCR</div>
+                      <div className="text-xs text-gray-500">Optional transparency field (can be enabled in Settings)</div>
+                    </div>
+                    <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_ocr ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
-                Setup Complete!
-              </h2>
+              <div className="border-t pt-6">
+                <h3 className="text-md font-semibold text-gray-900 mb-4">Required Tags</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {validationData?.tags?.poco_plus ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">POCO+</div>
+                      <div className="text-xs text-gray-500">Green tag indicating document matched a rule</div>
+                    </div>
+                    <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
+                    </div>
+                  </div>
 
-              <p className="text-lg mb-6" style={{ color: 'var(--app-text-secondary)' }}>
-                Successfully connected to Paperless-ngx
-              </p>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {validationData?.tags?.poco_minus ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">POCO-</div>
+                      <div className="text-xs text-gray-500">Red tag indicating document did not match any rule</div>
+                    </div>
+                    <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
+                    </div>
+                  </div>
 
-              <div className="info-box" style={{ 
-                backgroundColor: 'rgba(34, 197, 94, 0.1)', 
-                borderColor: '#22c55e',
-                color: 'var(--app-text)'
-              }}>
-                <p className="font-semibold mb-2">You're all set!</p>
-                <p className="text-sm">
-                  Redirecting you to the dashboard...
-                </p>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    {validationData?.tags?.new ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <XCircle className="w-5 h-5 text-red-600" />
+                    )}
+                    <div className="flex-1">
+                      <div className="text-sm font-medium text-gray-900">NEW</div>
+                      <div className="text-xs text-gray-500">Blue tag marking documents not yet processed</div>
+                    </div>
+                    <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {validationData?.tags?.new ? 'Present' : 'Missing'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-8">
+                <Button 
+                  onClick={handleContinueToDashboard}
+                  className="btn btn-primary flex-1"
+                  disabled={!validationData?.valid}
+                >
+                  Continue to Dashboard
+                </Button>
               </div>
             </div>
           )}
