@@ -499,7 +499,7 @@ class BackgroundProcessor:
         rules_applied = 0
         if not dry_run:
             if classified and best_result:
-                updates = self._build_metadata_updates(best_result, api_client)
+                updates = self._build_metadata_updates(best_result, doc, api_client)
                 if updates:
                     # Track what metadata will be applied
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
@@ -523,14 +523,14 @@ class BackgroundProcessor:
             # In dry run mode, build what would be applied
             if classified and best_result:
                 rules_applied = 1
-                updates = self._build_metadata_updates(best_result, api_client)
+                updates = self._build_metadata_updates(best_result, doc, api_client)
                 logger.info(f"DRY RUN: updates dict has {len(updates)} keys: {list(updates.keys())}")
                 if updates:
                     logger.info(f"DRY RUN: Calling _build_metadata_applied_list...")
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
                     logger.info(f"DRY RUN: metadata_applied has {len(metadata_applied)} items")
                 else:
-                    logger.info(f"DRY RUN: updates is empty, skipping metadata_applied")
+                    logger.info(f"DRY RUN: updates is empty - all fields already correct!")
             logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing
@@ -567,8 +567,11 @@ class BackgroundProcessor:
             'detail': detail
         }
     
-    def _build_metadata_updates(self, result: Dict, api_client: PaperlessAPIClient) -> Dict[str, Any]:
-        """Build metadata updates dictionary from rule evaluation result"""
+    def _build_metadata_updates(self, result: Dict, doc: Dict, api_client: PaperlessAPIClient) -> Dict[str, Any]:
+        """
+        Build metadata updates dictionary - SMART UPDATES ONLY
+        Only includes fields that differ from current Paperless values
+        """
         updates = {}
         extracted_metadata = result.get('extracted_metadata', {})
         
@@ -578,35 +581,46 @@ class BackgroundProcessor:
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
         
-        # Map extracted metadata to Paperless fields
+        # Smart update: Only add if different from current value
         if 'title' in extracted:
-            updates['title'] = extracted['title']
+            if doc.get('title') != extracted['title']:
+                updates['title'] = extracted['title']
+                logger.info(f"Title differs: current='{doc.get('title')}' vs extracted='{extracted['title']}'")
         
         if 'created_date' in extracted:
-            updates['created_date'] = extracted['created_date']
+            # Paperless uses 'created' field, not 'created_date'
+            if doc.get('created') != extracted['created_date']:
+                updates['created_date'] = extracted['created_date']
+                logger.info(f"Created date differs: current='{doc.get('created')}' vs extracted='{extracted['created_date']}'")
         
         if 'correspondent' in extracted:
             corr_id = api_client.get_correspondent_id(extracted['correspondent'])
-            if corr_id:
+            if corr_id and doc.get('correspondent') != corr_id:
                 updates['correspondent'] = corr_id
+                logger.info(f"Correspondent differs: current={doc.get('correspondent')} vs extracted={corr_id}")
         
         if 'document_type' in extracted:
             dt_id = api_client.get_document_type_id(extracted['document_type'])
-            if dt_id:
+            if dt_id and doc.get('document_type') != dt_id:
                 updates['document_type'] = dt_id
+                logger.info(f"Document type differs: current={doc.get('document_type')} vs extracted={dt_id}")
         
-        # Handle tags (append to existing)
+        # Handle tags - only add NEW tags that aren't already present
         if 'tags' in extracted:
-            tag_ids = []
+            current_tags = set(doc.get('tags', []))
+            new_tag_ids = []
             for tag_name in extracted['tags']:
                 tag_id = api_client.get_tag_id(tag_name)
-                if tag_id:
-                    tag_ids.append(tag_id)
-            if tag_ids:
-                updates['tags'] = tag_ids
+                if tag_id and tag_id not in current_tags:
+                    new_tag_ids.append(tag_id)
+            if new_tag_ids:
+                # Combine current + new tags
+                updates['tags'] = list(current_tags) + new_tag_ids
+                logger.info(f"Tags differ: adding {len(new_tag_ids)} new tags")
         
-        # Handle custom fields - both nested and flattened formats
+        # Handle custom fields - only update if value differs
         custom_fields = []
+        current_custom_fields = {cf['field']: cf['value'] for cf in doc.get('custom_fields', [])}
         
         # Handle nested custom_fields structure from static metadata
         if 'custom_fields' in extracted:
@@ -615,28 +629,33 @@ class BackgroundProcessor:
                 for cf in cf_list:
                     if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
                         field_id = api_client.get_custom_field_id(cf['name'])
-                        logger.info(f"Processing nested custom field '{cf['name']}' -> ID={field_id}")
                         if field_id:
-                            custom_fields.append({
-                                'field': field_id,
-                                'value': str(cf['value'])
-                            })
+                            current_value = current_custom_fields.get(field_id)
+                            new_value = str(cf['value'])
+                            if current_value != new_value:
+                                custom_fields.append({
+                                    'field': field_id,
+                                    'value': new_value
+                                })
+                                logger.info(f"Custom field '{cf['name']}' differs: current='{current_value}' vs extracted='{new_value}'")
         
-        # Handle flattened custom fields from dynamic extraction (e.g., 'documentCategory': 'FINANCE')
-        # IMPORTANT: Skip structural metadata keys (static, dynamic, filename) and standard fields
+        # Handle flattened custom fields from dynamic extraction
         for field_name, value in extracted.items():
             if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
                 field_id = api_client.get_custom_field_id(field_name)
-                logger.info(f"Processing flattened custom field '{field_name}' -> ID={field_id}")
                 if field_id:
-                    custom_fields.append({
-                        'field': field_id,
-                        'value': str(value)
-                    })
+                    current_value = current_custom_fields.get(field_id)
+                    new_value = str(value)
+                    if current_value != new_value:
+                        custom_fields.append({
+                            'field': field_id,
+                            'value': new_value
+                        })
+                        logger.info(f"Custom field '{field_name}' differs: current='{current_value}' vs extracted='{new_value}'")
         
         if custom_fields:
             updates['custom_fields'] = custom_fields
-            logger.info(f"Custom fields in updates: {custom_fields}")
+            logger.info(f"Smart updates: {len(custom_fields)} custom fields need updating")
         
         return updates
     
