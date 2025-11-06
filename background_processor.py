@@ -674,10 +674,34 @@ class BackgroundProcessor:
                 'needsUpdate': 'created_date' in updates
             })
         
-        # Custom fields - show all extracted custom fields
+        # Custom fields - handle the custom_fields list specially
+        if 'custom_fields' in extracted:
+            custom_fields_list = extracted['custom_fields']
+            if isinstance(custom_fields_list, list):
+                for cf in custom_fields_list:
+                    if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
+                        field_name = cf['name']
+                        field_value = cf['value']
+                        
+                        # Check if this custom field needs updating
+                        needs_update = False
+                        if 'custom_fields' in updates:
+                            field_id = api_client.get_custom_field_id(field_name)
+                            for update_cf in updates['custom_fields']:
+                                if update_cf['field'] == field_id:
+                                    needs_update = True
+                                    break
+                        
+                        applied.append({
+                            'label': field_name,
+                            'value': field_value,
+                            'needsUpdate': needs_update
+                        })
+        
+        # Also check for flattened custom fields (from dynamic extraction)
         for field_name, value in extracted.items():
-            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags']:
-                # Check if this custom field is in updates by matching field IDs
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
+                # This is a flattened custom field (e.g., 'documentCategory': 'FINANCE')
                 needs_update = False
                 if 'custom_fields' in updates:
                     field_id = api_client.get_custom_field_id(field_name)

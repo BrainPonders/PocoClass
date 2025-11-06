@@ -77,7 +77,7 @@ export default function BackgroundProcess() {
   }, [currentUser, navigate, toast]);
 
   // Use ref to track previous status for detecting transitions
-  const previousStatusRef = useRef(null);
+  const previousStatusRef = useRef('idle');
   
   // Polling: Auto-refresh when processing completes
   useEffect(() => {
