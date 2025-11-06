@@ -646,12 +646,14 @@ class BackgroundProcessor:
         """
         applied = []
         extracted_metadata = result.get('extracted_metadata', {})
+        logger.info(f"Building metadata_applied list - extracted_metadata keys: {list(extracted_metadata.keys())}")
         
         # Flatten extracted metadata from static/dynamic/filename structure
         extracted = {}
         extracted.update(extracted_metadata.get('static', {}))
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
+        logger.info(f"Flattened extracted keys: {list(extracted.keys())}")
         
         # Show ALL extracted fields with flag indicating if they need updating
         # This allows frontend to color-code only values that will be written
