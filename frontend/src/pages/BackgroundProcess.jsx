@@ -388,6 +388,17 @@ export default function BackgroundProcess() {
     }
   };
 
+  const formatDateTime = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + 
+             ' ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return dateString;
+    }
+  };
+
   const formatDuration = (seconds) => {
     if (!seconds) return 'N/A';
     if (seconds < 60) return `${seconds}s`;
@@ -821,7 +832,7 @@ export default function BackgroundProcess() {
                       <div className="flex-1 grid grid-cols-6 gap-4">
                         <div>
                           <div className="text-xs text-gray-500">Started</div>
-                          <div className="text-sm font-medium">{formatDate(entry.started_at)}</div>
+                          <div className="text-sm font-medium">{formatDateTime(entry.started_at)}</div>
                         </div>
                         <div>
                           <div className="text-xs text-gray-500">Documents</div>
