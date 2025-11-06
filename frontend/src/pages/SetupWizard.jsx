@@ -172,7 +172,7 @@ export default function SetupWizard() {
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
         }
       `}</style>
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-xl">
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
@@ -199,9 +199,9 @@ export default function SetupWizard() {
                 </p>
               </div>
 
-              <div className="space-y-4 text-left mb-8">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <div className="space-y-4 text-center mb-8">
+                <div className="flex flex-col items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
                     <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
@@ -210,8 +210,8 @@ export default function SetupWizard() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="flex flex-col items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
                     <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
@@ -220,8 +220,8 @@ export default function SetupWizard() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                <div className="flex flex-col items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
                     <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
