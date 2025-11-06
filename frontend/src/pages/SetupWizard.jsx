@@ -350,19 +350,43 @@ export default function SetupWizard() {
                 PocoClass needs specific tags and custom fields in Paperless-ngx to work correctly
               </p>
 
-              <div className="info-box info-box-blue mb-8 text-left">
-                <h3 className="font-semibold mb-3">What We'll Check:</h3>
-                <div className="space-y-2 text-sm">
+              <div className="info-box info-box-blue mb-6 text-left">
+                <h3 className="font-semibold mb-3">Required Custom Fields:</h3>
+                <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-2">
                     <span className="text-blue-600 font-bold">•</span>
                     <div>
-                      <strong>Custom Fields:</strong> POCO Score (required) and POCO OCR (optional)
+                      <strong>POCO Score</strong> (Required) - Stores the overall classification score (0-100%)
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-blue-600 font-bold">•</span>
                     <div>
-                      <strong>Tags:</strong> POCO+ (success), POCO- (no match), and NEW (unprocessed documents)
+                      <strong>POCO OCR</strong> (Optional) - Stores the OCR transparency score. You can choose to include this field or skip it. This setting can be changed later in Settings → Data Validation.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="info-box info-box-green mb-6 text-left">
+                <h3 className="font-semibold mb-3">Required Tags:</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">•</span>
+                    <div>
+                      <strong>POCO+</strong> - Applied when a document matches a rule and passes all thresholds
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">•</span>
+                    <div>
+                      <strong>POCO-</strong> - Applied when a document is processed but doesn't match any rule
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold">•</span>
+                    <div>
+                      <strong>NEW</strong> - <strong className="text-orange-700">Important:</strong> You must apply this tag to all newly imported documents in Paperless-ngx. PocoClass uses this tag to identify which documents need processing.
                     </div>
                   </div>
                 </div>
