@@ -100,9 +100,10 @@ export default function BackgroundProcess() {
           const data = await response.json();
           
           // Detect transition from running to idle using ref
+          console.log(`Polling status: prev=${previousStatusRef.current}, current=${data.status}`);
           if (previousStatusRef.current === 'running' && data.status === 'idle') {
             // Processing just completed - refresh history
-            console.log('Processing completed, refreshing history...');
+            console.log('✓ Processing completed, refreshing history...');
             loadHistory();
           }
           
@@ -876,33 +877,59 @@ export default function BackgroundProcess() {
                                           let keyCounter = 0;
                                           
                                           // Define patterns to match and color
-                                          // Patterns handle both JSON format {"key": "value"} and Python dict format {key: value}
+                                          // Support both new format (Correspondent: ExampleBank) and old JSON format ({"correspondent": "ExampleBank"})
                                           const patterns = [
-                                            // POCO: Value%
-                                            { regex: /(POCO:\s*)(\d+\.?\d*%)/g, color: 'text-green-600' },
-                                            // OCR: Value%
-                                            { regex: /(OCR:\s*)(\d+\.?\d*%)/g, color: 'text-blue-600' },
-                                            // "correspondent": "Value" (JSON) or correspondent: "Value" (Python dict)
-                                            { regex: /("?correspondent"?:\s*)"([^"]+)"/g, color: 'text-green-700' },
-                                            { regex: /("?correspondent"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-green-700' },
-                                            // "document_type": "Value" or document_type: "Value"
-                                            { regex: /("?document_type"?:\s*)"([^"]+)"/g, color: 'text-orange-700' },
-                                            { regex: /("?document_type"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-orange-700' },
-                                            // "tags": ["Value", "Value2"] or tags: [Value, Value2]
-                                            { regex: /("?tags"?:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700' },
-                                            // "title": "Value" or title: "Value"
-                                            { regex: /("?title"?:\s*)"([^"]+)"/g, color: 'text-purple-700' },
-                                            { regex: /("?title"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-purple-700' },
-                                            // "value": "Value" or value: "Value" (for custom fields)
-                                            { regex: /("?value"?:\s*)"([^"]+)"/g, color: 'text-teal-700' },
-                                            { regex: /("?value"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-teal-700' }
+                                            // POCO: Value% or POCO Score: Value%
+                                            { regex: /(POCO(?:\s+Score)?:\s*)(\d+\.?\d*%?)/g, color: 'text-green-600' },
+                                            // OCR: Value% or POCO OCR: Value%
+                                            { regex: /((?:POCO\s+)?OCR:\s*)(\d+\.?\d*%?)/g, color: 'text-blue-600' },
+                                            
+                                            // New format: "Correspondent: Value" (no quotes or braces)
+                                            { regex: /(Correspondent:\s*)([^,•|]+?)(?=\s*(?:,|•|\||$))/g, color: 'text-green-700' },
+                                            // Old format: "correspondent": "Value" or correspondent: "Value"
+                                            { regex: /(?:"?correspondent"?:\s*)"([^"]+)"/g, color: 'text-green-700', prefixLen: 0 },
+                                            
+                                            // New format: "Doc Type: Value"
+                                            { regex: /(Doc Type:\s*)([^,•|]+?)(?=\s*(?:,|•|\||$))/g, color: 'text-orange-700' },
+                                            // Old format: "document_type": "Value" or document_type: "Value"  
+                                            { regex: /(?:"?document_type"?:\s*)"([^"]+)"/g, color: 'text-orange-700', prefixLen: 0 },
+                                            
+                                            // New format: "Tags: Value1, Value2"
+                                            { regex: /(Tags:\s*)([^,•|]+?)(?=\s*(?:•|\||$))/g, color: 'text-blue-700' },
+                                            // Old format: "tags": ["Value"] or tags: [Value]
+                                            { regex: /(?:"?tags"?:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700', prefixLen: 0 },
+                                            
+                                            // New format: "Title: Value"
+                                            { regex: /(Title:\s*)([^,•|]+?)(?=\s*(?:,|•|\||$))/g, color: 'text-purple-700' },
+                                            // Old format: "title": "Value" or title: "Value"
+                                            { regex: /(?:"?title"?:\s*)"([^"]+)"/g, color: 'text-purple-700', prefixLen: 0 },
+                                            
+                                            // Custom fields - new format: "fieldName: Value"
+                                            { regex: /(documentCategory:\s*)([^,•|]+?)(?=\s*(?:,|•|\||$))/g, color: 'text-teal-700' },
+                                            // Old format: "value": "Value" or value: "Value"
+                                            { regex: /(?:"?value"?:\s*)"([^"]+)"/g, color: 'text-teal-700', prefixLen: 0 }
                                           ];
                                           
                                           // Replace each pattern with markers
                                           const markers = [];
                                           patterns.forEach((pattern, patternIdx) => {
-                                            processedText = processedText.replace(pattern.regex, (match, prefix, value, suffix = '') => {
+                                            processedText = processedText.replace(pattern.regex, (match, ...groups) => {
                                               const markerId = `__MARKER_${keyCounter++}__`;
+                                              
+                                              // Handle patterns with no prefix (prefixLen: 0 indicates value only)
+                                              let prefix, value, suffix;
+                                              if (pattern.prefixLen === 0) {
+                                                // Old format patterns: only value captured
+                                                prefix = '';
+                                                value = groups[0];
+                                                suffix = groups[1] || '';
+                                              } else {
+                                                // New format patterns: prefix, value, optional suffix
+                                                prefix = groups[0] || '';
+                                                value = groups[1] || '';
+                                                suffix = groups[2] || '';
+                                              }
+                                              
                                               // Strip quotes from value if present
                                               const cleanValue = value.trim().replace(/^["']|["']$/g, '');
                                               markers.push({
