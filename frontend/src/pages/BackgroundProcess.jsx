@@ -81,10 +81,10 @@ export default function BackgroundProcess() {
   
   // Polling: Auto-refresh when processing completes
   useEffect(() => {
-    // Wait until processingStatus is loaded before starting polling
-    if (!currentUser || currentUser.role !== 'admin' || !processingStatus) return;
+    // Only start polling if user is admin
+    if (!currentUser || currentUser.role !== 'admin') return;
     
-    let timeoutId = null;
+    let intervalId = null;
     let isMounted = true;
     
     const pollStatus = async () => {
@@ -102,35 +102,30 @@ export default function BackgroundProcess() {
           // Detect transition from running to idle using ref
           if (previousStatusRef.current === 'running' && data.status === 'idle') {
             // Processing just completed - refresh history
+            console.log('Processing completed, refreshing history...');
             loadHistory();
           }
           
           // Update ref with new status
           previousStatusRef.current = data.status;
           setProcessingStatus(data);
-          
-          // Continue polling every 3 seconds while component is mounted
-          timeoutId = setTimeout(pollStatus, 3000);
         }
       } catch (error) {
         console.error('Polling error:', error);
-        // Retry after error
-        if (isMounted) {
-          timeoutId = setTimeout(pollStatus, 3000);
-        }
       }
     };
     
-    // Start polling after 3 seconds (initial status already loaded)
-    timeoutId = setTimeout(pollStatus, 3000);
+    // Start polling immediately, then every 3 seconds
+    pollStatus();
+    intervalId = setInterval(pollStatus, 3000);
     
     return () => {
       isMounted = false;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (intervalId) {
+        clearInterval(intervalId);
       }
     };
-  }, [currentUser, processingStatus]); // Depend on processingStatus to ensure it's loaded before polling starts
+  }, [currentUser]); // Only depend on currentUser to avoid restarting polling
 
   const loadUser = async () => {
     try {
@@ -881,26 +876,26 @@ export default function BackgroundProcess() {
                                           let keyCounter = 0;
                                           
                                           // Define patterns to match and color
-                                          // Patterns handle both quoted ("Value") and unquoted (Value) formats
+                                          // Patterns handle both JSON format {"key": "value"} and Python dict format {key: value}
                                           const patterns = [
                                             // POCO: Value%
                                             { regex: /(POCO:\s*)(\d+\.?\d*%)/g, color: 'text-green-600' },
                                             // OCR: Value%
                                             { regex: /(OCR:\s*)(\d+\.?\d*%)/g, color: 'text-blue-600' },
-                                            // correspondent: "Value" or correspondent: Value
-                                            { regex: /(correspondent:\s*)"([^"]+)"/g, color: 'text-green-700' },
-                                            { regex: /(correspondent:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-green-700' },
-                                            // document_type: "Value" or document_type: Value
-                                            { regex: /(document_type:\s*)"([^"]+)"/g, color: 'text-orange-700' },
-                                            { regex: /(document_type:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-orange-700' },
-                                            // tags: ["Value", "Value2"] or tags: [Value, Value2]
-                                            { regex: /(tags:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700' },
-                                            // title: "Value" or title: Value
-                                            { regex: /(title:\s*)"([^"]+)"/g, color: 'text-purple-700' },
-                                            { regex: /(title:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-purple-700' },
-                                            // value: "Value" or value: Value (for custom fields)
-                                            { regex: /(value:\s*)"([^"]+)"/g, color: 'text-teal-700' },
-                                            { regex: /(value:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-teal-700' }
+                                            // "correspondent": "Value" (JSON) or correspondent: "Value" (Python dict)
+                                            { regex: /("?correspondent"?:\s*)"([^"]+)"/g, color: 'text-green-700' },
+                                            { regex: /("?correspondent"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-green-700' },
+                                            // "document_type": "Value" or document_type: "Value"
+                                            { regex: /("?document_type"?:\s*)"([^"]+)"/g, color: 'text-orange-700' },
+                                            { regex: /("?document_type"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-orange-700' },
+                                            // "tags": ["Value", "Value2"] or tags: [Value, Value2]
+                                            { regex: /("?tags"?:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700' },
+                                            // "title": "Value" or title: "Value"
+                                            { regex: /("?title"?:\s*)"([^"]+)"/g, color: 'text-purple-700' },
+                                            { regex: /("?title"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-purple-700' },
+                                            // "value": "Value" or value: "Value" (for custom fields)
+                                            { regex: /("?value"?:\s*)"([^"]+)"/g, color: 'text-teal-700' },
+                                            { regex: /("?value"?:\s*)([^,}\]]+?)(?=\s*[,}\]])/g, color: 'text-teal-700' }
                                           ];
                                           
                                           // Replace each pattern with markers
