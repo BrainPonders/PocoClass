@@ -66,7 +66,6 @@ export default function Settings() {
   useEffect(() => {
     if (activeTab === 'validation') {
       loadValidationData();
-    } else if (activeTab === 'optionalFeatures') {
       loadPocoOcrEnabled();
     }
   }, [activeTab]);
@@ -920,7 +919,6 @@ export default function Settings() {
 
   const tabs = [
     { id: 'system', label: 'System', icon: Database, adminOnly: true },
-    { id: 'optionalFeatures', label: 'Optional Features', icon: Sliders, adminOnly: true },
     { id: 'validation', label: 'Data Validation', icon: AlertCircle, adminOnly: true },
     { id: 'backgroundProcessing', label: 'Background Processing', icon: Activity, adminOnly: true },
     { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
@@ -1473,56 +1471,6 @@ export default function Settings() {
                 </div>
               )}
 
-              {activeTab === 'optionalFeatures' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Optional Features</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Configure optional features that provide additional functionality beyond core PocoClass capabilities
-                    </p>
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 pr-4">
-                          <label className="block text-sm font-medium text-gray-900 mb-1">
-                            POCO OCR Transparency Score Field
-                          </label>
-                          <p className="text-sm text-gray-600">
-                            Enable the POCO OCR custom field in Paperless-ngx. This field stores the OCR transparency score separately from the main POCO Score. <strong>Not required for PocoClass to work</strong> - this provides additional visibility for advanced users who want to see the OCR pattern matching quality.
-                          </p>
-                        </div>
-                        <Switch
-                          checked={pocoOcrEnabled}
-                          onCheckedChange={handlePocoOcrEnabledToggle}
-                          disabled={!isAdmin || loadingPocoOcr}
-                        />
-                      </div>
-
-                      {!isAdmin && (
-                        <p className="text-xs text-gray-500">
-                          Only administrators can modify optional feature settings
-                        </p>
-                      )}
-
-                      {pocoOcrEnabled && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-                          <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                            <div>
-                              <p className="text-sm text-blue-900">
-                                POCO OCR field will be created during next sync or when you click "Fix Missing Data"
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {activeTab === 'validation' && (
                 <div className="space-y-6">
                   <div>
@@ -1679,6 +1627,46 @@ export default function Settings() {
                           {validationData?.tags?.new ? 'Present' : 'Missing'}
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Optional Features</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-900 mb-1">
+                            POCO OCR Transparency Score Field
+                          </label>
+                          <p className="text-sm text-gray-600">
+                            Enable the POCO OCR custom field in Paperless-ngx. This field stores the OCR transparency score separately from the main POCO Score. <strong>Not required for PocoClass to work</strong> - this provides additional visibility for advanced users who want to see the OCR pattern matching quality.
+                          </p>
+                        </div>
+                        <Switch
+                          checked={pocoOcrEnabled}
+                          onCheckedChange={handlePocoOcrEnabledToggle}
+                          disabled={!isAdmin || loadingPocoOcr}
+                        />
+                      </div>
+
+                      {!isAdmin && (
+                        <p className="text-xs text-gray-500">
+                          Only administrators can modify optional feature settings
+                        </p>
+                      )}
+
+                      {pocoOcrEnabled && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-sm text-blue-900">
+                                POCO OCR field will be created during next sync or when you click "Fix Missing Data" above
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
