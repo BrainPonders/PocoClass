@@ -2633,10 +2633,13 @@ def get_background_settings():
     """Get background processing settings"""
     try:
         settings = {
-            'enabled': db.get_config('bg_enabled') == 'true',
-            'debounce_seconds': int(db.get_config('bg_debounce_seconds') or '30'),
-            'tag_new': db.get_config('bg_tag_new') or 'NEW',
-            'tag_poco': db.get_config('bg_tag_poco') or 'POCO'
+            'bg_enabled': db.get_config('bg_enabled') == 'true',
+            'bg_debounce_seconds': int(db.get_config('bg_debounce_seconds') or '30'),
+            'bg_tag_new': db.get_config('bg_tag_new') or 'NEW',
+            'bg_tag_poco': db.get_config('bg_tag_poco') or 'POCO',
+            'history_retention_type': db.get_config('history_retention_type') or 'days',
+            'history_retention_days': int(db.get_config('history_retention_days') or '365'),
+            'history_retention_count': int(db.get_config('history_retention_count') or '100')
         }
         
         return jsonify(settings)
@@ -2651,17 +2654,35 @@ def update_background_settings():
     try:
         data = request.json
         
-        if 'enabled' in data:
-            db.set_config('bg_enabled', 'true' if data['enabled'] else 'false')
+        if 'bg_enabled' in data:
+            db.set_config('bg_enabled', 'true' if data['bg_enabled'] else 'false')
         
-        if 'debounce_seconds' in data:
-            db.set_config('bg_debounce_seconds', str(int(data['debounce_seconds'])))
+        if 'bg_debounce_seconds' in data:
+            db.set_config('bg_debounce_seconds', str(int(data['bg_debounce_seconds'])))
         
-        if 'tag_new' in data:
-            db.set_config('bg_tag_new', data['tag_new'])
+        if 'bg_tag_new' in data:
+            db.set_config('bg_tag_new', data['bg_tag_new'])
         
-        if 'tag_poco' in data:
-            db.set_config('bg_tag_poco', data['tag_poco'])
+        if 'bg_tag_poco' in data:
+            db.set_config('bg_tag_poco', data['bg_tag_poco'])
+        
+        if 'history_retention_type' in data:
+            retention_type = data['history_retention_type']
+            if retention_type not in ['days', 'count']:
+                return jsonify({'error': 'Invalid retention type. Must be "days" or "count"'}), 400
+            db.set_config('history_retention_type', retention_type)
+        
+        if 'history_retention_days' in data:
+            days = int(data['history_retention_days'])
+            if days < 1:
+                return jsonify({'error': 'Retention days must be at least 1'}), 400
+            db.set_config('history_retention_days', str(days))
+        
+        if 'history_retention_count' in data:
+            count = int(data['history_retention_count'])
+            if count < 1:
+                return jsonify({'error': 'Retention count must be at least 1'}), 400
+            db.set_config('history_retention_count', str(count))
         
         return jsonify({'success': True, 'message': 'Settings updated'})
     except Exception as e:
@@ -2738,6 +2759,17 @@ def get_sync_counts():
     except Exception as e:
         logger.error(f"Error getting sync counts: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
+
+# Run cleanup on app startup
+try:
+    logger.info("Running processing history cleanup on startup...")
+    deleted_count = db.cleanup_old_processing_history()
+    if deleted_count > 0:
+        logger.info(f"Startup cleanup: Deleted {deleted_count} old processing runs")
+    else:
+        logger.info("Startup cleanup: No old processing runs to delete")
+except Exception as e:
+    logger.warning(f"Startup cleanup failed (non-critical): {e}")
 
 if __name__ == '__main__':
     # In development, run with debug mode on port 8000

@@ -44,7 +44,10 @@ export default function Settings() {
     bg_enabled: false,
     bg_debounce_seconds: 30,
     bg_tag_new: 'NEW',
-    bg_tag_poco: 'POCO'
+    bg_tag_poco: 'POCO',
+    history_retention_type: 'days',
+    history_retention_days: 365,
+    history_retention_count: 100
   });
 
   const [validationData, setValidationData] = useState(null);
@@ -501,7 +504,10 @@ export default function Settings() {
           bg_enabled: data.bg_enabled || false,
           bg_debounce_seconds: data.bg_debounce_seconds || 30,
           bg_tag_new: data.bg_tag_new || 'NEW',
-          bg_tag_poco: data.bg_tag_poco || 'POCO'
+          bg_tag_poco: data.bg_tag_poco || 'POCO',
+          history_retention_type: data.history_retention_type || 'days',
+          history_retention_days: data.history_retention_days || 365,
+          history_retention_count: data.history_retention_count || 100
         });
       }
     } catch (error) {
@@ -1758,6 +1764,91 @@ export default function Settings() {
                         <p className="text-xs text-gray-500 mt-1">
                           Tag name to mark documents as processed by POCO. This tag is added after classification.
                         </p>
+                      </div>
+
+                      <div className="border-t pt-6">
+                        <h3 className="text-md font-semibold text-gray-900 mb-4">Processing History Retention Policy</h3>
+                        <p className="text-xs text-gray-500 mb-4">
+                          Control how long processing history is kept in the database
+                        </p>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                              Retention Type
+                            </label>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="retention_type"
+                                  value="days"
+                                  checked={backgroundSettings.history_retention_type === 'days'}
+                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_type: e.target.value })}
+                                  disabled={!isAdmin}
+                                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
+                                />
+                                <span className="text-sm text-gray-700">By Days</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="retention_type"
+                                  value="count"
+                                  checked={backgroundSettings.history_retention_type === 'count'}
+                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_type: e.target.value })}
+                                  disabled={!isAdmin}
+                                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
+                                />
+                                <span className="text-sm text-gray-700">By Number of Runs</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {backgroundSettings.history_retention_type === 'days' && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Days to Keep
+                              </label>
+                              <div className="flex gap-3 mb-2">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={backgroundSettings.history_retention_days}
+                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_days: parseInt(e.target.value) || 365 })}
+                                  disabled={!isAdmin}
+                                  className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                />
+                                <span className="text-sm text-gray-500 self-center">days</span>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                Processing runs older than this will be automatically deleted (default: 365 days / 1 year)
+                              </p>
+                            </div>
+                          )}
+
+                          {backgroundSettings.history_retention_type === 'count' && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Runs to Keep
+                              </label>
+                              <div className="flex gap-3 mb-2">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={backgroundSettings.history_retention_count}
+                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_count: parseInt(e.target.value) || 100 })}
+                                  disabled={!isAdmin}
+                                  className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                />
+                                <span className="text-sm text-gray-500 self-center">runs</span>
+                              </div>
+                              <p className="text-xs text-gray-500">
+                                Keep only the most recent N processing runs (default: 100 runs)
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div className="border-t pt-4">
