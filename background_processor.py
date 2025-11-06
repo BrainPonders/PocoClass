@@ -524,8 +524,13 @@ class BackgroundProcessor:
             if classified and best_result:
                 rules_applied = 1
                 updates = self._build_metadata_updates(best_result, api_client)
+                logger.info(f"DRY RUN: updates dict has {len(updates)} keys: {list(updates.keys())}")
                 if updates:
+                    logger.info(f"DRY RUN: Calling _build_metadata_applied_list...")
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
+                    logger.info(f"DRY RUN: metadata_applied has {len(metadata_applied)} items")
+                else:
+                    logger.info(f"DRY RUN: updates is empty, skipping metadata_applied")
             logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing
