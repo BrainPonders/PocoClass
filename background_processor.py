@@ -604,6 +604,7 @@ class BackgroundProcessor:
                 for cf in cf_list:
                     if isinstance(cf, dict) and 'name' in cf and 'value' in cf:
                         field_id = api_client.get_custom_field_id(cf['name'])
+                        logger.info(f"Processing nested custom field '{cf['name']}' -> ID={field_id}")
                         if field_id:
                             custom_fields.append({
                                 'field': field_id,
@@ -614,6 +615,7 @@ class BackgroundProcessor:
         for field_name, value in extracted.items():
             if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
                 field_id = api_client.get_custom_field_id(field_name)
+                logger.info(f"Processing flattened custom field '{field_name}' -> ID={field_id}")
                 if field_id:
                     custom_fields.append({
                         'field': field_id,
@@ -622,6 +624,7 @@ class BackgroundProcessor:
         
         if custom_fields:
             updates['custom_fields'] = custom_fields
+            logger.info(f"Custom fields in updates: {custom_fields}")
         
         return updates
     
@@ -707,6 +710,7 @@ class BackgroundProcessor:
                                     needs_update = True
                                     break
                         
+                        logger.info(f"Nested CF '{field_name}' = '{field_value}' -> needsUpdate={needs_update}")
                         applied.append({
                             'label': field_name,
                             'value': field_value,
@@ -720,11 +724,13 @@ class BackgroundProcessor:
                 needs_update = False
                 if 'custom_fields' in updates:
                     field_id = api_client.get_custom_field_id(field_name)
+                    logger.info(f"Checking flattened CF '{field_name}' with ID={field_id} against updates: {updates.get('custom_fields', [])}")
                     for cf in updates['custom_fields']:
                         if cf['field'] == field_id:
                             needs_update = True
                             break
                 
+                logger.info(f"Flattened CF '{field_name}' = '{value}' -> needsUpdate={needs_update}")
                 applied.append({
                     'label': field_name,
                     'value': value,
