@@ -631,7 +631,9 @@ class BackgroundProcessor:
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
         
-        logger.info(f"Building metadata list - extracted: {extracted}, updates keys: {list(updates.keys())}")
+        logger.info(f"=== Building metadata list ===")
+        logger.info(f"Extracted metadata: {extracted}")
+        logger.info(f"Updates keys: {list(updates.keys())}")
         
         # Standard fields with actual values
         if 'title' in updates:
@@ -674,6 +676,7 @@ class BackgroundProcessor:
                 if field_name in extracted:
                     applied.append(f"{field_name}: {extracted[field_name]}")
         
+        logger.info(f"Final metadata_applied list: {applied}")
         return applied
     
     def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
