@@ -620,8 +620,27 @@ class BackgroundProcessor:
         
         # Handle custom fields - only update if value differs
         custom_fields = []
-        current_custom_fields = {cf['field']: cf['value'] for cf in doc.get('custom_fields', [])}
-        logger.info(f"Current custom fields from Paperless: {current_custom_fields}")
+        
+        # Build dict of current custom field values (resolve select options)
+        current_custom_fields = {}
+        for cf_entry in doc.get('custom_fields', []):
+            field_id = cf_entry.get('field')
+            raw_value = cf_entry.get('value')
+            
+            # Resolve select option ID to label if needed
+            cf_def = api_client.get_custom_field_by_id(field_id)
+            if cf_def and cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+                select_options = cf_def['extra_data'].get('select_options', [])
+                resolved_value = raw_value
+                for option in select_options:
+                    if option.get('id') == raw_value:
+                        resolved_value = option.get('label', raw_value)
+                        break
+                current_custom_fields[field_id] = resolved_value
+            else:
+                current_custom_fields[field_id] = raw_value
+        
+        logger.info(f"Current custom fields from Paperless (resolved): {current_custom_fields}")
         
         # Handle nested custom_fields structure from static metadata
         if 'custom_fields' in extracted:
