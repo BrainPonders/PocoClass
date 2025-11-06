@@ -237,6 +237,23 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to get/create custom field '{field_name}': {e}")
             return None
     
+    def get_custom_field_by_id(self, field_id: int) -> Optional[Dict]:
+        """Get custom field definition by ID (cached, includes select options)"""
+        try:
+            # Check cache first
+            cached_field = self.db.get_custom_field_by_id(field_id)
+            if cached_field:
+                self.logger.debug(f"Found custom field ID {field_id} in cache: {cached_field['name']}")
+                return cached_field
+            
+            # Not in cache - should not happen if sync is working correctly
+            self.logger.warning(f"Custom field ID {field_id} not found in cache")
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Failed to get custom field by ID {field_id}: {e}")
+            return None
+    
     def get_documents(self, limit: Optional[int] = None, document_id: Optional[int] = None, ignore_tags: bool = False,
                      title: Optional[str] = None, tags: Optional[List[str]] = None, tags_mode: str = 'include',
                      exclude_tags: Optional[List[str]] = None,

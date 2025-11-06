@@ -855,6 +855,23 @@ class Database:
         conn.close()
         return row['paperless_id'] if row else None
     
+    def get_custom_field_by_id(self, field_id: int) -> Optional[Dict]:
+        """Get custom field definition by ID from cache (includes select options)"""
+        import json
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM paperless_custom_fields WHERE paperless_id = ?", (field_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return {
+                'id': row['paperless_id'],
+                'name': row['name'],
+                'data_type': row['data_type'],
+                'extra_data': json.loads(row['extra_data']) if row['extra_data'] else {}
+            }
+        return None
+    
     def get_all_custom_fields(self) -> List[Dict]:
         """Get all cached custom fields"""
         import json

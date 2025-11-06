@@ -51,8 +51,7 @@ export default function RuleReviewer() {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + 
-             ' ' + date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     } catch {
       return dateString;
     }
