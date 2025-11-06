@@ -47,7 +47,7 @@ export default function SetupWizard() {
       localStorage.setItem('pococlass_session', data.sessionToken);
       localStorage.setItem('pococlass_user', JSON.stringify(data.user));
 
-      // Go to validation step instead of success
+      // Go to information step first
       setStep(3);
 
     } catch (error) {
@@ -63,9 +63,9 @@ export default function SetupWizard() {
     }
   };
 
-  // Load validation data when reaching step 3
+  // Load validation data when reaching step 4
   useEffect(() => {
-    if (step === 3) {
+    if (step === 4) {
       loadValidationData();
     }
   }, [step]);
@@ -335,8 +335,55 @@ export default function SetupWizard() {
             </div>
           )}
 
-          {/* Step 3: Validate/Create Mandatory Data */}
+          {/* Step 3: Information About Validation */}
           {step === 3 && (
+            <div className="text-center">
+              <div className="flex justify-center mb-6">
+                <Database className="w-16 h-16 text-blue-600" />
+              </div>
+
+              <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
+                System Requirements Check
+              </h2>
+              
+              <p className="text-lg mb-8" style={{ color: 'var(--app-text-secondary)' }}>
+                PocoClass needs specific tags and custom fields in Paperless-ngx to work correctly
+              </p>
+
+              <div className="info-box info-box-blue mb-8 text-left">
+                <h3 className="font-semibold mb-3">What We'll Check:</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold">•</span>
+                    <div>
+                      <strong>Custom Fields:</strong> POCO Score (required) and POCO OCR (optional)
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-bold">•</span>
+                    <div>
+                      <strong>Tags:</strong> POCO+ (success), POCO- (no match), and NEW (unprocessed documents)
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="info-box info-box-yellow mb-8 text-left">
+                <h3 className="font-semibold mb-2">What Happens Next:</h3>
+                <p className="text-sm">
+                  We'll check your Paperless-ngx instance for these items. If any are missing, 
+                  we'll show you exactly what's needed and offer to create them automatically for you.
+                </p>
+              </div>
+
+              <Button onClick={() => setStep(4)} className="btn btn-primary btn-lg w-full">
+                Check System Requirements
+              </Button>
+            </div>
+          )}
+
+          {/* Step 4: Validate/Create Mandatory Data */}
+          {step === 4 && (
             <div>
               <div className="flex justify-center mb-6">
                 <Database className="w-16 h-16 text-blue-600" />
