@@ -43,8 +43,6 @@ export default function Settings() {
   const [backgroundSettings, setBackgroundSettings] = useState({
     bg_enabled: false,
     bg_debounce_seconds: 30,
-    bg_tag_new: 'NEW',
-    bg_tag_poco: 'POCO',
     history_retention_type: 'days',
     history_retention_days: 365,
     history_retention_count: 100
@@ -502,8 +500,6 @@ export default function Settings() {
         setBackgroundSettings({
           bg_enabled: data.bg_enabled || false,
           bg_debounce_seconds: data.bg_debounce_seconds || 30,
-          bg_tag_new: data.bg_tag_new || 'NEW',
-          bg_tag_poco: data.bg_tag_poco || 'POCO',
           history_retention_type: data.history_retention_type || 'days',
           history_retention_days: data.history_retention_days || 365,
           history_retention_count: data.history_retention_count || 100
@@ -1720,38 +1716,43 @@ export default function Settings() {
                         </p>
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          NEW Tag Name
-                        </label>
-                        <input
-                          type="text"
-                          value={backgroundSettings.bg_tag_new}
-                          onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_tag_new: e.target.value })}
-                          disabled={!isAdmin}
-                          placeholder="NEW"
-                          className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Tag name to identify documents for processing. Documents with this tag will be classified.
+                      <div className="border-t pt-6">
+                        <h3 className="text-md font-semibold text-gray-900 mb-4">Tag Configuration</h3>
+                        <p className="text-xs text-gray-500 mb-4">
+                          PocoClass uses these fixed tags for document processing and classification
                         </p>
-                      </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">NEW</div>
+                              <div className="text-xs text-gray-600">
+                                Discovery tag - Documents with this tag will be automatically processed by background processing
+                              </div>
+                            </div>
+                          </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          POCO Tag Name
-                        </label>
-                        <input
-                          type="text"
-                          value={backgroundSettings.bg_tag_poco}
-                          onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_tag_poco: e.target.value })}
-                          disabled={!isAdmin}
-                          placeholder="POCO"
-                          className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Tag name to mark documents as processed by POCO. This tag is added after classification.
-                        </p>
+                          <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                            <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">POCO+</div>
+                              <div className="text-xs text-gray-600">
+                                Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                            <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900">POCO-</div>
+                              <div className="text-xs text-gray-600">
+                                Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="border-t pt-6">
