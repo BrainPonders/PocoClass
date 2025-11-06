@@ -570,7 +570,13 @@ class BackgroundProcessor:
     def _build_metadata_updates(self, result: Dict, api_client: PaperlessAPIClient) -> Dict[str, Any]:
         """Build metadata updates dictionary from rule evaluation result"""
         updates = {}
-        extracted = result.get('extracted_metadata', {})
+        extracted_metadata = result.get('extracted_metadata', {})
+        
+        # Flatten extracted metadata from static/dynamic/filename structure
+        extracted = {}
+        extracted.update(extracted_metadata.get('static', {}))
+        extracted.update(extracted_metadata.get('dynamic', {}))
+        extracted.update(extracted_metadata.get('filename', {}))
         
         # Map extracted metadata to Paperless fields
         if 'title' in extracted:
@@ -617,9 +623,9 @@ class BackgroundProcessor:
                             })
         
         # Handle flattened custom fields from dynamic extraction (e.g., 'documentCategory': 'FINANCE')
-        # IMPORTANT: Skip structural metadata keys (static, dynamic, filename)
+        # IMPORTANT: Skip structural metadata keys (static, dynamic, filename) and standard fields
         for field_name, value in extracted.items():
-            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields', 'static', 'dynamic', 'filename']:
+            if field_name not in ['title', 'created_date', 'correspondent', 'document_type', 'tags', 'custom_fields']:
                 field_id = api_client.get_custom_field_id(field_name)
                 logger.info(f"Processing flattened custom field '{field_name}' -> ID={field_id}")
                 if field_id:
