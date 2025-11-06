@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square, ChevronDown, ChevronRight, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,52 +76,61 @@ export default function BackgroundProcess() {
     }
   }, [currentUser, navigate, toast]);
 
+  // Use ref to track previous status for detecting transitions
+  const previousStatusRef = useRef(null);
+  
   // Polling: Auto-refresh when processing completes
   useEffect(() => {
-    if (!currentUser || currentUser.role !== 'admin') return;
+    // Wait until processingStatus is loaded before starting polling
+    if (!currentUser || currentUser.role !== 'admin' || !processingStatus) return;
     
     let timeoutId = null;
-    let previousStatus = processingStatus?.status;
+    let isMounted = true;
     
     const pollStatus = async () => {
+      if (!isMounted) return;
+      
       try {
         const sessionToken = localStorage.getItem('pococlass_session');
         const response = await fetch(`${API_BASE_URL}/api/background/status`, {
           headers: { 'Authorization': `Bearer ${sessionToken}` }
         });
         
-        if (response.ok) {
+        if (response.ok && isMounted) {
           const data = await response.json();
-          const newStatus = data.status;
           
-          // Detect transition from running to idle
-          if (previousStatus === 'running' && newStatus === 'idle') {
+          // Detect transition from running to idle using ref
+          if (previousStatusRef.current === 'running' && data.status === 'idle') {
             // Processing just completed - refresh history
             loadHistory();
           }
           
-          previousStatus = newStatus;
+          // Update ref with new status
+          previousStatusRef.current = data.status;
           setProcessingStatus(data);
+          
+          // Continue polling every 3 seconds while component is mounted
+          timeoutId = setTimeout(pollStatus, 3000);
         }
       } catch (error) {
         console.error('Polling error:', error);
+        // Retry after error
+        if (isMounted) {
+          timeoutId = setTimeout(pollStatus, 3000);
+        }
       }
-      
-      // Continue polling every 3 seconds
-      timeoutId = setTimeout(pollStatus, 3000);
     };
     
-    // Start polling when processing is active
-    if (processingStatus?.status === 'running') {
-      timeoutId = setTimeout(pollStatus, 3000);
-    }
+    // Start polling after 3 seconds (initial status already loaded)
+    timeoutId = setTimeout(pollStatus, 3000);
     
     return () => {
+      isMounted = false;
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
     };
-  }, [processingStatus?.status, currentUser]);
+  }, [currentUser, processingStatus]); // Depend on processingStatus to ensure it's loaded before polling starts
 
   const loadUser = async () => {
     try {
@@ -142,6 +151,8 @@ export default function BackgroundProcess() {
       if (response.ok) {
         const data = await response.json();
         setProcessingStatus(data);
+        // Initialize previousStatusRef for polling transition detection
+        previousStatusRef.current = data.status;
       }
     } catch (error) {
       console.error('Error loading status:', error);

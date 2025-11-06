@@ -623,14 +623,20 @@ class BackgroundProcessor:
             List of strings like ["Title: Bank Statement", "Correspondent: ExampleBank", "Tags: Bank, NEW"]
         """
         applied = []
-        extracted = result.get('extracted_metadata', {})
+        extracted_metadata = result.get('extracted_metadata', {})
+        
+        # Flatten extracted metadata from static/dynamic/filename structure
+        extracted = {}
+        extracted.update(extracted_metadata.get('static', {}))
+        extracted.update(extracted_metadata.get('dynamic', {}))
+        extracted.update(extracted_metadata.get('filename', {}))
         
         # Standard fields with actual values
         if 'title' in updates:
-            applied.append(f"Title: {extracted.get('title', updates['title'])}")
+            applied.append(f"Title: {extracted.get('title', updates.get('title', 'Unknown'))}")
         
         if 'created_date' in updates:
-            applied.append(f"Date: {extracted.get('created_date', updates['created_date'])}")
+            applied.append(f"Date: {extracted.get('created_date', updates.get('created_date', 'Unknown'))}")
         
         if 'correspondent' in updates:
             applied.append(f"Correspondent: {extracted.get('correspondent', 'Unknown')}")
@@ -640,7 +646,8 @@ class BackgroundProcessor:
         
         # Tags with names
         if 'tags' in updates and 'tags' in extracted:
-            tags_str = ', '.join(extracted['tags'])
+            tags_list = extracted['tags'] if isinstance(extracted['tags'], list) else [extracted['tags']]
+            tags_str = ', '.join(str(t) for t in tags_list)
             applied.append(f"Tags: {tags_str}")
         elif 'tags' in updates:
             tag_count = len(updates['tags'])
