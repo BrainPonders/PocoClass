@@ -377,6 +377,14 @@ class Database:
         if self.get_config('bg_needs_rerun') is None:
             self.set_config('bg_needs_rerun', 'false')
         
+        # Initialize processing history retention policy defaults
+        if self.get_config('history_retention_type') is None:
+            self.set_config('history_retention_type', 'days')
+        if self.get_config('history_retention_days') is None:
+            self.set_config('history_retention_days', '365')
+        if self.get_config('history_retention_count') is None:
+            self.set_config('history_retention_count', '100')
+        
         self.init_date_formats()
         self.init_placeholder_settings()
     
@@ -1426,3 +1434,81 @@ class Database:
             details.append(detail)
         
         return details
+    
+    def cleanup_old_processing_history(self) -> int:
+        """
+        Clean up old processing history based on retention policy settings
+        
+        Returns:
+            Number of runs deleted
+        """
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        try:
+            retention_type = self.get_config('history_retention_type') or 'days'
+            
+            if retention_type == 'days':
+                retention_days = int(self.get_config('history_retention_days') or '365')
+                cutoff_date = (datetime.now() - timedelta(days=retention_days)).isoformat()
+                
+                cursor.execute("""
+                    SELECT id FROM processing_history 
+                    WHERE started_at < ?
+                """, (cutoff_date,))
+                runs_to_delete = cursor.fetchall()
+                run_ids = [row['id'] for row in runs_to_delete]
+                
+                if run_ids:
+                    placeholders = ','.join('?' * len(run_ids))
+                    cursor.execute(f"""
+                        DELETE FROM processing_history_details 
+                        WHERE run_id IN ({placeholders})
+                    """, run_ids)
+                    
+                    cursor.execute(f"""
+                        DELETE FROM processing_history 
+                        WHERE id IN ({placeholders})
+                    """, run_ids)
+                    
+                    conn.commit()
+                    deleted_count = len(run_ids)
+                    logger.info(f"Cleanup: Deleted {deleted_count} processing runs older than {retention_days} days")
+                    return deleted_count
+                
+            elif retention_type == 'count':
+                retention_count = int(self.get_config('history_retention_count') or '100')
+                
+                cursor.execute("""
+                    SELECT id FROM processing_history 
+                    ORDER BY started_at DESC 
+                    LIMIT -1 OFFSET ?
+                """, (retention_count,))
+                runs_to_delete = cursor.fetchall()
+                run_ids = [row['id'] for row in runs_to_delete]
+                
+                if run_ids:
+                    placeholders = ','.join('?' * len(run_ids))
+                    cursor.execute(f"""
+                        DELETE FROM processing_history_details 
+                        WHERE run_id IN ({placeholders})
+                    """, run_ids)
+                    
+                    cursor.execute(f"""
+                        DELETE FROM processing_history 
+                        WHERE id IN ({placeholders})
+                    """, run_ids)
+                    
+                    conn.commit()
+                    deleted_count = len(run_ids)
+                    logger.info(f"Cleanup: Deleted {deleted_count} processing runs, keeping most recent {retention_count}")
+                    return deleted_count
+            
+            return 0
+            
+        except Exception as e:
+            logger.error(f"Error cleaning up processing history: {e}")
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
