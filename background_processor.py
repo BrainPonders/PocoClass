@@ -621,6 +621,7 @@ class BackgroundProcessor:
         # Handle custom fields - only update if value differs
         custom_fields = []
         current_custom_fields = {cf['field']: cf['value'] for cf in doc.get('custom_fields', [])}
+        logger.info(f"Current custom fields from Paperless: {current_custom_fields}")
         
         # Handle nested custom_fields structure from static metadata
         if 'custom_fields' in extracted:
@@ -646,12 +647,15 @@ class BackgroundProcessor:
                 if field_id:
                     current_value = current_custom_fields.get(field_id)
                     new_value = str(value)
+                    logger.info(f"Smart update check - Field '{field_name}' (ID={field_id}): current='{current_value}' (type={type(current_value).__name__}), new='{new_value}' (type={type(new_value).__name__}), equal={current_value == new_value}")
                     if current_value != new_value:
                         custom_fields.append({
                             'field': field_id,
                             'value': new_value
                         })
-                        logger.info(f"Custom field '{field_name}' differs: current='{current_value}' vs extracted='{new_value}'")
+                        logger.info(f"→ WILL UPDATE: Custom field '{field_name}' differs")
+                    else:
+                        logger.info(f"→ SKIP: Custom field '{field_name}' already correct")
         
         if custom_fields:
             updates['custom_fields'] = custom_fields

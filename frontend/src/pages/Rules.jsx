@@ -847,6 +847,7 @@ export default function Rules() {
                   <tr>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
                     <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
@@ -867,6 +868,7 @@ export default function Rules() {
                     >
                       <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
+                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
                       <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
