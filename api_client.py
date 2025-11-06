@@ -42,6 +42,45 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to connect to Paperless API: {e}")
             return False
     
+    def check_tag_exists(self, tag_name: str) -> Optional[int]:
+        """Check if tag exists WITHOUT creating it (for validation purposes)"""
+        try:
+            # Check cache first
+            cached_id = self.db.get_tag_id_by_name(tag_name)
+            if cached_id:
+                self.logger.debug(f"Found tag '{tag_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Tag '{tag_name}' not in cache, checking Paperless...")
+            
+            # Get all tags with pagination
+            all_tags = []
+            url = f"{self.config.paperless_url}/api/tags/"
+            
+            while url:
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
+                response.raise_for_status()
+                data = response.json()
+                all_tags.extend(data.get('results', []))
+                url = data.get('next')
+            
+            # Search for existing tag (case-sensitive exact match)
+            for tag in all_tags:
+                if tag['name'] == tag_name:
+                    # Cache it for next time
+                    self.db.sync_tags([tag])
+                    self.logger.debug(f"Found existing tag '{tag_name}' with ID {tag['id']}")
+                    return tag['id']
+            
+            # Tag not found - return None WITHOUT creating
+            self.logger.debug(f"Tag '{tag_name}' does not exist in Paperless")
+            return None
+            
+        except requests.RequestException as e:
+            self.logger.error(f"Failed to check tag '{tag_name}': {e}")
+            return None
+    
     def get_tag_id(self, tag_name: str) -> Optional[int]:
         """Get tag ID by name, create if doesn't exist (uses cache for performance)"""
         try:
@@ -185,6 +224,41 @@ class PaperlessAPIClient:
             
         except requests.RequestException as e:
             self.logger.error(f"Failed to get/create document type '{document_type_name}': {e}")
+            return None
+    
+    def check_custom_field_exists(self, field_name: str) -> Optional[int]:
+        """Check if custom field exists WITHOUT creating it (for validation purposes)"""
+        try:
+            # Check cache first
+            cached_id = self.db.get_custom_field_id_by_name(field_name)
+            if cached_id:
+                self.logger.debug(f"Found custom field '{field_name}' in cache with ID {cached_id}")
+                return cached_id
+            
+            # Not in cache - check Paperless API
+            self.logger.debug(f"Custom field '{field_name}' not in cache, checking Paperless...")
+            
+            # Try to find existing custom field
+            response = self.session.get(
+                f"{self.config.paperless_url}/api/custom_fields/",
+                params={'name': field_name},
+                timeout=self.REQUEST_TIMEOUT
+            )
+            response.raise_for_status()
+            
+            results = response.json().get('results', [])
+            if results:
+                # Cache it for next time
+                self.db.cache_custom_field(results[0])
+                self.logger.debug(f"Found existing custom field '{field_name}' with ID {results[0]['id']}")
+                return results[0]['id']
+            
+            # Field not found - return None WITHOUT creating
+            self.logger.debug(f"Custom field '{field_name}' does not exist in Paperless")
+            return None
+            
+        except requests.RequestException as e:
+            self.logger.error(f"Failed to check custom field '{field_name}': {e}")
             return None
     
     def get_custom_field_id(self, field_name: str) -> Optional[int]:
