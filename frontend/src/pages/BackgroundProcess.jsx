@@ -877,47 +877,116 @@ export default function BackgroundProcess() {
                                         // Helper function to render colored values in old format (dict strings)
                                         const renderOldFormat = (text) => {
                                           const parts = [];
-                                          let currentPos = 0;
+                                          let processedText = text;
+                                          let keyCounter = 0;
                                           
-                                          // Regex to match quoted strings: 'value' or "value"
-                                          const valueRegex = /(['"])([^'"]+)\1/g;
-                                          let match;
+                                          // Define patterns to match and color
+                                          // Helper: match value until we hit a known key or closing bracket/brace
+                                          // Use negative lookahead to not stop at commas within values
+                                          const knownKeys = 'correspondent|document_type|title|tags|custom_fields|name|value';
+                                          const valuePattern = `(?:(?!,\\s*(?:${knownKeys}):)[^}\\]])+`;
                                           
-                                          while ((match = valueRegex.exec(text)) !== null) {
-                                            // Add grey text before the value
-                                            if (match.index > currentPos) {
+                                          const patterns = [
+                                            // POCO: Value%
+                                            { regex: /(POCO:\s*)(\d+\.?\d*%)/g, color: 'text-green-600' },
+                                            // OCR: Value%
+                                            { regex: /(OCR:\s*)(\d+\.?\d*%)/g, color: 'text-blue-600' },
+                                            // correspondent: Value (stops at comma before known key or closing bracket/brace)
+                                            { regex: new RegExp(`(correspondent:\\s*)(${valuePattern})`, 'g'), color: 'text-green-700' },
+                                            // document_type: Value
+                                            { regex: new RegExp(`(document_type:\\s*)(${valuePattern})`, 'g'), color: 'text-orange-700' },
+                                            // tags: [Value, Value]
+                                            { regex: /(tags:\s*\[)([^\]]+)(\])/g, color: 'text-blue-700' },
+                                            // title: Value
+                                            { regex: new RegExp(`(title:\\s*)(${valuePattern})`, 'g'), color: 'text-purple-700' },
+                                            // value: Value (for custom fields)
+                                            { regex: new RegExp(`(value:\\s*)(${valuePattern})`, 'g'), color: 'text-teal-700' }
+                                          ];
+                                          
+                                          // Replace each pattern with markers
+                                          const markers = [];
+                                          patterns.forEach((pattern, patternIdx) => {
+                                            processedText = processedText.replace(pattern.regex, (match, prefix, value, suffix = '') => {
+                                              const markerId = `__MARKER_${keyCounter++}__`;
+                                              markers.push({
+                                                id: markerId,
+                                                prefix: prefix,
+                                                value: value.trim(),
+                                                suffix: suffix,
+                                                color: pattern.color
+                                              });
+                                              return markerId;
+                                            });
+                                          });
+                                          
+                                          // Now split by markers and rebuild with colored values
+                                          let remainingText = processedText;
+                                          let position = 0;
+                                          
+                                          markers.forEach((marker, idx) => {
+                                            const markerPos = remainingText.indexOf(marker.id);
+                                            if (markerPos >= 0) {
+                                              // Add grey text before marker
+                                              if (markerPos > 0) {
+                                                parts.push(
+                                                  <span key={`grey-${position}`} className="text-gray-500">
+                                                    {remainingText.substring(0, markerPos)}
+                                                  </span>
+                                                );
+                                              }
+                                              
+                                              // Add grey prefix
                                               parts.push(
-                                                <span key={`grey-${currentPos}`} className="text-gray-500">
-                                                  {text.substring(currentPos, match.index)}
+                                                <span key={`prefix-${idx}`} className="text-gray-500">
+                                                  {marker.prefix}
                                                 </span>
                                               );
+                                              
+                                              // Add colored value(s)
+                                              // For tags (array), split by comma and color each item
+                                              if (marker.color === 'text-blue-700' && marker.value.includes(',')) {
+                                                const tagItems = marker.value.split(',').map(t => t.trim());
+                                                tagItems.forEach((tag, tagIdx) => {
+                                                  if (tagIdx > 0) {
+                                                    parts.push(
+                                                      <span key={`tag-sep-${idx}-${tagIdx}`} className="text-gray-500">
+                                                        {', '}
+                                                      </span>
+                                                    );
+                                                  }
+                                                  parts.push(
+                                                    <span key={`tag-${idx}-${tagIdx}`} className={`${marker.color} font-medium`}>
+                                                      {tag}
+                                                    </span>
+                                                  );
+                                                });
+                                              } else {
+                                                parts.push(
+                                                  <span key={`value-${idx}`} className={`${marker.color} font-medium`}>
+                                                    {marker.value}
+                                                  </span>
+                                                );
+                                              }
+                                              
+                                              // Add grey suffix if exists
+                                              if (marker.suffix) {
+                                                parts.push(
+                                                  <span key={`suffix-${idx}`} className="text-gray-500">
+                                                    {marker.suffix}
+                                                  </span>
+                                                );
+                                              }
+                                              
+                                              remainingText = remainingText.substring(markerPos + marker.id.length);
+                                              position++;
                                             }
-                                            
-                                            // Add colored value (without quotes)
-                                            const value = match[2];
-                                            let colorClass = 'text-teal-700'; // Default for custom fields
-                                            
-                                            // Determine color based on context
-                                            const beforeValue = text.substring(Math.max(0, match.index - 20), match.index);
-                                            if (beforeValue.includes('correspondent')) colorClass = 'text-green-700';
-                                            else if (beforeValue.includes('document_type')) colorClass = 'text-orange-700';
-                                            else if (beforeValue.includes('tags')) colorClass = 'text-blue-700';
-                                            else if (beforeValue.includes('title')) colorClass = 'text-purple-700';
-                                            
-                                            parts.push(
-                                              <span key={`value-${match.index}`} className={`${colorClass} font-medium`}>
-                                                {value}
-                                              </span>
-                                            );
-                                            
-                                            currentPos = match.index + match[0].length;
-                                          }
+                                          });
                                           
-                                          // Add remaining grey text
-                                          if (currentPos < text.length) {
+                                          // Add any remaining grey text
+                                          if (remainingText.length > 0) {
                                             parts.push(
-                                              <span key={`grey-end`} className="text-gray-500">
-                                                {text.substring(currentPos)}
+                                              <span key="grey-final" className="text-gray-500">
+                                                {remainingText}
                                               </span>
                                             );
                                           }
