@@ -1587,7 +1587,6 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium text-gray-900">POCO+</div>
-                          <div className="text-xs text-gray-500">Green tag indicating document matched a rule</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
@@ -1602,7 +1601,6 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium text-gray-900">POCO-</div>
-                          <div className="text-xs text-gray-500">Red tag indicating document did not match any rule</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
@@ -1617,7 +1615,6 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium text-gray-900">NEW</div>
-                          <div className="text-xs text-gray-500">Blue tag marking documents not yet processed by PocoClass</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {validationData?.tags?.new ? 'Present' : 'Missing'}
