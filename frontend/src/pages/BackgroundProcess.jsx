@@ -853,9 +853,6 @@ export default function BackgroundProcess() {
                   <AccordionContent className="px-4 pb-4">
                     {entry.details && entry.details.length > 0 ? (
                       <div className="space-y-2 mt-2">
-                        <div className="text-sm font-medium text-gray-700 mb-3">
-                          Document Details ({entry.details.length} documents)
-                        </div>
                         <div className="grid grid-cols-1 gap-2 max-h-96 overflow-y-auto">
                           {entry.details.map((detail) => (
                             <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded px-3 py-2">
@@ -912,11 +909,6 @@ export default function BackgroundProcess() {
                                 {/* Right side: Badges */}
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                   {getClassificationBadge(detail.classification)}
-                                  {detail.status === 'simulated' && (
-                                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">
-                                      Simulated
-                                    </Badge>
-                                  )}
                                 </div>
                               </div>
                             </div>
