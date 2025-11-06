@@ -631,6 +631,8 @@ class BackgroundProcessor:
         extracted.update(extracted_metadata.get('dynamic', {}))
         extracted.update(extracted_metadata.get('filename', {}))
         
+        logger.info(f"Building metadata list - extracted: {extracted}, updates keys: {list(updates.keys())}")
+        
         # Standard fields with actual values
         if 'title' in updates:
             applied.append(f"Title: {extracted.get('title', updates.get('title', 'Unknown'))}")
