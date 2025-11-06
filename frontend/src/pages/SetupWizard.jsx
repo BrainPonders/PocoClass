@@ -195,6 +195,10 @@ export default function SetupWizard() {
                   PocoClass automatically classifies and enriches your documents in Paperless-ngx using 
                   intelligent pattern matching. Create rules once, and let PocoClass handle the rest!
                 </p>
+                <p className="text-sm mt-2">
+                  <strong>Perfect for:</strong> Bulk imports when Paperless hasn't been trained yet, or daily imports 
+                  to ensure the correct classification is always applied with an extra layer of security.
+                </p>
               </div>
 
               <div className="space-y-4 text-left mb-8">
