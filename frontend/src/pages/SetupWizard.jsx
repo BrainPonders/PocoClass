@@ -374,19 +374,19 @@ export default function SetupWizard() {
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">•</span>
                     <div>
-                      <strong>POCO+</strong> - Applied when a document matches a rule and passes all thresholds
+                      <strong>POCO+</strong>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">•</span>
                     <div>
-                      <strong>POCO-</strong> - Applied when a document is processed but doesn't match any rule
+                      <strong>POCO-</strong>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold">•</span>
                     <div>
-                      <strong>NEW</strong> - <strong className="text-orange-700">Important:</strong> You must apply this tag to all newly imported documents in Paperless-ngx. PocoClass uses this tag to identify which documents need processing.
+                      <strong>NEW</strong> - <strong className="text-orange-700">Important:</strong> You must apply this tag to all newly imported documents in Paperless-ngx.
                     </div>
                   </div>
                 </div>
