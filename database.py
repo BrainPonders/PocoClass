@@ -719,6 +719,21 @@ class Database:
         now = datetime.now().isoformat()
         synced = 0
         
+        # Get list of current paperless_ids from the sync
+        paperless_ids = [tag['id'] for tag in tags]
+        
+        # Delete any tags that no longer exist in Paperless
+        if paperless_ids:
+            placeholders = ','.join('?' * len(paperless_ids))
+            cursor.execute(f"""
+                DELETE FROM paperless_tags 
+                WHERE paperless_id NOT IN ({placeholders})
+            """, paperless_ids)
+        else:
+            # If no tags in Paperless, delete all
+            cursor.execute("DELETE FROM paperless_tags")
+        
+        # Insert or update current tags
         for tag in tags:
             cursor.execute("""
                 INSERT OR REPLACE INTO paperless_tags (paperless_id, name, color, last_synced)
