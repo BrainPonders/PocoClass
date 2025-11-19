@@ -238,20 +238,24 @@ class PaperlessAPIClient:
             # Not in cache - check Paperless API
             self.logger.debug(f"Custom field '{field_name}' not in cache, checking Paperless...")
             
-            # Try to find existing custom field
-            response = self.session.get(
-                f"{self.config.paperless_url}/api/custom_fields/",
-                params={'name': field_name},
-                timeout=self.REQUEST_TIMEOUT
-            )
-            response.raise_for_status()
+            # Get all custom fields with pagination (similar to tags)
+            all_fields = []
+            url = f"{self.config.paperless_url}/api/custom_fields/"
             
-            results = response.json().get('results', [])
-            if results:
-                # Cache it for next time
-                self.db.cache_custom_field(results[0])
-                self.logger.debug(f"Found existing custom field '{field_name}' with ID {results[0]['id']}")
-                return results[0]['id']
+            while url:
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
+                response.raise_for_status()
+                data = response.json()
+                all_fields.extend(data.get('results', []))
+                url = data.get('next')
+            
+            # Search for existing custom field (case-sensitive exact match)
+            for field in all_fields:
+                if field['name'] == field_name:
+                    # Cache it for next time
+                    self.db.cache_custom_field(field)
+                    self.logger.debug(f"Found existing custom field '{field_name}' with ID {field['id']}")
+                    return field['id']
             
             # Field not found - return None WITHOUT creating
             self.logger.debug(f"Custom field '{field_name}' does not exist in Paperless")
