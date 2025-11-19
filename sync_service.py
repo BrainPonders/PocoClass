@@ -15,8 +15,15 @@ class SyncService:
     def __init__(self, db: Database):
         self.db = db
     
-    def sync_all(self, paperless_token: str, paperless_url: str) -> Dict[str, int]:
-        """Sync all Paperless data to cache"""
+    def sync_all(self, paperless_token: str, paperless_url: str, ensure_mandatory: bool = True) -> Dict[str, int]:
+        """
+        Sync all Paperless data to cache
+        
+        Args:
+            paperless_token: Paperless API token
+            paperless_url: Paperless URL
+            ensure_mandatory: If True, auto-create missing mandatory tags/fields. Set to False for validation checks.
+        """
         logger.info("Starting full sync of Paperless data")
         
         # Log sync start
@@ -162,29 +169,32 @@ class SyncService:
                 source='sync_service'
             )
         
-        # Auto-create mandatory custom fields and tags if missing
-        try:
-            logger.info("Checking for mandatory custom fields and tags...")
-            created_items = self._ensure_mandatory_data(api_client)
-            results['mandatory_data_created'] = created_items
-            
-            # Re-sync custom fields and tags if we created any
-            if created_items['fields_created'] or created_items['tags_created']:
-                logger.info("Re-syncing after creating mandatory data...")
-                if created_items['fields_created']:
-                    custom_fields_data = self._fetch_all_with_pagination(
-                        api_client, f"{paperless_url}/api/custom_fields/"
-                    )
-                    results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+        # Auto-create mandatory custom fields and tags if missing (unless explicitly disabled)
+        if ensure_mandatory:
+            try:
+                logger.info("Checking for mandatory custom fields and tags...")
+                created_items = self._ensure_mandatory_data(api_client)
+                results['mandatory_data_created'] = created_items
                 
-                if created_items['tags_created']:
-                    tags_data = self._fetch_all_with_pagination(
-                        api_client, f"{paperless_url}/api/tags/"
-                    )
-                    results['tags'] = self.db.sync_tags(tags_data)
-        except Exception as e:
-            logger.error(f"Failed to ensure mandatory data: {e}")
-            results['mandatory_data_error'] = str(e)
+                # Re-sync custom fields and tags if we created any
+                if created_items['fields_created'] or created_items['tags_created']:
+                    logger.info("Re-syncing after creating mandatory data...")
+                    if created_items['fields_created']:
+                        custom_fields_data = self._fetch_all_with_pagination(
+                            api_client, f"{paperless_url}/api/custom_fields/"
+                        )
+                        results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+                    
+                    if created_items['tags_created']:
+                        tags_data = self._fetch_all_with_pagination(
+                            api_client, f"{paperless_url}/api/tags/"
+                        )
+                        results['tags'] = self.db.sync_tags(tags_data)
+            except Exception as e:
+                logger.error(f"Failed to ensure mandatory data: {e}")
+                results['mandatory_data_error'] = str(e)
+        else:
+            logger.info("Skipping mandatory data creation (ensure_mandatory=False)")
         
         logger.info(f"Sync completed: {results}")
         

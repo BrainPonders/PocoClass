@@ -1039,9 +1039,10 @@ def check_mandatory_data():
         api_client = PaperlessAPIClient(config, db)
         
         # Force a fresh sync to ensure cache is up-to-date before checking
+        # Use ensure_mandatory=False to prevent auto-creation during validation
         try:
-            sync_service.sync_all(session['paperless_token'], paperless_url)
-            logger.info("Synced data before mandatory data check")
+            sync_service.sync_all(session['paperless_token'], paperless_url, ensure_mandatory=False)
+            logger.info("Synced data before mandatory data check (without auto-creation)")
         except Exception as e:
             logger.warning(f"Sync failed before validation (non-critical): {e}")
         
