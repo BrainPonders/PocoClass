@@ -274,24 +274,30 @@ class PaperlessAPIClient:
                 self.logger.debug(f"Found custom field '{field_name}' in cache with ID {cached_id}")
                 return cached_id
             
-            # Not in cache - check Paperless API
+            # Not in cache - check Paperless API with pagination
             self.logger.debug(f"Custom field '{field_name}' not in cache, checking Paperless...")
             
-            # First try to find existing custom field
-            response = self.session.get(
-                f"{self.config.paperless_url}/api/custom_fields/",
-                params={'name': field_name},
-                timeout=self.REQUEST_TIMEOUT
-            )
-            response.raise_for_status()
+            # Get all custom fields with pagination (similar to tags and check method)
+            all_fields = []
+            url = f"{self.config.paperless_url}/api/custom_fields/"
             
-            results = response.json().get('results', [])
-            if results:
-                # Cache it for next time (without deleting other cached fields)
-                self.db.cache_custom_field(results[0])
-                return results[0]['id']
+            while url:
+                response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
+                response.raise_for_status()
+                data = response.json()
+                all_fields.extend(data.get('results', []))
+                url = data.get('next')
             
-            # Create custom field if it doesn't exist
+            # Search for existing custom field (case-sensitive exact match)
+            for field in all_fields:
+                if field['name'] == field_name:
+                    # Cache it for next time
+                    self.db.cache_custom_field(field)
+                    self.logger.debug(f"Found existing custom field '{field_name}' with ID {field['id']}")
+                    return field['id']
+            
+            # Field not found - create it
+            self.logger.info(f"Custom field '{field_name}' not found, creating...")
             response = self.session.post(
                 f"{self.config.paperless_url}/api/custom_fields/",
                 json={
