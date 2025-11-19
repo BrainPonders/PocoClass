@@ -7,6 +7,7 @@ const POCOFieldsContext = createContext();
 export function POCOFieldsProvider({ children }) {
   const [pocoScoreExists, setPocoScoreExists] = useState(true);
   const [pocoOcrExists, setPocoOcrExists] = useState(true);
+  const [pocoOcrEnabled, setPocoOcrEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
 
@@ -18,21 +19,20 @@ export function POCOFieldsProvider({ children }) {
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/sync/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch sync status');
+        throw new Error('Failed to fetch validation status');
       }
 
       const data = await response.json();
       
-      if (data.poco_fields) {
-        setPocoScoreExists(data.poco_fields.poco_score_exists || false);
-        setPocoOcrExists(data.poco_fields.poco_ocr_exists || false);
-        setLastChecked(new Date());
-      }
+      setPocoScoreExists(data.fields?.poco_score || false);
+      setPocoOcrExists(data.fields?.poco_ocr || false);
+      setPocoOcrEnabled(data.poco_ocr_enabled || false);
+      setLastChecked(new Date());
     } catch (error) {
       console.error('Error refreshing POCO fields status:', error);
     } finally {
@@ -44,11 +44,12 @@ export function POCOFieldsProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const hasMissingFields = !pocoScoreExists || !pocoOcrExists;
+  const hasMissingFields = !pocoScoreExists || (pocoOcrEnabled && !pocoOcrExists);
 
   const value = {
     pocoScoreExists,
     pocoOcrExists,
+    pocoOcrEnabled,
     hasMissingFields,
     isLoading,
     lastChecked,
