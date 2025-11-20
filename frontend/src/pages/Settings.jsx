@@ -1545,7 +1545,12 @@ export default function Settings() {
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Required Tags</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        {validationData?.tags?.poco_plus ? (
+                        {loadingValidation ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : validationData?.tags?.poco_plus ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600" />
@@ -1554,13 +1559,18 @@ export default function Settings() {
                           <div className="text-sm font-medium text-gray-900">POCO+</div>
                           <div className="text-xs text-gray-500">Applied to documents that match a rule successfully</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                          {validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        {validationData?.tags?.poco_minus ? (
+                        {loadingValidation ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : validationData?.tags?.poco_minus ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600" />
@@ -1569,13 +1579,18 @@ export default function Settings() {
                           <div className="text-sm font-medium text-gray-900">POCO-</div>
                           <div className="text-xs text-gray-500">Applied to documents that do not match any rule</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                          {validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        {validationData?.tags?.new ? (
+                        {loadingValidation ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : validationData?.tags?.new ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600" />
@@ -1584,8 +1599,8 @@ export default function Settings() {
                           <div className="text-sm font-medium text-gray-900">NEW</div>
                           <div className="text-xs text-gray-500">Identifies unprocessed documents for background processing</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                          {validationData?.tags?.new ? 'Present' : 'Missing'}
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {loadingValidation ? 'Verifying...' : validationData?.tags?.new ? 'Present' : 'Missing'}
                         </div>
                       </div>
                     </div>
@@ -1595,7 +1610,12 @@ export default function Settings() {
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Required Custom Fields</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        {validationData?.fields?.poco_score ? (
+                        {loadingValidation ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : validationData?.fields?.poco_score ? (
                           <CheckCircle className="w-5 h-5 text-green-600" />
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600" />
@@ -1604,8 +1624,8 @@ export default function Settings() {
                           <div className="text-sm font-medium text-gray-900">POCO Score</div>
                           <div className="text-xs text-gray-500">Stores the overall POCO score (0-100%)</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                          {validationData?.fields?.poco_score ? 'Present' : 'Missing'}
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_score ? 'Present' : 'Missing'}
                         </div>
                       </div>
                     </div>
@@ -1615,7 +1635,12 @@ export default function Settings() {
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Optional Custom Fields</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        {validationData?.fields?.poco_ocr ? (
+                        {loadingValidation ? (
+                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        ) : validationData?.fields?.poco_ocr ? (
                           <CheckCircle className="w-5 h-5 text-blue-600" />
                         ) : (
                           <Info className="w-5 h-5 text-gray-400" />
@@ -1624,8 +1649,8 @@ export default function Settings() {
                           <div className="text-sm font-medium text-gray-900">POCO OCR</div>
                           <div className="text-xs text-gray-500">Stores the OCR confidence score (0-100%). Optional for transparency.</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${validationData?.fields?.poco_ocr ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
-                          {validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_ocr ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                          {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
                         </div>
                       </div>
                     </div>
