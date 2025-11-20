@@ -1144,7 +1144,7 @@ def fix_mandatory_data():
         
         for field_spec in required_fields:
             field_name = field_spec['name']
-            if not api_client.get_custom_field_id(field_name):
+            if not api_client.check_custom_field_exists(field_name):
                 try:
                     success = api_client.create_custom_field(field_name, field_spec['data_type'])
                     if success:
@@ -1163,7 +1163,7 @@ def fix_mandatory_data():
         
         for tag_spec in required_tags:
             tag_name = tag_spec['name']
-            if not api_client.get_tag_id(tag_name):
+            if not api_client.check_tag_exists(tag_name):
                 try:
                     success = api_client.create_tag(tag_name, tag_spec['color'], tag_spec['is_inbox_tag'])
                     if success:
@@ -1173,11 +1173,11 @@ def fix_mandatory_data():
                 except Exception as e:
                     errors.append(f"Error creating tag {tag_name}: {str(e)}")
         
-        # Force sync to update cache
+        # Force sync to update cache (without auto-creating again)
         try:
             paperless_url = db.get_config('paperless_url')
             paperless_token = session['paperless_token']
-            sync_service.sync_all(paperless_token, paperless_url)
+            sync_service.sync_all(paperless_token, paperless_url, ensure_mandatory=False)
         except Exception as e:
             logger.warning(f"Sync failed after creating mandatory data: {e}")
         
