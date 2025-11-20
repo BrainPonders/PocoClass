@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import API_BASE_URL from '@/config/api';
 
 export default function ValidationBanner() {
@@ -40,9 +41,10 @@ export default function ValidationBanner() {
   };
 
   const handleFixNow = () => {
-    navigate('/Settings');
     // Store tab selection in sessionStorage for Settings page to read
     sessionStorage.setItem('settings_active_tab', 'validation');
+    // Navigate using the same format as the navigation menu
+    navigate(createPageUrl('Settings'));
   };
 
   const handleDismiss = () => {
