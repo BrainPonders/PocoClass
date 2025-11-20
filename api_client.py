@@ -6,12 +6,8 @@ Handles all communication with the Paperless-ngx API for document retrieval and 
 import requests
 import logging
 from typing import Dict, List, Any, Optional
-try:
-    from .config import Config
-    from .database import Database
-except ImportError:
-    from config import Config
-    from database import Database
+from config import Config
+from database import Database
 
 class PaperlessAPIClient:
     """Client for interacting with Paperless-ngx API"""

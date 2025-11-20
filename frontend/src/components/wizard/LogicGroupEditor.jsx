@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { Plus, Trash2, Wand2 } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';
 import PatternHelperModal from '@/components/PatternHelperModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function LogicGroupEditor({ group, index, onUpdate, onDelete, type, canDelete = true }) {
+  const { t } = useLanguage();
   const [showPatternHelper, setShowPatternHelper] = useState(false);
   const [activeConditionIndex, setActiveConditionIndex] = useState(null);
 
@@ -105,14 +107,14 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
     <div className="card">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h4 className="font-semibold text-lg">Logic Group {index + 1}</h4>
-          <Tooltip content="A logic group contains one or more patterns. Use 'Match any (OR)' when any pattern can identify the document. Use 'Match all (AND)' when all patterns must be present. Check 'Mandatory' to make this group required for classification - if mandatory groups don't match, the rule fails regardless of POCO score." />
+          <h4 className="font-semibold text-lg">{t('wizard.step2.logicGroup')} {index + 1}</h4>
+          <Tooltip content={t('wizard.step2.tooltipLogicGroup')} />
         </div>
         {canDelete && (
           <button
             onClick={onDelete}
             className="text-gray-400 hover:text-red-500 transition-colors"
-            title="Delete logic group"
+            title={t('wizard.step2.deleteLogicGroup')}
           >
             <Trash2 className="w-5 h-5" />
           </button>
@@ -121,7 +123,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
 
       <div className="space-y-3 mb-4">
         <div className="flex items-center gap-4 text-sm overflow-x-auto">
-          <span className="font-medium text-gray-700 whitespace-nowrap">Search lines:</span>
+          <span className="font-medium text-gray-700 whitespace-nowrap">{t('wizard.step2.searchLines')}:</span>
           
           <label className="flex items-center gap-2 whitespace-nowrap">
             <input
@@ -136,17 +138,17 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               value={fromValue}
               onChange={(e) => handleValueChange('from', e.target.value)}
               disabled={searchMode !== 'between'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="from"
             />
-            <span>to</span>
+            <span>{t('wizard.step2.to')}</span>
             <input
               type="text"
               value={toValue}
               onChange={(e) => handleValueChange('to', e.target.value)}
               disabled={searchMode !== 'between'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="to"
             />
@@ -162,13 +164,13 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={() => handleSearchModeChange('first')}
               className="form-radio"
             />
-            <span>First</span>
+            <span>{t('wizard.step2.first')}</span>
             <input
               type="text"
               value={firstValue}
               onChange={(e) => handleValueChange('first', e.target.value)}
               disabled={searchMode !== 'first'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
@@ -184,13 +186,13 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={() => handleSearchModeChange('last')}
               className="form-radio"
             />
-            <span>Last</span>
+            <span>{t('wizard.step2.last')}</span>
             <input
               type="text"
               value={lastValue}
               onChange={(e) => handleValueChange('last', e.target.value)}
               disabled={searchMode !== 'last'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
@@ -206,7 +208,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={() => onUpdate({ ...group, type: 'match' })}
               className="form-radio"
             />
-            <span className="font-medium">Match any (OR)</span>
+            <span className="font-medium">{t('wizard.step2.matchAnyOR')}</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer">
@@ -217,7 +219,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={() => onUpdate({ ...group, type: 'match_all' })}
               className="form-radio"
             />
-            <span className="font-medium">Match all (AND)</span>
+            <span className="font-medium">{t('wizard.step2.matchAllAND')}</span>
           </label>
 
           <label className="flex items-center gap-2 cursor-pointer">
@@ -227,7 +229,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               onChange={(e) => onUpdate({ ...group, mandatory: e.target.checked })}
               className="form-checkbox"
             />
-            <span className="font-medium">Mandatory</span>
+            <span className="font-medium">{t('wizard.step2.mandatory')}</span>
           </label>
         </div>
       </div>
@@ -236,13 +238,13 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
         {group.conditions?.map((condition, condIndex) => (
           <div key={condIndex}>
             <div className="flex items-center gap-2 mb-2">
-              <h5 className="text-sm font-semibold">Pattern {condIndex + 1}</h5>
-              <Tooltip content="Enter a simple text string to search for, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching." />
+              <h5 className="text-sm font-semibold">{t('wizard.step2.pattern')} {condIndex + 1}</h5>
+              <Tooltip content={t('wizard.step2.tooltipPattern')} />
               {group.conditions.length > 1 && (
                 <button
                   onClick={() => removeCondition(condIndex)}
                   className="text-gray-400 hover:text-red-500 transition-colors ml-auto"
-                  title="Remove pattern"
+                  title={t('wizard.step2.removePattern')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -254,14 +256,14 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
                 type="text"
                 value={condition.pattern || ''}
                 onChange={(e) => updateCondition(condIndex, 'pattern', e.target.value)}
-                placeholder="Enter text or regex pattern or use regex generator"
-                className="form-input flex-1"
+                placeholder={t('wizard.step2.enterPattern')}
+                className="pc-input flex-1"
               />
               <button
                 onClick={() => openPatternHelper(condIndex)}
                 className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                 type="button"
-                title="Open Pattern Helper"
+                title={t('wizard.step2.openPatternHelper')}
               >
                 <Wand2 className="w-5 h-5" />
               </button>
@@ -274,7 +276,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
           className="w-full p-3 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-lg bg-transparent text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center justify-center gap-2"
         >
           <Plus className="w-4 h-4" />
-          Add Pattern
+          {t('wizard.step2.addPattern')}
         </button>
       </div>
 

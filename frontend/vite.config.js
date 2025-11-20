@@ -9,6 +9,16 @@ export default defineConfig({
     allowedHosts: true,
     host: '0.0.0.0',
     port: 5000,
+    middlewareMode: false,
+    middleware: (req, res, next) => {
+      // Disable caching for HTML files to prevent stale content
+      if (req.url.endsWith('.html') || req.url === '/') {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+      next();
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

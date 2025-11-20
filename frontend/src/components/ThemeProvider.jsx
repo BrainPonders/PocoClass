@@ -11,8 +11,17 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('light');
+  const [themeMode, setThemeMode] = useState('light'); // 'light', 'dark', or 'auto'
+  const [effectiveTheme, setEffectiveTheme] = useState('light'); // actual applied theme
   const [colorBlindMode, setColorBlindMode] = useState('none');
+
+  // Detect system theme preference
+  const getSystemTheme = () => {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  };
 
   useEffect(() => {
     // Load theme from localStorage
@@ -20,8 +29,16 @@ export function ThemeProvider({ children }) {
       const saved = localStorage.getItem('pococlass_settings');
       if (saved) {
         const settings = JSON.parse(saved);
-        setTheme(settings.theme || 'light');
+        const savedTheme = settings.theme || 'light';
+        setThemeMode(savedTheme);
         setColorBlindMode(settings.colorBlindMode || 'none');
+        
+        // Set effective theme based on mode
+        if (savedTheme === 'auto') {
+          setEffectiveTheme(getSystemTheme());
+        } else {
+          setEffectiveTheme(savedTheme);
+        }
       }
     } catch (e) {
       console.error('Error loading theme:', e);
@@ -29,23 +46,42 @@ export function ThemeProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    // Listen for system theme changes when in auto mode
+    if (themeMode === 'auto') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      
+      const handleChange = (e) => {
+        setEffectiveTheme(e.matches ? 'dark' : 'light');
+      };
+      
+      mediaQuery.addEventListener('change', handleChange);
+      setEffectiveTheme(getSystemTheme());
+      
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      setEffectiveTheme(themeMode);
+    }
+  }, [themeMode]);
+
+  useEffect(() => {
     // Apply theme classes to document
     document.documentElement.classList.remove('light', 'dark', 'protanopia', 'deuteranopia', 'tritanopia');
-    document.documentElement.classList.add(theme);
+    document.documentElement.classList.add(effectiveTheme);
     
+    // Apply color blind mode if enabled
     if (colorBlindMode !== 'none') {
       document.documentElement.classList.add(colorBlindMode);
     }
-  }, [theme, colorBlindMode]);
+  }, [effectiveTheme, colorBlindMode]);
 
   const updateTheme = (newTheme) => {
-    setTheme(newTheme);
+    setThemeMode(newTheme);
     saveSettings({ theme: newTheme, colorBlindMode });
   };
 
   const updateColorBlindMode = (mode) => {
     setColorBlindMode(mode);
-    saveSettings({ theme, colorBlindMode: mode });
+    saveSettings({ theme: themeMode, colorBlindMode: mode });
   };
 
   const saveSettings = (settings) => {
@@ -62,7 +98,13 @@ export function ThemeProvider({ children }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, colorBlindMode, updateTheme, updateColorBlindMode }}>
+    <ThemeContext.Provider value={{ 
+      theme: themeMode, 
+      effectiveTheme,
+      colorBlindMode, 
+      updateTheme, 
+      updateColorBlindMode 
+    }}>
       {children}
     </ThemeContext.Provider>
   );

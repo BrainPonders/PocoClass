@@ -4,6 +4,7 @@ import { FileText, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
+import FormInput from '@/components/FormInput';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -65,44 +66,16 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <style>{`
-        .login-form-group {
-          margin-bottom: 28px;
-        }
-        
-        .login-form-label {
-          display: block;
-          font-size: 1rem;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 14px;
-          letter-spacing: -0.01em;
-        }
-        
-        .login-form-input {
-          width: 100%;
-          padding: 10px 12px;
-          border: 2px solid #d1d5db;
-          border-radius: 8px;
-          font-size: 1rem;
-          background: #f9fafb;
-          color: #1f2937;
-          transition: all 0.2s ease;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .login-form-input:focus {
-          outline: none;
-          border-color: #3b82f6;
-          background: white;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-      `}</style>
       <div className="w-full max-w-md">
         <div className="wizard-container">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <img src="/logo.png" alt="PocoClass Logo" className="h-20 w-auto" />
+              <div className="relative inline-block">
+                <img src="/logo.png" alt="PocoClass Logo" className="h-40 w-auto" />
+                <div className="absolute bottom-0 right-0 transform translate-x-[30px] -translate-y-[1px]">
+                  <span className="text-xs font-semibold text-gray-500">v2.0</span>
+                </div>
+              </div>
             </div>
             <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
               Document Classification System
@@ -114,13 +87,12 @@ export default function Login() {
               <label className="login-form-label">
                 Paperless Username
               </label>
-              <input
+              <FormInput
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Enter your username"
-                className="login-form-input"
                 required
                 autoFocus
               />
@@ -130,13 +102,12 @@ export default function Login() {
               <label className="login-form-label">
                 Paperless Password
               </label>
-              <input
+              <FormInput
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Enter your password"
-                className="login-form-input"
                 required
               />
             </div>

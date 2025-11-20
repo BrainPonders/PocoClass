@@ -1,7 +1,22 @@
 # PocoClass Technical Manual v2
 **Version:** 2.0  
-**Last Updated:** November 4, 2025  
+**Last Updated:** November 21, 2025  
 **Purpose:** Comprehensive technical documentation for PocoClass v2 architecture, logic, and implementation
+
+---
+
+## Recent Changes (November 2025)
+
+**November 21, 2025:**
+- Updated in-app guides (Full Guide + Quick Reference) with comprehensive documentation covering all aspects of PocoClass
+- Removed personal data references (organization names) from documentation and examples for privacy compliance
+- Updated UI documentation to reflect 1px border standardization across application
+
+**November 20, 2025:**
+- **Bug Fix**: Fixed critical custom field sync issue where deleted Paperless custom fields were persisting in PocoClass cache
+  - Root cause: `sync_custom_field_placeholders()` in `database.py` only added new fields, never removed deleted ones
+  - Solution: Added deletion logic to remove orphaned cache entries when fields are deleted from Paperless
+  - Impact: Ensures PocoClass cache stays synchronized with Paperless configuration changes
 
 ---
 
@@ -427,9 +442,9 @@ core_identifiers:
     - title: "Bank Identifier"
       type: "match"  # AND logic
       conditions:
-        - pattern: "/ExampleBank/i"
+        - pattern: "/Organization Name/i"
           source: "content"
-        - pattern: "/IBAN.*NL/i"
+        - pattern: "/Account.*Number/i"
           source: "content"
     
     - title: "Account Type"
@@ -475,9 +490,9 @@ def normalize_regex_pattern(pattern: str) -> Tuple[str, int]:
 
 | Input Pattern | Normalized Pattern | Flags |
 |---------------|-------------------|-------|
-| `/ExampleBank/i` | `ExampleBank` | `IGNORECASE \| MULTILINE` |
+| `/Organization/i` | `Organization` | `IGNORECASE \| MULTILINE` |
 | `/Invoice\s+\d+/im` | `Invoice\s+\d+` | `IGNORECASE \| MULTILINE` |
-| `IBAN` | `IBAN` | `IGNORECASE \| MULTILINE` (default) |
+| `Account Number` | `Account Number` | `IGNORECASE \| MULTILINE` (default) |
 
 ### 4.3 Pattern Matching with Source and Range
 
@@ -625,14 +640,14 @@ PocoClass v2 supports three types of metadata:
 **Format**:
 ```yaml
 static_metadata:
-  correspondent: "ExampleBank"
-  document_type: "Bank Statement"
+  correspondent: "Financial Institution"
+  document_type: "Statement"
   tags:
     - "Financial"
     - "Banking"
   custom_fields:
     Account Type: "Checking"
-    Bank Name: "ExampleBank NL"
+    Institution: "Organization Name"
 ```
 
 **Processing**:
@@ -991,7 +1006,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
 {
   "success": true,
   "rule_id": "rule_001",
-  "rule_name": "ExampleBank Statement",
+  "rule_name": "Organization Statement",
   "classification_allowed": true,
   "status": "CONFIDENT",
   "threshold": 80.0,
@@ -1009,7 +1024,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "percentage": 80.0,
       "groups": [
         {
-          "name": "Bank Identifier",
+          "name": "Organization Identifier",
           "matched": true,
           "score": 1
         },
@@ -1028,7 +1043,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "percentage": 66.67,
       "patterns": [
         {
-          "pattern": "/ExampleBank/i",
+          "pattern": "/Organization/i",
           "matched": true
         }
       ]
@@ -1039,8 +1054,8 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "matches": [
         {
           "field": "correspondent",
-          "extracted": "ExampleBank",
-          "paperless": "ExampleBank",
+          "extracted": "Organization Name",
+          "paperless": "Organization Name",
           "match": true
         }
       ]
@@ -1048,12 +1063,12 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
   },
   "extracted_metadata": {
     "static": {
-      "correspondent": "ExampleBank",
+      "correspondent": "Organization Name",
       "tags": ["Financial"]
     },
     "dynamic": {
       "date_created": "2024-12-27",
-      "account_number": "NL91RABO0315273637"
+      "account_number": "123456789"
     },
     "filename": {}
   }
@@ -1132,13 +1147,69 @@ def values_match(extracted, paperless):
 
 ### 7.1 Architecture Overview
 
+**Trigger Mechanism**: PocoClass uses Paperless-ngx's **post-consumption script** feature to automatically process documents after they are consumed (imported) by Paperless.
+
 **Components**:
-1. **Trigger System**: Debounced trigger via webhooks or manual activation
-2. **Document Discovery**: Tag-based filtering (NEW tag)
-3. **Processing Lock**: Prevents concurrent processing runs
-4. **Auto-Pause**: Skips processing when Web UI is active
+1. **Post-Consumption Webhook**: Paperless calls PocoClass after consuming each document
+2. **Debounced Trigger**: 30-second timer batches multiple rapid triggers into a single run
+3. **Document Discovery**: Tag-based filtering finds documents with NEW tag (no POCO+/POCO-)
+4. **Processing Lock**: Prevents concurrent processing runs
 5. **Processing History**: Audit trail of all runs
 6. **Rerun Flag**: Queues another run if triggered during processing
+
+### 7.1.1 Paperless-ngx Post-Consumption Script Setup
+
+To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents:
+
+**In Paperless-ngx configuration** (docker-compose.yml or environment):
+```yaml
+environment:
+  - PAPERLESS_POST_CONSUME_SCRIPT=/usr/src/paperless/scripts/post_consume_pococlass.sh
+```
+
+**Create the script** (`/usr/src/paperless/scripts/post_consume_pococlass.sh`):
+```bash
+#!/bin/bash
+# Post-consumption script for PocoClass integration
+# Called by Paperless-ngx after consuming each document
+
+POCOCLASS_URL="http://pococlass:8000"  # Adjust to your PocoClass URL
+ENDPOINT="${POCOCLASS_URL}/api/background/trigger"
+
+# Make HTTP POST request to trigger PocoClass processing
+curl -X POST "$ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -d '{"source": "post-consumption"}' \
+  --max-time 5 \
+  --silent \
+  --show-error
+
+exit 0  # Always exit 0 so Paperless doesn't fail on network issues
+```
+
+**Make script executable**:
+```bash
+chmod +x /usr/src/paperless/scripts/post_consume_pococlass.sh
+```
+
+**Flow**:
+```
+1. Paperless consumes document → adds NEW tag (manual or auto-tagging rule)
+2. Paperless runs post-consumption script
+3. Script calls POST /api/background/trigger
+4. PocoClass debouncer resets 30-second timer
+5. (More documents trigger, timer keeps resetting...)
+6. Timer expires → Processing batch starts
+7. PocoClass discovers all NEW-tagged documents
+8. Processes documents, applies POCO scoring
+9. Updates documents, removes NEW tag, adds POCO+ or POCO- tag
+```
+
+**Benefits**:
+- ✅ **Immediate Response**: Triggers right after document consumption
+- ✅ **Efficient Batching**: Debouncer handles bulk imports gracefully (e.g., 100 documents → 1 batch)
+- ✅ **No Polling**: Event-driven, minimal resource usage
+- ✅ **Resilient**: Failed triggers don't block Paperless consumption
 
 ### 7.2 Tag-Based Discovery
 
@@ -1660,7 +1731,7 @@ Authorization: Bearer {sessionToken}
   "rules": [
     {
       "id": "rule_001",
-      "name": "ExampleBank Statement",
+      "name": "Organization Statement",
       "enabled": true,
       "created_at": "2024-11-01T10:00:00",
       "modified_at": "2024-11-02T15:30:00"
