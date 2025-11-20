@@ -129,7 +129,6 @@ export default function Layout({ children }) {
   useEffect(() => {
     if (currentUser && !isAdmin) {
       const adminOnlyPaths = [
-        createPageUrl('Settings'),
         createPageUrl('BackgroundProcess')
       ];
       
