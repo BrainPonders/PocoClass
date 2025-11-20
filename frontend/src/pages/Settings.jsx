@@ -1101,14 +1101,15 @@ export default function Settings() {
 
                   {/* 2. Session Settings */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Session Settings</h3>
+                    <h3 className="text-md font-semibold text-gray-900 mb-2">Session Settings</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Configure session timeout and automatic logout behavior
+                    </p>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Session Timeout (hours)
-                      </label>
-                      <div className="flex gap-3 mb-2">
+                      <div className="flex items-center gap-3 mb-3">
                         <input
+                          id="session-timeout"
                           type="number"
                           min="1"
                           max="168"
@@ -1117,11 +1118,8 @@ export default function Settings() {
                           disabled={loading}
                           className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                         />
-                        <span className="text-sm text-gray-500 self-center">hours</span>
+                        <label htmlFor="session-timeout" className="text-sm font-medium text-gray-700">Session Timeout (hours)</label>
                       </div>
-                      <p className="text-xs text-gray-500 mb-3">
-                        How long before inactive sessions expire. Your session automatically refreshes with each activity, so you'll only be logged out after this much time of <strong>inactivity</strong>.
-                      </p>
                       <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
                         <strong>Background Processing Protection:</strong> The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.
                       </div>
@@ -1130,8 +1128,13 @@ export default function Settings() {
 
                   {/* 3. Paperless Datafield Synchronisation */}
                   <div className="border-t pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-md font-semibold text-gray-900">Paperless Datafield Synchronisation</h3>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-md font-semibold text-gray-900 mb-2">Paperless Datafield Synchronisation</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Sync and view cached data from Paperless-ngx
+                        </p>
+                      </div>
                       <Button
                         onClick={handleSync}
                         disabled={syncing}
@@ -1296,7 +1299,10 @@ export default function Settings() {
                   {/* 5. Sync History */}
                   {syncHistory.length > 0 && (
                     <div className="border-t pt-6">
-                      <h3 className="text-md font-semibold text-gray-900 mb-4">Sync History</h3>
+                      <h3 className="text-md font-semibold text-gray-900 mb-2">Sync History</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Recent synchronization events from Paperless-ngx
+                      </p>
                       <div className="space-y-2">
                         {syncHistory.map((entry, idx) => (
                           <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
