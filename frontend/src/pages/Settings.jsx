@@ -1497,7 +1497,7 @@ export default function Settings() {
                       const disabledReason = getDynamicDisabledReason(placeholder.placeholder_name, placeholder.is_custom_field);
                       
                       return (
-                      <div key={placeholder.id} className={`p-3 border-2 rounded-lg ${
+                      <div key={placeholder.id} className={`p-3 border rounded-lg ${
                         isMissingPoco
                           ? 'border-red-500 bg-red-50'
                           : placeholder.is_locked
