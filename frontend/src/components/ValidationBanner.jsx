@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import API_BASE_URL from '@/config/api';
 
@@ -8,6 +8,7 @@ export default function ValidationBanner() {
   const [validationData, setValidationData] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     checkValidation();
@@ -41,10 +42,17 @@ export default function ValidationBanner() {
   };
 
   const handleFixNow = () => {
-    // Store tab selection in sessionStorage for Settings page to read
-    sessionStorage.setItem('settings_active_tab', 'validation');
-    // Navigate using the same format as the navigation menu
-    navigate(createPageUrl('Settings'));
+    const settingsPath = createPageUrl('Settings');
+    const isOnSettings = location.pathname === settingsPath;
+    
+    if (isOnSettings) {
+      // If already on Settings, dispatch custom event to switch tabs
+      window.dispatchEvent(new CustomEvent('switchSettingsTab', { detail: { tab: 'validation' } }));
+    } else {
+      // Navigate to Settings and store tab selection
+      sessionStorage.setItem('settings_active_tab', 'validation');
+      navigate(settingsPath);
+    }
   };
 
   const handleDismiss = () => {

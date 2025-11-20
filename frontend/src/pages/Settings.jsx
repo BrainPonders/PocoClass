@@ -68,6 +68,16 @@ export default function Settings() {
     }
   }, [activeTab]);
 
+  // Listen for custom event from ValidationBanner to switch tabs
+  useEffect(() => {
+    const handleSwitchTab = (event) => {
+      setActiveTab(event.detail.tab);
+    };
+    
+    window.addEventListener('switchSettingsTab', handleSwitchTab);
+    return () => window.removeEventListener('switchSettingsTab', handleSwitchTab);
+  }, []);
+
   const loadAllSettings = async () => {
     try {
       setLoading(true);
