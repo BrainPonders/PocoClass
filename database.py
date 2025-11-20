@@ -1168,6 +1168,21 @@ class Database:
         cursor = conn.cursor()
         now = datetime.now().isoformat()
         
+        # Get list of current custom field names from the cache
+        custom_field_names = [cf['name'] for cf in custom_fields]
+        
+        # Delete placeholder entries for custom fields that no longer exist
+        if custom_field_names:
+            placeholders = ','.join('?' * len(custom_field_names))
+            cursor.execute(f"""
+                DELETE FROM placeholder_settings 
+                WHERE is_custom_field = 1 AND placeholder_name NOT IN ({placeholders})
+            """, custom_field_names)
+        else:
+            # If no custom fields exist, delete all custom field placeholders
+            cursor.execute("DELETE FROM placeholder_settings WHERE is_custom_field = 1")
+        
+        # Insert or update current custom fields
         # Custom fields get order_index 8, 9, 10, etc. (after built-in 1-7 and before internal 100+)
         for idx, cf in enumerate(custom_fields):
             placeholder_name = cf['name']

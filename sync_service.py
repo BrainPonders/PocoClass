@@ -109,6 +109,10 @@ class SyncService:
                 api_client, f"{paperless_url}/api/custom_fields/"
             )
             results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+            
+            # Sync custom field placeholders to reflect current state
+            self.db.sync_custom_field_placeholders()
+            
             self.db.add_log(
                 log_type='system',
                 level='info',
@@ -184,6 +188,9 @@ class SyncService:
                             api_client, f"{paperless_url}/api/custom_fields/"
                         )
                         results['custom_fields'] = self.db.sync_custom_fields(custom_fields_data)
+                        
+                        # Sync custom field placeholders to reflect current state
+                        self.db.sync_custom_field_placeholders()
                     
                     if created_items['tags_created']:
                         tags_data = self._fetch_all_with_pagination(
