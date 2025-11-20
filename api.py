@@ -689,12 +689,12 @@ def get_settings_batch():
 @app.route('/api/sync', methods=['POST'])
 @require_admin
 def trigger_sync():
-    """Trigger a full sync of Paperless data (admin only)"""
+    """Trigger a full sync of Paperless data (admin only) - does NOT auto-create mandatory items"""
     try:
         session = request.current_user
         paperless_url = db.get_config('paperless_url')
         
-        results = sync_service.sync_all(session['paperless_token'], paperless_url)
+        results = sync_service.sync_all(session['paperless_token'], paperless_url, ensure_mandatory=False)
         
         return jsonify({
             'success': True,
