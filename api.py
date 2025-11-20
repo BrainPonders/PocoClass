@@ -1036,7 +1036,11 @@ def update_poco_ocr_enabled():
                 'message': 'POCO OCR field already exists'
             })
         
-        return jsonify({'success': True, 'enabled': enabled})
+        return jsonify({
+            'success': True,
+            'enabled': enabled,
+            'message': 'POCO OCR disabled. Note: The POCO OCR custom field will NOT be removed from Paperless-ngx.'
+        })
     except Exception as e:
         logger.error(f"Error updating POCO OCR enabled status: {e}")
         return jsonify({'error': str(e)}), 500
