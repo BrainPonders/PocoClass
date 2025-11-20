@@ -574,6 +574,10 @@ def get_all_paperless_users():
         # Merge data
         result = []
         for paperless_user in paperless_users:
+            # Log if username is missing
+            if not paperless_user.get('username'):
+                logger.warning(f"User ID {paperless_user.get('id')} is missing username in Paperless API response")
+            
             pococlass_user = pococlass_map.get(paperless_user['id'])
             
             # Get groups - Paperless may return IDs or objects
@@ -592,8 +596,8 @@ def get_all_paperless_users():
                     group_names.append(str(g))
             
             result.append({
-                'paperless_id': paperless_user['id'],
-                'paperless_username': paperless_user['username'],
+                'paperless_id': paperless_user.get('id'),
+                'paperless_username': paperless_user.get('username', f"user_{paperless_user.get('id', 'unknown')}"),
                 'paperless_groups': group_names,
                 'is_active': paperless_user.get('is_active', False),
                 'is_staff': paperless_user.get('is_staff', False),
