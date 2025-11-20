@@ -994,13 +994,13 @@ def get_poco_ocr_enabled():
 @app.route('/api/settings/poco-ocr-enabled', methods=['PUT'])
 @require_admin
 def update_poco_ocr_enabled():
-    """Update POCO OCR enabled status (admin only)"""
+    """Update POCO OCR enabled status and instantly create field if enabling (admin only)"""
     try:
         data = request.json
         enabled = data.get('enabled', False)
         db.set_config('poco_ocr_enabled', 'true' if enabled else 'false')
         
-        # If enabling, check if field exists (do not create)
+        # If enabling, create field if it doesn't exist
         if enabled:
             session = request.current_user
             paperless_url = db.get_config('paperless_url')
@@ -1012,11 +1012,28 @@ def update_poco_ocr_enabled():
             
             poco_ocr_exists = api_client.check_custom_field_exists('POCO OCR') is not None
             
+            if not poco_ocr_exists:
+                try:
+                    api_client.create_custom_field('POCO OCR', 'string')
+                    logger.info("Created POCO OCR custom field")
+                    return jsonify({
+                        'success': True,
+                        'enabled': enabled,
+                        'field_created': True,
+                        'message': 'POCO OCR field has been created successfully in Paperless-ngx'
+                    })
+                except Exception as e:
+                    logger.error(f"Failed to create POCO OCR field: {e}")
+                    return jsonify({
+                        'success': False,
+                        'error': f'Failed to create POCO OCR field: {str(e)}'
+                    }), 500
+            
             return jsonify({
                 'success': True,
                 'enabled': enabled,
-                'field_exists': poco_ocr_exists,
-                'message': 'POCO OCR field enabled. Use "Fix Missing Data" if the field does not exist.' if not poco_ocr_exists else 'POCO OCR field enabled successfully.'
+                'field_created': False,
+                'message': 'POCO OCR field already exists'
             })
         
         return jsonify({'success': True, 'enabled': enabled})
