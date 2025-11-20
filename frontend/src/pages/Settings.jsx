@@ -66,6 +66,11 @@ export default function Settings() {
       loadValidationData();
       loadPocoOcrEnabled();
     }
+    if (activeTab === 'system') {
+      loadSyncStatus();
+      loadSyncHistory();
+      loadUsers();
+    }
   }, [activeTab]);
 
   // Listen for custom event from ValidationBanner to switch tabs
@@ -149,7 +154,7 @@ export default function Settings() {
   const loadUsers = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
-      const response = await fetch(`${API_BASE_URL}/api/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/all-paperless`, {
         headers: { 'Authorization': `Bearer ${sessionToken}` }
       });
       if (response.ok) {
