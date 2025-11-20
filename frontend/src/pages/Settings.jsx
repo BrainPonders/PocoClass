@@ -1030,11 +1030,72 @@ export default function Settings() {
               
               {activeTab === 'system' && (
                 <div className="space-y-8">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
-                    <p className="text-sm text-gray-600 mb-6">
-                      Manage Paperless connection, users, and data synchronization
-                    </p>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
+                      <p className="text-sm text-gray-600">
+                        Manage Paperless connection, users, and data synchronization
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleSync}
+                      disabled={loading}
+                      className="flex items-center gap-2"
+                    >
+                      <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                      {loading ? 'Syncing...' : 'Sync Now'}
+                    </Button>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Synchronization</h3>
+                    
+                    {syncStatus && (
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
+                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
+                        </div>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <div className="text-sm text-green-600 font-medium">Tags</div>
+                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
+                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
+                        </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
+                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
+                        </div>
+                        <div className="bg-cyan-50 p-4 rounded-lg">
+                          <div className="text-sm text-cyan-600 font-medium">Users</div>
+                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {syncHistory.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Recent Sync History</h4>
+                        <div className="space-y-2">
+                          {syncHistory.map((entry, idx) => (
+                            <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
+                              {entry.status === 'success' ? (
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                              ) : (
+                                <XCircle className="w-4 h-4 text-red-600" />
+                              )}
+                              <span className="font-medium text-gray-700">{entry.entity_type}</span>
+                              <span className="text-gray-500">{entry.items_synced} items</span>
+                              <span className="text-gray-400 ml-auto">
+                                {new Date(entry.synced_at).toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="border-t pt-6">
@@ -1107,6 +1168,9 @@ export default function Settings() {
 
                   <div className="border-t pt-6">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      All Paperless users with their PocoClass activation status
+                    </p>
                     
                     {users.length > 0 ? (
                       <div className="overflow-x-auto">
@@ -1120,6 +1184,12 @@ export default function Settings() {
                                 Group(s)
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Paperless Status
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                PocoClass Status
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Role
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1128,117 +1198,93 @@ export default function Settings() {
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {users.map(user => (
-                              <tr key={user.id} className={!user.is_enabled ? 'bg-gray-50 opacity-60' : ''}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {user.username}
-                                  {!user.is_enabled && (
-                                    <span className="ml-2 text-xs text-red-600">(Disabled)</span>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {user.groups?.join(', ') || '-'}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    user.is_admin ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                                  }`}>
-                                    {user.is_admin ? 'Admin' : 'User'}
-                                  </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {user.id !== currentUser?.id && (
-                                    <div className="flex gap-2">
-                                      <select
-                                        value={user.is_admin ? 'admin' : 'user'}
-                                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                        className="border border-gray-300 rounded-md px-2 py-1 text-sm"
-                                        disabled={!user.is_enabled}
-                                      >
-                                        <option value="user">User</option>
-                                        <option value="admin">Admin</option>
-                                      </select>
-                                      <button
-                                        onClick={() => handleToggleUserStatus(user.id, user.is_enabled)}
-                                        className={`px-3 py-1 text-xs font-medium rounded ${
-                                          user.is_enabled
-                                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                            : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        }`}
-                                      >
-                                        {user.is_enabled ? 'Disable' : 'Enable'}
-                                      </button>
-                                    </div>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
+                            {users.map(user => {
+                              const isCurrentUser = user.pococlass_id === currentUser?.id;
+                              const canManage = user.is_registered && !isCurrentUser;
+                              
+                              return (
+                                <tr key={user.paperless_id} className={!user.is_enabled && user.is_registered ? 'bg-gray-50 opacity-60' : ''}>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {user.paperless_username}
+                                    {isCurrentUser && (
+                                      <span className="ml-2 text-xs text-blue-600">(You)</span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {user.paperless_groups?.join(', ') || '-'}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      user.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                                    }`}>
+                                      {user.is_active ? 'Active' : 'Inactive'}
+                                    </span>
+                                    {user.is_superuser && (
+                                      <span className="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        Superuser
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {user.is_registered ? (
+                                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                        user.is_enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                      }`}>
+                                        {user.is_enabled ? 'Active' : 'Disabled'}
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                        Not Registered
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {user.is_registered ? (
+                                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                        user.pococlass_role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                                      }`}>
+                                        {user.pococlass_role === 'admin' ? 'Admin' : 'User'}
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400">-</span>
+                                    )}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {canManage ? (
+                                      <div className="flex gap-2">
+                                        <select
+                                          value={user.pococlass_role || 'user'}
+                                          onChange={(e) => handleRoleChange(user.pococlass_id, e.target.value)}
+                                          className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                                          disabled={!user.is_enabled}
+                                        >
+                                          <option value="user">User</option>
+                                          <option value="admin">Admin</option>
+                                        </select>
+                                        <button
+                                          onClick={() => handleToggleUserStatus(user.pococlass_id, user.is_enabled)}
+                                          className={`px-3 py-1 text-xs font-medium rounded ${
+                                            user.is_enabled
+                                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                          }`}
+                                        >
+                                          {user.is_enabled ? 'Disable' : 'Enable'}
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <span className="text-gray-400">-</span>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
                     ) : (
                       <div className="text-center py-8 text-gray-500">
                         No users found
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Synchronization</h3>
-                    
-                    {syncStatus && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
-                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <div className="text-sm text-green-600 font-medium">Tags</div>
-                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
-                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
-                        </div>
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
-                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
-                        </div>
-                        <div className="bg-cyan-50 p-4 rounded-lg">
-                          <div className="text-sm text-cyan-600 font-medium">Users</div>
-                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
-                        </div>
-                      </div>
-                    )}
-
-                    <Button
-                      onClick={handleSync}
-                      disabled={loading}
-                      className="flex items-center gap-2 mb-6"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                      {loading ? 'Syncing...' : 'Sync Now'}
-                    </Button>
-
-                    {syncHistory.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Recent Sync History</h4>
-                        <div className="space-y-2">
-                          {syncHistory.map((entry, idx) => (
-                            <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
-                              {entry.status === 'success' ? (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                              ) : (
-                                <XCircle className="w-4 h-4 text-red-600" />
-                              )}
-                              <span className="font-medium text-gray-700">{entry.entity_type}</span>
-                              <span className="text-gray-500">{entry.items_synced} items</span>
-                              <span className="text-gray-400 ml-auto">
-                                {new Date(entry.synced_at).toLocaleString()}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
                       </div>
                     )}
                   </div>
