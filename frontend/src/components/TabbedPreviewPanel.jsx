@@ -17,9 +17,23 @@ export default function TabbedPreviewPanel({
   };
 
   const getTabClass = (tab) => {
-    return activeTab === tab
-      ? 'px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-medium cursor-pointer transition-colors'
-      : 'px-4 py-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 cursor-pointer transition-colors';
+    const baseClass = 'px-4 py-2 border-b-2 font-medium cursor-pointer transition-colors';
+    if (activeTab === tab) {
+      return baseClass + ' border-transparent';
+    }
+    return baseClass + ' border-transparent';
+  };
+
+  const getTabStyle = (tab) => {
+    if (activeTab === tab) {
+      return {
+        borderBottomColor: 'var(--app-primary)',
+        color: 'var(--info-text)'
+      };
+    }
+    return {
+      color: 'var(--app-text-muted)'
+    };
   };
 
   const handleCopyYaml = async () => {
@@ -68,13 +82,26 @@ export default function TabbedPreviewPanel({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border border-gray-200 rounded-lg">
+    <div 
+      className="flex flex-col h-full rounded-lg"
+      style={{ 
+        backgroundColor: 'var(--app-surface)', 
+        border: '1px solid var(--app-border)' 
+      }}
+    >
       {/* Tab Headers */}
-      <div className="flex justify-between items-center border-b border-gray-200 bg-gray-50">
+      <div 
+        className="flex justify-between items-center"
+        style={{ 
+          borderBottom: '1px solid var(--app-border)', 
+          backgroundColor: 'var(--app-surface-light)' 
+        }}
+      >
         <div className="flex">
           <button
             onClick={() => handleTabClick('yaml')}
             className={getTabClass('yaml')}
+            style={getTabStyle('yaml')}
           >
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -84,6 +111,7 @@ export default function TabbedPreviewPanel({
           <button
             onClick={() => handleTabClick('ocr')}
             className={getTabClass('ocr')}
+            style={getTabStyle('ocr')}
             disabled={!ocrContent}
           >
             <div className="flex items-center gap-2">
@@ -94,6 +122,7 @@ export default function TabbedPreviewPanel({
           <button
             onClick={() => handleTabClick('pdf')}
             className={getTabClass('pdf')}
+            style={getTabStyle('pdf')}
             disabled={!documentId}
           >
             <div className="flex items-center gap-2">
@@ -108,17 +137,29 @@ export default function TabbedPreviewPanel({
           <div className="flex items-center gap-2 px-4">
             <button 
               onClick={activeTab === 'yaml' ? handleCopyYaml : handleCopyOcr}
-              className="p-2 hover:bg-gray-200 rounded transition-colors"
+              className="p-2 rounded transition-colors"
+              style={{ 
+                backgroundColor: 'transparent',
+                color: 'var(--app-text-muted)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title="Copy to clipboard"
             >
-              <Copy className="w-4 h-4 text-gray-600" />
+              <Copy className="w-4 h-4" />
             </button>
             <button 
               onClick={activeTab === 'yaml' ? handleDownloadYaml : handleDownloadOcr}
-              className="p-2 hover:bg-gray-200 rounded transition-colors"
+              className="p-2 rounded transition-colors"
+              style={{ 
+                backgroundColor: 'transparent',
+                color: 'var(--app-text-muted)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               title={activeTab === 'yaml' ? 'Download YAML' : 'Download OCR'}
             >
-              <Download className="w-4 h-4 text-gray-600" />
+              <Download className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -131,9 +172,12 @@ export default function TabbedPreviewPanel({
             {ruleData ? (
               <YamlPreview ruleData={ruleData} onGeneratorReady={setYamlGenerator} />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500 p-4">
+              <div 
+                className="flex items-center justify-center h-full p-4"
+                style={{ color: 'var(--app-text-muted)' }}
+              >
                 <div className="text-center">
-                  <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <FileText className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-muted)', opacity: 0.5 }} />
                   <p>No YAML content available</p>
                 </div>
               </div>
@@ -144,24 +188,39 @@ export default function TabbedPreviewPanel({
         {activeTab === 'ocr' && (
           <div className="h-full p-4">
             {ocrContent ? (
-              <div className="bg-gray-50 p-4 rounded flex h-full">
-                <div className="pr-4 border-r border-gray-300 text-right select-none">
-                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+              <div 
+                className="p-4 rounded flex h-full"
+                style={{ backgroundColor: 'var(--app-bg-secondary)' }}
+              >
+                <div 
+                  className="pr-4 text-right select-none"
+                  style={{ borderRight: '1px solid var(--app-border)' }}
+                >
+                  <pre 
+                    className="text-sm font-mono leading-relaxed"
+                    style={{ color: 'var(--app-text-muted)' }}
+                  >
                     {ocrContent.split('\n').map((_, i) => (
                       <div key={i}>{i + 1}</div>
                     ))}
                   </pre>
                 </div>
                 <div className="flex-1 pl-4 overflow-auto">
-                  <pre className="text-sm font-mono text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
+                  <pre 
+                    className="text-sm font-mono whitespace-pre-wrap break-words leading-relaxed"
+                    style={{ color: 'var(--app-text)' }}
+                  >
                     {ocrContent}
                   </pre>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
+              <div 
+                className="flex items-center justify-center h-full"
+                style={{ color: 'var(--app-text-muted)' }}
+              >
                 <div className="text-center">
-                  <Eye className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <Eye className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-muted)', opacity: 0.5 }} />
                   <p>No OCR content available</p>
                   <p className="text-sm mt-2">Select a document to view its OCR content</p>
                 </div>
@@ -179,9 +238,12 @@ export default function TabbedPreviewPanel({
                 title="PDF Preview"
               />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
+              <div 
+                className="flex items-center justify-center h-full"
+                style={{ color: 'var(--app-text-muted)' }}
+              >
                 <div className="text-center">
-                  <FileImage className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <FileImage className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-muted)', opacity: 0.5 }} />
                   <p>No PDF preview available</p>
                   <p className="text-sm mt-2">Select a document to view its PDF</p>
                 </div>

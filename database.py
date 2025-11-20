@@ -23,25 +23,47 @@ class TokenEncryption:
     
     def __init__(self):
         self._cipher = None
+        self._is_dev_mode = False
         self._load_key()
     
     def _load_key(self):
-        """Load encryption key from environment - REQUIRED for production"""
+        """Load encryption key from environment with development mode fallback"""
         key = os.getenv('POCOCLASS_SECRET_KEY')
         
         if not key:
-            # CRITICAL: Must set POCOCLASS_SECRET_KEY environment variable
-            error_msg = (
-                "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
-                "Token encryption requires a persistent encryption key.\n\n"
-                "To generate a secure key, run:\n"
-                "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
-                "Then add it to your environment:\n"
-                "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
-                "Application startup ABORTED for security."
-            )
-            logger.critical(error_msg)
-            raise ValueError("POCOCLASS_SECRET_KEY environment variable is required")
+            # Check for explicit development mode flag (REQUIRED for dev fallback)
+            is_dev = os.getenv('POCOCLASS_DEV_MODE') == 'true'
+            
+            if is_dev:
+                # DEVELOPMENT MODE: Generate temporary key with warning
+                warning_msg = (
+                    "⚠️  WARNING: POCOCLASS_SECRET_KEY not set - using TEMPORARY encryption key!\n"
+                    "   This is OK for development (POCOCLASS_DEV_MODE=true), but tokens will NOT persist across restarts.\n"
+                    "   For production, generate a persistent key:\n"
+                    "     python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n"
+                    "   Then set: POCOCLASS_SECRET_KEY=<your-generated-key>"
+                )
+                logger.warning(warning_msg)
+                print(f"\n{warning_msg}\n")
+                
+                # Generate a temporary key for this session only
+                key = Fernet.generate_key()
+                self._is_dev_mode = True
+            else:
+                # PRODUCTION MODE: Require explicit key
+                error_msg = (
+                    "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
+                    "Token encryption requires a persistent encryption key.\n\n"
+                    "To generate a secure key, run:\n"
+                    "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
+                    "Then add it to your environment:\n"
+                    "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
+                    "For development testing only, you can bypass this check with:\n"
+                    "  export POCOCLASS_DEV_MODE=true\n\n"
+                    "Application startup ABORTED for security."
+                )
+                logger.critical(error_msg)
+                raise ValueError("POCOCLASS_SECRET_KEY environment variable is required")
         
         # Ensure key is bytes
         if isinstance(key, str):
@@ -50,7 +72,10 @@ class TokenEncryption:
         # Validate and create cipher
         try:
             self._cipher = Fernet(key)
-            logger.info("Token encryption initialized successfully")
+            if self._is_dev_mode:
+                logger.info("Token encryption initialized (DEVELOPMENT MODE - temporary key)")
+            else:
+                logger.info("Token encryption initialized successfully")
         except Exception as e:
             logger.critical(f"Invalid POCOCLASS_SECRET_KEY: {e}")
             raise ValueError(f"Invalid encryption key format: {e}")
@@ -573,8 +598,19 @@ class Database:
         
         session = dict(row)
         
-        # Check if session expired
+        # Check if session expired (sliding window)
         if datetime.fromisoformat(session['expires_at']) < datetime.now():
+            logger.info(f"Session expired (sliding window timeout)")
+            self.delete_session(session_token)
+            return None
+        
+        # Check absolute session lifetime (prevents indefinite session extension)
+        absolute_max_hours = int(self.get_app_setting('session_absolute_max_hours', '168'))  # Default 7 days
+        created_at = datetime.fromisoformat(session['created_at'])
+        absolute_expiry = created_at + timedelta(hours=absolute_max_hours)
+        
+        if absolute_expiry < datetime.now():
+            logger.info(f"Session expired (absolute max lifetime of {absolute_max_hours} hours reached)")
             self.delete_session(session_token)
             return None
         
@@ -586,7 +622,7 @@ class Database:
             self.delete_session(session_token)
             return None
         
-        # Refresh session expiry on activity (activity-based timeout)
+        # Refresh session expiry on activity (sliding window timeout)
         self.refresh_session(session_token)
         
         return session
@@ -1168,6 +1204,21 @@ class Database:
         cursor = conn.cursor()
         now = datetime.now().isoformat()
         
+        # Get list of current custom field names from the cache
+        custom_field_names = [cf['name'] for cf in custom_fields]
+        
+        # Delete placeholder entries for custom fields that no longer exist
+        if custom_field_names:
+            placeholders = ','.join('?' * len(custom_field_names))
+            cursor.execute(f"""
+                DELETE FROM placeholder_settings 
+                WHERE is_custom_field = 1 AND placeholder_name NOT IN ({placeholders})
+            """, custom_field_names)
+        else:
+            # If no custom fields exist, delete all custom field placeholders
+            cursor.execute("DELETE FROM placeholder_settings WHERE is_custom_field = 1")
+        
+        # Insert or update current custom fields
         # Custom fields get order_index 8, 9, 10, etc. (after built-in 1-7 and before internal 100+)
         for idx, cf in enumerate(custom_fields):
             placeholder_name = cf['name']

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import MDMultiplierSlider from '../MDMultiplierSlider';
 import { calculateOcrMaxWeight } from '@/components/utils/pocoCalculations';
@@ -9,6 +10,7 @@ export default function DataVerificationStep({
   showInfoBoxes, 
   setShowInfoBoxes 
 }) {
+  const { t } = useLanguage();
   const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
   const [customFieldNames, setCustomFieldNames] = React.useState({});
 
@@ -57,9 +59,9 @@ export default function DataVerificationStep({
         const parsed = JSON.parse(settings);
         setFieldDisplaySettings(parsed.fieldDisplaySettings || {});
         setCustomFieldNames(parsed.customFieldNames || {
-          customField1: 'Invoice Number',
-          customField2: 'Reference ID',
-          documentCategory: 'Document Category'
+          customField1: t('documentClassifications.invoiceNumberDefault'),
+          customField2: t('documentClassifications.referenceIdDefault'),
+          documentCategory: t('documentClassifications.documentCategoryDefault')
         });
       }
     } catch (e) {
@@ -68,16 +70,16 @@ export default function DataVerificationStep({
   };
 
   const allVerificationFields = [
-    { key: 'title', label: 'Title' },
-    { key: 'archiveSerialNumber', label: 'Archive Serial Number' },
-    { key: 'dateCreated', label: 'Date Created' },
-    { key: 'correspondent', label: 'Correspondent' },
-    { key: 'documentType', label: 'Document Type' },
-    { key: 'storagePath', label: 'Storage Path' },
-    { key: 'tags', label: 'Tags' },
-    { key: 'documentCategory', label: 'Document Category', isCustom: true },
-    { key: 'customField1', label: 'Custom Field 1', isCustom: true },
-    { key: 'customField2', label: 'Custom Field 2', isCustom: true }
+    { key: 'title', label: t('fields.title') },
+    { key: 'archiveSerialNumber', label: t('fields.archiveSerialNumber') },
+    { key: 'dateCreated', label: t('fields.dateCreated') },
+    { key: 'correspondent', label: t('fields.correspondent') },
+    { key: 'documentType', label: t('fields.documentType') },
+    { key: 'storagePath', label: t('fields.storagePath') },
+    { key: 'tags', label: t('fields.tags') },
+    { key: 'documentCategory', label: t('fields.documentCategory'), isCustom: true },
+    { key: 'customField1', label: t('fields.customField') + ' 1', isCustom: true },
+    { key: 'customField2', label: t('fields.customField') + ' 2', isCustom: true }
   ];
 
   const verificationFields = allVerificationFields.filter(field => 
@@ -102,7 +104,7 @@ export default function DataVerificationStep({
     if (field.isCustom) {
       const rawName = customFieldNames[field.key];
       const fieldName = typeof rawName === 'string' ? rawName : (rawName?.label || rawName?.name || field.label);
-      return `Custom Field: ${fieldName}`;
+      return t('fields.customFieldLabel', { name: fieldName });
     }
     return field.label;
   };
@@ -137,31 +139,32 @@ export default function DataVerificationStep({
       <div className="mb-6">
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold">Step 4 of 6: Paperless Verification</h2>
-            <Tooltip content="Verify that extracted data matches existing Paperless metadata. This adds confidence to the classification by checking if the document's placeholders align with what was extracted from OCR." />
+            <h2 className="text-2xl font-bold">{t('wizard.step4')}</h2>
+            <Tooltip content={t('tooltips.verificationHelp')} />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isStepEnabled() 
               ? 'bg-green-100 text-green-700' 
-              : 'bg-gray-100 text-gray-600'
-          }`}>
-            {isStepEnabled() ? 'Enabled' : 'Disabled'}
+              : ''
+          }`}
+            style={!isStepEnabled() ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : {}}>
+            {isStepEnabled() ? t('status.enabled') : t('status.disabled')}
           </div>
         </div>
-        <p className="text-gray-600 mt-2">
-          Select which Paperless placeholders must be verified and configure verification multiplier.
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
+          {t('wizard.verificationDescription')}
           <span className="block mt-2 text-sm italic">
-            This step is optional. If you don't enable any fields, it will remain disabled and you can proceed to the next step.
+            {t('wizard.verificationOptionalNote')}
           </span>
         </p>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h3 className="font-semibold text-lg mb-4">Select Placeholders for Verification</h3>
+          <h3 className="font-semibold text-lg mb-4">{t('wizard.selectPlaceholdersLabel')}</h3>
           {verificationFields.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-              <p className="text-gray-500">No placeholders enabled. Enable placeholders in Settings &gt; Step 5.</p>
+            <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
+              <p style={{ color: 'var(--app-text-muted)' }}>{t('wizard.noPlaceholdersEnabled')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -171,25 +174,29 @@ export default function DataVerificationStep({
                 return (
                   <div 
                     key={field.key} 
-                    className={`flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 ${
-                      field.isCustom ? 'bg-purple-50 border-purple-200' : 'border-gray-200'
+                    className={`flex items-center justify-between p-3 border rounded-lg ${
+                      field.isCustom ? 'bg-purple-50 border-purple-200' : ''
                     }`}
+                    style={!field.isCustom ? { borderColor: 'var(--app-border)' } : {}}
+                    onMouseEnter={(e) => !field.isCustom && (e.currentTarget.style.backgroundColor = 'var(--app-surface)')}
+                    onMouseLeave={(e) => !field.isCustom && (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <span className={`text-sm font-medium ${
-                      field.isCustom ? 'text-purple-900' : 'text-gray-900'
-                    }`}>
+                      field.isCustom ? 'text-purple-900' : ''
+                    }`}
+                      style={!field.isCustom ? { color: 'var(--app-text)' } : {}}>
                       {fieldLabel}
                     </span>
                     <button
                       onClick={() => toggleField(field.key)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        isEnabled ? 'bg-blue-600' : 'bg-gray-300'
-                      }`}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
+                      style={{ backgroundColor: isEnabled ? 'var(--app-primary)' : 'var(--app-border)' }}
                     >
                       <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
                           isEnabled ? 'translate-x-6' : 'translate-x-1'
                         }`}
+                        style={{ backgroundColor: 'var(--app-surface)' }}
                       />
                     </button>
                   </div>

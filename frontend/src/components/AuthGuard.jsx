@@ -42,7 +42,8 @@ export default function AuthGuard({ children }) {
         return;
       }
 
-      if ((location.pathname === '/login' || location.pathname === '/setup') && isValid) {
+      // Only redirect away from login/setup if setup is actually completed
+      if ((location.pathname === '/login' || location.pathname === '/setup') && isValid && setupStatus.setupCompleted) {
         navigate('/', { replace: true });
       }
 
@@ -57,7 +58,7 @@ export default function AuthGuard({ children }) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--app-bg)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--app-primary)' }}></div>
           <p style={{ color: 'var(--app-text-secondary)' }}>Loading...</p>
         </div>
       </div>

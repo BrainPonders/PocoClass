@@ -28,8 +28,13 @@ export default function Tooltip({ content, children, icon = true }) {
   };
 
   const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-t-blue-600',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-blue-600'
+    top: 'top-full left-1/2 -translate-x-1/2',
+    bottom: 'bottom-full left-1/2 -translate-x-1/2'
+  };
+
+  const arrowStyles = {
+    top: { borderTopColor: 'var(--info-bg)' },
+    bottom: { borderBottomColor: 'var(--info-bg)' }
   };
 
   return (
@@ -49,12 +54,13 @@ export default function Tooltip({ content, children, icon = true }) {
       {isVisible && (
         <div 
           ref={tooltipRef}
-          className={`absolute ${positionClasses[position]} z-50 px-4 py-3 bg-blue-600 text-white text-sm rounded-lg shadow-lg whitespace-normal`}
-          style={{ maxWidth: '400px', minWidth: '250px' }}
+          className={`absolute ${positionClasses[position]} z-50 px-4 py-3 text-white text-sm rounded-lg shadow-lg whitespace-normal`}
+          style={{ maxWidth: '400px', minWidth: '250px', backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}
         >
           {content}
           <div 
             className={`absolute ${arrowClasses[position]} w-0 h-0 border-4 border-transparent`}
+            style={arrowStyles[position]}
           />
         </div>
       )}

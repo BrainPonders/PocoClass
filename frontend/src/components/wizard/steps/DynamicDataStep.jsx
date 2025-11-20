@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Wand2 } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import TagSelector from '@/components/TagSelector';
 import PatternHelperModal from '@/components/PatternHelperModal';
+import FormInput from '@/components/FormInput';
 
 export default function DynamicDataStep({ 
   ruleData, 
   updateRuleData
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const isInitialized = useRef(false);
   const [showPatternHelper, setShowPatternHelper] = useState(false);
   const [patternHelperContext, setPatternHelperContext] = useState({ ruleIndex: null, field: null });
@@ -56,10 +57,10 @@ export default function DynamicDataStep({
   };
 
   const extractionTypes = [
-    { value: 'text', label: 'Text (until end of line)' },
-    { value: 'amount', label: 'Amount/Number' },
-    { value: 'date', label: 'Date' },
-    { value: 'multiple_lines', label: 'Multiple Lines' }
+    { value: 'text', label: t('dynamicData.extractionTypes.text') },
+    { value: 'amount', label: t('dynamicData.extractionTypes.amount') },
+    { value: 'date', label: t('dynamicData.extractionTypes.date') },
+    { value: 'multiple_lines', label: t('dynamicData.extractionTypes.multipleLines') }
   ];
 
   return (
@@ -67,9 +68,9 @@ export default function DynamicDataStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{t('step_6_title')}</h2>
-          <Tooltip content="Dynamic data extraction allows you to pull specific information from documents using anchor points. Define patterns before and after the data you want to extract." />
+          <Tooltip content={t('tooltips.dynamicDataHelp')} />
         </div>
-        <p className="text-gray-600 mt-2">Configure data extraction rules to capture specific information from documents</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('dynamicData.configureDescription')}</p>
       </div>
 
       <div className="space-y-6">
@@ -77,14 +78,15 @@ export default function DynamicDataStep({
           <div key={index} className="card">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-lg">Extraction Rule {index + 1}</h4>
-                <Tooltip content="Each extraction rule identifies and extracts specific data from the document using before and after anchor patterns." />
+                <h4 className="font-semibold text-lg">{t('dynamicData.extractionRule')} {index + 1}</h4>
+                <Tooltip content={t('tooltips.extractionRuleHelp')} />
               </div>
               {ruleData.dynamicData.length > 1 && (
                 <button
                   onClick={() => removeExtractionRule(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                  title="Remove extraction rule"
+                  className="hover:text-red-500 transition-colors"
+                  style={{ color: 'var(--app-text-muted)' }}
+                  title={t('dynamicData.removeExtractionRule')}
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -95,22 +97,22 @@ export default function DynamicDataStep({
               {/* Before Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-blue-600">Before Anchor</h5>
-                  <Tooltip content="Text or pattern that appears before the data you want to extract. Can be simple text or regex." />
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>{t('dynamicData.beforeAnchor')}</h5>
+                  <Tooltip content={t('tooltips.beforeAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
-                  <input
+                  <FormInput
                     type="text"
                     value={rule.before_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'before_anchor', e.target.value)}
-                    placeholder="Enter text or regex pattern..."
-                    className="form-input flex-1"
+                    placeholder={t('placeholders.enterPattern')}
+                    className="flex-1"
                   />
                   <button
                     onClick={() => openPatternHelper(index, 'before_anchor')}
                     className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                     type="button"
-                    title="Open Pattern Helper"
+                    title={t('wizard.openPatternHelper')}
                   >
                     <Wand2 className="w-5 h-5" />
                   </button>
@@ -120,13 +122,23 @@ export default function DynamicDataStep({
               {/* Extraction Type */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-green-600">Extraction Type</h5>
-                  <Tooltip content="Defines what type of data to extract: simple text, numeric amounts, dates, or multiple lines of text." />
+                  <h5 className="text-sm font-semibold text-green-600">{t('dynamicData.extractionType')}</h5>
+                  <Tooltip content={t('tooltips.extractTypeHelp')} />
                 </div>
                 <select
                   value={rule.extraction_type || 'text'}
                   onChange={(e) => updateExtractionRule(index, 'extraction_type', e.target.value)}
-                  className="form-input w-full"
+                  style={{
+                    borderColor: 'var(--input-border, #d1d5db)',
+                    borderWidth: '1px',
+                    backgroundColor: 'var(--input-bg, #ffffff)',
+                    color: 'var(--input-text, #111827)',
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    fontSize: '1rem',
+                  }}
+                  className="transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {extractionTypes.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
@@ -137,22 +149,22 @@ export default function DynamicDataStep({
               {/* After Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-blue-600">After Anchor</h5>
-                  <Tooltip content="Text or pattern that appears after the data you want to extract. Can be simple text or regex." />
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>{t('dynamicData.afterAnchor')}</h5>
+                  <Tooltip content={t('tooltips.afterAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
-                  <input
+                  <FormInput
                     type="text"
                     value={rule.after_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'after_anchor', e.target.value)}
-                    placeholder="Enter text or regex pattern..."
-                    className="form-input flex-1"
+                    placeholder={t('placeholders.enterPattern')}
+                    className="flex-1"
                   />
                   <button
                     onClick={() => openPatternHelper(index, 'after_anchor')}
                     className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                     type="button"
-                    title="Open Pattern Helper"
+                    title={t('wizard.openPatternHelper')}
                   >
                     <Wand2 className="w-5 h-5" />
                   </button>
@@ -162,8 +174,8 @@ export default function DynamicDataStep({
               {/* Target Field with Tag Selector */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold">Target Field (Tags)</h5>
-                  <Tooltip content="Select one or more tags where the extracted data should be stored in Paperless-ngx." />
+                  <h5 className="text-sm font-semibold">{t('dynamicData.targetField')}</h5>
+                  <Tooltip content={t('tooltips.targetTagHelp')} />
                 </div>
                 <TagSelector
                   selectedTags={rule.target_field ? (Array.isArray(rule.target_field) ? rule.target_field : [rule.target_field]) : []}
@@ -179,10 +191,13 @@ export default function DynamicDataStep({
 
         <button
           onClick={addExtractionRule}
-          className="w-full p-3 border-2 border-dashed border-gray-300 hover:border-purple-400 rounded-lg bg-transparent text-purple-600 hover:text-purple-700 font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full p-3 border-2 border-dashed rounded-lg bg-transparent text-purple-600 hover:text-purple-700 font-medium transition-colors flex items-center justify-center gap-2"
+          style={{ borderColor: 'var(--app-border)' }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = '#c084fc'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
         >
           <Plus className="w-4 h-4" />
-          Add Extraction Rule
+          {t('dynamicData.addExtractionRule')}
         </button>
       </div>
 

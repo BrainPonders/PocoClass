@@ -22,7 +22,25 @@ import requests
 from functools import wraps
 
 app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
-CORS(app)
+
+# Configure CORS with security restrictions
+# Allow Replit domain and localhost for development
+replit_domain = os.getenv('REPLIT_DEV_DOMAIN', '')
+allowed_origins = [
+    f'https://{replit_domain}',
+    'http://localhost:5173',  # Vite dev server
+    'http://127.0.0.1:5173',
+]
+
+# Filter out empty origins (when REPLIT_DEV_DOMAIN is not set)
+allowed_origins = [origin for origin in allowed_origins if origin and not origin.endswith('://')]
+
+CORS(app, 
+     origins=allowed_origins,
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=True,
+     max_age=3600)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -100,6 +118,116 @@ def require_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def normalize_paperless_url(url):
+    """
+    Normalize Paperless URL by removing trailing slashes and validating scheme
+    Args:
+        url: The URL to normalize
+    Returns:
+        Normalized URL
+    Raises:
+        ValueError: If URL is invalid
+    """
+    if not url:
+        raise ValueError("Paperless URL cannot be empty")
+    
+    url = url.strip()
+    
+    # Ensure URL has a scheme
+    if not url.startswith('http://') and not url.startswith('https://'):
+        raise ValueError("Paperless URL must start with http:// or https://")
+    
+    # Remove trailing slashes
+    while url.endswith('/'):
+        url = url[:-1]
+    
+    # Basic validation - URL should have at least scheme://domain
+    if url.count('/') < 2:
+        raise ValueError("Invalid Paperless URL format")
+    
+    return url
+
+def fetch_all_users_paginated(paperless_url, token, username):
+    """
+    Fetch all users from Paperless with pagination support
+    Returns: (user_info, user_id, is_superuser) or (None, None, None) if not found
+    """
+    # Try /api/users/me/ first (most efficient - Paperless-ngx modern)
+    try:
+        user_response = requests.get(
+            f'{paperless_url}/api/users/me/',
+            headers={'Authorization': f'Token {token}'},
+            timeout=10
+        )
+        
+        if user_response.status_code == 200:
+            user_info = user_response.json()
+            user_id = user_info.get('id')
+            is_superuser = user_info.get('is_superuser', False)
+            logger.info(f"Found user via /api/users/me/ endpoint")
+            return user_info, user_id, is_superuser
+        else:
+            logger.warning(f"/api/users/me/ returned {user_response.status_code}, trying paginated user list")
+    except Exception as e:
+        logger.warning(f"Error calling /api/users/me/: {e}")
+    
+    # Fallback: paginate through ALL users to find the current user
+    try:
+        page = 1
+        page_size = 25  # Paperless default page size
+        
+        while True:
+            users_response = requests.get(
+                f'{paperless_url}/api/users/',
+                headers={'Authorization': f'Token {token}'},
+                params={'page': page, 'page_size': page_size},
+                timeout=10
+            )
+            
+            if users_response.status_code != 200:
+                logger.error(f"/api/users/ returned {users_response.status_code}")
+                break
+            
+            users_data = users_response.json()
+            
+            # Handle both list and paginated response formats
+            if isinstance(users_data, list):
+                users = users_data
+                has_next = False
+            elif isinstance(users_data, dict):
+                users = users_data.get('results', [])
+                # Check if there are more pages
+                has_next = users_data.get('next') is not None
+            else:
+                logger.error(f"Unexpected API response format: {type(users_data)}")
+                break
+            
+            # Search for user in current page
+            for user in users:
+                if user.get('username') == username:
+                    user_info = user
+                    user_id = user.get('id')
+                    is_superuser = user.get('is_superuser', False)
+                    logger.info(f"Found user '{username}' via /api/users/ pagination (page {page})")
+                    return user_info, user_id, is_superuser
+            
+            # If no more pages, stop
+            if not has_next:
+                break
+            
+            page += 1
+            
+            # Safety limit to prevent infinite loops
+            if page > 100:
+                logger.error("Exceeded maximum page limit (100) while searching for user")
+                break
+    
+    except Exception as e:
+        logger.error(f"Error during paginated user lookup: {e}")
+    
+    # User not found in Paperless
+    return None, None, None
+
 # Authentication Endpoints
 @app.route('/api/auth/status', methods=['GET'])
 def auth_status():
@@ -131,9 +259,11 @@ def setup():
         if db.is_setup_completed():
             return jsonify({'error': 'Setup already completed'}), 400
         
-        # Remove trailing slash from URL
-        if paperless_url.endswith('/'):
-            paperless_url = paperless_url[:-1]
+        # Normalize Paperless URL
+        try:
+            paperless_url = normalize_paperless_url(paperless_url)
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
         
         # Authenticate with Paperless to get user info and token
         try:
@@ -148,66 +278,29 @@ def setup():
             
             paperless_token = auth_response.json().get('token')
             
-            # Get user info from Paperless (try multiple endpoints for compatibility)
-            user_info = None
-            paperless_user_id = None
-            is_superuser = False
+            # Get user info from Paperless with proper pagination
+            user_info, paperless_user_id, is_superuser = fetch_all_users_paginated(
+                paperless_url, paperless_token, username
+            )
             
-            # Try /api/users/me/ first (Paperless-ngx modern)
-            try:
-                user_response = requests.get(
-                    f'{paperless_url}/api/users/me/',
-                    headers={'Authorization': f'Token {paperless_token}'},
-                    timeout=10
-                )
-                
-                if user_response.status_code == 200:
-                    user_info = user_response.json()
-                    paperless_user_id = user_info.get('id')
-                    is_superuser = user_info.get('is_superuser', False)
-                else:
-                    logger.warning(f"/api/users/me/ returned {user_response.status_code}, trying alternative endpoints")
-            except Exception as e:
-                logger.warning(f"Error calling /api/users/me/: {e}")
-            
-            # Fallback: try to get user list and find current user
-            if not user_info:
-                try:
-                    users_response = requests.get(
-                        f'{paperless_url}/api/users/',
-                        headers={'Authorization': f'Token {paperless_token}'},
-                        timeout=10
-                    )
-                    
-                    if users_response.status_code == 200:
-                        users_data = users_response.json()
-                        users = users_data.get('results', []) if isinstance(users_data, dict) else users_data
-                        
-                        # Find user by username
-                        for user in users:
-                            if user.get('username') == username:
-                                user_info = user
-                                paperless_user_id = user.get('id')
-                                is_superuser = user.get('is_superuser', False)
-                                logger.info(f"Found user via /api/users/ endpoint")
-                                break
-                except Exception as e:
-                    logger.warning(f"Error calling /api/users/: {e}")
-            
-            # If we still don't have user info, use a fallback approach
+            # Fail closed if user not found - do not create synthetic IDs
             if not paperless_user_id:
-                logger.warning(f"Could not get user ID from Paperless, using username hash as fallback")
-                # Use a hash of username as paperless_user_id for internal tracking
-                import hashlib
-                paperless_user_id = int(hashlib.md5(username.encode()).hexdigest()[:8], 16)
-                is_superuser = True  # Make first user admin by default
+                logger.error(
+                    f"Could not retrieve user ID from Paperless for user '{username}'. "
+                    f"This may indicate Paperless API compatibility issues or network problems."
+                )
+                return jsonify({
+                    'error': 'Failed to retrieve user information from Paperless. '
+                             'Please ensure your Paperless-ngx instance is accessible and up to date.'
+                }), 500
             
             # Create first admin user
             role = 'admin' if is_superuser else 'user'
             user_id = db.create_user(username, paperless_user_id, role)
             
-            # Complete setup
-            db.complete_setup(paperless_url)
+            # Store Paperless URL (but don't mark setup as complete yet)
+            # Setup will be completed in step 3 after validation
+            db.set_config('paperless_url', paperless_url)
             
             # Create session
             session_token = db.create_session(user_id, paperless_token)
@@ -220,7 +313,7 @@ def setup():
             except Exception as e:
                 logger.warning(f"Initial sync failed (non-critical): {e}")
             
-            logger.info(f"Setup completed by user: {username}")
+            logger.info(f"Initial setup (step 2) completed by user: {username}, awaiting validation (step 3)")
             
             return jsonify({
                 'success': True,
@@ -238,6 +331,24 @@ def setup():
             
     except Exception as e:
         logger.error(f"Error during setup: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/auth/complete-setup', methods=['POST'])
+@require_auth
+def complete_setup_endpoint():
+    """Mark setup as completed after step 3 validation"""
+    try:
+        paperless_url = db.get_config('paperless_url')
+        if not paperless_url:
+            return jsonify({'error': 'Paperless URL not configured'}), 400
+        
+        db.complete_setup(paperless_url)
+        logger.info(f"Setup completed successfully")
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logger.error(f"Error completing setup: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -276,55 +387,21 @@ def login():
             
             paperless_token = auth_response.json().get('token')
             
-            # Get user info from Paperless (try multiple endpoints for compatibility)
-            user_info = None
-            paperless_user_id = None
+            # Get user info from Paperless with proper pagination
+            user_info, paperless_user_id, is_superuser = fetch_all_users_paginated(
+                paperless_url, paperless_token, username
+            )
             
-            # Try /api/users/me/ first (Paperless-ngx modern)
-            try:
-                user_response = requests.get(
-                    f'{paperless_url}/api/users/me/',
-                    headers={'Authorization': f'Token {paperless_token}'},
-                    timeout=10
-                )
-                
-                if user_response.status_code == 200:
-                    user_info = user_response.json()
-                    paperless_user_id = user_info.get('id')
-                else:
-                    logger.warning(f"/api/users/me/ returned {user_response.status_code}, trying alternative endpoints")
-            except Exception as e:
-                logger.warning(f"Error calling /api/users/me/: {e}")
-            
-            # Fallback: try to get user list and find current user
-            if not user_info:
-                try:
-                    users_response = requests.get(
-                        f'{paperless_url}/api/users/',
-                        headers={'Authorization': f'Token {paperless_token}'},
-                        timeout=10
-                    )
-                    
-                    if users_response.status_code == 200:
-                        users_data = users_response.json()
-                        users = users_data.get('results', []) if isinstance(users_data, dict) else users_data
-                        
-                        # Find user by username
-                        for paperless_user in users:
-                            if paperless_user.get('username') == username:
-                                user_info = paperless_user
-                                paperless_user_id = paperless_user.get('id')
-                                logger.info(f"Found user via /api/users/ endpoint")
-                                break
-                except Exception as e:
-                    logger.warning(f"Error calling /api/users/: {e}")
-            
-            # If we still don't have user info, use a fallback approach
+            # Fail closed if user not found - do not create synthetic IDs
             if not paperless_user_id:
-                logger.warning(f"Could not get user ID from Paperless, using username hash as fallback")
-                # Use a hash of username as paperless_user_id for internal tracking
-                import hashlib
-                paperless_user_id = int(hashlib.md5(username.encode()).hexdigest()[:8], 16)
+                logger.error(
+                    f"Could not retrieve user ID from Paperless for user '{username}'. "
+                    f"This may indicate Paperless API compatibility issues or network problems."
+                )
+                return jsonify({
+                    'error': 'Failed to retrieve user information from Paperless. '
+                             'Please ensure your Paperless-ngx instance is accessible and up to date.'
+                }), 500
             
             # Get or create user in PocoClass database
             pococlass_user = db.get_user_by_paperless_id(paperless_user_id)
@@ -574,6 +651,10 @@ def get_all_paperless_users():
         # Merge data
         result = []
         for paperless_user in paperless_users:
+            # Log if username is missing
+            if not paperless_user.get('username'):
+                logger.warning(f"User ID {paperless_user.get('id')} is missing username in Paperless API response")
+            
             pococlass_user = pococlass_map.get(paperless_user['id'])
             
             # Get groups - Paperless may return IDs or objects
@@ -592,17 +673,17 @@ def get_all_paperless_users():
                     group_names.append(str(g))
             
             result.append({
-                'paperless_id': paperless_user['id'],
-                'paperless_username': paperless_user['username'],
+                'paperless_id': paperless_user.get('id'),
+                'paperless_username': paperless_user.get('username', f"user_{paperless_user.get('id', 'unknown')}"),
                 'paperless_groups': group_names,
                 'is_active': paperless_user.get('is_active', False),
                 'is_staff': paperless_user.get('is_staff', False),
                 'is_superuser': paperless_user.get('is_superuser', False),
                 'is_registered': pococlass_user is not None,
-                'is_enabled': pococlass_user['is_enabled'] == 1 if pococlass_user else False,
-                'pococlass_id': pococlass_user['id'] if pococlass_user else None,
-                'pococlass_role': pococlass_user['pococlass_role'] if pococlass_user else None,
-                'last_login': pococlass_user['last_login'] if pococlass_user else None
+                'is_enabled': pococlass_user.get('is_enabled', False) if pococlass_user else False,
+                'pococlass_id': pococlass_user.get('id') if pococlass_user else None,
+                'pococlass_role': pococlass_user.get('role') if pococlass_user else None,
+                'last_login': pococlass_user.get('last_login') if pococlass_user else None
             })
         
         return jsonify(result)
@@ -973,6 +1054,12 @@ def update_paperless_config():
         data = request.json
         paperless_url = data.get('paperless_url')
         if paperless_url:
+            # Normalize URL before saving (remove trailing slashes, validate scheme)
+            try:
+                paperless_url = normalize_paperless_url(paperless_url)
+            except ValueError as e:
+                return jsonify({'error': str(e)}), 400
+            
             db.set_config('paperless_url', paperless_url)
         return jsonify({'success': True})
     except Exception as e:
@@ -1235,6 +1322,22 @@ def list_rules():
         return jsonify(rules_list)
     except Exception as e:
         logger.error(f"Error listing rules: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/rules/errors', methods=['GET'])
+def get_rule_errors():
+    """Get rule loading errors"""
+    try:
+        errors = rule_loader.get_load_errors()
+        has_errors = rule_loader.has_load_errors()
+        
+        return jsonify({
+            'has_errors': has_errors,
+            'errors': errors,
+            'error_count': len(errors)
+        })
+    except Exception as e:
+        logger.error(f"Error getting rule errors: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['GET'])

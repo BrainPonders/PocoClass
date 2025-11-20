@@ -35,7 +35,7 @@ export default function ValidatedTextarea({
           onChange={onChange}
           placeholder={placeholder}
           rows={rows}
-          className={`form-textarea ${
+          className={`pc-textarea ${
             hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' :
             hasSuccess ? 'border-green-500 focus:border-green-500 focus:ring-green-500' :
             ''

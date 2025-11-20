@@ -7,10 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
+import DocumentListSection from '@/components/DocumentListSection';
 import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RuleReviewer() {
+  const { t } = useLanguage();
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
@@ -375,19 +378,19 @@ export default function RuleReviewer() {
 
   return (
     <PageLayout 
-      title="Rule Evaluation"
-      subtitle="Test and evaluate document classification rules"
+      title={t('nav.ruleEvaluation')}
+      subtitle={t('ruleEvaluation.subtitle')}
     >
 
       {/* Info Section */}
       {!hasRun && (
-        <Card className="mb-6 bg-blue-50 border-blue-200">
+        <Card className="mb-6" style={{ background: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
           <CardContent className="pt-4">
             <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-gray-700">
-                <p className="font-medium text-blue-900 mb-1">What is this section for?</p>
-                <p>Test how your classification rules perform on documents. Select a rule, pick documents to test, and click Run to see detailed results showing POCO scores, pattern matches, and extracted metadata. Use this to fine-tune your rules before applying them in production.</p>
+              <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
+              <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                <p className="font-medium mb-1" style={{ color: 'var(--info-text)' }}>{t('ruleEvaluation.whatIsThisFor')}</p>
+                <p>{t('ruleEvaluation.description')}</p>
               </div>
             </div>
           </CardContent>
@@ -395,154 +398,37 @@ export default function RuleReviewer() {
       )}
 
       {/* Document Browser */}
+      <DocumentListSection
+        title={t('ruleEvaluation.testDocuments')}
+        documents={documents}
+        isLoading={isLoadingDocuments}
+        filters={filters}
+        onFiltersChange={setFilters}
+        selectedDocuments={selectedDocuments}
+        onSelectionChange={toggleDocumentSelection}
+        allSelected={allSelected}
+        onSelectAllChange={toggleSelectAll}
+        allTags={allTags}
+        allCorrespondents={allCorrespondents}
+        allDocTypes={allDocTypes}
+        showSelectionCheckboxes={true}
+        showOwnerColumn={false}
+        onViewOCR={handleViewOCR}
+        onViewPDF={handleViewPDF}
+        noDocumentsMessage={t('ruleEvaluation.noDocumentsAvailable')}
+        cardClassName="mb-6"
+      />
+
+      {/* Rule Selector and Run Button */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Test Documents</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Paperless-style Filter Bar */}
-          <PaperlessFilterBar
-            filters={filters}
-            onFilterChange={setFilters}
-            onResetFilters={handleResetFilters}
-            allTags={allTags}
-            allCorrespondents={allCorrespondents}
-            allDocTypes={allDocTypes}
-            allCustomFields={[]}
-          />
-          {isLoadingDocuments ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          ) : documents.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
-              <p className="text-gray-500">No documents match the selected filters.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-2 py-1 text-left">
-                      <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
-                        {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                      </button>
-                    </th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {documents.map((doc) => (
-                    <tr
-                      key={doc.id}
-                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}
-                      onClick={() => toggleDocumentSelection(doc.id)}
-                    >
-                      <td className="px-2 py-1">
-                        <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
-                          {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
-                        </button>
-                      </td>
-                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        {doc.tags && doc.tags.length > 0 ? (
-                          doc.tags.map((tag, i) => {
-                            const tagObj = allTags.find(t => t.name === tag);
-                            const tagColor = tagObj?.color || '#3B82F6';
-                            
-                            const getTextColor = (hexColor) => {
-                              const r = parseInt(hexColor.slice(1, 3), 16);
-                              const g = parseInt(hexColor.slice(3, 5), 16);
-                              const b = parseInt(hexColor.slice(5, 7), 16);
-                              const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                              return luminance > 0.5 ? '#111827' : '#FFFFFF';
-                            };
-                            
-                            return (
-                              <Badge 
-                                key={i} 
-                                className="text-xs mr-1"
-                                style={{ 
-                                  backgroundColor: tagColor,
-                                  color: getTextColor(tagColor)
-                                }}
-                              >
-                                {tag}
-                              </Badge>
-                            );
-                          })
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 text-center">
-                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
-                          <span className={`text-xs font-semibold ${
-                            doc.pocoScore >= 80 ? 'text-green-600' : 
-                            doc.pocoScore >= 1 ? 'text-amber-600' : 
-                            'text-gray-400'
-                          }`}>
-                            {doc.pocoScore.toFixed(1)}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-1 justify-center">
-                          <button 
-                            className="btn btn-ghost btn-sm p-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewPDF(doc);
-                            }}
-                            title="View PDF"
-                          >
-                            <Eye className="w-3 h-3" />
-                          </button>
-                          <button 
-                            className="btn btn-ghost btn-sm p-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewOCR(doc);
-                            }}
-                            title="View OCR Content"
-                          >
-                            <FileText className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {/* Rule Selector and Run Button at bottom */}
-          <div className="flex justify-end items-center gap-3 mt-6">
+        <CardContent className="pt-6">
+          <div className="flex justify-end items-center gap-3">
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="form-select w-64 h-10"
+              className="pc-select w-64 h-10"
             >
-              <option value="">Select a rule...</option>
+              <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (
                 <option key={rule.id} value={rule.id}>{rule.ruleName}</option>
               ))}
@@ -635,14 +521,14 @@ export default function RuleReviewer() {
                     label={{ value: 'POCO Threshold', position: 'right', fill: '#f59e0b', fontSize: 12 }}
                   />
                   <Legend />
-                  <Bar dataKey="ocrScore" name="OCR Score" fill="#3b82f6">
+                  <Bar dataKey="ocrScore" name="OCR Score" fill="#1e40af">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-ocr-${index}`} fill="#3b82f6" />
+                      <Cell key={`cell-ocr-${index}`} fill="#1e40af" />
                     ))}
                   </Bar>
                   <Bar dataKey="pocoScore" name="POCO Score">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#dc2626'} />
+                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#991b1b'} />
                     ))}
                   </Bar>
                 </BarChart>
