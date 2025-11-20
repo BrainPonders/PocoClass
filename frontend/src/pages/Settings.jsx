@@ -1470,9 +1470,22 @@ export default function Settings() {
               {activeTab === 'validation' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Data Validation</h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-lg font-semibold text-gray-900">Data Validation</h2>
+                      <Button
+                        onClick={loadValidationData}
+                        disabled={loadingValidation}
+                        className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${loadingValidation ? 'animate-spin' : ''}`} />
+                        {loadingValidation ? 'Refreshing...' : 'Refresh'}
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
                       Ensure all required custom fields and tags exist in Paperless-ngx for PocoClass to function correctly
+                    </p>
+                    <p className="text-xs text-gray-500 italic">
+                      ℹ️ PocoClass automatically syncs with Paperless when you open this page. If you made changes in Paperless, click "Refresh" to see updates.
                     </p>
                   </div>
 
