@@ -8,6 +8,7 @@ export function POCOFieldsProvider({ children }) {
   const [pocoScoreExists, setPocoScoreExists] = useState(true);
   const [pocoOcrExists, setPocoOcrExists] = useState(true);
   const [pocoOcrEnabled, setPocoOcrEnabled] = useState(false);
+  const [allMandatoryDataValid, setAllMandatoryDataValid] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
 
@@ -32,6 +33,7 @@ export function POCOFieldsProvider({ children }) {
       setPocoScoreExists(data.fields?.poco_score || false);
       setPocoOcrExists(data.fields?.poco_ocr || false);
       setPocoOcrEnabled(data.poco_ocr_enabled || false);
+      setAllMandatoryDataValid(data.valid || false);
       setLastChecked(new Date());
     } catch (error) {
       console.error('Error refreshing POCO fields status:', error);
@@ -44,7 +46,7 @@ export function POCOFieldsProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const hasMissingFields = !pocoScoreExists || (pocoOcrEnabled && !pocoOcrExists);
+  const hasMissingFields = !allMandatoryDataValid;
 
   const value = {
     pocoScoreExists,
