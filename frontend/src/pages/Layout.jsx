@@ -656,7 +656,7 @@ export default function Layout({ children }) {
                       <h4>Key Paperless Concepts</h4>
                       <ul>
                         <li><strong>Documents</strong>: Each document you scan or upload becomes a searchable entry in Paperless. When you extract text from a PDF (OCR), Paperless makes that text searchable.</li>
-                        <li><strong>Correspondent</strong>: Who the document is from (e.g., "Bank of America", "IRS")</li>
+                        <li><strong>Correspondent</strong>: Who the document is from (e.g., "Financial Institution", "Government Agency")</li>
                         <li><strong>Document Type</strong>: What kind of document it is (e.g., "Invoice", "Receipt", "Letter")</li>
                         <li><strong>Tags</strong>: Labels you can apply (e.g., "Important", "Finance", "2024")</li>
                         <li><strong>Custom Fields</strong>: Extra data specific to your needs (e.g., "Invoice Amount", "Account Number")</li>
@@ -708,7 +708,7 @@ export default function Layout({ children }) {
                       <h4>Step 2: OCR Pattern Matching</h4>
                       <p>
                         OCR patterns are text strings you're looking for in the document's extracted text. 
-                        Think of it as: "Does this document mention the word 'Rabobank'?"
+                        Think of it as: "Does this document mention specific keywords or patterns?"
                       </p>
                       <p><strong>How it works</strong>:</p>
                       <ul>
@@ -734,7 +734,7 @@ export default function Layout({ children }) {
                         <ul>
                           <li><code>/invoice/i</code> - matches "invoice", "Invoice", "INVOICE"</li>
                           <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> - matches dates like "2024-01-15"</li>
-                          <li><code>/Rabobank|ABN AMRO/i</code> - matches either "Rabobank" OR "ABN AMRO"</li>
+                          <li><code>/Organization1|Organization2/i</code> - matches either "Organization1" OR "Organization2"</li>
                         </ul>
                       </div>
 
@@ -767,7 +767,7 @@ export default function Layout({ children }) {
                       <p>This is what happens when the rule matches a document:</p>
                       <p><strong>Static Metadata</strong> (Always assign the same value):</p>
                       <ul>
-                        <li>"Assign Correspondent → Bank of America"</li>
+                        <li>"Assign Correspondent → Financial Institution"</li>
                         <li>"Assign Document Type → Bank Statement"</li>
                         <li>"Assign Tags → Finance, 2024"</li>
                       </ul>

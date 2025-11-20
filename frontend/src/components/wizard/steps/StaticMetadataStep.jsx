@@ -63,7 +63,7 @@ export default function StaticMetadataStep({
           <h4 className="font-semibold text-sm mb-1">Static Metadata</h4>
           <p className="text-sm">
             This is constant data you want to assign to a document once it's recognized. 
-            For example, every "Rabobank Year Statement" will always have "Rabobank" as the correspondent.
+            For example, every statement of a certain type will always have the same correspondent assigned.
           </p>
         </div>
       </InfoBox>
@@ -76,7 +76,7 @@ export default function StaticMetadataStep({
               type="text"
               value={ruleData.staticMetadata.correspondent}
               onChange={(e) => updateRuleData('staticMetadata', { correspondent: e.target.value })}
-              placeholder="e.g., Rabobank"
+              placeholder="e.g., Organization Name"
               className="form-input"
             />
             <p className="text-xs text-gray-500 mt-1">Ideally, this would be a dropdown from your system.</p>

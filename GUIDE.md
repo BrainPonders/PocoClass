@@ -37,7 +37,7 @@ Each document you scan or upload becomes a searchable entry in Paperless. When y
 
 #### 2. **Document Properties** (Metadata)
 Each document has properties that help organize it:
-- **Correspondent**: Who the document is from (e.g., "Bank of America", "IRS")
+- **Correspondent**: Who the document is from (e.g., "Financial Institution", "Government Agency")
 - **Document Type**: What kind of document it is (e.g., "Invoice", "Receipt", "Letter")
 - **Tags**: Labels you can apply (e.g., "Important", "Finance", "2024")
 - **Custom Fields**: Extra data specific to your needs (e.g., "Invoice Amount", "Account Number")
@@ -133,7 +133,7 @@ A "rule" is a set of instructions that tells PocoClass: "If a document looks lik
 - **Description**: Optional notes about what this rule does
 
 #### **Step 2: OCR Pattern Matching**
-OCR patterns are text strings you're looking for in the document's extracted text. Think of it as: "Does this document mention the word 'Rabobank'?"
+OCR patterns are text strings you're looking for in the document's extracted text. Think of it as: "Does this document mention specific keywords or patterns?"
 
 **How it works**:
 1. You enter a search pattern (can be a simple word or a complex regular expression)
@@ -154,7 +154,7 @@ Regular expressions (regex) are a way to describe text patterns. The `/pattern/f
 Example patterns:
 - `/invoice/i` - matches "invoice", "Invoice", "INVOICE" (case-insensitive)
 - `/\d{4}-\d{2}-\d{2}/` - matches dates like "2024-01-15"
-- `/Rabobank|ABN AMRO/i` - matches either "Rabobank" OR "ABN AMRO"
+- `/Organization1|Organization2/i` - matches either "Organization1" OR "Organization2"
 
 #### **Step 3: Filename Patterns**
 These patterns search for text in the **document filename** (not the content).
@@ -180,8 +180,8 @@ These multipliers determine which data source you trust most. If OCR is 3×, you
 This is what happens when the rule matches a document:
 
 **Static Metadata** (Always assign the same value):
-- "Assign Correspondent → Bank of America"
-- "Assign Document Type → Bank Statement"
+- "Assign Correspondent → Financial Institution"
+- "Assign Document Type → Statement"
 - "Assign Tags → Finance, 2024"
 
 **Dynamic Metadata** (Extract from the document):
