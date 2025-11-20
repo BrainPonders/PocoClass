@@ -391,6 +391,11 @@ export default function Settings() {
   };
 
   const handleFixMandatoryData = async () => {
+    // Show confirmation dialog
+    if (!window.confirm('Fix Missing Data?\n\nThis will create all missing required custom fields and tags in Paperless-ngx immediately.')) {
+      return;
+    }
+
     try {
       setFixingMandatoryData(true);
       const sessionToken = localStorage.getItem('pococlass_session');
@@ -404,11 +409,19 @@ export default function Settings() {
         
         if (data.success) {
           const createdCount = data.created_fields.length + data.created_tags.length;
-          toast({
-            title: 'Missing Data Created',
-            description: `Successfully created ${createdCount} missing ${createdCount === 1 ? 'item' : 'items'}`,
-            duration: 3000,
-          });
+          if (createdCount > 0) {
+            toast({
+              title: 'Missing Data Created',
+              description: `Successfully created ${createdCount} missing ${createdCount === 1 ? 'item' : 'items'}`,
+              duration: 3000,
+            });
+          } else {
+            toast({
+              title: 'All Data Present',
+              description: 'All required custom fields and tags already exist',
+              duration: 3000,
+            });
+          }
           
           // Reload validation data and POCO fields
           await loadValidationData();
