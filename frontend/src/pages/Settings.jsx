@@ -1027,21 +1027,8 @@ export default function Settings() {
             </div>
 
             <div className="flex-1 p-6">
-              {/* Loading Indicator */}
-              {loading && (
-                <div className="mb-4 bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
-                  </div>
-                </div>
-              )}
-              
               {activeTab === 'system' && (
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <div className="flex items-start justify-between">
                     <div>
                       <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
@@ -1049,21 +1036,89 @@ export default function Settings() {
                         Manage Paperless connection, users, and data synchronization
                       </p>
                     </div>
-                    <Button
-                      onClick={handleSync}
-                      disabled={syncing}
-                      className="flex items-center gap-2"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                      {syncing ? 'Syncing...' : 'Sync Now'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={testPaperlessConnection}
+                        disabled={testingConnection || !paperlessConfig.paperless_url}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                      >
+                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
+                        {testingConnection ? 'Testing...' : 'Test Connection'}
+                      </Button>
+                      <Button
+                        onClick={handleSync}
+                        disabled={syncing}
+                        className="flex items-center gap-2"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+                        {syncing ? 'Syncing...' : 'Sync Now'}
+                      </Button>
+                    </div>
                   </div>
 
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Synchronization</h3>
+                  {/* Global Loading Indicator (initial load) or Syncing Indicator (manual sync) */}
+                  {(loading || syncing) && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">
+                          {syncing ? 'Syncing data from Paperless-ngx...' : 'Loading settings from Paperless-ngx...'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 1. Paperless Connection - Promoted to Top */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-md font-semibold text-gray-900 flex items-center gap-2">
+                        <Database className="w-5 h-5 text-blue-600" />
+                        Paperless Connection
+                      </h3>
+                      <span className="text-xs text-gray-500">Foundation</span>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Paperless URL
+                        </label>
+                        <div className="flex gap-3">
+                          <input
+                            type="url"
+                            value={paperlessConfig.paperless_url || ''}
+                            onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
+                            placeholder="https://paperless.example.com"
+                            className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={!isAdmin}
+                          />
+                          <Button
+                            onClick={handlePaperlessUrlUpdate}
+                            disabled={!isAdmin}
+                            size="sm"
+                          >
+                            Update
+                          </Button>
+                        </div>
+                        {!isAdmin && (
+                          <p className="mt-2 text-xs text-gray-500">
+                            Only administrators can update the Paperless URL
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Data Sync & Health */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Sync & Health</h3>
                     
                     {syncStatus && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <div className="text-sm text-blue-600 font-medium">Correspondents</div>
                           <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
@@ -1086,71 +1141,10 @@ export default function Settings() {
                         </div>
                       </div>
                     )}
-
-                    {syncHistory.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Recent Sync History</h4>
-                        <div className="space-y-2">
-                          {syncHistory.map((entry, idx) => (
-                            <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
-                              {entry.status === 'success' ? (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
-                              ) : (
-                                <XCircle className="w-4 h-4 text-red-600" />
-                              )}
-                              <span className="font-medium text-gray-700">{entry.entity_type}</span>
-                              <span className="text-gray-500">{entry.items_synced} items</span>
-                              <span className="text-gray-400 ml-auto">
-                                {new Date(entry.synced_at).toLocaleString()}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Paperless Instance</h3>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Paperless URL
-                      </label>
-                      <div className="flex gap-3 mb-3">
-                        <input
-                          type="url"
-                          value={paperlessConfig.paperless_url || ''}
-                          onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
-                          placeholder="https://paperless.example.com"
-                          className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          disabled={!isAdmin}
-                        />
-                        <Button
-                          onClick={handlePaperlessUrlUpdate}
-                          disabled={!isAdmin}
-                        >
-                          Update
-                        </Button>
-                      </div>
-                      <Button
-                        onClick={testPaperlessConnection}
-                        disabled={testingConnection || !paperlessConfig.paperless_url}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
-                        {testingConnection ? 'Testing...' : 'Test Connection'}
-                      </Button>
-                      {!isAdmin && (
-                        <p className="mt-2 text-xs text-gray-500">
-                          Only administrators can update the Paperless URL
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-6">
+                  {/* 3. Session Settings */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Session Settings</h3>
                     
                     <div>
@@ -1178,8 +1172,9 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">User Management</h3>
+                  {/* 4. User Management */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-2">User Management</h3>
                     <p className="text-sm text-gray-600 mb-4">
                       All Paperless users with their PocoClass activation status
                     </p>
@@ -1300,6 +1295,29 @@ export default function Settings() {
                       </div>
                     )}
                   </div>
+
+                  {/* 5. Sync History */}
+                  {syncHistory.length > 0 && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h3 className="text-md font-semibold text-gray-900 mb-4">Sync History</h3>
+                      <div className="space-y-2">
+                        {syncHistory.map((entry, idx) => (
+                          <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
+                            {entry.status === 'success' ? (
+                              <CheckCircle className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <XCircle className="w-4 h-4 text-red-600" />
+                            )}
+                            <span className="font-medium text-gray-700">{entry.entity_type}</span>
+                            <span className="text-gray-500">{entry.items_synced} items</span>
+                            <span className="text-gray-400 ml-auto">
+                              {new Date(entry.synced_at).toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1311,6 +1329,19 @@ export default function Settings() {
                       Customize the look and feel of your interface
                     </p>
                   </div>
+
+                  {/* Global Loading Indicator */}
+                  {loading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1370,6 +1401,19 @@ export default function Settings() {
                     </p>
                   </div>
 
+                  {/* Global Loading Indicator */}
+                  {loading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {Object.entries(
                       dateFormats.reduce((acc, fmt) => {
@@ -1412,6 +1456,19 @@ export default function Settings() {
                       Control which fields appear in the wizard and how they behave
                     </p>
                   </div>
+
+                  {/* Global Loading Indicator */}
+                  {loading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <h3 className="text-sm font-semibold text-blue-900 mb-2">Visibility Modes</h3>
@@ -1821,6 +1878,19 @@ export default function Settings() {
                       Configure automatic document classification for newly uploaded documents
                     </p>
                   </div>
+
+                  {/* Global Loading Indicator */}
+                  {loading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="border-t pt-6">
                     <div className="space-y-6">
