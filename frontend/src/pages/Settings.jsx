@@ -1695,11 +1695,16 @@ export default function Settings() {
                       <div className="mt-4">
                         <Button
                           onClick={handleFixMandatoryData}
-                          disabled={fixingMandatoryData}
+                          disabled={fixingMandatoryData || !isAdmin}
                           className="bg-red-600 hover:bg-red-700 text-white"
                         >
                           {fixingMandatoryData ? 'Creating...' : 'Fix Missing Data'}
                         </Button>
+                        {!isAdmin && (
+                          <p className="mt-2 text-xs text-gray-500">
+                            Only administrators can create missing custom fields and tags
+                          </p>
+                        )}
                       </div>
                     </div>
                   ) : validationData && validationData.valid ? (

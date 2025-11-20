@@ -603,10 +603,10 @@ def get_all_paperless_users():
                 'is_staff': paperless_user.get('is_staff', False),
                 'is_superuser': paperless_user.get('is_superuser', False),
                 'is_registered': pococlass_user is not None,
-                'is_enabled': pococlass_user['is_enabled'] == 1 if pococlass_user else False,
-                'pococlass_id': pococlass_user['id'] if pococlass_user else None,
-                'pococlass_role': pococlass_user['pococlass_role'] if pococlass_user else None,
-                'last_login': pococlass_user['last_login'] if pococlass_user else None
+                'is_enabled': pococlass_user.get('is_enabled', False) if pococlass_user else False,
+                'pococlass_id': pococlass_user.get('id') if pococlass_user else None,
+                'pococlass_role': pococlass_user.get('role') if pococlass_user else None,
+                'last_login': pococlass_user.get('last_login') if pococlass_user else None
             })
         
         return jsonify(result)
