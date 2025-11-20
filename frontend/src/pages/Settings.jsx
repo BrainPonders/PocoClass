@@ -581,6 +581,13 @@ export default function Settings() {
       return;
     }
 
+    // If enabling, show confirmation dialog
+    if (enabled) {
+      if (!window.confirm('Enable POCO OCR field?\n\nThis will create the POCO OCR custom field in Paperless-ngx immediately. The field stores the OCR confidence score (0-100%).')) {
+        return;
+      }
+    }
+
     try {
       setLoadingPocoOcr(true);
       const sessionToken = localStorage.getItem('pococlass_session');
@@ -593,17 +600,27 @@ export default function Settings() {
         body: JSON.stringify({ enabled })
       });
 
-      if (!response.ok) throw new Error('Failed to update POCO OCR setting');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update POCO OCR setting');
+      }
 
+      const data = await response.json();
       setPocoOcrEnabled(enabled);
       
       toast({
-        title: 'Setting Updated',
-        description: enabled 
-          ? 'POCO OCR field will be created during next sync or when you click "Fix Missing Data"'
-          : 'POCO OCR field disabled',
+        title: enabled ? 'POCO OCR Enabled' : 'POCO OCR Disabled',
+        description: data.message || (enabled 
+          ? 'POCO OCR field created successfully'
+          : 'POCO OCR field disabled'),
         duration: 3000,
       });
+      
+      // Refresh validation data after change
+      if (activeTab === 'validation') {
+        await loadValidationData();
+      }
+      await refreshPocoFields();
     } catch (error) {
       toast({
         title: 'Update Failed',
@@ -611,6 +628,8 @@ export default function Settings() {
         variant: 'destructive',
         duration: 5000,
       });
+      // Reset toggle on error
+      setPocoOcrEnabled(!enabled);
     } finally {
       setLoadingPocoOcr(false);
     }
