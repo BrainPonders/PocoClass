@@ -44,6 +44,9 @@ export function POCOFieldsProvider({ children }) {
 
   useEffect(() => {
     refresh();
+    // Set up interval to refresh every 2 seconds to catch changes from other pages
+    const interval = setInterval(refresh, 2000);
+    return () => clearInterval(interval);
   }, [refresh]);
 
   const hasMissingFields = !allMandatoryDataValid;
