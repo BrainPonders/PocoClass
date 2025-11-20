@@ -1503,9 +1503,6 @@ export default function Settings() {
                     <p className="text-sm text-gray-600 mb-2">
                       Ensure all required custom fields and tags exist in Paperless-ngx for PocoClass to function correctly
                     </p>
-                    <p className="text-xs text-gray-500 italic">
-                      ℹ️ PocoClass automatically syncs with Paperless when you open this page. If you made changes in Paperless, click "Refresh" to see updates.
-                    </p>
                   </div>
 
                   {loadingValidation ? (
