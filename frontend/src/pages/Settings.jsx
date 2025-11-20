@@ -54,6 +54,7 @@ export default function Settings() {
 
   const [pocoOcrEnabled, setPocoOcrEnabled] = useState(false);
   const [loadingPocoOcr, setLoadingPocoOcr] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     loadAllSettings();
@@ -212,7 +213,7 @@ export default function Settings() {
   };
 
   const handleSync = async () => {
-    setLoading(true);
+    setSyncing(true);
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync`, {
@@ -234,6 +235,7 @@ export default function Settings() {
 
       loadSyncStatus();
       loadSyncHistory();
+      loadUsers();
       loadPlaceholders();
       refreshPocoFields();
     } catch (error) {
@@ -244,11 +246,16 @@ export default function Settings() {
         duration: 5000,
       });
     } finally {
-      setLoading(false);
+      setSyncing(false);
     }
   };
 
   const handleRoleChange = async (userId, newRole) => {
+    if (!userId) {
+      console.error('Cannot change role: userId is undefined');
+      return;
+    }
+    
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/users/${userId}/role`, {
@@ -280,6 +287,11 @@ export default function Settings() {
   };
 
   const handleToggleUserStatus = async (userId, isEnabled) => {
+    if (!userId) {
+      console.error('Cannot toggle user status: userId is undefined');
+      return;
+    }
+    
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
       const action = isEnabled ? 'disable' : 'enable';
@@ -1039,11 +1051,11 @@ export default function Settings() {
                     </div>
                     <Button
                       onClick={handleSync}
-                      disabled={loading}
+                      disabled={syncing}
                       className="flex items-center gap-2"
                     >
-                      <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                      {loading ? 'Syncing...' : 'Sync Now'}
+                      <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+                      {syncing ? 'Syncing...' : 'Sync Now'}
                     </Button>
                   </div>
 
