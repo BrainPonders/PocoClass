@@ -1146,8 +1146,8 @@ def fix_mandatory_data():
             field_name = field_spec['name']
             if not api_client.check_custom_field_exists(field_name):
                 try:
-                    success = api_client.create_custom_field(field_name, field_spec['data_type'])
-                    if success:
+                    field_id = api_client.get_custom_field_id(field_name)
+                    if field_id:
                         created_fields.append(field_name)
                     else:
                         errors.append(f"Failed to create field: {field_name}")
@@ -1156,17 +1156,17 @@ def fix_mandatory_data():
         
         # Create missing tags
         required_tags = [
-            {'name': 'POCO+', 'color': '#10b981', 'is_inbox_tag': False},
-            {'name': 'POCO-', 'color': '#ef4444', 'is_inbox_tag': False},
-            {'name': 'NEW', 'color': '#3b82f6', 'is_inbox_tag': False}
+            {'name': 'POCO+'},
+            {'name': 'POCO-'},
+            {'name': 'NEW'}
         ]
         
         for tag_spec in required_tags:
             tag_name = tag_spec['name']
             if not api_client.check_tag_exists(tag_name):
                 try:
-                    success = api_client.create_tag(tag_name, tag_spec['color'], tag_spec['is_inbox_tag'])
-                    if success:
+                    tag_id = api_client.get_tag_id(tag_name)
+                    if tag_id:
                         created_tags.append(tag_name)
                     else:
                         errors.append(f"Failed to create tag: {tag_name}")
