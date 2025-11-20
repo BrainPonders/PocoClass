@@ -43,10 +43,30 @@ export function POCOFieldsProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    // Refresh on initial mount
     refresh();
-    // Set up interval to refresh every 2 seconds to catch changes from other pages
-    const interval = setInterval(refresh, 2000);
-    return () => clearInterval(interval);
+    
+    // Refresh immediately when tab becomes visible (user returns from another tab/window)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refresh();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Passive refresh every 5 minutes as a fallback
+    // This catches changes made externally without aggressive polling
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refresh();
+      }
+    }, 300000); // 5 minutes
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(interval);
+    };
   }, [refresh]);
 
   const hasMissingFields = !allMandatoryDataValid;

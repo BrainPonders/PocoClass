@@ -6,19 +6,20 @@ import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
 import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown, Eye, X } from 'lucide-react';
 import API_BASE_URL from '@/config/api';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import YamlExportButton from '@/components/YamlExportButton';
 import TrashCanModal from '@/components/TrashCanModal';
 import PaperlessFilterBar from '@/components/PaperlessFilterBar';
+import DocumentListSection from '@/components/DocumentListSection';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PageLayout from '@/components/PageLayout';
 
 export default function Rules() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const { showToast } = useToast();
   
   const [rules, setRules] = useState([]);
@@ -78,9 +79,9 @@ export default function Rules() {
         if (isMounted) {
           console.error('Error loading rules:', error);
           if (error.message && error.message.includes('Rate limit')) {
-            showToast('Too many requests. Please wait a moment.', 'warning');
+            showToast(t('toasts.tooManyRequests'), 'warning');
           } else {
-            showToast('Error loading rules', 'error');
+            showToast(t('toasts.errorLoadingRules'), 'error');
           }
         }
       } finally {
@@ -302,23 +303,23 @@ export default function Rules() {
     
     // Protect template_v2 from deletion
     if (rule.ruleId === 'template_v2') {
-      showToast('Template Rule v2 cannot be deleted', 'error');
+      showToast(t('toasts.templateProtected'), 'error');
       return;
     }
     
     setConfirmDialog({
       isOpen: true,
-      title: t('rules_confirm_delete'),
-      message: `Delete "${rule.ruleName}"? This rule will be moved to the deleted folder.`,
+      title: t('dialogs.deleteRule.title'),
+      message: t('dialogs.deleteRule.message', { ruleName: rule.ruleName }),
       onConfirm: async () => {
         try {
           // Delete the rule (backend moves it to deleted folder)
           await Rule.delete(ruleId);
-          showToast(`Rule "${rule.ruleName}" moved to deleted folder`, 'success');
+          showToast(t('toasts.ruleDeleted', { ruleName: rule.ruleName }), 'success');
           await reloadRules();
         } catch (error) {
           console.error('Error deleting rule:', error);
-          showToast('Error deleting rule', 'error');
+          showToast(t('toasts.ruleDeleteError'), 'error');
         }
         setConfirmDialog({ isOpen: false });
       },
@@ -340,11 +341,11 @@ export default function Rules() {
       delete duplicateData.created_by;
       
       await Rule.create(duplicateData);
-      showToast('Rule duplicated successfully', 'success');
+      showToast(t('toasts.ruleDuplicated'), 'success');
       await reloadRules();
     } catch (error) {
       console.error('Error duplicating rule:', error);
-      showToast('Error duplicating rule', 'error');
+      showToast(t('toasts.ruleDuplicateError'), 'error');
     }
   };
 
@@ -365,13 +366,13 @@ export default function Rules() {
     try {
       await Rule.update(rule.id, { ...rule, status: newStatus });
       const message = isCurrentlyActive 
-        ? `Rule "${rule.ruleName}" deactivated`
-        : `Rule "${rule.ruleName}" activated`;
+        ? t('toasts.ruleDeactivated', { ruleName: rule.ruleName })
+        : t('toasts.ruleActivated', { ruleName: rule.ruleName });
       showToast(message, 'success');
       await reloadRules();
     } catch (error) {
       console.error('Error toggling rule status:', error);
-      showToast('Error updating rule status', 'error');
+      showToast(t('toasts.ruleStatusError'), 'error');
     }
   };
 
@@ -381,8 +382,8 @@ export default function Rules() {
     if (action === 'delete') {
       setConfirmDialog({
         isOpen: true,
-        title: `Delete ${selectedRules.length} rule(s)?`,
-        message: 'Rules will be moved to the trash can.',
+        title: t('dialogs.deleteMultiple.title', { count: selectedRules.length }),
+        message: t('dialogs.deleteMultiple.message'),
         onConfirm: async () => {
           try {
             // Filter out protected rules
@@ -397,15 +398,15 @@ export default function Rules() {
             await Promise.all(rulesToDelete.map(id => Rule.delete(id)));
             
             if (protectedCount > 0) {
-              showToast(`${rulesToDelete.length} rule(s) deleted. ${protectedCount} protected rule(s) skipped.`, 'warning');
+              showToast(t('toasts.rulesDeletedWithSkipped', { count: rulesToDelete.length, skipped: protectedCount }), 'warning');
             } else {
-              showToast(`${rulesToDelete.length} rule(s) moved to deleted folder`, 'success');
+              showToast(t('toasts.rulesDeleted', { count: rulesToDelete.length }), 'success');
             }
             setSelectedRules([]);
             await reloadRules();
           } catch (error) {
             console.error('Bulk delete error:', error);
-            showToast('Error deleting rules', 'error');
+            showToast(t('toasts.rulesDeleteError'), 'error');
           }
           setConfirmDialog({ isOpen: false });
         },
@@ -414,28 +415,12 @@ export default function Rules() {
     } else if (action === 'activate' || action === 'deactivate') {
       const newStatus = action === 'activate' ? 'active' : 'inactive';
       
-      // Check if activating draft rules
-      let confirmMessage = action === 'activate' 
-        ? `Activate ${selectedRules.length} rule(s)?`
-        : `Deactivate ${selectedRules.length} rule(s)?`;
-      
-      let warningMessage = `${selectedRules.length} rule(s) will be ${newStatus}`;
-      
-      if (action === 'activate') {
-        const newRules = selectedRules.filter(id => {
-          const rule = rules.find(r => r.id === id);
-          return rule && rule.status === 'new';
-        });
-        
-        if (newRules.length > 0) {
-          warningMessage = `⚠️ Warning: ${newRules.length} of ${selectedRules.length} selected rule(s) are in "new" status. Are you sure you want to activate them?`;
-        }
-      }
+      const dialogKey = action === 'activate' ? 'activateRules' : 'deactivateRules';
 
       setConfirmDialog({
         isOpen: true,
-        title: confirmMessage,
-        message: warningMessage,
+        title: t(`dialogs.${dialogKey}.title`, { count: selectedRules.length }),
+        message: t(`dialogs.${dialogKey}.message`),
         variant: 'info',
         onConfirm: async () => {
           try{
@@ -445,15 +430,13 @@ export default function Rules() {
                 return Rule.update(id, { ...rule, status: newStatus });
               })
             );
-            const successMessage = action === 'activate' 
-              ? `${selectedRules.length} rule(s) activated`
-              : `${selectedRules.length} rule(s) deactivated`;
-            showToast(successMessage, 'success');
+            const toastKey = action === 'activate' ? 'rulesActivated' : 'rulesDeactivated';
+            showToast(t(`toasts.${toastKey}`, { count: selectedRules.length }), 'success');
             setSelectedRules([]);
             await reloadRules();
           } catch (error) {
             console.error('Bulk status update error:', error);
-            showToast('Error updating rules', 'error');
+            showToast(t('toasts.rulesStatusError'), 'error');
           }
           setConfirmDialog({ isOpen: false });
         },
@@ -488,7 +471,7 @@ export default function Rules() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--app-primary)' }}></div>
         <span className="sr-only">Loading rules...</span>
       </div>
     );
@@ -496,8 +479,8 @@ export default function Rules() {
 
   return (
     <PageLayout
-      title={t('rules_title')}
-      subtitle={t('rules_subtitle')}
+      title={t('rules.title')}
+      subtitle={t('rules.subtitle')}
       actions={
         <>
           <button 
@@ -506,7 +489,7 @@ export default function Rules() {
             aria-label="Open trash can"
           >
             <Trash2 className="w-5 h-5" />
-            Trash
+            {t('rulesPage.trash')}
           </button>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
@@ -514,32 +497,33 @@ export default function Rules() {
             aria-label="Create new rule"
           >
             <Plus className="w-5 h-5" />
-            {t('rules_create')}
+            {t('rules.createNew')}
           </button>
         </>
       }
     >
       {/* Warning banner about rule activation */}
-      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p className="text-sm text-yellow-800">
-          <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
-          <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
+      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+        <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
+          <strong>⚠️ {t('warnings.ruleActivationWarning')}</strong>
         </p>
       </div>
 
         {/* Search, Filter, Sort Bar */}
         <div className="card mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" aria-hidden="true" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none z-10" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={t('rules_search_placeholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  style={{ paddingLeft: '2.5rem' }}
+                  placeholder={t('placeholders.searchRules')}
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none"
+                  style={{ paddingLeft: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                  onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                  onBlur={(e) => e.target.style.boxShadow = 'none'}
                   aria-label="Search rules by name, ID, or description"
                 />
               </div>
@@ -549,29 +533,33 @@ export default function Rules() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 appearance-none bg-white"
-                style={{ paddingRight: '2.5rem' }}
+                className="w-full px-3 py-2 rounded-lg focus:outline-none pr-10 appearance-none"
+                style={{ paddingRight: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                onBlur={(e) => e.target.style.boxShadow = 'none'}
                 aria-label="Filter rules by status"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
+                <option value="all">{t('filters.allStatus')}</option>
+                <option value="active">{t('status.active')}</option>
                 <option value="new">New</option>
-                <option value="inactive">Inactive</option>
+                <option value="inactive">{t('status.inactive')}</option>
               </select>
             </div>
 
             <div>
               <div className="relative">
-                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" aria-hidden="true" />
+                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none z-10" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10 appearance-none bg-white"
-                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none pl-10 appearance-none"
+                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                  onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                  onBlur={(e) => e.target.style.boxShadow = 'none'}
                   aria-label="Sort rules"
                 >
-                  <option value="date_newest">Newest First</option>
-                  <option value="date_oldest">Oldest First</option>
+                  <option value="date_newest">{t('filters.newestFirst')}</option>
+                  <option value="date_oldest">{t('filters.oldestFirst')}</option>
                   <option value="name_asc">Name (A-Z)</option>
                   <option value="name_desc">Name (Z-A)</option>
                   <option value="status">Status</option>
@@ -584,9 +572,9 @@ export default function Rules() {
         {/* Bulk Actions - Fixed height to prevent layout jumping */}
         <div className="mb-6" style={{ minHeight: selectedRules.length > 0 ? 'auto' : '0' }}>
           {selectedRules.length > 0 && (
-            <div className="card bg-blue-50 border-blue-200">
+            <div className="card" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-blue-900">
+                <span className="font-semibold" style={{ color: 'var(--info-text)' }}>
                   {selectedRules.length} rule(s) selected
                 </span>
                 <div className="flex gap-2">
@@ -596,7 +584,7 @@ export default function Rules() {
                     aria-label="Activate selected rules"
                   >
                     <Power className="w-4 h-4" />
-                    Activate
+                    {t('rulesPage.activate')}
                   </button>
                   <button 
                     onClick={() => handleBulkAction('deactivate')} 
@@ -604,7 +592,7 @@ export default function Rules() {
                     aria-label="Deactivate selected rules"
                   >
                     <PowerOff className="w-4 h-4" />
-                    Deactivate
+                    {t('rulesPage.deactivate')}
                   </button>
                   <button 
                     onClick={() => handleBulkAction('delete')} 
@@ -612,7 +600,7 @@ export default function Rules() {
                     aria-label="Delete selected rules"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -623,23 +611,23 @@ export default function Rules() {
       {/* Rules Table */}
       {filteredRules.length === 0 ? (
         <div className="card text-center py-16">
-          <FileText className="w-20 h-20 text-gray-300 mx-auto mb-4" aria-hidden="true" />
-          <h3 className="text-2xl font-semibold text-gray-700 mb-2">{t('rules_no_rules')}</h3>
-          <p className="text-gray-500 mb-6">Get started by creating your first classification rule</p>
+          <FileText className="w-20 h-20 mx-auto mb-4" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
+          <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--app-text-secondary)' }}>{t('rules.noRules')}</h3>
+          <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>{t('rules.createFirstRuleDesc')}</p>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
             className="btn btn-primary"
             aria-label="Create your first rule"
           >
             <Plus className="w-5 h-5" />
-            {t('rules_create')}
+            {t('rules.createNew')}
           </button>
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="rounded-lg shadow overflow-hidden" style={{ backgroundColor: 'var(--app-surface)' }}>
             <table className="w-full" role="table" aria-label="Rules table">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead style={{ backgroundColor: 'var(--app-bg-secondary)', borderBottom: '1px solid var(--app-border)' }}>
                 <tr>
                   <th className="px-4 py-3 text-left w-12" scope="col">
                     <input
@@ -650,18 +638,18 @@ export default function Rules() {
                       aria-label="Select all rules on this page"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule Name</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule ID</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Source Document</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">{t('common_status')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Threshold</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Created</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700" scope="col">{t('common_actions')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleName')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleId')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.sourceDocument')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.status')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.threshold')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.created')}</th>
+                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody style={{ borderTop: '1px solid var(--app-border)' }}>
                 {paginatedRules.map((rule) => (
-                  <tr key={rule.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={rule.id} className="transition-colors" style={{ borderBottom: '1px solid var(--app-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -672,37 +660,37 @@ export default function Rules() {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">{rule.ruleName}</div>
+                      <div className="font-medium" style={{ color: 'var(--app-text)' }}>{rule.ruleName}</div>
                       {rule.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-md">{rule.description}</div>
+                        <div className="text-sm truncate max-w-md" style={{ color: 'var(--app-text-secondary)' }}>{rule.description}</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">{rule.ruleId}</code>
+                      <code className="text-xs px-2 py-1 rounded" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>{rule.ruleId}</code>
                     </td>
                     <td className="px-4 py-3">
                       {rule.source_document_id ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-700 font-mono">{rule.source_document_id}</span>
-                          <span className="text-xs text-gray-500">(Paperless ID)</span>
+                          <span className="text-sm font-mono" style={{ color: 'var(--app-text)' }}>{rule.source_document_id}</span>
+                          <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>({t('filters.searchPlaceholder') === 'Rechercher...' ? 'ID Paperless' : 'Paperless ID'})</span>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">-</span>
+                        <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         rule.status === 'active' ? 'bg-green-100 text-green-800' :
-                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : ''
+                      }`}
+                      style={!['active', 'draft'].includes(rule.status) ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
                         {rule.status ? rule.status.charAt(0).toUpperCase() + rule.status.slice(1) : 'Unknown'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3" style={{ color: 'var(--app-text)' }}>
                       {rule.threshold}%
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                       {rule.created_date ? new Date(rule.created_date).toLocaleDateString('en-GB', { 
                         day: 'numeric', 
                         month: 'short', 
@@ -714,10 +702,11 @@ export default function Rules() {
                         <button 
                           onClick={() => handleToggleStatus(rule)}
                           className={`btn btn-ghost btn-sm ${
-                            rule.status === 'active' ? 'text-green-600' : 'text-gray-400'
+                            rule.status === 'active' ? 'text-green-600' : ''
                           }`}
-                          title={rule.status === 'active' ? 'Deactivate rule' : 'Activate rule'}
-                          aria-label={rule.status === 'active' ? `Deactivate rule ${rule.ruleName}` : `Activate rule ${rule.ruleName}`}
+                          style={rule.status !== 'active' ? { color: 'var(--app-text-muted)' } : undefined}
+                          title={rule.status === 'active' ? t('rules.disableRule') : t('rules.enableRule')}
+                          aria-label={rule.status === 'active' ? `${t('rules.disableRule')} ${rule.ruleName}` : `${t('rules.enableRule')} ${rule.ruleName}`}
                         >
                           {rule.status === 'active' ? (
                             <Power className="w-4 h-4" />
@@ -729,7 +718,7 @@ export default function Rules() {
                         <button 
                           onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${rule.id}`)}
                           className="btn btn-ghost btn-sm"
-                          title={t('common_edit')}
+                          title={t('common.edit')}
                           aria-label={`Edit rule ${rule.ruleName}`}
                         >
                           <Pencil className="w-4 h-4" />
@@ -737,15 +726,15 @@ export default function Rules() {
                         <button 
                           onClick={() => handleDuplicate(rule)}
                           className="btn btn-ghost btn-sm"
-                          title={t('common_duplicate')}
-                          aria-label={`Duplicate rule ${rule.ruleName}`}
+                          title={t('rules.duplicateRule')}
+                          aria-label={`${t('rules.duplicateRule')} ${rule.ruleName}`}
                         >
                           <Copy className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleDelete(rule.id)}
                           className="btn btn-ghost btn-sm text-red-500"
-                          title={t('common_delete')}
+                          title={t('common.delete')}
                           aria-label={`Delete rule ${rule.ruleName}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -761,7 +750,7 @@ export default function Rules() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-6" role="navigation" aria-label="Pagination">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                 Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredRules.length)} of {filteredRules.length} rules
               </div>
               <div className="flex gap-2">
@@ -771,7 +760,7 @@ export default function Rules() {
                   className="btn btn-secondary btn-sm"
                   aria-label="Go to previous page"
                 >
-                  {t('common_previous')}
+                  {t('common.previous')}
                 </button>
                 {[...Array(Math.min(5, totalPages))].map((_, i) => {
                   const pageNum = i + 1;
@@ -793,7 +782,7 @@ export default function Rules() {
                   className="btn btn-secondary btn-sm"
                   aria-label="Go to next page"
                 >
-                  {t('common_next')}
+                  {t('common.next')}
                 </button>
               </div>
             </div>
@@ -802,196 +791,62 @@ export default function Rules() {
       )}
 
       {/* Documents without Rules */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>
-            Documents without Rules ({documents.length} found)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* New Paperless-style Filter Bar */}
-          <PaperlessFilterBar
-            filters={filters}
-            onFilterChange={setFilters}
-            onResetFilters={handleResetFilters}
-            allTags={allTags}
-            allCorrespondents={allCorrespondents}
-            allDocTypes={allDocTypes}
-            allCustomFields={[]}
-          />
-          
-          {isLoadingDocuments ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          ) : documents.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Found</h3>
-              <div className="text-gray-500 space-y-2">
-                <p>No documents found. This could mean:</p>
-                <ul className="list-disc list-inside text-left max-w-md mx-auto">
-                  <li>No documents exist in Paperless-ngx</li>
-                  <li>All documents have been processed</li>
-                  <li>Current filters are too restrictive</li>
-                </ul>
-                <p className="mt-4 text-sm">
-                  Check the browser console for API response details.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {documents.map((doc) => (
-                    <tr 
-                      key={doc.id} 
-                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
-                      onClick={() => setSelectedDocument(doc)}
-                    >
-                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-1 flex-wrap">
-                          {doc.tags && doc.tags.length > 0 ? (
-                            doc.tags.map((tag, i) => {
-                              const tagObj = allTags.find(t => t.name === tag);
-                              const tagColor = tagObj?.color || '#3B82F6';
-                              
-                              const getTextColor = (hexColor) => {
-                                const r = parseInt(hexColor.slice(1, 3), 16);
-                                const g = parseInt(hexColor.slice(3, 5), 16);
-                                const b = parseInt(hexColor.slice(5, 7), 16);
-                                const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                                return luminance > 0.5 ? '#111827' : '#FFFFFF';
-                              };
-                              
-                              return (
-                                <Badge 
-                                  key={i} 
-                                  style={{ 
-                                    backgroundColor: tagColor,
-                                    color: getTextColor(tagColor)
-                                  }}
-                                >
-                                  {tag}
-                                </Badge>
-                              );
-                            })
-                          ) : (
-                            <span className="text-gray-400 text-xs">No tags</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-2 py-1 text-center">
-                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
-                          <span className={`text-xs font-semibold ${
-                            doc.pocoScore >= 80 ? 'text-green-600' : 
-                            doc.pocoScore >= 1 ? 'text-amber-600' : 
-                            'text-gray-400'
-                          }`}>
-                            {doc.pocoScore.toFixed(1)}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.owner || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-2 justify-center items-center">
-                          <button 
-                            className="btn btn-ghost btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewPDF(doc);
-                            }}
-                            title="View PDF"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            className="btn btn-ghost btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewOCR(doc);
-                            }}
-                            title="View OCR Content"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex justify-center">
-                          <button 
-                            className="btn btn-primary btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCreateRuleForDocument(doc);
-                            }}
-                          >
-                            + New Rule
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <DocumentListSection
+        title={t('rules.documentsWithoutRules', { count: documents.length })}
+        documents={documents}
+        isLoading={isLoadingDocuments}
+        filters={filters}
+        onFiltersChange={setFilters}
+        allTags={allTags}
+        allCorrespondents={allCorrespondents}
+        allDocTypes={allDocTypes}
+        showSelectionCheckboxes={false}
+        showOwnerColumn={true}
+        onViewOCR={handleViewOCR}
+        onViewPDF={handleViewPDF}
+        onRowClick={setSelectedDocument}
+        renderCustomActions={(doc) => (
+          <button 
+            className="btn btn-primary btn-sm"
+            style={{ padding: '2px 8px', height: '22px', fontSize: '11px' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCreateRuleForDocument(doc);
+            }}
+          >
+            {t('rules.newRule')}
+          </button>
+        )}
+        cardClassName="mt-8"
+      />
 
       {/* OCR Content Modal */}
       {ocrModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+          <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col" style={{ backgroundColor: 'var(--app-surface)' }}>
+            <div className="flex justify-between items-center p-6" style={{ borderBottom: '1px solid var(--app-border)' }}>
+              <h2 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>OCR Content: {ocrDocumentTitle}</h2>
               <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="bg-gray-50 p-4 rounded border flex">
-                <div className="pr-4 border-r border-gray-300 text-right select-none">
-                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+              <div className="p-4 rounded flex" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
+                <div className="pr-4 text-right select-none" style={{ borderRight: '1px solid var(--app-border)' }}>
+                  <pre className="text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text-secondary)' }}>
                     {ocrContent.split('\n').map((_, i) => (
                       <div key={i}>{i + 1}</div>
                     ))}
                   </pre>
                 </div>
                 <div className="flex-1 pl-4">
-                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed">
+                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text)' }}>
                     {ocrContent}
                   </pre>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-6 border-t">
+            <div className="flex justify-end gap-2 p-6" style={{ borderTop: '1px solid var(--app-border)' }}>
               <button onClick={() => setOcrModalOpen(false)} className="btn btn-secondary">
                 Close
               </button>

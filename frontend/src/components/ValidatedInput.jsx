@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import Tooltip from './Tooltip';
+import FormInput from './FormInput';
 
 export default function ValidatedInput({
   label,
@@ -30,16 +31,16 @@ export default function ValidatedInput({
       )}
       
       <div className="relative">
-        <input
+        <FormInput
           type={type}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`form-input ${
+          className={`${
             hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' :
             hasSuccess ? 'border-green-500 focus:border-green-500 focus:ring-green-500' :
             ''
-          } ${(hasError || hasSuccess) ? 'pr-10' : ''}`}
+          } ${(hasError || hasSuccess) ? 'pr-10' : ''}`.trim()}
           {...props}
         />
         

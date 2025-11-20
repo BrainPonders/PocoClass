@@ -185,7 +185,7 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
   return (
     <div className="relative flex-1">
       {value ? (
-        <div className="form-input flex items-center justify-between">
+        <div className="pc-input flex items-center justify-between">
           <span>{value}</span>
           <button
             onClick={clearSelection}
@@ -208,7 +208,7 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
             onFocus={() => setShowDropdown(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className={`form-input ${!searchTerm ? 'text-gray-500' : ''}`}
+            className={`pc-input ${!searchTerm ? 'text-gray-500' : ''}`}
           />
 
           {showDropdown && (
