@@ -1029,32 +1029,11 @@ export default function Settings() {
             <div className="flex-1 p-6">
               {activeTab === 'system' && (
                 <div className="space-y-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
-                      <p className="text-sm text-gray-600">
-                        Manage Paperless connection, users, and data synchronization
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={testPaperlessConnection}
-                        disabled={testingConnection || !paperlessConfig.paperless_url}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                      >
-                        <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
-                        {testingConnection ? 'Testing...' : 'Test Connection'}
-                      </Button>
-                      <Button
-                        onClick={handleSync}
-                        disabled={syncing}
-                        className="flex items-center gap-2"
-                      >
-                        <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                        {syncing ? 'Syncing...' : 'Sync Now'}
-                      </Button>
-                    </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
+                    <p className="text-sm text-gray-600">
+                      Manage Paperless connection, users, and data synchronization
+                    </p>
                   </div>
 
                   {/* Global Loading Indicator (initial load) or Syncing Indicator (manual sync) */}
@@ -1072,15 +1051,12 @@ export default function Settings() {
                     </div>
                   )}
 
-                  {/* 1. Paperless Connection - Promoted to Top */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-md font-semibold text-gray-900 flex items-center gap-2">
-                        <Database className="w-5 h-5 text-blue-600" />
-                        Paperless Connection
-                      </h3>
-                      <span className="text-xs text-gray-500">Foundation</span>
-                    </div>
+                  {/* 1. Paperless Connection */}
+                  <div className="border-t pt-6">
+                    <h3 className="text-md font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Database className="w-5 h-5 text-blue-600" />
+                      Paperless Connection
+                    </h3>
                     
                     <div className="space-y-4">
                       <div>
@@ -1096,6 +1072,16 @@ export default function Settings() {
                             className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             disabled={!isAdmin}
                           />
+                          <Button
+                            onClick={testPaperlessConnection}
+                            disabled={testingConnection || !paperlessConfig.paperless_url}
+                            variant="outline"
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
+                            <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
+                            {testingConnection ? 'Testing...' : 'Test Connection'}
+                          </Button>
                           <Button
                             onClick={handlePaperlessUrlUpdate}
                             disabled={!isAdmin}
@@ -1113,38 +1099,8 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  {/* 2. Data Sync & Health */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Data Sync & Health</h3>
-                    
-                    {syncStatus && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
-                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <div className="text-sm text-green-600 font-medium">Tags</div>
-                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
-                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
-                        </div>
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
-                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
-                        </div>
-                        <div className="bg-cyan-50 p-4 rounded-lg">
-                          <div className="text-sm text-cyan-600 font-medium">Users</div>
-                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 3. Session Settings */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  {/* 2. Session Settings */}
+                  <div className="border-t pt-6">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Session Settings</h3>
                     
                     <div>
@@ -1172,8 +1128,49 @@ export default function Settings() {
                     </div>
                   </div>
 
+                  {/* 3. Paperless Datafield Synchronisation */}
+                  <div className="border-t pt-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-md font-semibold text-gray-900">Paperless Datafield Synchronisation</h3>
+                      <Button
+                        onClick={handleSync}
+                        disabled={syncing}
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
+                        {syncing ? 'Syncing...' : 'Sync Now'}
+                      </Button>
+                    </div>
+                    
+                    {syncStatus && (
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
+                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
+                        </div>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <div className="text-sm text-green-600 font-medium">Tags</div>
+                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
+                        </div>
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
+                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
+                        </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
+                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
+                        </div>
+                        <div className="bg-cyan-50 p-4 rounded-lg">
+                          <div className="text-sm text-cyan-600 font-medium">Users</div>
+                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* 4. User Management */}
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="border-t pt-6">
                     <h3 className="text-md font-semibold text-gray-900 mb-2">User Management</h3>
                     <p className="text-sm text-gray-600 mb-4">
                       All Paperless users with their PocoClass activation status
@@ -1298,7 +1295,7 @@ export default function Settings() {
 
                   {/* 5. Sync History */}
                   {syncHistory.length > 0 && (
-                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <div className="border-t pt-6">
                       <h3 className="text-md font-semibold text-gray-900 mb-4">Sync History</h3>
                       <div className="space-y-2">
                         {syncHistory.map((entry, idx) => (
