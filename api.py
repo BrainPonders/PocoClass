@@ -1000,7 +1000,7 @@ def update_poco_ocr_enabled():
         enabled = data.get('enabled', False)
         db.set_config('poco_ocr_enabled', 'true' if enabled else 'false')
         
-        # If enabling, sync to check/create the field
+        # If enabling, check if field exists (do not create)
         if enabled:
             session = request.current_user
             paperless_url = db.get_config('paperless_url')
@@ -1010,7 +1010,7 @@ def update_poco_ocr_enabled():
             config.paperless_url = paperless_url
             api_client = PaperlessAPIClient(config, db)
             
-            poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None
+            poco_ocr_exists = api_client.check_custom_field_exists('POCO OCR') is not None
             
             return jsonify({
                 'success': True,
@@ -2380,14 +2380,14 @@ def trigger_background_processing():
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
         
-        # Check for required custom fields (POCO Score always required, POCO OCR if enabled)
-        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
-        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None if poco_ocr_enabled else True
+        # Check for required custom fields (POCO Score always required, POCO OCR if enabled) - use check methods to avoid auto-creating
+        poco_score_exists = api_client.check_custom_field_exists('POCO Score') is not None
+        poco_ocr_exists = api_client.check_custom_field_exists('POCO OCR') is not None if poco_ocr_enabled else True
         
-        # Check for required tags
-        poco_plus_exists = api_client.get_tag_id('POCO+') is not None
-        poco_minus_exists = api_client.get_tag_id('POCO-') is not None
-        new_tag_exists = api_client.get_tag_id('NEW') is not None
+        # Check for required tags - use check methods to avoid auto-creating
+        poco_plus_exists = api_client.check_tag_exists('POCO+') is not None
+        poco_minus_exists = api_client.check_tag_exists('POCO-') is not None
+        new_tag_exists = api_client.check_tag_exists('NEW') is not None
         
         if not (poco_score_exists and poco_ocr_exists and poco_plus_exists and poco_minus_exists and new_tag_exists):
             return jsonify({
@@ -2431,14 +2431,14 @@ def manual_processing():
         # Check if POCO OCR is enabled
         poco_ocr_enabled = db.get_config('poco_ocr_enabled') == 'true'
         
-        # Check for required custom fields (POCO Score always required, POCO OCR if enabled)
-        poco_score_exists = api_client.get_custom_field_id('POCO Score') is not None
-        poco_ocr_exists = api_client.get_custom_field_id('POCO OCR') is not None if poco_ocr_enabled else True
+        # Check for required custom fields (POCO Score always required, POCO OCR if enabled) - use check methods to avoid auto-creating
+        poco_score_exists = api_client.check_custom_field_exists('POCO Score') is not None
+        poco_ocr_exists = api_client.check_custom_field_exists('POCO OCR') is not None if poco_ocr_enabled else True
         
-        # Check for required tags
-        poco_plus_exists = api_client.get_tag_id('POCO+') is not None
-        poco_minus_exists = api_client.get_tag_id('POCO-') is not None
-        new_tag_exists = api_client.get_tag_id('NEW') is not None
+        # Check for required tags - use check methods to avoid auto-creating
+        poco_plus_exists = api_client.check_tag_exists('POCO+') is not None
+        poco_minus_exists = api_client.check_tag_exists('POCO-') is not None
+        new_tag_exists = api_client.check_tag_exists('NEW') is not None
         
         if not (poco_score_exists and poco_ocr_exists and poco_plus_exists and poco_minus_exists and new_tag_exists):
             return jsonify({
