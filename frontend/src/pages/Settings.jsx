@@ -16,8 +16,6 @@ export default function Settings() {
   const { theme, updateTheme, colorBlindMode, updateColorBlindMode } = useTheme();
   const { language, updateLanguage } = useLanguage();
   
-  console.log('Settings: Current theme:', theme, 'colorBlindMode:', colorBlindMode, 'language:', language);
-  
   // Check if we should auto-select validation tab
   const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
   const [activeTab, setActiveTab] = useState(defaultTab);
