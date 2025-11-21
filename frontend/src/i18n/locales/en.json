@@ -1,0 +1,136 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "reset": "Reset"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "rules": "Rules",
+    "ruleEvaluation": "Rule Evaluation",
+    "backgroundProcess": "Background Process",
+    "logs": "Logs",
+    "settings": "Settings",
+    "guide": "Guide",
+    "quickGuide": "Quick Guide",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loginError": "Invalid credentials",
+    "sessionExpired": "Session expired. Please log in again."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to PocoClass",
+    "stats": {
+      "totalRules": "Total Rules",
+      "activeRules": "Active Rules",
+      "processedDocuments": "Processed Documents",
+      "successRate": "Success Rate"
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "createNew": "Create New Rule",
+    "editRule": "Edit Rule",
+    "deleteRule": "Delete Rule",
+    "enableRule": "Enable Rule",
+    "disableRule": "Disable Rule",
+    "ruleName": "Rule Name",
+    "ruleId": "Rule ID",
+    "description": "Description",
+    "threshold": "Threshold",
+    "ocrThreshold": "OCR Threshold",
+    "status": "Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "noRules": "No rules found"
+  },
+  "wizard": {
+    "step1": "Basic Information",
+    "step2": "OCR Patterns",
+    "step3": "Filename Patterns",
+    "step4": "Configuration",
+    "step5": "Metadata Assignment",
+    "step6": "Verification",
+    "step7": "Review",
+    "stepOf": "Step {current} of {total}"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "general": "General",
+      "system": "System",
+      "dataValidation": "Data Validation",
+      "dateFormats": "Date Formats",
+      "fieldVisibility": "Field Visibility",
+      "users": "Users",
+      "backgroundProcessing": "Background Processing"
+    },
+    "general": {
+      "language": "Language",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeAuto": "Auto",
+      "colorblindMode": "Enable Color Blind Mode",
+      "colorblindModeDesc": "Adjusts colors for better accessibility"
+    },
+    "system": {
+      "paperlessConnection": "Paperless-ngx Connection",
+      "testConnection": "Test Connection",
+      "sync": "Sync Now",
+      "syncSuccess": "Sync completed successfully",
+      "syncError": "Sync failed"
+    }
+  },
+  "processing": {
+    "status": "Processing Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "trigger": "Trigger Processing",
+    "dryRun": "Dry Run",
+    "history": "Processing History",
+    "noHistory": "No processing history available"
+  },
+  "logs": {
+    "title": "Logs",
+    "level": "Level",
+    "message": "Message",
+    "timestamp": "Timestamp",
+    "noLogs": "No logs found"
+  },
+  "scores": {
+    "pocoScore": "POCO Score",
+    "ocrScore": "OCR Score",
+    "threshold": "Threshold",
+    "classification": "Classification",
+    "classified": "Classified",
+    "notClassified": "Not Classified"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidFormat": "Invalid format",
+    "minLength": "Minimum length is {min} characters",
+    "maxLength": "Maximum length is {max} characters"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "reset": "Restablecer"
+  },
+  "nav": {
+    "dashboard": "Panel de Control",
+    "rules": "Reglas",
+    "ruleEvaluation": "Evaluación de Reglas",
+    "backgroundProcess": "Proceso en Segundo Plano",
+    "logs": "Registros",
+    "settings": "Configuración",
+    "guide": "Guía",
+    "quickGuide": "Guía Rápida",
+    "logout": "Cerrar Sesión"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "loginButton": "Entrar",
+    "loginError": "Credenciales inválidas",
+    "sessionExpired": "Sesión expirada. Por favor, inicie sesión nuevamente."
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "Bienvenido a PocoClass",
+    "stats": {
+      "totalRules": "Total de Reglas",
+      "activeRules": "Reglas Activas",
+      "processedDocuments": "Documentos Procesados",
+      "successRate": "Tasa de Éxito"
+    }
+  },
+  "rules": {
+    "title": "Reglas",
+    "createNew": "Crear Nueva Regla",
+    "editRule": "Editar Regla",
+    "deleteRule": "Eliminar Regla",
+    "enableRule": "Habilitar Regla",
+    "disableRule": "Deshabilitar Regla",
+    "ruleName": "Nombre de la Regla",
+    "ruleId": "ID de la Regla",
+    "description": "Descripción",
+    "threshold": "Umbral",
+    "ocrThreshold": "Umbral OCR",
+    "status": "Estado",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "noRules": "No se encontraron reglas"
+  },
+  "wizard": {
+    "step1": "Información Básica",
+    "step2": "Patrones OCR",
+    "step3": "Patrones de Nombre de Archivo",
+    "step4": "Configuración",
+    "step5": "Asignación de Metadatos",
+    "step6": "Verificación",
+    "step7": "Revisión",
+    "stepOf": "Paso {current} de {total}"
+  },
+  "settings": {
+    "title": "Configuración",
+    "tabs": {
+      "general": "General",
+      "system": "Sistema",
+      "dataValidation": "Validación de Datos",
+      "dateFormats": "Formatos de Fecha",
+      "fieldVisibility": "Visibilidad de Campos",
+      "users": "Usuarios",
+      "backgroundProcessing": "Procesamiento en Segundo Plano"
+    },
+    "general": {
+      "language": "Idioma",
+      "theme": "Tema",
+      "themeLight": "Claro",
+      "themeDark": "Oscuro",
+      "themeAuto": "Automático",
+      "colorblindMode": "Habilitar Modo para Daltónicos",
+      "colorblindModeDesc": "Ajusta los colores para mejor accesibilidad"
+    },
+    "system": {
+      "paperlessConnection": "Conexión Paperless-ngx",
+      "testConnection": "Probar Conexión",
+      "sync": "Sincronizar Ahora",
+      "syncSuccess": "Sincronización completada exitosamente",
+      "syncError": "Error en la sincronización"
+    }
+  },
+  "processing": {
+    "status": "Estado del Procesamiento",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "trigger": "Activar Procesamiento",
+    "dryRun": "Ejecución de Prueba",
+    "history": "Historial de Procesamiento",
+    "noHistory": "No hay historial de procesamiento disponible"
+  },
+  "logs": {
+    "title": "Registros",
+    "level": "Nivel",
+    "message": "Mensaje",
+    "timestamp": "Marca de Tiempo",
+    "noLogs": "No se encontraron registros"
+  },
+  "scores": {
+    "pocoScore": "Puntuación POCO",
+    "ocrScore": "Puntuación OCR",
+    "threshold": "Umbral",
+    "classification": "Clasificación",
+    "classified": "Clasificado",
+    "notClassified": "No Clasificado"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "invalidFormat": "Formato inválido",
+    "minLength": "La longitud mínima es {min} caracteres",
+    "maxLength": "La longitud máxima es {max} caracteres"
+  }
+}

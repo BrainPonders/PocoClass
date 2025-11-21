@@ -1,0 +1,136 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "reset": "Réinitialiser"
+  },
+  "nav": {
+    "dashboard": "Tableau de Bord",
+    "rules": "Règles",
+    "ruleEvaluation": "Évaluation des Règles",
+    "backgroundProcess": "Processus en Arrière-plan",
+    "logs": "Journaux",
+    "settings": "Paramètres",
+    "guide": "Guide",
+    "quickGuide": "Guide Rapide",
+    "logout": "Déconnexion"
+  },
+  "auth": {
+    "login": "Connexion",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "loginButton": "Se connecter",
+    "loginError": "Identifiants invalides",
+    "sessionExpired": "Session expirée. Veuillez vous reconnecter."
+  },
+  "dashboard": {
+    "title": "Tableau de Bord",
+    "welcome": "Bienvenue sur PocoClass",
+    "stats": {
+      "totalRules": "Total de Règles",
+      "activeRules": "Règles Actives",
+      "processedDocuments": "Documents Traités",
+      "successRate": "Taux de Réussite"
+    }
+  },
+  "rules": {
+    "title": "Règles",
+    "createNew": "Créer une Nouvelle Règle",
+    "editRule": "Modifier la Règle",
+    "deleteRule": "Supprimer la Règle",
+    "enableRule": "Activer la Règle",
+    "disableRule": "Désactiver la Règle",
+    "ruleName": "Nom de la Règle",
+    "ruleId": "ID de la Règle",
+    "description": "Description",
+    "threshold": "Seuil",
+    "ocrThreshold": "Seuil OCR",
+    "status": "Statut",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "noRules": "Aucune règle trouvée"
+  },
+  "wizard": {
+    "step1": "Informations de Base",
+    "step2": "Motifs OCR",
+    "step3": "Motifs de Nom de Fichier",
+    "step4": "Configuration",
+    "step5": "Attribution de Métadonnées",
+    "step6": "Vérification",
+    "step7": "Révision",
+    "stepOf": "Étape {current} sur {total}"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "tabs": {
+      "general": "Général",
+      "system": "Système",
+      "dataValidation": "Validation des Données",
+      "dateFormats": "Formats de Date",
+      "fieldVisibility": "Visibilité des Champs",
+      "users": "Utilisateurs",
+      "backgroundProcessing": "Traitement en Arrière-plan"
+    },
+    "general": {
+      "language": "Langue",
+      "theme": "Thème",
+      "themeLight": "Clair",
+      "themeDark": "Sombre",
+      "themeAuto": "Automatique",
+      "colorblindMode": "Activer le Mode Daltonien",
+      "colorblindModeDesc": "Ajuste les couleurs pour une meilleure accessibilité"
+    },
+    "system": {
+      "paperlessConnection": "Connexion Paperless-ngx",
+      "testConnection": "Tester la Connexion",
+      "sync": "Synchroniser Maintenant",
+      "syncSuccess": "Synchronisation réussie",
+      "syncError": "Échec de la synchronisation"
+    }
+  },
+  "processing": {
+    "status": "État du Traitement",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "trigger": "Déclencher le Traitement",
+    "dryRun": "Exécution à Blanc",
+    "history": "Historique de Traitement",
+    "noHistory": "Aucun historique de traitement disponible"
+  },
+  "logs": {
+    "title": "Journaux",
+    "level": "Niveau",
+    "message": "Message",
+    "timestamp": "Horodatage",
+    "noLogs": "Aucun journal trouvé"
+  },
+  "scores": {
+    "pocoScore": "Score POCO",
+    "ocrScore": "Score OCR",
+    "threshold": "Seuil",
+    "classification": "Classification",
+    "classified": "Classifié",
+    "notClassified": "Non Classifié"
+  },
+  "validation": {
+    "required": "Ce champ est obligatoire",
+    "invalidFormat": "Format invalide",
+    "minLength": "La longueur minimale est de {min} caractères",
+    "maxLength": "La longueur maximale est de {max} caractères"
+  }
+}

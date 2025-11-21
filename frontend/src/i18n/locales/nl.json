@@ -1,0 +1,136 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "add": "Toevoegen",
+    "search": "Zoeken",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succesvol",
+    "confirm": "Bevestigen",
+    "yes": "Ja",
+    "no": "Nee",
+    "close": "Sluiten",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "submit": "Verzenden",
+    "reset": "Resetten"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "rules": "Regels",
+    "ruleEvaluation": "Regelevaluatie",
+    "backgroundProcess": "Achtergrondproces",
+    "logs": "Logboeken",
+    "settings": "Instellingen",
+    "guide": "Gids",
+    "quickGuide": "Snelgids",
+    "logout": "Uitloggen"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "loginButton": "Aanmelden",
+    "loginError": "Ongeldige inloggegevens",
+    "sessionExpired": "Sessie verlopen. Log opnieuw in."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welkom bij PocoClass",
+    "stats": {
+      "totalRules": "Totaal Regels",
+      "activeRules": "Actieve Regels",
+      "processedDocuments": "Verwerkte Documenten",
+      "successRate": "Succespercentage"
+    }
+  },
+  "rules": {
+    "title": "Regels",
+    "createNew": "Nieuwe Regel Maken",
+    "editRule": "Regel Bewerken",
+    "deleteRule": "Regel Verwijderen",
+    "enableRule": "Regel Inschakelen",
+    "disableRule": "Regel Uitschakelen",
+    "ruleName": "Regelnaam",
+    "ruleId": "Regel-ID",
+    "description": "Beschrijving",
+    "threshold": "Drempelwaarde",
+    "ocrThreshold": "OCR Drempelwaarde",
+    "status": "Status",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld",
+    "noRules": "Geen regels gevonden"
+  },
+  "wizard": {
+    "step1": "Basisinformatie",
+    "step2": "OCR Patronen",
+    "step3": "Bestandsnaampatronen",
+    "step4": "Configuratie",
+    "step5": "Metadata Toewijzing",
+    "step6": "Verificatie",
+    "step7": "Beoordeling",
+    "stepOf": "Stap {current} van {total}"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "tabs": {
+      "general": "Algemeen",
+      "system": "Systeem",
+      "dataValidation": "Datavalidatie",
+      "dateFormats": "Datumformaten",
+      "fieldVisibility": "Veldenzichtbaarheid",
+      "users": "Gebruikers",
+      "backgroundProcessing": "Achtergrondverwerking"
+    },
+    "general": {
+      "language": "Taal",
+      "theme": "Thema",
+      "themeLight": "Licht",
+      "themeDark": "Donker",
+      "themeAuto": "Automatisch",
+      "colorblindMode": "Kleurenblindmodus Inschakelen",
+      "colorblindModeDesc": "Past kleuren aan voor betere toegankelijkheid"
+    },
+    "system": {
+      "paperlessConnection": "Paperless-ngx Verbinding",
+      "testConnection": "Verbinding Testen",
+      "sync": "Nu Synchroniseren",
+      "syncSuccess": "Synchronisatie succesvol voltooid",
+      "syncError": "Synchronisatie mislukt"
+    }
+  },
+  "processing": {
+    "status": "Verwerkingsstatus",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld",
+    "trigger": "Verwerking Activeren",
+    "dryRun": "Droogloop",
+    "history": "Verwerkingsgeschiedenis",
+    "noHistory": "Geen verwerkingsgeschiedenis beschikbaar"
+  },
+  "logs": {
+    "title": "Logboeken",
+    "level": "Niveau",
+    "message": "Bericht",
+    "timestamp": "Tijdstempel",
+    "noLogs": "Geen logboeken gevonden"
+  },
+  "scores": {
+    "pocoScore": "POCO Score",
+    "ocrScore": "OCR Score",
+    "threshold": "Drempelwaarde",
+    "classification": "Classificatie",
+    "classified": "Geclassificeerd",
+    "notClassified": "Niet Geclassificeerd"
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "invalidFormat": "Ongeldig formaat",
+    "minLength": "Minimale lengte is {min} tekens",
+    "maxLength": "Maximale lengte is {max} tekens"
+  }
+}

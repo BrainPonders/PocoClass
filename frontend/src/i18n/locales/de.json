@@ -1,0 +1,136 @@
+{
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "search": "Suchen",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Vorherige",
+    "submit": "Absenden",
+    "reset": "Zurücksetzen"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "rules": "Regeln",
+    "ruleEvaluation": "Regelauswertung",
+    "backgroundProcess": "Hintergrundprozess",
+    "logs": "Protokolle",
+    "settings": "Einstellungen",
+    "guide": "Leitfaden",
+    "quickGuide": "Schnellanleitung",
+    "logout": "Abmelden"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "loginButton": "Einloggen",
+    "loginError": "Ungültige Anmeldedaten",
+    "sessionExpired": "Sitzung abgelaufen. Bitte melden Sie sich erneut an."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Willkommen bei PocoClass",
+    "stats": {
+      "totalRules": "Gesamtregeln",
+      "activeRules": "Aktive Regeln",
+      "processedDocuments": "Verarbeitete Dokumente",
+      "successRate": "Erfolgsrate"
+    }
+  },
+  "rules": {
+    "title": "Regeln",
+    "createNew": "Neue Regel Erstellen",
+    "editRule": "Regel Bearbeiten",
+    "deleteRule": "Regel Löschen",
+    "enableRule": "Regel Aktivieren",
+    "disableRule": "Regel Deaktivieren",
+    "ruleName": "Regelname",
+    "ruleId": "Regel-ID",
+    "description": "Beschreibung",
+    "threshold": "Schwellenwert",
+    "ocrThreshold": "OCR-Schwellenwert",
+    "status": "Status",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "noRules": "Keine Regeln gefunden"
+  },
+  "wizard": {
+    "step1": "Grundlegende Informationen",
+    "step2": "OCR-Muster",
+    "step3": "Dateinamenmuster",
+    "step4": "Konfiguration",
+    "step5": "Metadatenzuweisung",
+    "step6": "Überprüfung",
+    "step7": "Überprüfung",
+    "stepOf": "Schritt {current} von {total}"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "tabs": {
+      "general": "Allgemein",
+      "system": "System",
+      "dataValidation": "Datenvalidierung",
+      "dateFormats": "Datumsformate",
+      "fieldVisibility": "Feldsichtbarkeit",
+      "users": "Benutzer",
+      "backgroundProcessing": "Hintergrundverarbeitung"
+    },
+    "general": {
+      "language": "Sprache",
+      "theme": "Thema",
+      "themeLight": "Hell",
+      "themeDark": "Dunkel",
+      "themeAuto": "Automatisch",
+      "colorblindMode": "Farbblindmodus Aktivieren",
+      "colorblindModeDesc": "Passt Farben für bessere Zugänglichkeit an"
+    },
+    "system": {
+      "paperlessConnection": "Paperless-ngx Verbindung",
+      "testConnection": "Verbindung Testen",
+      "sync": "Jetzt Synchronisieren",
+      "syncSuccess": "Synchronisierung erfolgreich abgeschlossen",
+      "syncError": "Synchronisierung fehlgeschlagen"
+    }
+  },
+  "processing": {
+    "status": "Verarbeitungsstatus",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "trigger": "Verarbeitung Auslösen",
+    "dryRun": "Probelauf",
+    "history": "Verarbeitungsverlauf",
+    "noHistory": "Kein Verarbeitungsverlauf verfügbar"
+  },
+  "logs": {
+    "title": "Protokolle",
+    "level": "Ebene",
+    "message": "Nachricht",
+    "timestamp": "Zeitstempel",
+    "noLogs": "Keine Protokolle gefunden"
+  },
+  "scores": {
+    "pocoScore": "POCO-Wertung",
+    "ocrScore": "OCR-Wertung",
+    "threshold": "Schwellenwert",
+    "classification": "Klassifizierung",
+    "classified": "Klassifiziert",
+    "notClassified": "Nicht Klassifiziert"
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidFormat": "Ungültiges Format",
+    "minLength": "Mindestlänge beträgt {min} Zeichen",
+    "maxLength": "Maximale Länge beträgt {max} Zeichen"
+  }
+}
