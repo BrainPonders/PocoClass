@@ -16,6 +16,8 @@ export default function Settings() {
   const { theme, updateTheme, colorBlindMode, updateColorBlindMode } = useTheme();
   const { language, updateLanguage } = useLanguage();
   
+  console.log('Settings: Current theme:', theme, 'colorBlindMode:', colorBlindMode, 'language:', language);
+  
   // Check if we should auto-select validation tab
   const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -330,12 +332,16 @@ export default function Settings() {
 
   const handleAppSettingChange = async (key, value) => {
     try {
+      console.log('Settings: handleAppSettingChange called with:', key, value);
       // Update theme and language contexts immediately
       if (key === 'theme') {
+        console.log('Settings: Updating theme to:', value);
         updateTheme(value);
       } else if (key === 'language') {
+        console.log('Settings: Updating language to:', value);
         updateLanguage(value);
       } else if (key === 'colorblind_mode') {
+        console.log('Settings: Updating colorblind mode to:', value);
         updateColorBlindMode(value === 'true' ? 'protanopia' : 'none');
       }
 

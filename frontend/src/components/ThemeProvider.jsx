@@ -65,6 +65,7 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     // Apply theme classes to document
+    console.log('ThemeProvider: Applying theme -', effectiveTheme, 'colorBlindMode:', colorBlindMode);
     document.documentElement.classList.remove('light', 'dark', 'protanopia', 'deuteranopia', 'tritanopia');
     document.documentElement.classList.add(effectiveTheme);
     
@@ -72,6 +73,7 @@ export function ThemeProvider({ children }) {
     if (colorBlindMode !== 'none') {
       document.documentElement.classList.add(colorBlindMode);
     }
+    console.log('ThemeProvider: Classes applied:', document.documentElement.className);
   }, [effectiveTheme, colorBlindMode]);
 
   const updateTheme = (newTheme) => {

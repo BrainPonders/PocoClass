@@ -1,4 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import enTranslations from '../i18n/locales/en.json';
+import esTranslations from '../i18n/locales/es.json';
+import frTranslations from '../i18n/locales/fr.json';
+import deTranslations from '../i18n/locales/de.json';
+import nlTranslations from '../i18n/locales/nl.json';
 
 const LanguageContext = createContext();
 
@@ -10,16 +15,24 @@ export function useLanguage() {
   return context;
 }
 
+// Translation map
+const translationsMap = {
+  en: enTranslations,
+  es: esTranslations,
+  fr: frTranslations,
+  de: deTranslations,
+  nl: nlTranslations
+};
+
 // Translation loader
 const loadTranslations = async (lang) => {
   try {
-    const translations = await import(`../i18n/locales/${lang}.json`);
-    return translations.default;
+    const translations = translationsMap[lang] || translationsMap.en;
+    console.log(`Loading translations for ${lang}:`, translations);
+    return translations;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
-    // Fallback to English
-    const fallback = await import('../i18n/locales/en.json');
-    return fallback.default;
+    return translationsMap.en;
   }
 };
 
