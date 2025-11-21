@@ -986,12 +986,12 @@ export default function Settings() {
   };
 
   const tabs = [
-    { id: 'system', label: 'System', icon: Database, adminOnly: true },
-    { id: 'validation', label: 'Data Validation', icon: AlertCircle, adminOnly: true },
-    { id: 'backgroundProcessing', label: 'Background Processing', icon: Activity, adminOnly: true },
-    { id: 'appearance', label: 'Appearance', icon: Palette, adminOnly: false },
-    { id: 'dateFormats', label: 'Date Formats', icon: Calendar, adminOnly: false },
-    { id: 'fieldVisibility', label: 'Field Visibility', icon: FileText, adminOnly: false },
+    { id: 'system', label: t('settings.tabs.system'), icon: Database, adminOnly: true },
+    { id: 'validation', label: t('settings.tabs.validation'), icon: AlertCircle, adminOnly: true },
+    { id: 'backgroundProcessing', label: t('settings.tabs.backgroundProcessing'), icon: Activity, adminOnly: true },
+    { id: 'appearance', label: t('settings.tabs.appearance'), icon: Palette, adminOnly: false },
+    { id: 'dateFormats', label: t('settings.tabs.dateFormats'), icon: Calendar, adminOnly: false },
+    { id: 'fieldVisibility', label: t('settings.tabs.fieldVisibility'), icon: FileText, adminOnly: false },
   ];
 
   const isAdmin = currentUser?.role === 'admin';
@@ -1003,7 +1003,7 @@ export default function Settings() {
           <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--app-border)' }}>
             <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
               <SettingsIcon className="w-6 h-6" />
-              Settings
+              {t('settings.title')}
             </h1>
           </div>
 
@@ -1054,7 +1054,7 @@ export default function Settings() {
               {activeTab === 'system' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>System Management</h2>
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.title')}</h2>
                     <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                       Manage Paperless connection, users, and data synchronization
                     </p>
@@ -1079,13 +1079,13 @@ export default function Settings() {
                   <div className="border-t pt-6">
                     <h3 className="text-md font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
                       <Database className="w-5 h-5" style={{ color: 'var(--info-text)' }} />
-                      Paperless Connection
+                      {t('settings.system.paperlessConnection')}
                     </h3>
                     
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                          Paperless URL
+                          {t('settings.system.paperlessUrl')}
                         </label>
                         <div className="flex gap-3">
                           <input
@@ -1107,14 +1107,14 @@ export default function Settings() {
                             className="flex items-center gap-2"
                           >
                             <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
-                            {testingConnection ? 'Testing...' : 'Test Connection'}
+                            {testingConnection ? t('settings.system.testing') : t('settings.system.testConnection')}
                           </Button>
                           <Button
                             onClick={handlePaperlessUrlUpdate}
                             disabled={!isAdmin}
                             size="sm"
                           >
-                            Update
+                            {t('settings.system.update')}
                           </Button>
                         </div>
                         {!isAdmin && (
@@ -1128,7 +1128,7 @@ export default function Settings() {
 
                   {/* 2. Session Settings */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Session Settings</h3>
+                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.sessionSettings')}</h3>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Configure session timeout and automatic logout behavior
                     </p>
@@ -1153,7 +1153,7 @@ export default function Settings() {
                           onFocus={(e) => !loading && (e.target.style.boxShadow = '0 0 0 2px var(--app-primary)')}
                           onBlur={(e) => e.target.style.boxShadow = 'none'}
                         />
-                        <label htmlFor="session-timeout" className="text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>Session Timeout (hours)</label>
+                        <label htmlFor="session-timeout" className="text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.system.sessionTimeout')}</label>
                       </div>
                       <div className="p-3 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
                         <strong>Background Processing Protection:</strong> The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.
@@ -1165,7 +1165,7 @@ export default function Settings() {
                   <div className="border-t pt-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Paperless Datafield Synchronisation</h3>
+                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.paperlessSync')}</h3>
                         <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                           Sync and view cached data from Paperless-ngx
                         </p>
@@ -1177,30 +1177,30 @@ export default function Settings() {
                         className="flex items-center gap-2"
                       >
                         <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                        {syncing ? 'Syncing...' : 'Sync Now'}
+                        {syncing ? t('settings.system.syncing') : t('settings.system.sync')}
                       </Button>
                     </div>
                     
                     {syncStatus && (
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)' }}>
-                          <div className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Correspondents</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.system.correspondents')}</div>
                           <div className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>{syncStatus.correspondents?.count || 0}</div>
                         </div>
                         <div className="bg-green-50 p-4 rounded-lg">
-                          <div className="text-sm text-green-600 font-medium">Tags</div>
+                          <div className="text-sm text-green-600 font-medium">{t('settings.system.tags')}</div>
                           <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
                         </div>
                         <div className="bg-purple-50 p-4 rounded-lg">
-                          <div className="text-sm text-purple-600 font-medium">Document Types</div>
+                          <div className="text-sm text-purple-600 font-medium">{t('settings.system.documentTypes')}</div>
                           <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
                         </div>
                         <div className="bg-orange-50 p-4 rounded-lg">
-                          <div className="text-sm text-orange-600 font-medium">Custom Fields</div>
+                          <div className="text-sm text-orange-600 font-medium">{t('settings.system.customFields')}</div>
                           <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
                         </div>
                         <div className="bg-cyan-50 p-4 rounded-lg">
-                          <div className="text-sm text-cyan-600 font-medium">Users</div>
+                          <div className="text-sm text-cyan-600 font-medium">{t('settings.system.users')}</div>
                           <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
                         </div>
                       </div>
@@ -1209,7 +1209,7 @@ export default function Settings() {
 
                   {/* 4. User Management */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>User Management</h3>
+                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.userManagement')}</h3>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       All Paperless users with their PocoClass activation status
                     </p>
@@ -1220,22 +1220,22 @@ export default function Settings() {
                           <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                             <tr>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                Username
+                                {t('settings.system.username')}
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                Group(s)
+                                {t('settings.system.groups')}
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                Paperless Status
+                                {t('settings.system.paperlessStatus')}
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                PocoClass Status
+                                {t('settings.system.pococlassStatus')}
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                Role
+                                {t('settings.system.role')}
                               </th>
                               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                Actions
+                                {t('settings.system.actions')}
                               </th>
                             </tr>
                           </thead>
@@ -1260,11 +1260,11 @@ export default function Settings() {
                                       user.is_active ? 'bg-green-100 text-green-800' : ''
                                     }`}
                                     style={!user.is_active ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : undefined}>
-                                      {user.is_active ? 'Active' : 'Inactive'}
+                                      {user.is_active ? t('settings.system.active') : t('settings.system.inactive')}
                                     </span>
                                     {user.is_superuser && (
                                       <span className="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                        Superuser
+                                        {t('settings.system.superuser')}
                                       </span>
                                     )}
                                   </td>
@@ -1273,11 +1273,11 @@ export default function Settings() {
                                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                         user.is_enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                       }`}>
-                                        {user.is_enabled ? 'Active' : 'Disabled'}
+                                        {user.is_enabled ? t('settings.system.active') : t('settings.system.disabled')}
                                       </span>
                                     ) : (
                                       <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
-                                        Not Registered
+                                        {t('settings.system.notRegistered')}
                                       </span>
                                     )}
                                   </td>
@@ -1287,7 +1287,7 @@ export default function Settings() {
                                         user.pococlass_role === 'admin' ? 'bg-purple-100 text-purple-800' : ''
                                       }`}
                                       style={user.pococlass_role !== 'admin' ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
-                                        {user.pococlass_role === 'admin' ? 'Admin' : 'User'}
+                                        {user.pococlass_role === 'admin' ? t('settings.system.admin') : t('settings.system.user')}
                                       </span>
                                     ) : (
                                       <span style={{ color: 'var(--app-text-muted)' }}>-</span>
@@ -1303,8 +1303,8 @@ export default function Settings() {
                                           style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
                                           disabled={!user.is_enabled}
                                         >
-                                          <option value="user">User</option>
-                                          <option value="admin">Admin</option>
+                                          <option value="user">{t('settings.system.user')}</option>
+                                          <option value="admin">{t('settings.system.admin')}</option>
                                         </select>
                                         <button
                                           onClick={() => handleToggleUserStatus(user.pococlass_id, user.is_enabled)}
@@ -1314,7 +1314,7 @@ export default function Settings() {
                                               : 'bg-green-100 text-green-700 hover:bg-green-200'
                                           }`}
                                         >
-                                          {user.is_enabled ? 'Disable' : 'Enable'}
+                                          {user.is_enabled ? t('settings.system.disable') : t('settings.system.enable')}
                                         </button>
                                       </div>
                                     ) : (
@@ -1329,7 +1329,7 @@ export default function Settings() {
                       </div>
                     ) : (
                       <div className="text-center py-8" style={{ color: 'var(--app-text-muted)' }}>
-                        No users found
+                        {t('settings.system.noUsers')}
                       </div>
                     )}
                   </div>
@@ -1337,7 +1337,7 @@ export default function Settings() {
                   {/* 5. Sync History */}
                   {syncHistory.length > 0 && (
                     <div className="border-t pt-6">
-                      <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Sync History</h3>
+                      <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.syncHistory')}</h3>
                       <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                         Recent synchronization events from Paperless-ngx
                       </p>
@@ -1365,7 +1365,7 @@ export default function Settings() {
               {activeTab === 'appearance' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Appearance Settings</h2>
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.appearance.title')}</h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Customize the look and feel of your interface
                     </p>
@@ -1386,7 +1386,7 @@ export default function Settings() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
-                      {t('settings.general.language')}
+                      {t('settings.appearance.language')}
                     </label>
                     <select
                       value={language}
@@ -1410,7 +1410,7 @@ export default function Settings() {
 
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
-                      {t('settings.general.theme')}
+                      {t('settings.appearance.theme')}
                     </label>
                     <select
                       value={theme}
@@ -1424,9 +1424,9 @@ export default function Settings() {
                       onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
                       onBlur={(e) => e.target.style.boxShadow = 'none'}
                     >
-                      <option value="light">{t('settings.general.themeLight')}</option>
-                      <option value="dark">{t('settings.general.themeDark')}</option>
-                      <option value="auto">{t('settings.general.themeAuto')}</option>
+                      <option value="light">{t('settings.appearance.themeLight')}</option>
+                      <option value="dark">{t('settings.appearance.themeDark')}</option>
+                      <option value="auto">{t('settings.appearance.themeAuto')}</option>
                     </select>
                   </div>
 
@@ -1442,11 +1442,11 @@ export default function Settings() {
                         onBlur={(e) => e.target.style.boxShadow = 'none'}
                       />
                       <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                        {t('settings.general.colorblindMode')}
+                        {t('settings.appearance.colorblindMode')}
                       </span>
                     </label>
                     <p className="mt-1 ml-7 text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.general.colorblindModeDesc')}
+                      {t('settings.appearance.colorblindModeDesc')}
                     </p>
                   </div>
                 </div>
@@ -1455,7 +1455,7 @@ export default function Settings() {
               {activeTab === 'dateFormats' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Date Format Presets</h2>
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.dateFormats.title')}</h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Select date formats to appear in the wizard quick-select dropdown
                     </p>
@@ -1519,7 +1519,7 @@ export default function Settings() {
                 <div className="space-y-6">
                   <div>
                     <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>
-                      Field Visibility Settings
+                      {t('settings.fieldVisibility.title')}
                     </h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Control which fields appear in the wizard and how they behave
@@ -1764,7 +1764,7 @@ export default function Settings() {
                 <div className="space-y-6">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-lg font-semibold" style={{ color: 'var(--app-text)' }}>Data Validation</h2>
+                      <h2 className="text-lg font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.validation.title')}</h2>
                       <Button
                         onClick={loadValidationData}
                         disabled={loadingValidation}
@@ -1774,7 +1774,7 @@ export default function Settings() {
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1e40af'}
                       >
                         <RefreshCw className={`w-4 h-4 ${loadingValidation ? 'animate-spin' : ''}`} />
-                        {loadingValidation ? 'Refreshing...' : 'Refresh'}
+                        {loadingValidation ? t('settings.validation.verifying') : t('common.search')}
                       </Button>
                     </div>
                     <p className="text-sm mb-2" style={{ color: 'var(--app-text-secondary)' }}>
@@ -1829,7 +1829,7 @@ export default function Settings() {
                           disabled={fixingMandatoryData || !isAdmin}
                           className="bg-red-600 hover:bg-red-700 text-white"
                         >
-                          {fixingMandatoryData ? 'Creating...' : 'Fix Missing Data'}
+                          {fixingMandatoryData ? 'Creating...' : t('settings.validation.fixMissingData')}
                         </Button>
                         {!isAdmin && (
                           <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
@@ -1880,7 +1880,7 @@ export default function Settings() {
                                 : { backgroundColor: '#fee2e2', color: '#991b1b' }
                           }
                         >
-                          {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
+                          {loadingValidation ? t('settings.validation.verifying') : validationData?.tags?.poco_plus ? t('settings.validation.present') : t('settings.validation.missing')}
                         </div>
                       </div>
 
@@ -2054,7 +2054,7 @@ export default function Settings() {
               {activeTab === 'backgroundProcessing' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Background Processing</h2>
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.title')}</h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Configure automatic document classification for newly uploaded documents
                     </p>
