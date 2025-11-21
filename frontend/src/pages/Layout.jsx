@@ -181,6 +181,11 @@ export default function Layout({ children }) {
                 --info-yellow-bg: #fefce8;
                 --info-yellow-border: #fde047;
                 --info-yellow-text: #a16207;
+                --input-bg: #f9fafb;
+                --input-border: #d1d5db;
+                --input-text: #1f2937;
+                --input-focus-bg: #ffffff;
+                --input-focus-border: #3b82f6;
               }
 
               :root.dark {
@@ -192,22 +197,27 @@ export default function Layout({ children }) {
                 --app-text: #f1f5f9;
                 --app-text-secondary: #cbd5e1;
                 --app-text-muted: #94a3b8;
-                --app-primary: #3b82f6;
-                --app-primary-hover: #2563eb;
-                --app-primary-light: #1e3a8a;
-                --app-primary-light-rgb: 30, 58, 138;
+                --app-primary: #1e40af;
+                --app-primary-hover: #1e3a8a;
+                --app-primary-light: #1e293b;
+                --app-primary-light-rgb: 30, 41, 59;
                 --app-border: #334155;
                 --app-success: #22c55e;
                 --app-success-rgb: 34, 197, 94;
                 --app-warning: #f59e0b;
                 --app-danger: #ef4444;
                 --app-danger-rgb: 239, 68, 68;
-                --info-bg: #1e3a8a;
-                --info-border: #3b82f6;
-                --info-text: #bfdbfe;
+                --info-bg: rgba(37, 99, 235, 0.1);
+                --info-border: rgba(59, 130, 246, 0.3);
+                --info-text: #93c5fd;
                 --info-yellow-bg: #422006;
                 --info-yellow-border: #92400e;
                 --info-yellow-text: #fbbf24;
+                --input-bg: #1e293b;
+                --input-border: #475569;
+                --input-text: #f1f5f9;
+                --input-focus-bg: #334155;
+                --input-focus-border: #1e40af;
               }
 
               :root.protanopia {
@@ -324,19 +334,19 @@ export default function Layout({ children }) {
               .form-input, .form-textarea, .form-select {
                 width: 100%;
                 padding: 10px 12px;
-                border: 1px solid #d1d5db;
+                border: 1px solid var(--input-border);
                 border-radius: 8px;
                 font-size: 1rem;
-                background: #f9fafb;
-                color: #1f2937;
+                background: var(--input-bg);
+                color: var(--input-text);
                 transition: all 0.2s ease;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
               }
               
               .form-input:focus, .form-textarea:focus, .form-select:focus {
                 outline: none;
-                border-color: #3b82f6;
-                background: white;
+                border-color: var(--input-focus-border);
+                background: var(--input-focus-bg);
                 box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
               }
               
@@ -344,7 +354,7 @@ export default function Layout({ children }) {
                 display: block;
                 font-size: 1rem;
                 font-weight: 600;
-                color: #111827;
+                color: var(--app-text);
                 margin-bottom: 14px;
                 letter-spacing: -0.01em;
               }

@@ -100,37 +100,37 @@ export default function MDMultiplierSlider({
       </div>
       
       {/* Dynamic info display */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
+      <div className="border rounded-lg p-3 text-sm" style={{ background: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <span className="text-gray-600">Evaluated fields:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Evaluated fields:</span>
             <span className="ml-2 font-medium">{enabledFieldCount}</span>
           </div>
           <div>
-            <span className="text-gray-600">Current multiplier:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Current multiplier:</span>
             <span className="ml-2 font-medium">{effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)}</span>
           </div>
           <div>
-            <span className="text-gray-600">Verification weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Verification weight:</span>
             <span className="ml-2 font-medium">{enabledFieldCount * enabledFieldCount}</span>
           </div>
           <div>
-            <span className="text-gray-600">Potential MD weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Potential MD weight:</span>
             <span className="ml-2 font-medium">{mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)}</span>
           </div>
-          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
-            <span className="text-gray-500 text-xs italic">Example: With {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} verified, max MD weight = {enabledFieldCount} × {enabledFieldCount} × {effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)} = {mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)} points.</span>
+          <div className="col-span-2 mt-1 pt-2 border-t" style={{ borderColor: 'var(--info-border)' }}>
+            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: With {enabledFieldCount} field{enabledFieldCount !== 1 ? 's' : ''} verified, max MD weight = {enabledFieldCount} × {enabledFieldCount} × {effectiveMultiplier < 1 ? effectiveMultiplier.toFixed(2) : Math.round(effectiveMultiplier)} = {mdMaxWeight < 1 ? mdMaxWeight.toFixed(2) : Math.round(mdMaxWeight)} points.</span>
           </div>
         </div>
         {mode !== 'auto' && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 border-t text-amber-700 flex items-center gap-2" style={{ borderColor: 'var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>Metadata multiplier changed from default (Auto).</span>
           </div>
         )}
         {showWarning && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 border-t text-amber-700 flex items-center gap-2" style={{ borderColor: 'var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>Paperless verification weight exceeds OCR.</span>
           </div>
