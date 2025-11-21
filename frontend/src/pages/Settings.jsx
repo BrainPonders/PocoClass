@@ -14,7 +14,7 @@ import { QuickTooltip } from '@/components/ui/QuickTooltip';
 export default function Settings() {
   const { toast } = useToast();
   const { theme, updateTheme, colorBlindMode, updateColorBlindMode } = useTheme();
-  const { language, updateLanguage } = useLanguage();
+  const { language, updateLanguage, t } = useLanguage();
   
   // Check if we should auto-select validation tab
   const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
@@ -330,16 +330,12 @@ export default function Settings() {
 
   const handleAppSettingChange = async (key, value) => {
     try {
-      console.log('Settings: handleAppSettingChange called with:', key, value);
       // Update theme and language contexts immediately
       if (key === 'theme') {
-        console.log('Settings: Updating theme to:', value);
         updateTheme(value);
       } else if (key === 'language') {
-        console.log('Settings: Updating language to:', value);
         updateLanguage(value);
       } else if (key === 'colorblind_mode') {
-        console.log('Settings: Updating colorblind mode to:', value);
         updateColorBlindMode(value === 'true' ? 'protanopia' : 'none');
       }
 
@@ -1001,18 +997,18 @@ export default function Settings() {
   const isAdmin = currentUser?.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--app-bg)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+        <div className="rounded-lg shadow" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
+          <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--app-border)' }}>
+            <h1 className="text-2xl font-semibold flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
               <SettingsIcon className="w-6 h-6" />
               Settings
             </h1>
           </div>
 
           <div className="flex">
-            <div className="w-64 border-r border-gray-200">
+            <div className="w-64" style={{ borderRight: '1px solid var(--app-border)' }}>
               <nav className="p-4 space-y-1">
                 {tabs.map(tab => {
                   const Icon = tab.icon;
@@ -1043,7 +1039,7 @@ export default function Settings() {
               </nav>
             </div>
 
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-6" style={{ color: 'var(--app-text)' }}>
               {activeTab === 'system' && (
                 <div className="space-y-6">
                   <div>
@@ -1364,13 +1360,18 @@ export default function Settings() {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Language
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
+                      {t('settings.general.language')}
                     </label>
                     <select
                       value={language}
                       onChange={(e) => handleAppSettingChange('language', e.target.value)}
-                      className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      style={{ 
+                        border: '1px solid var(--app-border)', 
+                        backgroundColor: 'var(--app-surface)',
+                        color: 'var(--app-text)'
+                      }}
                     >
                       <option value="en">English</option>
                       <option value="es">Español (Spanish)</option>
@@ -1381,17 +1382,22 @@ export default function Settings() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Theme
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
+                      {t('settings.general.theme')}
                     </label>
                     <select
                       value={theme}
                       onChange={(e) => handleAppSettingChange('theme', e.target.value)}
-                      className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      style={{ 
+                        border: '1px solid var(--app-border)', 
+                        backgroundColor: 'var(--app-surface)',
+                        color: 'var(--app-text)'
+                      }}
                     >
-                      <option value="light">Light</option>
-                      <option value="dark">Dark</option>
-                      <option value="auto">Auto (System Preference)</option>
+                      <option value="light">{t('settings.general.themeLight')}</option>
+                      <option value="dark">{t('settings.general.themeDark')}</option>
+                      <option value="auto">{t('settings.general.themeAuto')}</option>
                     </select>
                   </div>
 
@@ -1403,10 +1409,12 @@ export default function Settings() {
                         onChange={(e) => handleAppSettingChange('colorblind_mode', e.target.checked ? 'true' : 'false')}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
-                      <span className="text-sm font-medium text-gray-700">Enable Color Blind Mode</span>
+                      <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
+                        {t('settings.general.colorblindMode')}
+                      </span>
                     </label>
-                    <p className="mt-1 ml-7 text-xs text-gray-500">
-                      Adjusts colors for better accessibility
+                    <p className="mt-1 ml-7 text-xs" style={{ color: 'var(--app-text-secondary)' }}>
+                      {t('settings.general.colorblindModeDesc')}
                     </p>
                   </div>
                 </div>

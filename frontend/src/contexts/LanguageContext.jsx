@@ -28,7 +28,6 @@ const translationsMap = {
 const loadTranslations = async (lang) => {
   try {
     const translations = translationsMap[lang] || translationsMap.en;
-    console.log(`Loading translations for ${lang}:`, translations);
     return translations;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
