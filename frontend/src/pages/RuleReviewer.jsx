@@ -423,44 +423,77 @@ export default function RuleReviewer() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead style={{ backgroundColor: 'var(--app-surface-light)' }}>
                   <tr>
                     <th className="px-2 py-1 text-left">
-                      <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
+                      <button 
+                        onClick={toggleSelectAll} 
+                        className="p-1 rounded"
+                        style={{ 
+                          backgroundColor: 'transparent',
+                          color: 'var(--app-text)'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      >
                         {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                       </button>
                     </th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Title</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>ID</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Date Created</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Added</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Correspondent</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Document Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>CF: Doc Category</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Tags</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>POCO Score</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>View</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
                   {documents.map((doc) => (
                     <tr
                       key={doc.id}
-                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`}
+                      className="cursor-pointer"
+                      style={{
+                        backgroundColor: selectedDocuments.includes(doc.id) ? 'rgba(var(--app-primary-light-rgb), 0.3)' : 'transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!selectedDocuments.includes(doc.id)) {
+                          e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!selectedDocuments.includes(doc.id)) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        } else {
+                          e.currentTarget.style.backgroundColor = 'rgba(var(--app-primary-light-rgb), 0.3)';
+                        }
+                      }}
                       onClick={() => toggleDocumentSelection(doc.id)}
                     >
                       <td className="px-2 py-1">
-                        <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
-                          {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} 
+                          className="p-1 rounded"
+                          style={{ 
+                            backgroundColor: 'transparent',
+                            color: 'var(--app-text)'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4" style={{ color: 'var(--app-primary)' }} /> : <Square className="w-4 h-4" />}
                         </button>
                       </td>
-                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.id}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.created)}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.added || doc.created)}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.correspondent || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.documentType || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.docCategory || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         {doc.tags && doc.tags.length > 0 ? (
                           doc.tags.map((tag, i) => {

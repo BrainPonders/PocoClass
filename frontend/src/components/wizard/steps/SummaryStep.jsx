@@ -82,7 +82,11 @@ export default function SummaryStep({
                   }
                 }}
                 className="px-3 py-1 rounded focus:outline-none text-sm"
-                style={{ border: '1px solid var(--app-border)' }}
+                style={{ 
+                  border: '1px solid var(--app-border)',
+                  backgroundColor: 'var(--input-bg)',
+                  color: 'var(--input-text)'
+                }}
                 onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
                 onBlur={(e) => e.target.style.boxShadow = 'none'}
               >
