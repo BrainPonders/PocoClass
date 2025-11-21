@@ -6,11 +6,15 @@ import { useToast } from "@/components/ui/use-toast";
 import { User } from '@/api/entities';
 import API_BASE_URL from '@/config/api';
 import { usePOCOFields } from '@/contexts/POCOFieldsContext';
+import { useTheme } from '@/components/ThemeProvider';
+import { useLanguage } from '@/contexts/LanguageContext';
 import CreatePocoFieldDialog from '@/components/CreatePocoFieldDialog';
 import { QuickTooltip } from '@/components/ui/QuickTooltip';
 
 export default function Settings() {
   const { toast } = useToast();
+  const { theme, updateTheme, colorBlindMode, updateColorBlindMode } = useTheme();
+  const { language, updateLanguage } = useLanguage();
   
   // Check if we should auto-select validation tab
   const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
@@ -326,6 +330,15 @@ export default function Settings() {
 
   const handleAppSettingChange = async (key, value) => {
     try {
+      // Update theme and language contexts immediately
+      if (key === 'theme') {
+        updateTheme(value);
+      } else if (key === 'language') {
+        updateLanguage(value);
+      } else if (key === 'colorblind_mode') {
+        updateColorBlindMode(value === 'true' ? 'protanopia' : 'none');
+      }
+
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/app`, {
         method: 'POST',
@@ -1351,15 +1364,15 @@ export default function Settings() {
                       Language
                     </label>
                     <select
-                      value={appSettings.language || 'en'}
+                      value={language}
                       onChange={(e) => handleAppSettingChange('language', e.target.value)}
                       className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                      <option value="nl">Dutch</option>
+                      <option value="es">Español (Spanish)</option>
+                      <option value="fr">Français (French)</option>
+                      <option value="de">Deutsch (German)</option>
+                      <option value="nl">Nederlands (Dutch)</option>
                     </select>
                   </div>
 
@@ -1368,13 +1381,13 @@ export default function Settings() {
                       Theme
                     </label>
                     <select
-                      value={appSettings.theme || 'light'}
+                      value={theme}
                       onChange={(e) => handleAppSettingChange('theme', e.target.value)}
                       className="w-full md:w-64 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="light">Light</option>
                       <option value="dark">Dark</option>
-                      <option value="auto">Auto</option>
+                      <option value="auto">Auto (System Preference)</option>
                     </select>
                   </div>
 
@@ -1382,7 +1395,7 @@ export default function Settings() {
                     <label className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={appSettings.colorblind_mode === 'true'}
+                        checked={colorBlindMode !== 'none'}
                         onChange={(e) => handleAppSettingChange('colorblind_mode', e.target.checked ? 'true' : 'false')}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />

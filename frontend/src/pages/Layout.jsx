@@ -7,6 +7,7 @@ import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User 
 import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { usePOCOFields } from "@/contexts/POCOFieldsContext";
 import { useTabVisibility } from "@/components/hooks/useTabVisibility";
 import { useToast } from "@/components/ui/use-toast";
@@ -151,8 +152,9 @@ export default function Layout({ children }) {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <ToastProvider>
-          <SidebarProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <SidebarProvider>
             <style>{`
               :root.light {
                 --app-bg: #f8fafc;
@@ -1239,8 +1241,9 @@ export default function Layout({ children }) {
                 </div>
               </div>
             )}
-          </SidebarProvider>
-        </ToastProvider>
+            </SidebarProvider>
+          </ToastProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
