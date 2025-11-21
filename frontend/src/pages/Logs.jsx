@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileStack, Download, RefreshCw } from 'lucide-react';
 import { Log } from '@/api/entities';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LogFilterBar from '@/components/LogFilterBar';
 import PageLayout from '@/components/PageLayout';
 
 export default function Logs() {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -150,8 +150,8 @@ export default function Logs() {
 
   return (
     <PageLayout 
-      title={t('logs_title')}
-      subtitle={t('logs_subtitle')}
+      title={t('logs.title')}
+      subtitle="View and analyze system logs"
       actions={
         <>
           <button onClick={loadLogs} className="btn btn-secondary">
@@ -181,7 +181,7 @@ export default function Logs() {
         {filteredLogs.length === 0 ? (
           <div className="text-center py-12">
             <FileStack className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-secondary)' }} />
-            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('logs_no_logs')}</h3>
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No logs found</h3>
             <p style={{ color: 'var(--app-text-secondary)' }}>Try adjusting your filters</p>
           </div>
         ) : (
@@ -201,7 +201,7 @@ export default function Logs() {
                         className="px-2 py-1 rounded text-xs font-semibold"
                         style={getLevelBadgeStyle(log.level)}
                       >
-                        {t(`logs_level_${log.level}`)}
+                        {log.level.toUpperCase()}
                       </span>
                       <span 
                         className="px-2 py-1 rounded text-xs font-semibold"

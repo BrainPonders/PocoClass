@@ -7,8 +7,10 @@ import { FileText, Plus, Settings, BarChart3, Activity, CheckCircle, XCircle, Us
 import API_BASE_URL from '@/config/api';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageLayout from "@/components/PageLayout";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const [rules, setRules] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -68,12 +70,12 @@ export default function Dashboard() {
 
   return (
     <PageLayout 
-      title="PocoClass Dashboard" 
+      title={t('dashboard.title')}
       subtitle="View and manage documents"
       actions={
         <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
           <Plus className="w-5 h-5" />
-          Create New Rule
+          {t('rules.createNew')}
         </Link>
       }
     >
@@ -197,7 +199,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Rules</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.stats.totalRules')}</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -207,7 +209,7 @@ export default function Dashboard() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Rules</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.stats.activeRules')}</CardTitle>
             <BarChart3 className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>

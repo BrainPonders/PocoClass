@@ -6,7 +6,7 @@ import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
 import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown, Eye, X } from 'lucide-react';
 import API_BASE_URL from '@/config/api';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import YamlExportButton from '@/components/YamlExportButton';
@@ -18,7 +18,7 @@ import PageLayout from '@/components/PageLayout';
 
 export default function Rules() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const { showToast } = useToast();
   
   const [rules, setRules] = useState([]);
@@ -308,7 +308,7 @@ export default function Rules() {
     
     setConfirmDialog({
       isOpen: true,
-      title: t('rules_confirm_delete'),
+      title: t('rules.deleteRule'),
       message: `Delete "${rule.ruleName}"? This rule will be moved to the deleted folder.`,
       onConfirm: async () => {
         try {
@@ -496,8 +496,8 @@ export default function Rules() {
 
   return (
     <PageLayout
-      title={t('rules_title')}
-      subtitle={t('rules_subtitle')}
+      title={t('rules.title')}
+      subtitle="Manage your document classification rules"
       actions={
         <>
           <button 
@@ -514,7 +514,7 @@ export default function Rules() {
             aria-label="Create new rule"
           >
             <Plus className="w-5 h-5" />
-            {t('rules_create')}
+            {t('rules.createNew')}
           </button>
         </>
       }
@@ -537,7 +537,7 @@ export default function Rules() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={t('rules_search_placeholder')}
+                  placeholder="Search rules..."
                   className="w-full px-3 py-2 rounded-lg focus:outline-none"
                   style={{ paddingLeft: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
                   onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
@@ -630,7 +630,7 @@ export default function Rules() {
       {filteredRules.length === 0 ? (
         <div className="card text-center py-16">
           <FileText className="w-20 h-20 mx-auto mb-4" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
-          <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--app-text-secondary)' }}>{t('rules_no_rules')}</h3>
+          <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--app-text-secondary)' }}>{t('rules.noRules')}</h3>
           <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>Get started by creating your first classification rule</p>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
@@ -638,7 +638,7 @@ export default function Rules() {
             aria-label="Create your first rule"
           >
             <Plus className="w-5 h-5" />
-            {t('rules_create')}
+            {t('rules.createNew')}
           </button>
         </div>
       ) : (
@@ -656,13 +656,13 @@ export default function Rules() {
                       aria-label="Select all rules on this page"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Rule Name</th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Rule ID</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleName')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleId')}</th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Source Document</th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('common_status')}</th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Threshold</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.status')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.threshold')}</th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Created</th>
-                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('common_actions')}</th>
+                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody style={{ borderTop: '1px solid var(--app-border)' }}>
@@ -736,7 +736,7 @@ export default function Rules() {
                         <button 
                           onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${rule.id}`)}
                           className="btn btn-ghost btn-sm"
-                          title={t('common_edit')}
+                          title={t('common.edit')}
                           aria-label={`Edit rule ${rule.ruleName}`}
                         >
                           <Pencil className="w-4 h-4" />
@@ -744,7 +744,7 @@ export default function Rules() {
                         <button 
                           onClick={() => handleDuplicate(rule)}
                           className="btn btn-ghost btn-sm"
-                          title={t('common_duplicate')}
+                          title="Duplicate"
                           aria-label={`Duplicate rule ${rule.ruleName}`}
                         >
                           <Copy className="w-4 h-4" />
@@ -752,7 +752,7 @@ export default function Rules() {
                         <button 
                           onClick={() => handleDelete(rule.id)}
                           className="btn btn-ghost btn-sm text-red-500"
-                          title={t('common_delete')}
+                          title={t('common.delete')}
                           aria-label={`Delete rule ${rule.ruleName}`}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -778,7 +778,7 @@ export default function Rules() {
                   className="btn btn-secondary btn-sm"
                   aria-label="Go to previous page"
                 >
-                  {t('common_previous')}
+                  {t('common.previous')}
                 </button>
                 {[...Array(Math.min(5, totalPages))].map((_, i) => {
                   const pageNum = i + 1;
@@ -800,7 +800,7 @@ export default function Rules() {
                   className="btn btn-secondary btn-sm"
                   aria-label="Go to next page"
                 >
-                  {t('common_next')}
+                  {t('common.next')}
                 </button>
               </div>
             </div>

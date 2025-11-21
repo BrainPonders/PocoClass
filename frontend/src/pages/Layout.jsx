@@ -7,7 +7,7 @@ import { FileText, Settings, Home, BookOpen, BarChart3, FileStack, LogOut, User 
 import { User } from "@/api/entities";
 import { ToastProvider } from "@/components/ToastContainer";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { LanguageProvider } from "@/contexts/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { usePOCOFields } from "@/contexts/POCOFieldsContext";
 import { useTabVisibility } from "@/components/hooks/useTabVisibility";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,47 +29,48 @@ import {
 } from "@/components/ui/sidebar";
 import ErrorBoundary from '@/components/ErrorBoundary';
 
-const navigationItems = [
-  {
-    title: "Dashboard",
-    url: createPageUrl("Dashboard"),
-    icon: Home,
-  },
-  {
-    title: "Rules",
-    url: createPageUrl("Rules"),
-    icon: FileText,
-  },
-  {
-    title: "Rule Evaluation",
-    url: createPageUrl("RuleReviewer"),
-    icon: BarChart3,
-  },
-  {
-    title: "Background Process",
-    url: createPageUrl("BackgroundProcess"),
-    icon: Activity,
-    adminOnly: true,
-  },
-  {
-    title: "Logs",
-    url: createPageUrl("Logs"),
-    icon: FileStack,
-  },
-  {
-    title: "Settings",
-    url: createPageUrl("Settings"),
-    icon: Settings,
-  },
-];
-
-export default function Layout({ children }) {
+function LayoutContent({ children }) {
   const location = useLocation();
+  const { t } = useLanguage();
   const [showGuide, setShowGuide] = useState(false);
   const [showQuickGuide, setShowQuickGuide] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
+
+  const navigationItems = [
+    {
+      title: t('nav.dashboard'),
+      url: createPageUrl("Dashboard"),
+      icon: Home,
+    },
+    {
+      title: t('nav.rules'),
+      url: createPageUrl("Rules"),
+      icon: FileText,
+    },
+    {
+      title: t('nav.ruleEvaluation'),
+      url: createPageUrl("RuleReviewer"),
+      icon: BarChart3,
+    },
+    {
+      title: t('nav.backgroundProcess'),
+      url: createPageUrl("BackgroundProcess"),
+      icon: Activity,
+      adminOnly: true,
+    },
+    {
+      title: t('nav.logs'),
+      url: createPageUrl("Logs"),
+      icon: FileStack,
+    },
+    {
+      title: t('nav.settings'),
+      url: createPageUrl("Settings"),
+      icon: Settings,
+    },
+  ];
 
   useEffect(() => {
     loadUser();
@@ -150,12 +151,9 @@ export default function Layout({ children }) {
   };
 
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <LanguageProvider>
-          <ToastProvider>
-            <SidebarProvider>
-            <style>{`
+    <ToastProvider>
+      <SidebarProvider>
+        <style>{`
               :root.light {
                 --app-bg: #f8fafc;
                 --app-bg-secondary: #f1f5f9;
@@ -591,7 +589,7 @@ export default function Layout({ children }) {
                           >
                             <div className="flex items-center gap-3 px-3 py-2 w-full">
                               <BookOpen className="w-4 h-4" />
-                              <span className="font-medium">Guide</span>
+                              <span className="font-medium">{t('nav.guide')}</span>
                             </div>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -634,7 +632,7 @@ export default function Layout({ children }) {
                             >
                               <div className="flex items-center gap-3 px-3 py-2 w-full">
                                 <LogOut className="w-4 h-4" />
-                                <span className="font-medium">Logout</span>
+                                <span className="font-medium">{t('nav.logout')}</span>
                               </div>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
@@ -679,7 +677,7 @@ export default function Layout({ children }) {
                         }}
                         className="btn btn-outline btn-sm"
                       >
-                        Quick Guide
+                        {t('nav.quickGuide')}
                       </button>
                       <button 
                         onClick={() => setShowGuide(false)}
@@ -1304,8 +1302,17 @@ export default function Layout({ children }) {
                 </div>
               </div>
             )}
-            </SidebarProvider>
-          </ToastProvider>
+        </SidebarProvider>
+      </ToastProvider>
+  );
+}
+
+export default function Layout({ children }) {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider>
+        <LanguageProvider>
+          <LayoutContent>{children}</LayoutContent>
         </LanguageProvider>
       </ThemeProvider>
     </ErrorBoundary>
