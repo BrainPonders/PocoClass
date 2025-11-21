@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 
 import { 
@@ -16,6 +17,7 @@ export default function SummaryStep({
   setShowInfoBoxes,
   updateRuleData
 }) {
+  const { t } = useLanguage();
   const ocrMultiplier = ruleData.ocrMultiplier ?? OCR_DEFAULT_MULTIPLIER;
   const filenameMultiplier = ruleData.filenameMultiplier ?? FILENAME_DEFAULT_MULTIPLIER;
   
@@ -38,7 +40,7 @@ export default function SummaryStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">Step 6 of 6: Review & Summary</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step6')}</h2>
         <Tooltip content="Review all your rule configurations before saving. You can go back to any step to make changes if needed." />
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>

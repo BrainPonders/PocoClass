@@ -12,8 +12,10 @@ import { apiClient } from "@/api/apiClient";
 import API_BASE_URL from '@/config/api';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 import PageLayout from "@/components/PageLayout";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BackgroundProcess() {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
@@ -508,7 +510,7 @@ export default function BackgroundProcess() {
 
   return (
     <PageLayout 
-      title="Background Processing"
+      title={t('nav.backgroundProcess')}
       subtitle="Monitor and manage automatic document classification"
       actions={
         <div className="flex flex-col items-end">
@@ -518,7 +520,7 @@ export default function BackgroundProcess() {
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
           >
             <RefreshCw className="w-4 h-4" />
-            {loading ? 'Triggering...' : 'Trigger Now'}
+            {loading ? 'Triggering...' : t('processing.trigger') + ' Now'}
           </Button>
           <p className="text-xs mt-1" style={{ color: 'var(--app-text-secondary)' }}>Auto-discover & process documents tagged "NEW"</p>
         </div>
@@ -544,7 +546,7 @@ export default function BackgroundProcess() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5" />
-              Processing Status
+              {t('processing.status')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -557,7 +559,7 @@ export default function BackgroundProcess() {
                       ? 'bg-green-100 text-green-800' : ''
                   }`}
                   style={!processingStatus.enabled ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
-                    {processingStatus.enabled ? 'Enabled' : 'Disabled'}
+                    {processingStatus.enabled ? t('processing.enabled') : t('processing.disabled')}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -799,7 +801,7 @@ export default function BackgroundProcess() {
                   onMouseLeave={(e) => !loading && matchingDocuments.length > 0 && (e.currentTarget.style.opacity = '1')}
                 >
                   <Play className="w-4 h-4" />
-                  {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
+                  {loading && currentDryRun === true ? 'Testing...' : t('processing.dryRun')}
                 </Button>
                 <p className="text-xs mt-2 text-center" style={{ color: 'var(--app-text-muted)' }}>
                   Test all rules without changing Paperless
@@ -836,7 +838,7 @@ export default function BackgroundProcess() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Processing History
+            {t('processing.history')}
             {backgroundSettings && (
               <span className="text-sm font-normal ml-2" style={{ color: 'var(--app-text-muted)' }}>
                 (Retention: {backgroundSettings.history_retention_type === 'days' 

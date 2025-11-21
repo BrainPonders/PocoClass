@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, FileText, Eye, HelpCircle, AlertTriangle } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import LogicGroupEditor from '../LogicGroupEditor';
 import Tooltip from '@/components/Tooltip';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -14,7 +14,7 @@ export default function OcrIdentifiersStep({
   onViewOcr,
   onViewPdf
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const isInitialized = useRef(false);
   const [showOcrThresholdWarning, setShowOcrThresholdWarning] = useState(false);
   const [pendingOcrThreshold, setPendingOcrThreshold] = useState(null);
@@ -172,8 +172,8 @@ export default function OcrIdentifiersStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
-          <Tooltip content={t('ocr_identifiers_tooltip')} />
+          <h2 className="text-2xl font-bold">{t('wizard.step2')}</h2>
+          <Tooltip content="Define OCR content patterns to identify documents. At least 3 logic groups are required." />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('ocr_identifiers_description')}</p>
         {selectedDocumentId && selectedDocumentName && (

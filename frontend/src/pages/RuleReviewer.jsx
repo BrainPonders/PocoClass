@@ -9,8 +9,10 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RuleReviewer() {
+  const { t } = useLanguage();
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
@@ -375,7 +377,7 @@ export default function RuleReviewer() {
 
   return (
     <PageLayout 
-      title="Rule Evaluation"
+      title={t('nav.ruleEvaluation')}
       subtitle="Test and evaluate document classification rules"
     >
 

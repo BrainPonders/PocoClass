@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import MDMultiplierSlider from '../MDMultiplierSlider';
 import { calculateOcrMaxWeight } from '@/components/utils/pocoCalculations';
@@ -9,6 +10,7 @@ export default function DataVerificationStep({
   showInfoBoxes, 
   setShowInfoBoxes 
 }) {
+  const { t } = useLanguage();
   const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
   const [customFieldNames, setCustomFieldNames] = React.useState({});
 
@@ -137,7 +139,7 @@ export default function DataVerificationStep({
       <div className="mb-6">
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold">Step 4 of 6: Paperless Verification</h2>
+            <h2 className="text-2xl font-bold">{t('wizard.step4')}</h2>
             <Tooltip content="Verify that extracted data matches existing Paperless metadata. This adds confidence to the classification by checking if the document's placeholders align with what was extracted from OCR." />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${

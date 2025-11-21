@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Wand2, Trash2, HelpCircle, AlertTriangle } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import PatternHelperModal from '@/components/PatternHelperModal';
 
@@ -9,7 +9,7 @@ export default function FilenameIdentificationStep({
   ruleData, 
   updateRuleData
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const isInitialized = useRef(false);
   const [showPatternHelper, setShowPatternHelper] = useState(false);
   const [activePatternIndex, setActivePatternIndex] = useState(null);
@@ -93,7 +93,7 @@ export default function FilenameIdentificationStep({
       <div className="mb-6">
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-bold">{t('step_4_title')}</h2>
+            <h2 className="text-2xl font-bold">{t('wizard.step3')}</h2>
             <Tooltip content="Filename patterns help identify documents by their file names. Use the Pattern Helper to create flexible patterns that handle variations in naming conventions." />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ValidatedInput from '@/components/ValidatedInput';
 import ValidatedTextarea from '@/components/ValidatedTextarea';
 import Tooltip from '@/components/Tooltip';
@@ -12,7 +12,7 @@ export default function BasicInfoStep({
   updateRuleData,
   currentStep 
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const [showThresholdWarning, setShowThresholdWarning] = useState(false);
   const [pendingThreshold, setPendingThreshold] = useState(null);
   const [tempThreshold, setTempThreshold] = useState(ruleData.threshold || 75);
@@ -71,7 +71,7 @@ export default function BasicInfoStep({
   };
 
   const getRuleNameError = () => {
-    if (!ruleData.ruleName) return t('step1_rule_name') + ' is required';
+    if (!ruleData.ruleName) return t('rules.ruleName') + ' is required';
     if (ruleData.ruleName.length < 3) return 'Name must be at least 3 characters';
     return '';
   };
@@ -92,7 +92,7 @@ export default function BasicInfoStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('step_1_title')}</h2>
+          <h2 className="text-2xl font-bold">{t('wizard.step1')}</h2>
           <Tooltip content="Basic information helps identify your rule and control classification behavior. The POCO Score requirement determines how confident the system must be before classifying a document. For more details, see the Guide in the sidebar." />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Define basic rule information and confidence requirements</p>
@@ -100,37 +100,37 @@ export default function BasicInfoStep({
 
       <div className="space-y-6">
         <ValidatedInput
-          label={t('step1_rule_name')}
+          label={t('rules.ruleName')}
           value={ruleData.ruleName}
           onChange={handleRuleNameChange}
-          placeholder={t('step1_rule_name_placeholder')}
+          placeholder="e.g., Electric Bill Classification"
           error={ruleData.ruleName && getRuleNameError()}
           success={ruleData.ruleName && !getRuleNameError()}
           required
-          helpText={t('step1_rule_name_help')}
+          helpText="Choose a descriptive name to identify this rule"
           tooltip="A descriptive name that helps you identify this rule. This is what you'll see in lists and reports."
         />
 
         <ValidatedInput
-          label={t('step1_rule_id')}
+          label={t('rules.ruleId')}
           value={ruleData.ruleId}
           onChange={(e) => updateRuleData('', { 
             ruleId: e.target.value, 
             ruleIdManuallyEdited: true 
           })}
-          placeholder={t('step1_rule_id_placeholder')}
+          placeholder="e.g., electric_bill_rule"
           error={ruleData.ruleId && getRuleIdError()}
           success={ruleData.ruleId && !getRuleIdError()}
           required
-          helpText={t('step1_rule_id_help')}
+          helpText="Unique identifier (lowercase, numbers, underscores only)"
           tooltip="Technical identifier used in the system. Use lowercase, numbers, and underscores only."
         />
 
         <ValidatedTextarea
-          label={t('step1_description')}
+          label={t('rules.description')}
           value={ruleData.description}
           onChange={(e) => updateRuleData('description', e.target.value)}
-          placeholder={t('step1_description_placeholder')}
+          placeholder="Describe what documents this rule identifies..."
           error={ruleData.description && getDescriptionError()}
           success={ruleData.description && !getDescriptionError()}
           required

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Plus, Trash2, Wand2, Play, CheckCircle, XCircle } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import TagSelector from '@/components/TagSelector';
 import PatternHelperModal from '@/components/PatternHelperModal';
@@ -13,7 +13,7 @@ export default function DocumentClassificationsStep({
   updateRuleData,
   selectedDocumentId
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const [showPatternHelper, setShowPatternHelper] = React.useState(false);
   const [activeAnchorType, setActiveAnchorType] = React.useState(null);
   const [activeRuleIndex, setActiveRuleIndex] = React.useState(null);

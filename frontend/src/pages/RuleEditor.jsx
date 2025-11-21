@@ -5,7 +5,7 @@ import { Rule } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
 import { ArrowLeft, Eye, FileText, X } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -43,7 +43,7 @@ function useDebounce(value, delay) {
 export default function RuleEditor() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const { showToast } = useToast();
   const { hasUnsavedChanges, setHasUnsavedChanges } = useUnsavedChanges();
   const ruleId = searchParams.get('id');
@@ -514,7 +514,7 @@ export default function RuleEditor() {
   return (
     <PageLayout
       headerPadding="py-[15px]"
-      title={ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'editor_edit_title' : 'editor_create_title')}
+      title={ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'rules.editRule' : 'rules.createNew')}
       subtitle={
         <div className="space-y-1">
           {ruleData.sourceDocumentId && (
@@ -552,7 +552,7 @@ export default function RuleEditor() {
             className={`btn btn-primary ${!canFinish() ? 'opacity-50 cursor-not-allowed' : ''}`}
             loadingText={t('common_saving')}
           >
-            {t('common_save')}
+            {t('common.save')}
           </LoadingButton>
         </>
       }
@@ -576,7 +576,7 @@ export default function RuleEditor() {
                   disabled={currentStep === 1}
                   className="btn btn-secondary"
                 >
-                  {t('common_previous')}
+                  {t('common.back')}
                 </button>
                 <div className="flex gap-3">
                   {currentStep === 6 ? (
@@ -595,7 +595,7 @@ export default function RuleEditor() {
                       disabled={!validateStep(currentStep)} // Simplified this condition
                       className={`btn btn-primary ${!validateStep(currentStep) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      {t('common_next')}
+                      {t('common.next')}
                     </button>
                   )}
                 </div>
