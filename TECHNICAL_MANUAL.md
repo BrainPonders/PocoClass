@@ -1,7 +1,22 @@
 # PocoClass Technical Manual v2
 **Version:** 2.0  
-**Last Updated:** November 4, 2025  
+**Last Updated:** November 21, 2025  
 **Purpose:** Comprehensive technical documentation for PocoClass v2 architecture, logic, and implementation
+
+---
+
+## Recent Changes (November 2025)
+
+**November 21, 2025:**
+- Updated in-app guides (Full Guide + Quick Reference) with comprehensive documentation covering all aspects of PocoClass
+- Removed personal data references (organization names) from documentation and examples for privacy compliance
+- Updated UI documentation to reflect 1px border standardization across application
+
+**November 20, 2025:**
+- **Bug Fix**: Fixed critical custom field sync issue where deleted Paperless custom fields were persisting in PocoClass cache
+  - Root cause: `sync_custom_field_placeholders()` in `database.py` only added new fields, never removed deleted ones
+  - Solution: Added deletion logic to remove orphaned cache entries when fields are deleted from Paperless
+  - Impact: Ensures PocoClass cache stays synchronized with Paperless configuration changes
 
 ---
 
@@ -427,9 +442,9 @@ core_identifiers:
     - title: "Bank Identifier"
       type: "match"  # AND logic
       conditions:
-        - pattern: "/Rabobank/i"
+        - pattern: "/Organization Name/i"
           source: "content"
-        - pattern: "/IBAN.*NL/i"
+        - pattern: "/Account.*Number/i"
           source: "content"
     
     - title: "Account Type"
@@ -475,9 +490,9 @@ def normalize_regex_pattern(pattern: str) -> Tuple[str, int]:
 
 | Input Pattern | Normalized Pattern | Flags |
 |---------------|-------------------|-------|
-| `/Rabobank/i` | `Rabobank` | `IGNORECASE \| MULTILINE` |
+| `/Organization/i` | `Organization` | `IGNORECASE \| MULTILINE` |
 | `/Invoice\s+\d+/im` | `Invoice\s+\d+` | `IGNORECASE \| MULTILINE` |
-| `IBAN` | `IBAN` | `IGNORECASE \| MULTILINE` (default) |
+| `Account Number` | `Account Number` | `IGNORECASE \| MULTILINE` (default) |
 
 ### 4.3 Pattern Matching with Source and Range
 
@@ -625,14 +640,14 @@ PocoClass v2 supports three types of metadata:
 **Format**:
 ```yaml
 static_metadata:
-  correspondent: "Rabobank"
-  document_type: "Bank Statement"
+  correspondent: "Financial Institution"
+  document_type: "Statement"
   tags:
     - "Financial"
     - "Banking"
   custom_fields:
     Account Type: "Checking"
-    Bank Name: "Rabobank NL"
+    Institution: "Organization Name"
 ```
 
 **Processing**:
@@ -991,7 +1006,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
 {
   "success": true,
   "rule_id": "rule_001",
-  "rule_name": "Rabobank Statement",
+  "rule_name": "Organization Statement",
   "classification_allowed": true,
   "status": "CONFIDENT",
   "threshold": 80.0,
@@ -1009,7 +1024,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "percentage": 80.0,
       "groups": [
         {
-          "name": "Bank Identifier",
+          "name": "Organization Identifier",
           "matched": true,
           "score": 1
         },
@@ -1028,7 +1043,7 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "percentage": 66.67,
       "patterns": [
         {
-          "pattern": "/Rabobank/i",
+          "pattern": "/Organization/i",
           "matched": true
         }
       ]
@@ -1039,8 +1054,8 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "matches": [
         {
           "field": "correspondent",
-          "extracted": "Rabobank",
-          "paperless": "Rabobank",
+          "extracted": "Organization Name",
+          "paperless": "Organization Name",
           "match": true
         }
       ]
@@ -1048,12 +1063,12 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
   },
   "extracted_metadata": {
     "static": {
-      "correspondent": "Rabobank",
+      "correspondent": "Organization Name",
       "tags": ["Financial"]
     },
     "dynamic": {
       "date_created": "2024-12-27",
-      "account_number": "NL91RABO0315273637"
+      "account_number": "123456789"
     },
     "filename": {}
   }
@@ -1660,7 +1675,7 @@ Authorization: Bearer {sessionToken}
   "rules": [
     {
       "id": "rule_001",
-      "name": "Rabobank Statement",
+      "name": "Organization Statement",
       "enabled": true,
       "created_at": "2024-11-01T10:00:00",
       "modified_at": "2024-11-02T15:30:00"
