@@ -173,9 +173,9 @@ export default function OcrIdentifiersStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{t('wizard.step2')}</h2>
-          <Tooltip content="Define OCR content patterns to identify documents. At least 3 logic groups are required." />
+          <Tooltip content={t('tooltips.ocrThresholdHelp')} />
         </div>
-        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('ocr_identifiers_description')}</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step2Description')}</p>
         {selectedDocumentId && selectedDocumentName && (
           <div className="mt-2 p-2 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
             📄 Working with: <span className="font-medium">{selectedDocumentName}</span>
@@ -239,7 +239,7 @@ export default function OcrIdentifiersStep({
               <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
               <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">75</span>
               <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
-                <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
+                <Tooltip content={t('tooltips.ocrThresholdDefault')}>
                   <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
@@ -280,7 +280,7 @@ export default function OcrIdentifiersStep({
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
               <span style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">3</span>
               <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(8px)'}}>
-                <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
+                <Tooltip content={t('tooltips.ocrThresholdDefault')}>
                   <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
@@ -347,10 +347,10 @@ export default function OcrIdentifiersStep({
         isOpen={showOcrThresholdWarning}
         onClose={cancelOcrThresholdChange}
         onConfirm={confirmOcrThresholdChange}
-        title={t('change_ocr_score_requirement_title')}
-        message={t('change_ocr_score_requirement_message', { pendingOcrThreshold })}
-        confirmText={t('yes_change_it')}
-        cancelText={t('cancel')}
+        title={t('dialogs.ocrThresholdWarning.title')}
+        message={t('dialogs.ocrThresholdWarning.message', { threshold: pendingOcrThreshold })}
+        confirmText={t('dialogs.ocrThresholdWarning.confirmButton')}
+        cancelText={t('dialogs.ocrThresholdWarning.cancelButton')}
         variant="warning"
         showDontShowAgain={true}
         warningKey="ocrThreshold"
@@ -360,10 +360,10 @@ export default function OcrIdentifiersStep({
         isOpen={showMultiplierWarning}
         onClose={cancelMultiplierChange}
         onConfirm={confirmMultiplierChange}
-        title={t('change_ocr_weight_multiplier_title')}
-        message={t('change_ocr_weight_multiplier_message', { pendingMultiplier })}
-        confirmText={t('yes_change_it')}
-        cancelText={t('cancel')}
+        title={t('dialogs.multiplierWarning.title')}
+        message={t('dialogs.multiplierWarning.message', { multiplier: pendingMultiplier })}
+        confirmText={t('dialogs.multiplierWarning.confirmButton')}
+        cancelText={t('dialogs.multiplierWarning.cancelButton')}
         variant="warning"
         showDontShowAgain={true}
         warningKey="ocrMultiplier"

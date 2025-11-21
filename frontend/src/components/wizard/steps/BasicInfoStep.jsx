@@ -71,20 +71,20 @@ export default function BasicInfoStep({
   };
 
   const getRuleNameError = () => {
-    if (!ruleData.ruleName) return t('rules.ruleName') + ' is required';
-    if (ruleData.ruleName.length < 3) return 'Name must be at least 3 characters';
+    if (!ruleData.ruleName) return t('validation.ruleNameRequired');
+    if (ruleData.ruleName.length < 3) return t('validation.ruleNameMinLength');
     return '';
   };
 
   const getRuleIdError = () => {
-    if (!ruleData.ruleId) return 'Rule ID is required';
-    if (!/^[a-z0-9_]+$/.test(ruleData.ruleId)) return 'Only lowercase letters, numbers, and underscores';
+    if (!ruleData.ruleId) return t('validation.ruleIdRequired');
+    if (!/^[a-z0-9_]+$/.test(ruleData.ruleId)) return t('validation.ruleIdFormat');
     return '';
   };
 
   const getDescriptionError = () => {
-    if (!ruleData.description) return 'Description is required';
-    if (ruleData.description.length < 10) return 'Description should be at least 10 characters';
+    if (!ruleData.description) return t('validation.descriptionRequired');
+    if (ruleData.description.length < 10) return t('validation.descriptionMinLength');
     return '';
   };
 
@@ -93,9 +93,9 @@ export default function BasicInfoStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{t('wizard.step1')}</h2>
-          <Tooltip content="Basic information helps identify your rule and control classification behavior. The POCO Score requirement determines how confident the system must be before classifying a document. For more details, see the Guide in the sidebar." />
+          <Tooltip content={t('tooltips.basicInfoHelp')} />
         </div>
-        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Define basic rule information and confidence requirements</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step1Description')}</p>
       </div>
 
       <div className="space-y-6">
@@ -103,12 +103,11 @@ export default function BasicInfoStep({
           label={t('rules.ruleName')}
           value={ruleData.ruleName}
           onChange={handleRuleNameChange}
-          placeholder="e.g., Electric Bill Classification"
+          placeholder={t('placeholders.ruleName')}
           error={ruleData.ruleName && getRuleNameError()}
           success={ruleData.ruleName && !getRuleNameError()}
           required
-          helpText="Choose a descriptive name to identify this rule"
-          tooltip="A descriptive name that helps you identify this rule. This is what you'll see in lists and reports."
+          helpText={t('helpText.ruleNameHelp')}
         />
 
         <ValidatedInput
@@ -118,30 +117,28 @@ export default function BasicInfoStep({
             ruleId: e.target.value, 
             ruleIdManuallyEdited: true 
           })}
-          placeholder="e.g., electric_bill_rule"
+          placeholder={t('placeholders.ruleId')}
           error={ruleData.ruleId && getRuleIdError()}
           success={ruleData.ruleId && !getRuleIdError()}
           required
-          helpText="Unique identifier (lowercase, numbers, underscores only)"
-          tooltip="Technical identifier used in the system. Use lowercase, numbers, and underscores only."
+          helpText={t('helpText.ruleIdHelp')}
         />
 
         <ValidatedTextarea
           label={t('rules.description')}
           value={ruleData.description}
           onChange={(e) => updateRuleData('description', e.target.value)}
-          placeholder="Describe what documents this rule identifies..."
+          placeholder={t('placeholders.description')}
           error={ruleData.description && getDescriptionError()}
           success={ruleData.description && !getDescriptionError()}
           required
           rows={4}
-          tooltip="Explain what documents this rule identifies and any special characteristics or edge cases."
         />
 
         <div className="form-group">
           <label className="form-label flex items-center gap-2">
-            POCO Score Requirement
-            <Tooltip content="The minimum overall confidence score required for a document to be classified by this rule. The POCO score combines OCR content matching, filename patterns, and metadata verification. 75% is recommended for balanced accuracy." />
+            {t('wizard.pocoScoreReq')}
+            <Tooltip content={t('tooltips.pocoScoreHelp')} />
           </label>
           
           <div className="space-y-2">
@@ -168,7 +165,7 @@ export default function BasicInfoStep({
                 <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
                 <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">75</span>
                 <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
-                  <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
+                  <Tooltip content={t('tooltips.pocoScoreDefault')}>
                     <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                   </Tooltip>
                 </div>
@@ -184,22 +181,22 @@ export default function BasicInfoStep({
       </div>
 
       <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>{t('wizard.configSummary')}</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="col-span-2">
-            <span style={{ color: 'var(--app-text-secondary)' }}>Rule Name:</span>
-            <span className="ml-2 font-medium">{ruleData.ruleName || 'Not set'}</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.ruleNameLabel')}:</span>
+            <span className="ml-2 font-medium">{ruleData.ruleName || t('wizard.notSet')}</span>
           </div>
           <div className="col-span-2">
-            <span style={{ color: 'var(--app-text-secondary)' }}>Rule ID:</span>
-            <span className="ml-2 font-medium">{ruleData.ruleId || 'Not set'}</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.ruleIdLabel')}:</span>
+            <span className="ml-2 font-medium">{ruleData.ruleId || t('wizard.notSet')}</span>
           </div>
           <div className="col-span-2">
-            <span style={{ color: 'var(--app-text-secondary)' }}>POCO Score Requirement:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.pocoScoreReq')}:</span>
             <span className="ml-2 font-medium">{ruleData.threshold || 75}%</span>
           </div>
           <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
-            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: A document must score ≥ {ruleData.threshold || 75}% to be classified. A score of {Math.min((ruleData.threshold || 75) + 5, 100)}% would pass.</span>
+            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>{t('wizard.examplePrefix')} {t('helpText.pocoScoreHelp', {threshold: ruleData.threshold || 75, example: Math.min((ruleData.threshold || 75) + 5, 100)})}</span>
           </div>
         </div>
         {(ruleData.threshold || 75) !== 75 && (
@@ -214,10 +211,13 @@ export default function BasicInfoStep({
         isOpen={showThresholdWarning}
         onClose={cancelThresholdChange}
         onConfirm={confirmThresholdChange}
-        title="Change POCO Score Requirement?"
-        message={`You're changing the POCO Score requirement from 75% (recommended) to ${pendingThreshold}%. ${pendingThreshold < 75 ? 'Lower values may result in false positives (incorrect classifications).' : 'Higher values may result in missing valid documents that should be classified.'} Are you sure?`}
-        confirmText="Yes, Change It"
-        cancelText="Cancel"
+        title={t('dialogs.thresholdWarning.title')}
+        message={pendingThreshold < 75 
+          ? t('dialogs.thresholdWarning.messageLow', { threshold: pendingThreshold })
+          : t('dialogs.thresholdWarning.messageHigh', { threshold: pendingThreshold })
+        }
+        confirmText={t('dialogs.thresholdWarning.confirmButton')}
+        cancelText={t('dialogs.thresholdWarning.cancelButton')}
         variant="warning"
         showDontShowAgain={true}
         warningKey="pocoThreshold"

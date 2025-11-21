@@ -140,7 +140,7 @@ export default function DataVerificationStep({
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-bold">{t('wizard.step4')}</h2>
-            <Tooltip content="Verify that extracted data matches existing Paperless metadata. This adds confidence to the classification by checking if the document's placeholders align with what was extracted from OCR." />
+            <Tooltip content={t('tooltips.verificationHelp')} />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isStepEnabled() 

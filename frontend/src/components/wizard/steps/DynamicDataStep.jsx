@@ -67,7 +67,7 @@ export default function DynamicDataStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{t('step_6_title')}</h2>
-          <Tooltip content="Dynamic data extraction allows you to pull specific information from documents using anchor points. Define patterns before and after the data you want to extract." />
+          <Tooltip content={t('tooltips.dynamicDataHelp')} />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Configure data extraction rules to capture specific information from documents</p>
       </div>
@@ -78,7 +78,7 @@ export default function DynamicDataStep({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h4 className="font-semibold text-lg">Extraction Rule {index + 1}</h4>
-                <Tooltip content="Each extraction rule identifies and extracts specific data from the document using before and after anchor patterns." />
+                <Tooltip content={t('tooltips.extractionRuleHelp')} />
               </div>
               {ruleData.dynamicData.length > 1 && (
                 <button
@@ -97,14 +97,14 @@ export default function DynamicDataStep({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>Before Anchor</h5>
-                  <Tooltip content="Text or pattern that appears before the data you want to extract. Can be simple text or regex." />
+                  <Tooltip content={t('tooltips.beforeAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={rule.before_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'before_anchor', e.target.value)}
-                    placeholder="Enter text or regex pattern..."
+                    placeholder={t('placeholders.enterPattern')}
                     className="form-input flex-1"
                   />
                   <button
@@ -122,7 +122,7 @@ export default function DynamicDataStep({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <h5 className="text-sm font-semibold text-green-600">Extraction Type</h5>
-                  <Tooltip content="Defines what type of data to extract: simple text, numeric amounts, dates, or multiple lines of text." />
+                  <Tooltip content={t('tooltips.extractTypeHelp')} />
                 </div>
                 <select
                   value={rule.extraction_type || 'text'}
@@ -139,14 +139,14 @@ export default function DynamicDataStep({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>After Anchor</h5>
-                  <Tooltip content="Text or pattern that appears after the data you want to extract. Can be simple text or regex." />
+                  <Tooltip content={t('tooltips.afterAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={rule.after_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'after_anchor', e.target.value)}
-                    placeholder="Enter text or regex pattern..."
+                    placeholder={t('placeholders.enterPattern')}
                     className="form-input flex-1"
                   />
                   <button
@@ -164,7 +164,7 @@ export default function DynamicDataStep({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <h5 className="text-sm font-semibold">Target Field (Tags)</h5>
-                  <Tooltip content="Select one or more tags where the extracted data should be stored in Paperless-ngx." />
+                  <Tooltip content={t('tooltips.targetTagHelp')} />
                 </div>
                 <TagSelector
                   selectedTags={rule.target_field ? (Array.isArray(rule.target_field) ? rule.target_field : [rule.target_field]) : []}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { HelpCircle, Plus, Trash2 } from 'lucide-react';
 import InfoBox from '../InfoBox';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function StaticMetadataStep({ 
   ruleData, 
@@ -8,6 +9,8 @@ export default function StaticMetadataStep({
   showInfoBoxes, 
   setShowInfoBoxes 
 }) {
+  const { t } = useLanguage();
+  
   const addCustomField = () => {
     const newFields = [...ruleData.staticMetadata.customFields, { name: '', value: '' }];
     updateRuleData('staticMetadata', { customFields: newFields });
@@ -79,7 +82,7 @@ export default function StaticMetadataStep({
               type="text"
               value={ruleData.staticMetadata.correspondent}
               onChange={(e) => updateRuleData('staticMetadata', { correspondent: e.target.value })}
-              placeholder="e.g., Organization Name"
+              placeholder={t('placeholders.organizationName')}
               className="form-input"
             />
             <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown from your system.</p>
@@ -91,7 +94,7 @@ export default function StaticMetadataStep({
               type="text"
               value={ruleData.staticMetadata.documentType}
               onChange={(e) => updateRuleData('staticMetadata', { documentType: e.target.value })}
-              placeholder="e.g., Year Statement"
+              placeholder={t('placeholders.yearStatement')}
               className="form-input"
             />
             <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown.</p>
@@ -103,7 +106,7 @@ export default function StaticMetadataStep({
           <div className="flex gap-2 mb-2">
             <input
               type="text"
-              placeholder="Add a tag and press Enter"
+              placeholder={t('placeholders.addTag')}
               className="form-input flex-1"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
@@ -159,14 +162,14 @@ export default function StaticMetadataStep({
                 type="text"
                 value={field.name}
                 onChange={(e) => updateCustomField(index, 'name', e.target.value)}
-                placeholder="Field name"
+                placeholder={t('placeholders.fieldName')}
                 className="form-input flex-1"
               />
               <input
                 type="text"
                 value={field.value}
                 onChange={(e) => updateCustomField(index, 'value', e.target.value)}
-                placeholder="Field value"
+                placeholder={t('placeholders.fieldValue')}
                 className="form-input flex-1"
               />
               <button 

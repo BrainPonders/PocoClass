@@ -302,23 +302,23 @@ export default function Rules() {
     
     // Protect template_v2 from deletion
     if (rule.ruleId === 'template_v2') {
-      showToast('Template Rule v2 cannot be deleted', 'error');
+      showToast(t('toasts.templateProtected'), 'error');
       return;
     }
     
     setConfirmDialog({
       isOpen: true,
-      title: t('rules.deleteRule'),
-      message: `Delete "${rule.ruleName}"? This rule will be moved to the deleted folder.`,
+      title: t('dialogs.deleteRule.title'),
+      message: t('dialogs.deleteRule.message', { ruleName: rule.ruleName }),
       onConfirm: async () => {
         try {
           // Delete the rule (backend moves it to deleted folder)
           await Rule.delete(ruleId);
-          showToast(`Rule "${rule.ruleName}" moved to deleted folder`, 'success');
+          showToast(t('toasts.ruleDeleted', { ruleName: rule.ruleName }), 'success');
           await reloadRules();
         } catch (error) {
           console.error('Error deleting rule:', error);
-          showToast('Error deleting rule', 'error');
+          showToast(t('toasts.ruleDeleteError'), 'error');
         }
         setConfirmDialog({ isOpen: false });
       },
@@ -340,11 +340,11 @@ export default function Rules() {
       delete duplicateData.created_by;
       
       await Rule.create(duplicateData);
-      showToast('Rule duplicated successfully', 'success');
+      showToast(t('toasts.ruleDuplicated'), 'success');
       await reloadRules();
     } catch (error) {
       console.error('Error duplicating rule:', error);
-      showToast('Error duplicating rule', 'error');
+      showToast(t('toasts.ruleDuplicateError'), 'error');
     }
   };
 
@@ -365,13 +365,13 @@ export default function Rules() {
     try {
       await Rule.update(rule.id, { ...rule, status: newStatus });
       const message = isCurrentlyActive 
-        ? `Rule "${rule.ruleName}" deactivated`
-        : `Rule "${rule.ruleName}" activated`;
+        ? t('toasts.ruleDeactivated', { ruleName: rule.ruleName })
+        : t('toasts.ruleActivated', { ruleName: rule.ruleName });
       showToast(message, 'success');
       await reloadRules();
     } catch (error) {
       console.error('Error toggling rule status:', error);
-      showToast('Error updating rule status', 'error');
+      showToast(t('toasts.ruleStatusError'), 'error');
     }
   };
 
@@ -381,8 +381,8 @@ export default function Rules() {
     if (action === 'delete') {
       setConfirmDialog({
         isOpen: true,
-        title: `Delete ${selectedRules.length} rule(s)?`,
-        message: 'Rules will be moved to the trash can.',
+        title: t('dialogs.deleteMultiple.title', { count: selectedRules.length }),
+        message: t('dialogs.deleteMultiple.message'),
         onConfirm: async () => {
           try {
             // Filter out protected rules
@@ -397,15 +397,15 @@ export default function Rules() {
             await Promise.all(rulesToDelete.map(id => Rule.delete(id)));
             
             if (protectedCount > 0) {
-              showToast(`${rulesToDelete.length} rule(s) deleted. ${protectedCount} protected rule(s) skipped.`, 'warning');
+              showToast(t('toasts.rulesDeletedWithSkipped', { count: rulesToDelete.length, skipped: protectedCount }), 'warning');
             } else {
-              showToast(`${rulesToDelete.length} rule(s) moved to deleted folder`, 'success');
+              showToast(t('toasts.rulesDeleted', { count: rulesToDelete.length }), 'success');
             }
             setSelectedRules([]);
             await reloadRules();
           } catch (error) {
             console.error('Bulk delete error:', error);
-            showToast('Error deleting rules', 'error');
+            showToast(t('toasts.rulesDeleteError'), 'error');
           }
           setConfirmDialog({ isOpen: false });
         },
@@ -414,28 +414,12 @@ export default function Rules() {
     } else if (action === 'activate' || action === 'deactivate') {
       const newStatus = action === 'activate' ? 'active' : 'inactive';
       
-      // Check if activating draft rules
-      let confirmMessage = action === 'activate' 
-        ? `Activate ${selectedRules.length} rule(s)?`
-        : `Deactivate ${selectedRules.length} rule(s)?`;
-      
-      let warningMessage = `${selectedRules.length} rule(s) will be ${newStatus}`;
-      
-      if (action === 'activate') {
-        const newRules = selectedRules.filter(id => {
-          const rule = rules.find(r => r.id === id);
-          return rule && rule.status === 'new';
-        });
-        
-        if (newRules.length > 0) {
-          warningMessage = `⚠️ Warning: ${newRules.length} of ${selectedRules.length} selected rule(s) are in "new" status. Are you sure you want to activate them?`;
-        }
-      }
+      const dialogKey = action === 'activate' ? 'activateRules' : 'deactivateRules';
 
       setConfirmDialog({
         isOpen: true,
-        title: confirmMessage,
-        message: warningMessage,
+        title: t(`dialogs.${dialogKey}.title`, { count: selectedRules.length }),
+        message: t(`dialogs.${dialogKey}.message`),
         variant: 'info',
         onConfirm: async () => {
           try{
@@ -445,15 +429,13 @@ export default function Rules() {
                 return Rule.update(id, { ...rule, status: newStatus });
               })
             );
-            const successMessage = action === 'activate' 
-              ? `${selectedRules.length} rule(s) activated`
-              : `${selectedRules.length} rule(s) deactivated`;
-            showToast(successMessage, 'success');
+            const toastKey = action === 'activate' ? 'rulesActivated' : 'rulesDeactivated';
+            showToast(t(`toasts.${toastKey}`, { count: selectedRules.length }), 'success');
             setSelectedRules([]);
             await reloadRules();
           } catch (error) {
             console.error('Bulk status update error:', error);
-            showToast('Error updating rules', 'error');
+            showToast(t('toasts.rulesStatusError'), 'error');
           }
           setConfirmDialog({ isOpen: false });
         },
@@ -497,7 +479,7 @@ export default function Rules() {
   return (
     <PageLayout
       title={t('rules.title')}
-      subtitle="Manage your document classification rules"
+      subtitle={t('rules.subtitle')}
       actions={
         <>
           <button 
@@ -522,8 +504,7 @@ export default function Rules() {
       {/* Warning banner about rule activation */}
       <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
         <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
-          <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
-          <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
+          <strong>⚠️ {t('warnings.ruleActivationWarning')}</strong>
         </p>
       </div>
 
@@ -537,7 +518,7 @@ export default function Rules() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search rules..."
+                  placeholder={t('placeholders.searchRules')}
                   className="w-full px-3 py-2 rounded-lg focus:outline-none"
                   style={{ paddingLeft: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
                   onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
@@ -557,10 +538,10 @@ export default function Rules() {
                 onBlur={(e) => e.target.style.boxShadow = 'none'}
                 aria-label="Filter rules by status"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
+                <option value="all">{t('filters.allStatus')}</option>
+                <option value="active">{t('status.active')}</option>
                 <option value="new">New</option>
-                <option value="inactive">Inactive</option>
+                <option value="inactive">{t('status.inactive')}</option>
               </select>
             </div>
 
@@ -576,8 +557,8 @@ export default function Rules() {
                   onBlur={(e) => e.target.style.boxShadow = 'none'}
                   aria-label="Sort rules"
                 >
-                  <option value="date_newest">Newest First</option>
-                  <option value="date_oldest">Oldest First</option>
+                  <option value="date_newest">{t('filters.newestFirst')}</option>
+                  <option value="date_oldest">{t('filters.oldestFirst')}</option>
                   <option value="name_asc">Name (A-Z)</option>
                   <option value="name_desc">Name (Z-A)</option>
                   <option value="status">Status</option>

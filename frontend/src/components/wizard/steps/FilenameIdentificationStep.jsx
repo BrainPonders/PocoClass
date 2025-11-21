@@ -94,17 +94,17 @@ export default function FilenameIdentificationStep({
         <div className="flex items-center gap-2 justify-between" style={{minHeight: '32px'}}>
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-bold">{t('wizard.step3')}</h2>
-            <Tooltip content="Filename patterns help identify documents by their file names. Use the Pattern Helper to create flexible patterns that handle variations in naming conventions." />
+            <Tooltip content={t('tooltips.filenameHelp')} />
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isStepEnabled() 
               ? 'bg-green-100 text-green-700' 
               : ''
           }`} style={!isStepEnabled() ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : {}}>
-            {isStepEnabled() ? 'Enabled' : 'Disabled'}
+            {isStepEnabled() ? t('status.enabled') : t('status.disabled')}
           </div>
         </div>
-        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Define patterns that identify this document type by filename</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step3Description')}</p>
       </div>
 
       <div className="space-y-4 mb-6">
@@ -112,7 +112,7 @@ export default function FilenameIdentificationStep({
           <div key={index}>
             <div className="flex items-center gap-2 mb-2">
               <label className="text-sm font-semibold">Filename Pattern {index + 1}</label>
-              <Tooltip content="Enter a simple text string to search for in filenames, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching." />
+              <Tooltip content={t('tooltips.filenamePatternHelp')} />
               {patterns.length > 1 && (
                 <button
                   onClick={() => removePattern(index)}
@@ -131,7 +131,7 @@ export default function FilenameIdentificationStep({
                 type="text"
                 value={pattern}
                 onChange={(e) => updatePattern(index, e.target.value)}
-                placeholder="Enter text or regex pattern..."
+                placeholder={t('placeholders.enterFilenamePattern')}
                 className="form-input flex-1"
               />
               <button
@@ -155,14 +155,14 @@ export default function FilenameIdentificationStep({
           type="button"
         >
           <Plus className="w-4 h-4" />
-          Add Filename Pattern
+          {t('patterns.addFilenamePattern')}
         </button>
       </div>
 
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">Filename Weight Multiplier</h3>
-          <Tooltip content="Controls how much influence filename patterns have in the final POCO score. Higher values mean filenames are more important." />
+          <h3 className="font-semibold text-lg">{t('patterns.filenameWeightMultiplier')}</h3>
+          <Tooltip content={t('tooltips.filenameMultiplierHelp')} />
         </div>
         
         <div className="space-y-2">
@@ -182,7 +182,7 @@ export default function FilenameIdentificationStep({
             <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">1</span>
               <div style={{position: 'absolute', left: '0%', transform: 'translateX(8px)'}}>
-                <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
+                <Tooltip content={t('tooltips.filenameMultiplierDefault')}>
                   <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
@@ -201,22 +201,22 @@ export default function FilenameIdentificationStep({
       </div>
 
       <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>{t('wizard.configSummary')}</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Total patterns:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.totalPatterns')}:</span>
             <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Current multiplier:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.currentMultiplier')}:</span>
             <span className="ml-2 font-medium">{filenameMultiplier}</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Pattern weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.patternWeight')}:</span>
             <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Max filename weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.maxFilenameWeight')}:</span>
             <span className="ml-2 font-medium">{maxFilenameWeight}</span>
           </div>
           <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
