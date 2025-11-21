@@ -205,8 +205,8 @@ export default function Layout({ children }) {
                 --app-success: #22c55e;
                 --app-success-rgb: 34, 197, 94;
                 --app-warning: #f59e0b;
-                --app-danger: #ef4444;
-                --app-danger-rgb: 239, 68, 68;
+                --app-danger: #991b1b;
+                --app-danger-rgb: 153, 27, 27;
                 --info-bg: rgba(37, 99, 235, 0.1);
                 --info-border: rgba(59, 130, 246, 0.3);
                 --info-text: #93c5fd;

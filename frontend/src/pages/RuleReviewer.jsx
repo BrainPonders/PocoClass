@@ -465,7 +465,7 @@ export default function RuleReviewer() {
                         {doc.tags && doc.tags.length > 0 ? (
                           doc.tags.map((tag, i) => {
                             const tagObj = allTags.find(t => t.name === tag);
-                            const tagColor = tagObj?.color || '#3B82F6';
+                            const tagColor = tagObj?.color || '#1e40af';
                             
                             const getTextColor = (hexColor) => {
                               const r = parseInt(hexColor.slice(1, 3), 16);
@@ -635,14 +635,14 @@ export default function RuleReviewer() {
                     label={{ value: 'POCO Threshold', position: 'right', fill: '#f59e0b', fontSize: 12 }}
                   />
                   <Legend />
-                  <Bar dataKey="ocrScore" name="OCR Score" fill="#3b82f6">
+                  <Bar dataKey="ocrScore" name="OCR Score" fill="#1e40af">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-ocr-${index}`} fill="#3b82f6" />
+                      <Cell key={`cell-ocr-${index}`} fill="#1e40af" />
                     ))}
                   </Bar>
                   <Bar dataKey="pocoScore" name="POCO Score">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#dc2626'} />
+                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#991b1b'} />
                     ))}
                   </Bar>
                 </BarChart>

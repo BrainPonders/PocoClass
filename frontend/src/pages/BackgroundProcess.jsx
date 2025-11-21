@@ -710,7 +710,7 @@ export default function BackgroundProcess() {
                             {doc.tags && doc.tags.length > 0 ? (
                               doc.tags.map((tag, i) => {
                                 const tagObj = allTags.find(t => t.name === tag);
-                                const tagColor = tagObj?.color || '#3B82F6';
+                                const tagColor = tagObj?.color || '#1e40af';
                                 
                                 const getTextColor = (hexColor) => {
                                   const r = parseInt(hexColor.slice(1, 3), 16);

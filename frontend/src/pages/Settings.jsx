@@ -1564,8 +1564,8 @@ export default function Settings() {
                       
                       return (
                       <div key={placeholder.id} className="p-3 border rounded-lg" style={{
-                        borderColor: isMissingPoco ? '#ef4444' : placeholder.is_locked ? 'var(--app-border)' : placeholder.is_custom_field ? '#a855f7' : 'var(--app-border)',
-                        backgroundColor: isMissingPoco ? '#fef2f2' : placeholder.is_locked ? 'var(--app-bg-secondary)' : placeholder.is_custom_field ? '#faf5ff' : 'var(--app-surface)'
+                        borderColor: isMissingPoco ? '#991b1b' : placeholder.is_locked ? 'var(--app-border)' : placeholder.is_custom_field ? '#7c3aed' : 'var(--app-border)',
+                        backgroundColor: isMissingPoco ? '#fef2f2' : placeholder.is_locked ? 'var(--app-bg-secondary)' : placeholder.is_custom_field ? '#f5f3ff' : 'var(--app-surface)'
                       }}>
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-1">
@@ -1768,7 +1768,10 @@ export default function Settings() {
                       <Button
                         onClick={loadValidationData}
                         disabled={loadingValidation}
-                        className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                        className="text-white gap-2"
+                        style={{ backgroundColor: '#1e40af' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e3a8a'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1e40af'}
                       >
                         <RefreshCw className={`w-4 h-4 ${loadingValidation ? 'animate-spin' : ''}`} />
                         {loadingValidation ? 'Refreshing...' : 'Refresh'}
@@ -1867,7 +1870,16 @@ export default function Settings() {
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
                           <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that match a rule successfully</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div 
+                          className="text-xs font-medium px-3 py-1 rounded"
+                          style={
+                            loadingValidation 
+                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
+                              : validationData?.tags?.poco_plus 
+                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
+                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
+                          }
+                        >
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
                         </div>
                       </div>
@@ -1887,7 +1899,16 @@ export default function Settings() {
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
                           <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that do not match any rule</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div 
+                          className="text-xs font-medium px-3 py-1 rounded"
+                          style={
+                            loadingValidation 
+                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
+                              : validationData?.tags?.poco_minus 
+                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
+                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
+                          }
+                        >
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
                         </div>
                       </div>
@@ -1907,7 +1928,16 @@ export default function Settings() {
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
                           <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Identifies unprocessed documents for background processing</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div 
+                          className="text-xs font-medium px-3 py-1 rounded"
+                          style={
+                            loadingValidation 
+                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
+                              : validationData?.tags?.new 
+                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
+                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
+                          }
+                        >
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.new ? 'Present' : 'Missing'}
                         </div>
                       </div>
@@ -1932,7 +1962,16 @@ export default function Settings() {
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO Score</div>
                           <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the overall POCO score (0-100%)</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div 
+                          className="text-xs font-medium px-3 py-1 rounded"
+                          style={
+                            loadingValidation 
+                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
+                              : validationData?.fields?.poco_score 
+                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
+                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
+                          }
+                        >
                           {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_score ? 'Present' : 'Missing'}
                         </div>
                       </div>
@@ -1949,7 +1988,7 @@ export default function Settings() {
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                         ) : validationData?.fields?.poco_ocr ? (
-                          <CheckCircle className="w-5 h-5 text-blue-600" />
+                          <CheckCircle className="w-5 h-5" style={{ color: '#1e40af' }} />
                         ) : (
                           <Info className="w-5 h-5" style={{ color: 'var(--app-text-muted)' }} />
                         )}
@@ -1957,8 +1996,13 @@ export default function Settings() {
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO OCR</div>
                           <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the OCR confidence score (0-100%). Optional for transparency.</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_ocr ? 'bg-blue-100 text-blue-700' : ''}`}
-                          style={!loadingValidation && !validationData?.fields?.poco_ocr ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : undefined}>
+                        <div 
+                          className="text-xs font-medium px-3 py-1 rounded"
+                          style={
+                            loadingValidation || validationData?.fields?.poco_ocr
+                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' }
+                              : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }
+                          }>
                           {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
                         </div>
                       </div>
