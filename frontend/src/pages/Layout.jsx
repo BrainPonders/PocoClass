@@ -158,6 +158,7 @@ export default function Layout({ children }) {
             <style>{`
               :root.light {
                 --app-bg: #f8fafc;
+                --app-bg-secondary: #f1f5f9;
                 --app-surface: #ffffff;
                 --app-surface-light: #f1f5f9;
                 --app-surface-hover: #e2e8f0;
@@ -174,6 +175,9 @@ export default function Layout({ children }) {
                 --app-warning: #d97706;
                 --app-danger: #dc2626;
                 --app-danger-rgb: 220, 38, 38;
+                --info-bg: #eff6ff;
+                --info-border: #bfdbfe;
+                --info-text: #1e40af;
                 --info-yellow-bg: #fefce8;
                 --info-yellow-border: #fde047;
                 --info-yellow-text: #a16207;
@@ -181,6 +185,7 @@ export default function Layout({ children }) {
 
               :root.dark {
                 --app-bg: #0f172a;
+                --app-bg-secondary: #1e293b;
                 --app-surface: #1e293b;
                 --app-surface-light: #334155;
                 --app-surface-hover: #475569;
@@ -197,6 +202,9 @@ export default function Layout({ children }) {
                 --app-warning: #f59e0b;
                 --app-danger: #ef4444;
                 --app-danger-rgb: 239, 68, 68;
+                --info-bg: #1e3a8a;
+                --info-border: #3b82f6;
+                --info-text: #bfdbfe;
                 --info-yellow-bg: #422006;
                 --info-yellow-border: #92400e;
                 --info-yellow-text: #fbbf24;

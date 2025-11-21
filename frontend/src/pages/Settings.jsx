@@ -1498,16 +1498,16 @@ export default function Settings() {
                     </div>
                   )}
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <h3 className="text-sm font-semibold text-blue-900 mb-2">Visibility Modes</h3>
-                    <ul className="text-xs text-blue-800 space-y-1">
+                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+                    <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--info-text)' }}>Visibility Modes</h3>
+                    <ul className="text-xs space-y-1" style={{ color: 'var(--info-text)' }}>
                       <li><strong>Disabled:</strong> Field is hidden from the wizard</li>
                       <li><strong>Predefined:</strong> Show dropdown with existing values from Paperless (used for static assignment and verification)</li>
                       <li><strong>Dynamic:</strong> Extract value from document content using patterns and anchors</li>
                       <li><strong>Both Enabled:</strong> Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically</li>
                     </ul>
-                    <div className="mt-3 pt-3 border-t border-blue-200">
-                      <p className="text-xs text-blue-800">
+                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--info-border)' }}>
+                      <p className="text-xs" style={{ color: 'var(--info-text)' }}>
                         <strong>Note:</strong> Any field not disabled will also be available in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata.
                       </p>
                     </div>
@@ -1522,15 +1522,10 @@ export default function Settings() {
                       const disabledReason = getDynamicDisabledReason(placeholder.placeholder_name, placeholder.is_custom_field);
                       
                       return (
-                      <div key={placeholder.id} className={`p-3 border rounded-lg ${
-                        isMissingPoco
-                          ? 'border-red-500 bg-red-50'
-                          : placeholder.is_locked
-                          ? 'border-gray-300 bg-gray-100'
-                          : placeholder.is_custom_field 
-                          ? 'border-purple-300 bg-purple-50' 
-                          : 'border-gray-200 bg-white'
-                      }`}>
+                      <div key={placeholder.id} className="p-3 border rounded-lg" style={{
+                        borderColor: isMissingPoco ? '#ef4444' : placeholder.is_locked ? 'var(--app-border)' : placeholder.is_custom_field ? '#a855f7' : 'var(--app-border)',
+                        backgroundColor: isMissingPoco ? '#fef2f2' : placeholder.is_locked ? 'var(--app-bg-secondary)' : placeholder.is_custom_field ? '#faf5ff' : 'var(--app-surface)'
+                      }}>
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
