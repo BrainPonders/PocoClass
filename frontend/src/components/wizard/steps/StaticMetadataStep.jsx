@@ -43,13 +43,16 @@ export default function StaticMetadataStep({
         {!showInfoBoxes[4] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 4: true }))}
-            className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
+            className="btn btn-ghost btn-sm p-1"
+            style={{ color: 'var(--app-text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--app-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--app-text-muted)'}
           >
             <HelpCircle className="w-4 h-4" />
           </button>
         )}
       </div>
-      <p className="text-gray-600 mb-6">
+      <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
         Configure fixed information that applies to all documents matching this rule. 
         This is constant data assigned once a document is recognized.
       </p>
@@ -79,7 +82,7 @@ export default function StaticMetadataStep({
               placeholder="e.g., Organization Name"
               className="form-input"
             />
-            <p className="text-xs text-gray-500 mt-1">Ideally, this would be a dropdown from your system.</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown from your system.</p>
           </div>
 
           <div className="form-group">
@@ -91,7 +94,7 @@ export default function StaticMetadataStep({
               placeholder="e.g., Year Statement"
               className="form-input"
             />
-            <p className="text-xs text-gray-500 mt-1">Ideally, this would be a dropdown.</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown.</p>
           </div>
         </div>
 
@@ -125,11 +128,12 @@ export default function StaticMetadataStep({
           </div>
           <div className="flex flex-wrap gap-2">
             {ruleData.staticMetadata?.tags?.map((tag, index) => (
-              <span key={index} className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+              <span key={index} className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>
                 {tag}
                 <button 
                   onClick={() => removeTag(index)}
-                  className="text-gray-500 hover:text-red-500"
+                  className="hover:text-red-500"
+                  style={{ color: 'var(--app-text-muted)' }}
                 >
                   ×
                 </button>

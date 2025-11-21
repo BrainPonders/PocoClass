@@ -459,7 +459,7 @@ export default function DocumentClassificationsStep({
           <h2 className="text-2xl font-bold">Step 5 of 6: Document Classifications</h2>
           <Tooltip content="Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5." />
         </div>
-        <p className="text-gray-600 mt-2">
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
           Configure document classification data extracted from OCR
         </p>
       </div>
@@ -475,7 +475,8 @@ export default function DocumentClassificationsStep({
                 type="text"
                 disabled
                 placeholder="Auto generated from document"
-                className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+                className="form-input cursor-not-allowed"
+                style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
               />
             </div>
           )}
@@ -489,13 +490,13 @@ export default function DocumentClassificationsStep({
                 onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, dateCreated: e.target.value })}
                 className={`form-input ${
                   hasDynamicRule('dateCreated') 
-                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                    ? 'cursor-not-allowed' 
                     : ''
                 }`}
                 style={
                   hasDynamicRule('dateCreated') 
-                    ? { color: '#6b7280' } 
-                    : (!ruleData.predefinedData?.dateCreated ? { color: '#6b7280' } : {})
+                    ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } 
+                    : (!ruleData.predefinedData?.dateCreated ? { color: 'var(--app-text-muted)' } : {})
                 }
                 disabled={hasDynamicRule('dateCreated')}
                 placeholder={hasDynamicRule('dateCreated') ? "Disabled - remove dynamic rule first" : ""}
@@ -575,16 +576,16 @@ export default function DocumentClassificationsStep({
                       onChange={(e) => updateCustomField(e.target.value)}
                       className={`form-input ${
                         hasConflict 
-                          ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                          ? 'cursor-not-allowed' 
                           : ''
                       }`}
                       style={
                         hasConflict 
-                          ? {} 
+                          ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } 
                           : { 
                               backgroundColor: '#f3e8ff', 
                               borderColor: '#a855f7',
-                              color: ruleData.predefinedData?.customFields?.[fieldName] ? '#000000' : '#6b7280'
+                              color: ruleData.predefinedData?.customFields?.[fieldName] ? 'var(--app-text)' : 'var(--app-text-muted)'
                             }
                       }
                       disabled={hasConflict}
@@ -611,8 +612,8 @@ export default function DocumentClassificationsStep({
                       value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
                       onChange={(e) => updateCustomField(e.target.value)}
                       placeholder={hasConflict ? "Disabled - remove dynamic rule first" : `Enter ${fieldName.toLowerCase()}...`}
-                      className={`form-input ${hasConflict ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
-                      style={hasConflict ? {} : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      className={`form-input ${hasConflict ? 'cursor-not-allowed' : ''}`}
+                      style={hasConflict ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
                       disabled={hasConflict}
                     />
                     {hasConflict && (
@@ -637,29 +638,29 @@ export default function DocumentClassificationsStep({
           </div>
         </div>
 
-        <p className="text-gray-600 mb-4">
+        <p className="mb-4" style={{ color: 'var(--app-text-secondary)' }}>
           Define anchor points and extraction patterns for dynamic field population
         </p>
 
 
         {/* Graphic Representation */}
-        <div className="flex items-center justify-center gap-3 mb-6 p-4 bg-gray-50 rounded-lg">
-          <div className="px-4 py-2 bg-blue-100 border-2 border-blue-500 rounded-lg font-mono text-sm text-blue-800">
+        <div className="flex items-center justify-center gap-3 mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)' }}>
+          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
             Before Anchor
           </div>
           <div className="px-4 py-2 bg-green-100 border-2 border-green-500 rounded-lg font-mono text-sm text-green-800">
             Extracted Data
           </div>
-          <div className="px-4 py-2 bg-blue-100 border-2 border-blue-500 rounded-lg font-mono text-sm text-blue-800">
+          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
             After Anchor
           </div>
         </div>
 
         {(ruleData.dynamicData?.extractionRules?.length || 0) === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
+          <div className="text-center py-12 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
             <div className="text-6xl mb-4">📊</div>
             <h3 className="text-xl font-semibold mb-2">No Dynamic Extraction Rules</h3>
-            <p className="text-gray-600 mb-6">Add rules to extract data from OCR content dynamically</p>
+            <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>Add rules to extract data from OCR content dynamically</p>
             <button onClick={addExtractionRule} className="btn btn-primary">
               <Plus className="w-4 h-4" />
               Add First Rule
@@ -834,7 +835,7 @@ export default function DocumentClassificationsStep({
                       )}
 
                       {!rule.targetField && (
-                        <p className="text-sm text-gray-500 italic">Select a target field to configure extraction</p>
+                        <p className="text-sm italic" style={{ color: 'var(--app-text-muted)' }}>Select a target field to configure extraction</p>
                       )}
                     </div>
 
@@ -885,7 +886,7 @@ export default function DocumentClassificationsStep({
                                   <CheckCircle className="w-5 h-5 text-green-600" />
                                   <span className="font-semibold text-green-900">Extracted Value:</span>
                                 </div>
-                                <div className="bg-white p-2 rounded border border-green-200 font-mono text-sm text-gray-800">
+                                <div className="p-2 rounded border border-green-200 font-mono text-sm" style={{ backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}>
                                   {testResults[index].value}
                                 </div>
                               </div>
@@ -913,7 +914,13 @@ export default function DocumentClassificationsStep({
 
         <button 
           onClick={addExtractionRule}
-          className="w-full p-3 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-lg bg-transparent text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center justify-center gap-2 mt-4"
+          className="w-full p-3 border-2 border-dashed rounded-lg bg-transparent font-medium transition-colors flex items-center justify-center gap-2 mt-4"
+          style={{ 
+            borderColor: 'var(--app-border)', 
+            color: 'var(--info-text)'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--info-border)'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
         >
           <Plus className="w-4 h-4" />
           Add Extraction Rule

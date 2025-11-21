@@ -91,21 +91,21 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {/* Background Processing Status */}
               {backgroundSettings && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
                     {backgroundSettings.bg_enabled ? (
                       <CheckCircle className="h-6 w-6 text-green-600" />
                     ) : (
-                      <XCircle className="h-6 w-6 text-gray-400" />
+                      <XCircle className="h-6 w-6" style={{ color: 'var(--app-text-muted)' }} />
                     )}
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Background Processing</div>
-                    <div className={`text-xs ${backgroundSettings.bg_enabled ? 'text-green-600' : 'text-gray-500'}`}>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Background Processing</div>
+                    <div className={`text-xs ${backgroundSettings.bg_enabled ? 'text-green-600' : ''}`} style={{ color: backgroundSettings.bg_enabled ? undefined : 'var(--app-text-muted)' }}>
                       {backgroundSettings.bg_enabled ? 'Enabled' : 'Disabled'}
                     </div>
                     {backgroundStatus?.is_paused && (
-                      <div className="mt-1 text-xs text-yellow-600 flex items-center gap-1">
+                      <div className="mt-1 text-xs flex items-center gap-1" style={{ color: 'var(--app-warning)' }}>
                         <Activity className="h-3 w-3" />
                         Paused (Active session)
                       </div>
@@ -116,13 +116,13 @@ export default function Dashboard() {
 
               {/* Correspondents Count */}
               {syncStatus && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
-                    <Users className="h-6 w-6 text-blue-600" />
+                    <Users className="h-6 w-6" style={{ color: 'var(--info-text)' }} />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Correspondents</div>
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Correspondents</div>
+                    <div className="text-2xl font-bold" style={{ color: 'var(--info-text)' }}>
                       {syncStatus.correspondents?.count || 0}
                     </div>
                   </div>
@@ -131,12 +131,12 @@ export default function Dashboard() {
 
               {/* Tags Count */}
               {syncStatus && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
                     <Tag className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Tags</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Tags</div>
                     <div className="text-2xl font-bold text-purple-600">
                       {syncStatus.tags?.count || 0}
                     </div>
@@ -146,12 +146,12 @@ export default function Dashboard() {
 
               {/* Document Types Count */}
               {syncStatus && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
                     <FileType className="h-6 w-6 text-orange-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Document Types</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Document Types</div>
                     <div className="text-2xl font-bold text-orange-600">
                       {syncStatus.document_types?.count || 0}
                     </div>
@@ -161,12 +161,12 @@ export default function Dashboard() {
 
               {/* Custom Fields Count */}
               {syncStatus && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
                     <Database className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Custom Fields</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Custom Fields</div>
                     <div className="text-2xl font-bold text-teal-600">
                       {syncStatus.custom_fields?.count || 0}
                     </div>
@@ -176,12 +176,12 @@ export default function Dashboard() {
 
               {/* Users Count (admin only) */}
               {syncStatus && currentUser?.role === 'admin' && (
-                <div className="flex items-start gap-3 p-4 border rounded-lg">
+                <div className="flex items-start gap-3 p-4 rounded-lg" style={{ border: '1px solid var(--app-border)' }}>
                   <div className="flex-shrink-0">
                     <Users className="h-6 w-6 text-indigo-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Users</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Users</div>
                     <div className="text-2xl font-bold text-indigo-600">
                       {syncStatus.users?.count || 0}
                     </div>
@@ -237,13 +237,13 @@ export default function Dashboard() {
         <CardContent>
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--info-text)' }}></div>
             </div>
           ) : rules.length === 0 ? (
             <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Rules Yet</h3>
-              <p className="text-gray-500 mb-4">Create your first document classification rule to get started</p>
+              <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Rules Yet</h3>
+              <p className="mb-4" style={{ color: 'var(--app-text-muted)' }}>Create your first document classification rule to get started</p>
               <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
                 <Plus className="w-4 h-4" />
                 Create First Rule
@@ -251,8 +251,8 @@ export default function Dashboard() {
             </div>
           ) : (
             <>
-              <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+                <p className="text-sm" style={{ color: 'var(--info-text)' }}>
                   📊 <strong>Note:</strong> Execution tracking coming soon. Currently showing rule creation dates as activity indicators.
                 </p>
               </div>
@@ -267,28 +267,30 @@ export default function Dashboard() {
                     : 'N/A';
                   
                   return (
-                    <div key={rule.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                    <div key={rule.id} className="flex items-center justify-between p-4 rounded-lg" style={{ border: '1px solid var(--app-border)', backgroundColor: 'var(--app-bg-secondary)' }}>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{rule.ruleName}</h4>
-                        <div className="mt-1 flex flex-wrap gap-3 text-sm text-gray-600">
+                        <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>{rule.ruleName}</h4>
+                        <div className="mt-1 flex flex-wrap gap-3 text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                           <span className="flex items-center gap-1">
                             <Activity className="w-4 h-4" />
                             Last Activity: {lastActivity}
                           </span>
                           <span>•</span>
                           <span>Status: 
-                            <span className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                              rule.status === 'active' ? 'bg-green-100 text-green-800' : 
-                              rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 
-                              'bg-gray-100 text-gray-800'
-                            }`}>
+                            <span 
+                              className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                rule.status === 'active' ? 'bg-green-100 text-green-800' : 
+                                rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : ''
+                              }`}
+                              style={rule.status !== 'active' && rule.status !== 'draft' ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : {}}
+                            >
                               {rule.status}
                             </span>
                           </span>
                           <span>•</span>
-                          <span className="text-gray-500">Executions: -</span>
+                          <span style={{ color: 'var(--app-text-muted)' }}>Executions: -</span>
                           <span>•</span>
-                          <span className="text-gray-500">Success Rate: -</span>
+                          <span style={{ color: 'var(--app-text-muted)' }}>Success Rate: -</span>
                         </div>
                       </div>
                     </div>

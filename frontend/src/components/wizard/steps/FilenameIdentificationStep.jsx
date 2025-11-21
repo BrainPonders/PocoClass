@@ -86,7 +86,7 @@ export default function FilenameIdentificationStep({
   };
 
   const isMultiplierDefault = filenameMultiplier === 1;
-  const summaryTextColor = isMultiplierDefault ? 'text-blue-700' : 'text-gray-600';
+  const summaryTextColor = isMultiplierDefault ? 'var(--info-text)' : 'var(--app-text-secondary)';
 
   return (
     <div className="wizard-container">
@@ -99,12 +99,12 @@ export default function FilenameIdentificationStep({
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isStepEnabled() 
               ? 'bg-green-100 text-green-700' 
-              : 'bg-gray-100 text-gray-600'
-          }`}>
+              : ''
+          }`} style={!isStepEnabled() ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : {}}>
             {isStepEnabled() ? 'Enabled' : 'Disabled'}
           </div>
         </div>
-        <p className="text-gray-600 mt-2">Define patterns that identify this document type by filename</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Define patterns that identify this document type by filename</p>
       </div>
 
       <div className="space-y-4 mb-6">
@@ -116,7 +116,8 @@ export default function FilenameIdentificationStep({
               {patterns.length > 1 && (
                 <button
                   onClick={() => removePattern(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors ml-auto"
+                  className="hover:text-red-500 transition-colors ml-auto"
+                  style={{ color: 'var(--app-text-muted)' }}
                   type="button"
                   title="Remove pattern"
                 >
@@ -147,7 +148,10 @@ export default function FilenameIdentificationStep({
         
         <button 
           onClick={addPattern}
-          className="w-full p-3 border-2 border-dashed border-gray-300 hover:border-blue-400 rounded-lg bg-transparent text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full p-3 border-2 border-dashed rounded-lg bg-transparent font-medium transition-colors flex items-center justify-center gap-2"
+          style={{ borderColor: 'var(--app-border)', color: 'var(--info-text)' }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--info-text)'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
           type="button"
         >
           <Plus className="w-4 h-4" />
@@ -169,16 +173,17 @@ export default function FilenameIdentificationStep({
             step="1"
             value={filenameMultiplier}
             onChange={(e) => updateRuleData('filenameMultiplier', parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            style={{ backgroundColor: 'var(--app-bg-secondary)' }}
           />
           
           {/* Scale markers */}
           <div className="relative mt-2 px-2 pb-8">
-            <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
-              <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">1</span>
+            <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
+              <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">1</span>
               <div style={{position: 'absolute', left: '0%', transform: 'translateX(8px)'}}>
                 <Tooltip content="Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.">
-                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
@@ -195,37 +200,37 @@ export default function FilenameIdentificationStep({
         </div>
       </div>
 
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
+      <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="text-gray-600">Total patterns:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Total patterns:</span>
             <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span className="text-gray-600">Current multiplier:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Current multiplier:</span>
             <span className="ml-2 font-medium">{filenameMultiplier}</span>
           </div>
           <div>
-            <span className="text-gray-600">Pattern weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Pattern weight:</span>
             <span className="ml-2 font-medium">{totalPatterns}</span>
           </div>
           <div>
-            <span className="text-gray-600">Max filename weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Max filename weight:</span>
             <span className="ml-2 font-medium">{maxFilenameWeight}</span>
           </div>
-          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
-            <span className="text-gray-500 text-xs italic">Example: With {totalPatterns} pattern{totalPatterns !== 1 ? 's' : ''} defined, max filename weight = {totalPatterns} × {totalPatterns} × {filenameMultiplier} = {maxFilenameWeight} points.</span>
+          <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
+            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: With {totalPatterns} pattern{totalPatterns !== 1 ? 's' : ''} defined, max filename weight = {totalPatterns} × {totalPatterns} × {filenameMultiplier} = {maxFilenameWeight} points.</span>
           </div>
         </div>
         {filenameMultiplier > 1 && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>Filename multiplier increased from default (1×).</span>
           </div>
         )}
         {maxFilenameWeight > maxOcrWeight && totalPatterns > 0 && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>Filename weight exceeds OCR weight.</span>
           </div>

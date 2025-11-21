@@ -76,7 +76,7 @@ export default function ChangePassword() {
     <div className="p-6 max-w-2xl mx-auto">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Lock className="w-8 h-8 text-blue-600" />
+          <Lock className="w-8 h-8" style={{ color: 'var(--app-primary)' }} />
           <h1 className="text-3xl font-bold">Change Password</h1>
         </div>
         <p className="text-gray-600 mt-2">Update your PocoClass account password</p>

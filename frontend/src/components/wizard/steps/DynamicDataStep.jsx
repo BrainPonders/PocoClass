@@ -69,7 +69,7 @@ export default function DynamicDataStep({
           <h2 className="text-2xl font-bold">{t('step_6_title')}</h2>
           <Tooltip content="Dynamic data extraction allows you to pull specific information from documents using anchor points. Define patterns before and after the data you want to extract." />
         </div>
-        <p className="text-gray-600 mt-2">Configure data extraction rules to capture specific information from documents</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Configure data extraction rules to capture specific information from documents</p>
       </div>
 
       <div className="space-y-6">
@@ -83,7 +83,8 @@ export default function DynamicDataStep({
               {ruleData.dynamicData.length > 1 && (
                 <button
                   onClick={() => removeExtractionRule(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  className="hover:text-red-500 transition-colors"
+                  style={{ color: 'var(--app-text-muted)' }}
                   title="Remove extraction rule"
                 >
                   <Trash2 className="w-5 h-5" />
@@ -95,7 +96,7 @@ export default function DynamicDataStep({
               {/* Before Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-blue-600">Before Anchor</h5>
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>Before Anchor</h5>
                   <Tooltip content="Text or pattern that appears before the data you want to extract. Can be simple text or regex." />
                 </div>
                 <div className="flex items-center gap-2">
@@ -137,7 +138,7 @@ export default function DynamicDataStep({
               {/* After Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-blue-600">After Anchor</h5>
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>After Anchor</h5>
                   <Tooltip content="Text or pattern that appears after the data you want to extract. Can be simple text or regex." />
                 </div>
                 <div className="flex items-center gap-2">
@@ -179,7 +180,10 @@ export default function DynamicDataStep({
 
         <button
           onClick={addExtractionRule}
-          className="w-full p-3 border-2 border-dashed border-gray-300 hover:border-purple-400 rounded-lg bg-transparent text-purple-600 hover:text-purple-700 font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full p-3 border-2 border-dashed rounded-lg bg-transparent text-purple-600 hover:text-purple-700 font-medium transition-colors flex items-center justify-center gap-2"
+          style={{ borderColor: 'var(--app-border)' }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = '#c084fc'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
         >
           <Plus className="w-4 h-4" />
           Add Extraction Rule

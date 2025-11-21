@@ -1020,13 +1020,24 @@ export default function Settings() {
                       key={tab.id}
                       onClick={() => !isDisabled && setActiveTab(tab.id)}
                       disabled={isDisabled}
-                      className={`w-full flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                      style={
                         activeTab === tab.id
-                          ? 'bg-blue-50 text-blue-700'
+                          ? { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }
                           : isDisabled
-                          ? 'text-gray-400 cursor-not-allowed'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
+                          ? { color: 'var(--app-text-muted)', cursor: 'not-allowed' }
+                          : { color: 'var(--app-text-secondary)' }
+                      }
+                      onMouseEnter={(e) => {
+                        if (!isDisabled && activeTab !== tab.id) {
+                          e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isDisabled && activeTab !== tab.id) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                      }}
                     >
                       <Icon className="w-5 h-5" />
                       {tab.label}
@@ -1043,21 +1054,21 @@ export default function Settings() {
               {activeTab === 'system' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">System Management</h2>
-                    <p className="text-sm text-gray-600">
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>System Management</h2>
+                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                       Manage Paperless connection, users, and data synchronization
                     </p>
                   </div>
 
                   {/* Global Loading Indicator (initial load) or Syncing Indicator (manual sync) */}
                   {(loading || syncing) && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>
                           {syncing ? 'Syncing data from Paperless-ngx...' : 'Loading settings from Paperless-ngx...'}
                         </span>
                       </div>
@@ -1066,14 +1077,14 @@ export default function Settings() {
 
                   {/* 1. Paperless Connection */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Database className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-md font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
+                      <Database className="w-5 h-5" style={{ color: 'var(--info-text)' }} />
                       Paperless Connection
                     </h3>
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
                           Paperless URL
                         </label>
                         <div className="flex gap-3">
@@ -1082,7 +1093,10 @@ export default function Settings() {
                             value={paperlessConfig.paperless_url || ''}
                             onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
                             placeholder="https://paperless.example.com"
-                            className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="flex-1 border rounded-md px-3 py-2 text-sm focus:outline-none"
+                            style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
+                            onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                            onBlur={(e) => e.target.style.boxShadow = 'none'}
                             disabled={!isAdmin}
                           />
                           <Button
@@ -1104,7 +1118,7 @@ export default function Settings() {
                           </Button>
                         </div>
                         {!isAdmin && (
-                          <p className="mt-2 text-xs text-gray-500">
+                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
                             Only administrators can update the Paperless URL
                           </p>
                         )}
@@ -1114,8 +1128,8 @@ export default function Settings() {
 
                   {/* 2. Session Settings */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-2">Session Settings</h3>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Session Settings</h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Configure session timeout and automatic logout behavior
                     </p>
                     
@@ -1129,11 +1143,19 @@ export default function Settings() {
                           value={appSettings.session_timeout_hours || ''}
                           onChange={(e) => handleAppSettingChange('session_timeout_hours', e.target.value)}
                           disabled={loading}
-                          className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          className="w-32 border rounded-md px-3 py-2 text-sm focus:outline-none"
+                          style={{ 
+                            borderColor: 'var(--app-border)', 
+                            backgroundColor: loading ? 'var(--app-bg-secondary)' : 'var(--app-surface)', 
+                            color: 'var(--app-text)',
+                            cursor: loading ? 'not-allowed' : 'default'
+                          }}
+                          onFocus={(e) => !loading && (e.target.style.boxShadow = '0 0 0 2px var(--app-primary)')}
+                          onBlur={(e) => e.target.style.boxShadow = 'none'}
                         />
-                        <label htmlFor="session-timeout" className="text-sm font-medium text-gray-700">Session Timeout (hours)</label>
+                        <label htmlFor="session-timeout" className="text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>Session Timeout (hours)</label>
                       </div>
-                      <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                      <div className="p-3 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
                         <strong>Background Processing Protection:</strong> The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.
                       </div>
                     </div>
@@ -1143,8 +1165,8 @@ export default function Settings() {
                   <div className="border-t pt-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <h3 className="text-md font-semibold text-gray-900 mb-2">Paperless Datafield Synchronisation</h3>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Paperless Datafield Synchronisation</h3>
+                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                           Sync and view cached data from Paperless-ngx
                         </p>
                       </div>
@@ -1161,9 +1183,9 @@ export default function Settings() {
                     
                     {syncStatus && (
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                          <div className="text-sm text-blue-600 font-medium">Correspondents</div>
-                          <div className="text-2xl font-bold text-blue-900">{syncStatus.correspondents?.count || 0}</div>
+                        <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)' }}>
+                          <div className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Correspondents</div>
+                          <div className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>{syncStatus.correspondents?.count || 0}</div>
                         </div>
                         <div className="bg-green-50 p-4 rounded-lg">
                           <div className="text-sm text-green-600 font-medium">Tags</div>
@@ -1187,56 +1209,57 @@ export default function Settings() {
 
                   {/* 4. User Management */}
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-2">User Management</h3>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>User Management</h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       All Paperless users with their PocoClass activation status
                     </p>
                     
                     {users.length > 0 ? (
                       <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y" style={{ borderColor: 'var(--app-border)' }}>
+                          <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                             <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 Username
                               </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 Group(s)
                               </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 Paperless Status
                               </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 PocoClass Status
                               </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 Role
                               </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
                                 Actions
                               </th>
                             </tr>
                           </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
+                          <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
                             {users.map(user => {
                               const isCurrentUser = user.pococlass_id === currentUser?.id;
                               const canManage = user.is_registered && !isCurrentUser;
                               
                               return (
-                                <tr key={user.paperless_id} className={!user.is_enabled && user.is_registered ? 'bg-gray-50 opacity-60' : ''}>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                <tr key={user.paperless_id} style={!user.is_enabled && user.is_registered ? { backgroundColor: 'var(--app-bg-secondary)', opacity: 0.6 } : undefined}>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: 'var(--app-text)' }}>
                                     {user.paperless_username}
                                     {isCurrentUser && (
-                                      <span className="ml-2 text-xs text-blue-600">(You)</span>
+                                      <span className="ml-2 text-xs" style={{ color: 'var(--info-text)' }}>(You)</span>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
                                     {user.paperless_groups?.join(', ') || '-'}
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      user.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                                    }`}>
+                                      user.is_active ? 'bg-green-100 text-green-800' : ''
+                                    }`}
+                                    style={!user.is_active ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : undefined}>
                                       {user.is_active ? 'Active' : 'Inactive'}
                                     </span>
                                     {user.is_superuser && (
@@ -1245,7 +1268,7 @@ export default function Settings() {
                                       </span>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
                                     {user.is_registered ? (
                                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                         user.is_enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -1253,29 +1276,31 @@ export default function Settings() {
                                         {user.is_enabled ? 'Active' : 'Disabled'}
                                       </span>
                                     ) : (
-                                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                      <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
                                         Not Registered
                                       </span>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
                                     {user.is_registered ? (
                                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                        user.pococlass_role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                                      }`}>
+                                        user.pococlass_role === 'admin' ? 'bg-purple-100 text-purple-800' : ''
+                                      }`}
+                                      style={user.pococlass_role !== 'admin' ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
                                         {user.pococlass_role === 'admin' ? 'Admin' : 'User'}
                                       </span>
                                     ) : (
-                                      <span className="text-gray-400">-</span>
+                                      <span style={{ color: 'var(--app-text-muted)' }}>-</span>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
                                     {canManage ? (
                                       <div className="flex gap-2">
                                         <select
                                           value={user.pococlass_role || 'user'}
                                           onChange={(e) => handleRoleChange(user.pococlass_id, e.target.value)}
-                                          className="border border-gray-300 rounded-md px-2 py-1 text-sm"
+                                          className="border rounded-md px-2 py-1 text-sm"
+                                          style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
                                           disabled={!user.is_enabled}
                                         >
                                           <option value="user">User</option>
@@ -1293,7 +1318,7 @@ export default function Settings() {
                                         </button>
                                       </div>
                                     ) : (
-                                      <span className="text-gray-400">-</span>
+                                      <span style={{ color: 'var(--app-text-muted)' }}>-</span>
                                     )}
                                   </td>
                                 </tr>
@@ -1303,7 +1328,7 @@ export default function Settings() {
                         </table>
                       </div>
                     ) : (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8" style={{ color: 'var(--app-text-muted)' }}>
                         No users found
                       </div>
                     )}
@@ -1312,21 +1337,21 @@ export default function Settings() {
                   {/* 5. Sync History */}
                   {syncHistory.length > 0 && (
                     <div className="border-t pt-6">
-                      <h3 className="text-md font-semibold text-gray-900 mb-2">Sync History</h3>
-                      <p className="text-sm text-gray-600 mb-4">
+                      <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Sync History</h3>
+                      <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                         Recent synchronization events from Paperless-ngx
                       </p>
                       <div className="space-y-2">
                         {syncHistory.map((entry, idx) => (
-                          <div key={idx} className="flex items-center gap-3 text-sm p-3 bg-gray-50 rounded-lg">
+                          <div key={idx} className="flex items-center gap-3 text-sm p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                             {entry.status === 'success' ? (
                               <CheckCircle className="w-4 h-4 text-green-600" />
                             ) : (
                               <XCircle className="w-4 h-4 text-red-600" />
                             )}
-                            <span className="font-medium text-gray-700">{entry.entity_type}</span>
-                            <span className="text-gray-500">{entry.items_synced} items</span>
-                            <span className="text-gray-400 ml-auto">
+                            <span className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{entry.entity_type}</span>
+                            <span style={{ color: 'var(--app-text-muted)' }}>{entry.items_synced} items</span>
+                            <span className="ml-auto" style={{ color: 'var(--app-text-muted)' }}>
                               {new Date(entry.synced_at).toLocaleString()}
                             </span>
                           </div>
@@ -1340,21 +1365,21 @@ export default function Settings() {
               {activeTab === 'appearance' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Appearance Settings</h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Appearance Settings</h2>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Customize the look and feel of your interface
                     </p>
                   </div>
 
                   {/* Global Loading Indicator */}
                   {loading && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Loading settings from Paperless-ngx...</span>
                       </div>
                     </div>
                   )}
@@ -1366,12 +1391,14 @@ export default function Settings() {
                     <select
                       value={language}
                       onChange={(e) => handleAppSettingChange('language', e.target.value)}
-                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none"
                       style={{ 
                         border: '1px solid var(--app-border)', 
                         backgroundColor: 'var(--app-surface)',
                         color: 'var(--app-text)'
                       }}
+                      onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                      onBlur={(e) => e.target.style.boxShadow = 'none'}
                     >
                       <option value="en">English</option>
                       <option value="es">Español (Spanish)</option>
@@ -1388,12 +1415,14 @@ export default function Settings() {
                     <select
                       value={theme}
                       onChange={(e) => handleAppSettingChange('theme', e.target.value)}
-                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none"
                       style={{ 
                         border: '1px solid var(--app-border)', 
                         backgroundColor: 'var(--app-surface)',
                         color: 'var(--app-text)'
                       }}
+                      onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                      onBlur={(e) => e.target.style.boxShadow = 'none'}
                     >
                       <option value="light">{t('settings.general.themeLight')}</option>
                       <option value="dark">{t('settings.general.themeDark')}</option>
@@ -1407,7 +1436,10 @@ export default function Settings() {
                         type="checkbox"
                         checked={colorBlindMode !== 'none'}
                         onChange={(e) => handleAppSettingChange('colorblind_mode', e.target.checked ? 'true' : 'false')}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 border-gray-300 rounded"
+                        style={{ accentColor: 'var(--app-primary)' }}
+                        onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                        onBlur={(e) => e.target.style.boxShadow = 'none'}
                       />
                       <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
                         {t('settings.general.colorblindMode')}
@@ -1423,21 +1455,21 @@ export default function Settings() {
               {activeTab === 'dateFormats' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Date Format Presets</h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Date Format Presets</h2>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Select date formats to appear in the wizard quick-select dropdown
                     </p>
                   </div>
 
                   {/* Global Loading Indicator */}
                   {loading && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Loading settings from Paperless-ngx...</span>
                       </div>
                     </div>
                   )}
@@ -1451,19 +1483,28 @@ export default function Settings() {
                       }, {})
                     ).map(([category, formats]) => (
                       <div key={category}>
-                        <h3 className="text-sm font-semibold text-gray-700 mb-3">{category}</h3>
+                        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text-secondary)' }}>{category}</h3>
                         <div className="space-y-2">
                           {formats.map(fmt => (
-                            <label key={fmt.id} className="flex items-start gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer border border-gray-200">
+                            <label key={fmt.id} className="flex items-start gap-2 p-2 rounded cursor-pointer" 
+                              style={{ 
+                                border: '1px solid var(--app-border)',
+                                backgroundColor: 'var(--app-surface)'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface)'}>
                               <input
                                 type="checkbox"
                                 checked={fmt.is_selected === 1}
                                 onChange={(e) => handleDateFormatToggle(fmt.format_pattern, e.target.checked)}
-                                className="mt-0.5 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className="mt-0.5 w-4 h-4 border-gray-300 rounded"
+                                style={{ accentColor: 'var(--app-primary)' }}
+                                onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                                onBlur={(e) => e.target.style.boxShadow = 'none'}
                               />
                               <div className="flex-1 min-w-0">
-                                <div className="text-xs font-medium text-gray-900">{fmt.format_pattern}</div>
-                                <div className="text-xs text-gray-500 truncate">{fmt.example}</div>
+                                <div className="text-xs font-medium" style={{ color: 'var(--app-text)' }}>{fmt.format_pattern}</div>
+                                <div className="text-xs truncate" style={{ color: 'var(--app-text-muted)' }}>{fmt.example}</div>
                               </div>
                             </label>
                           ))}
@@ -1477,23 +1518,23 @@ export default function Settings() {
               {activeTab === 'fieldVisibility' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>
                       Field Visibility Settings
                     </h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Control which fields appear in the wizard and how they behave
                     </p>
                   </div>
 
                   {/* Global Loading Indicator */}
                   {loading && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Loading settings from Paperless-ngx...</span>
                       </div>
                     </div>
                   )}
@@ -1529,25 +1570,25 @@ export default function Settings() {
                         <div className="flex items-center justify-between gap-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              {!!placeholder.is_locked && <Lock className="w-4 h-4 text-gray-500" />}
-                              <div className="text-sm font-medium text-gray-900">
+                              {!!placeholder.is_locked && <Lock className="w-4 h-4" style={{ color: 'var(--app-text-muted)' }} />}
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
                                 {placeholder.placeholder_name}
                               </div>
                               {!!placeholder.is_custom_field && dataType && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-700">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
                                   {dataType}
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-500 mt-0.5">
+                            <div className="text-xs mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
                               {placeholder.is_locked ? (
-                                <span className="text-gray-500 italic">Not available in this version of PocoClass</span>
+                                <span className="italic" style={{ color: 'var(--app-text-muted)' }}>Not available in this version of PocoClass</span>
                               ) : placeholder.is_custom_field ? (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                                   Custom Field
                                 </span>
                               ) : (
-                                <span className="text-gray-500">Built-in Field</span>
+                                <span style={{ color: 'var(--app-text-muted)' }}>Built-in Field</span>
                               )}
                             </div>
                           </div>
@@ -1559,8 +1600,22 @@ export default function Settings() {
                                 className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
                                   placeholder.visibility_mode === 'disabled'
                                     ? 'bg-gray-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    : ''
                                 }`}
+                                style={placeholder.visibility_mode !== 'disabled' ? {
+                                  backgroundColor: 'var(--app-bg-secondary)',
+                                  color: 'var(--app-text-secondary)'
+                                } : undefined}
+                                onMouseEnter={(e) => {
+                                  if (placeholder.visibility_mode !== 'disabled') {
+                                    e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (placeholder.visibility_mode !== 'disabled') {
+                                    e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
+                                  }
+                                }}
                               >
                                 Disabled
                               </button>
@@ -1577,11 +1632,25 @@ export default function Settings() {
                                   }
                                   handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
                                 }}
-                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
+                                className="px-2.5 py-1 text-xs font-medium rounded transition-colors"
+                                style={
                                   placeholder.visibility_mode === 'predefined' || placeholder.visibility_mode === 'both'
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                    ? { backgroundColor: 'var(--app-primary)', color: 'white' }
+                                    : {
+                                        backgroundColor: 'var(--app-bg-secondary)',
+                                        color: 'var(--app-text-secondary)'
+                                      }
+                                }
+                                onMouseEnter={(e) => {
+                                  if (placeholder.visibility_mode !== 'predefined' && placeholder.visibility_mode !== 'both') {
+                                    e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (placeholder.visibility_mode !== 'predefined' && placeholder.visibility_mode !== 'both') {
+                                    e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
+                                  }
+                                }}
                               >
                                 Predefined
                               </button>
@@ -1603,11 +1672,28 @@ export default function Settings() {
                                   disabled={!canExtractDynamic}
                                   className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
                                     !canExtractDynamic
-                                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                                      ? 'cursor-not-allowed opacity-60'
                                       : placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
                                       ? 'bg-green-600 text-white'
-                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                      : ''
                                   }`}
+                                  style={!canExtractDynamic ? {
+                                    backgroundColor: 'var(--app-bg-secondary)',
+                                    color: 'var(--app-text-muted)'
+                                  } : (placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') ? {
+                                    backgroundColor: 'var(--app-bg-secondary)',
+                                    color: 'var(--app-text-secondary)'
+                                  } : undefined}
+                                  onMouseEnter={(e) => {
+                                    if (canExtractDynamic && placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') {
+                                      e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
+                                    }
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    if (canExtractDynamic && placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') {
+                                      e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
+                                    }
+                                  }}
                                 >
                                   Dynamic
                                 </button>
@@ -1618,11 +1704,22 @@ export default function Settings() {
                               <button
                                 onClick={() => !pocoScoreExists && handleCreateFieldClick('POCO Score')}
                                 disabled={pocoScoreExists}
-                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                className="px-3 py-1 text-xs font-medium rounded transition-colors cursor-pointer"
+                                style={
                                   pocoScoreExists
-                                    ? 'bg-green-100 text-green-700 cursor-default'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-                                }`}
+                                    ? { backgroundColor: '#dcfce7', color: '#15803d', cursor: 'default' }
+                                    : { backgroundColor: 'var(--app-primary)', color: 'white' }
+                                }
+                                onMouseEnter={(e) => {
+                                  if (!pocoScoreExists) {
+                                    e.currentTarget.style.opacity = '0.9';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!pocoScoreExists) {
+                                    e.currentTarget.style.opacity = '1';
+                                  }
+                                }}
                               >
                                 {pocoScoreExists ? 'Existing' : 'Create'}
                               </button>
@@ -1630,16 +1727,27 @@ export default function Settings() {
                               <button
                                 onClick={() => !pocoOcrExists && handleCreateFieldClick('POCO OCR')}
                                 disabled={pocoOcrExists}
-                                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                                className="px-3 py-1 text-xs font-medium rounded transition-colors cursor-pointer"
+                                style={
                                   pocoOcrExists
-                                    ? 'bg-green-100 text-green-700 cursor-default'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-                                }`}
+                                    ? { backgroundColor: '#dcfce7', color: '#15803d', cursor: 'default' }
+                                    : { backgroundColor: 'var(--app-primary)', color: 'white' }
+                                }
+                                onMouseEnter={(e) => {
+                                  if (!pocoOcrExists) {
+                                    e.currentTarget.style.opacity = '0.9';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!pocoOcrExists) {
+                                    e.currentTarget.style.opacity = '1';
+                                  }
+                                }}
                               >
                                 {pocoOcrExists ? 'Existing' : 'Create'}
                               </button>
                             ) : (
-                              <div className="text-xs font-medium text-blue-700 bg-blue-100 px-3 py-1 rounded">
+                              <div className="text-xs font-medium px-3 py-1 rounded" style={{ color: 'var(--info-text)', backgroundColor: 'var(--info-bg)' }}>
                                 Mandatory
                               </div>
                             )
@@ -1656,7 +1764,7 @@ export default function Settings() {
                 <div className="space-y-6">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-lg font-semibold text-gray-900">Data Validation</h2>
+                      <h2 className="text-lg font-semibold" style={{ color: 'var(--app-text)' }}>Data Validation</h2>
                       <Button
                         onClick={loadValidationData}
                         disabled={loadingValidation}
@@ -1666,34 +1774,34 @@ export default function Settings() {
                         {loadingValidation ? 'Refreshing...' : 'Refresh'}
                       </Button>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm mb-2" style={{ color: 'var(--app-text-secondary)' }}>
                       Ensure all required custom fields and tags exist in Paperless-ngx for PocoClass to function correctly
                     </p>
                   </div>
 
                   {loadingValidation ? (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">Checking mandatory data...</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Checking mandatory data...</span>
                       </div>
                     </div>
                   ) : validationData && !validationData.valid ? (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <div className="border rounded-lg p-4 mb-6" style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca' }}>
                       <div className="flex items-start gap-3">
                         <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-red-900 mb-2">Missing Required Data</h3>
-                          <p className="text-sm text-red-800 mb-3">
+                          <h3 className="text-sm font-semibold mb-2" style={{ color: '#7f1d1d' }}>Missing Required Data</h3>
+                          <p className="text-sm mb-3" style={{ color: '#991b1b' }}>
                             PocoClass requires specific custom fields and tags to function. The following items are missing from your Paperless-ngx instance:
                           </p>
                           {validationData.missing_fields.length > 0 && (
                             <div className="mb-3">
-                              <p className="text-xs font-semibold text-red-900 mb-1">Missing Custom Fields:</p>
-                              <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                              <p className="text-xs font-semibold mb-1" style={{ color: '#7f1d1d' }}>Missing Custom Fields:</p>
+                              <ul className="list-disc list-inside text-sm ml-2" style={{ color: '#991b1b' }}>
                                 {validationData.missing_fields.map(field => (
                                   <li key={field}>{field}</li>
                                 ))}
@@ -1702,8 +1810,8 @@ export default function Settings() {
                           )}
                           {validationData.missing_tags.length > 0 && (
                             <div>
-                              <p className="text-xs font-semibold text-red-900 mb-1">Missing Tags:</p>
-                              <ul className="list-disc list-inside text-sm text-red-800 ml-2">
+                              <p className="text-xs font-semibold mb-1" style={{ color: '#7f1d1d' }}>Missing Tags:</p>
+                              <ul className="list-disc list-inside text-sm ml-2" style={{ color: '#991b1b' }}>
                                 {validationData.missing_tags.map(tag => (
                                   <li key={tag}>{tag}</li>
                                 ))}
@@ -1721,19 +1829,19 @@ export default function Settings() {
                           {fixingMandatoryData ? 'Creating...' : 'Fix Missing Data'}
                         </Button>
                         {!isAdmin && (
-                          <p className="mt-2 text-xs text-gray-500">
+                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
                             Only administrators can create missing custom fields and tags
                           </p>
                         )}
                       </div>
                     </div>
                   ) : validationData && validationData.valid ? (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <div className="border rounded-lg p-4 mb-6" style={{ backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
                       <div className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                         <div>
-                          <h3 className="text-sm font-semibold text-green-900 mb-1">All Required Data Present</h3>
-                          <p className="text-sm text-green-800">
+                          <h3 className="text-sm font-semibold mb-1" style={{ color: '#14532d' }}>All Required Data Present</h3>
+                          <p className="text-sm" style={{ color: '#15803d' }}>
                             All mandatory custom fields and tags are configured correctly in Paperless-ngx.
                           </p>
                         </div>
@@ -1742,11 +1850,11 @@ export default function Settings() {
                   ) : null}
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Required Tags</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Required Tags</h3>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -1756,17 +1864,17 @@ export default function Settings() {
                           <XCircle className="w-5 h-5 text-red-600" />
                         )}
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">POCO+</div>
-                          <div className="text-xs text-gray-500">Applied to documents that match a rule successfully</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that match a rule successfully</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_plus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_plus ? 'Present' : 'Missing'}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -1776,17 +1884,17 @@ export default function Settings() {
                           <XCircle className="w-5 h-5 text-red-600" />
                         )}
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">POCO-</div>
-                          <div className="text-xs text-gray-500">Applied to documents that do not match any rule</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that do not match any rule</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.poco_minus ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -1796,8 +1904,8 @@ export default function Settings() {
                           <XCircle className="w-5 h-5 text-red-600" />
                         )}
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">NEW</div>
-                          <div className="text-xs text-gray-500">Identifies unprocessed documents for background processing</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Identifies unprocessed documents for background processing</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.tags?.new ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {loadingValidation ? 'Verifying...' : validationData?.tags?.new ? 'Present' : 'Missing'}
@@ -1807,11 +1915,11 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Required Custom Fields</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Required Custom Fields</h3>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -1821,8 +1929,8 @@ export default function Settings() {
                           <XCircle className="w-5 h-5 text-red-600" />
                         )}
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">POCO Score</div>
-                          <div className="text-xs text-gray-500">Stores the overall POCO score (0-100%)</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO Score</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the overall POCO score (0-100%)</div>
                         </div>
                         <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_score ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                           {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_score ? 'Present' : 'Missing'}
@@ -1832,24 +1940,25 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Optional Custom Fields</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Optional Custom Fields</h3>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                         ) : validationData?.fields?.poco_ocr ? (
                           <CheckCircle className="w-5 h-5 text-blue-600" />
                         ) : (
-                          <Info className="w-5 h-5 text-gray-400" />
+                          <Info className="w-5 h-5" style={{ color: 'var(--app-text-muted)' }} />
                         )}
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">POCO OCR</div>
-                          <div className="text-xs text-gray-500">Stores the OCR confidence score (0-100%). Optional for transparency.</div>
+                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO OCR</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the OCR confidence score (0-100%). Optional for transparency.</div>
                         </div>
-                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_ocr ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}`}>
+                        <div className={`text-xs font-medium px-3 py-1 rounded ${loadingValidation ? 'bg-blue-100 text-blue-700' : validationData?.fields?.poco_ocr ? 'bg-blue-100 text-blue-700' : ''}`}
+                          style={!loadingValidation && !validationData?.fields?.poco_ocr ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : undefined}>
                           {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
                         </div>
                       </div>
@@ -1857,14 +1966,14 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold text-gray-900 mb-4">Optional Features</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Optional Features</h3>
                     <div className="space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
-                          <label className="block text-sm font-medium text-gray-900 mb-1">
+                          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--app-text)' }}>
                             POCO OCR Transparency Score Field
                           </label>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                             Enable the POCO OCR custom field in Paperless-ngx. This field stores the OCR transparency score separately from the main POCO Score. <strong>Not required for PocoClass to work</strong> - this provides additional visibility for advanced users who want to see the OCR pattern matching quality.
                           </p>
                         </div>
@@ -1876,17 +1985,17 @@ export default function Settings() {
                       </div>
 
                       {!isAdmin && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
                           Only administrators can modify optional feature settings
                         </p>
                       )}
 
                       {pocoOcrEnabled && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                        <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--info-text)' }} />
                             <div>
-                              <p className="text-sm text-blue-900">
+                              <p className="text-sm" style={{ color: 'var(--info-text)' }}>
                                 POCO OCR field will be created during next sync or when you click "Fix Missing Data" above
                               </p>
                             </div>
@@ -1901,21 +2010,21 @@ export default function Settings() {
               {activeTab === 'backgroundProcessing' && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Background Processing</h2>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Background Processing</h2>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
                       Configure automatic document classification for newly uploaded documents
                     </p>
                   </div>
 
                   {/* Global Loading Indicator */}
                   {loading && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3">
+                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                       <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span className="text-sm text-blue-700 font-medium">Loading settings from Paperless-ngx...</span>
+                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Loading settings from Paperless-ngx...</span>
                       </div>
                     </div>
                   )}
@@ -1924,7 +2033,7 @@ export default function Settings() {
                     <div className="space-y-6">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <label className="block text-sm font-medium text-gray-700">
+                          <label className="block text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>
                             Enable Background Processing
                           </label>
                           <Switch
@@ -1933,13 +2042,13 @@ export default function Settings() {
                             disabled={!isAdmin}
                           />
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
                           Automatically classify documents when they are uploaded to Paperless-ngx
                         </p>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
                           Debounce Time (seconds)
                         </label>
                         <div className="flex gap-3 mb-2">
@@ -1950,27 +2059,32 @@ export default function Settings() {
                             value={backgroundSettings.bg_debounce_seconds}
                             onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_debounce_seconds: parseInt(e.target.value) || 30 })}
                             disabled={!isAdmin}
-                            className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
+                            style={{ 
+                              border: '1px solid var(--app-border)', 
+                              backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
+                              color: 'var(--app-text)' 
+                            }}
                           />
-                          <span className="text-sm text-gray-500 self-center">seconds</span>
+                          <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>seconds</span>
                         </div>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
                           Wait time after detecting new documents before processing (prevents multiple runs for batch uploads). Range: 5-300 seconds.
                         </p>
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold text-gray-900 mb-4">Tag Configuration</h3>
-                        <p className="text-xs text-gray-500 mb-4">
+                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Tag Configuration</h3>
+                        <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
                           PocoClass uses these fixed tags for document processing and classification
                         </p>
                         
                         <div className="space-y-3">
-                          <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+                            <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--info-text)' }}></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">NEW</div>
-                              <div className="text-xs text-gray-600">
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
+                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
                                 Discovery tag - Documents with this tag will be automatically processed by background processing
                               </div>
                             </div>
@@ -1979,8 +2093,8 @@ export default function Settings() {
                           <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
                             <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">POCO+</div>
-                              <div className="text-xs text-gray-600">
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
+                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
                                 Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds
                               </div>
                             </div>
@@ -1989,8 +2103,8 @@ export default function Settings() {
                           <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
                             <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900">POCO-</div>
-                              <div className="text-xs text-gray-600">
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
+                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
                                 Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds
                               </div>
                             </div>
@@ -1999,14 +2113,14 @@ export default function Settings() {
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold text-gray-900 mb-4">Processing History Retention Policy</h3>
-                        <p className="text-xs text-gray-500 mb-4">
+                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Processing History Retention Policy</h3>
+                        <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
                           Control how long processing history is kept in the database
                         </p>
 
                         <div className="space-y-4">
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-3">
+                            <label className="block text-sm font-medium mb-3" style={{ color: 'var(--app-text-secondary)' }}>
                               Retention Type
                             </label>
                             <div className="flex gap-4">
@@ -2020,7 +2134,7 @@ export default function Settings() {
                                   disabled={!isAdmin}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
                                 />
-                                <span className="text-sm text-gray-700">By Days</span>
+                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>By Days</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -2032,14 +2146,14 @@ export default function Settings() {
                                   disabled={!isAdmin}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
                                 />
-                                <span className="text-sm text-gray-700">By Number of Runs</span>
+                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>By Number of Runs</span>
                               </label>
                             </div>
                           </div>
 
                           {backgroundSettings.history_retention_type === 'days' && (
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
                                 Days to Keep
                               </label>
                               <div className="flex gap-3 mb-2">
@@ -2049,11 +2163,16 @@ export default function Settings() {
                                   value={backgroundSettings.history_retention_days}
                                   onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_days: parseInt(e.target.value) || 365 })}
                                   disabled={!isAdmin}
-                                  className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                  className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
+                                  style={{ 
+                                    border: '1px solid var(--app-border)', 
+                                    backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
+                                    color: 'var(--app-text)' 
+                                  }}
                                 />
-                                <span className="text-sm text-gray-500 self-center">days</span>
+                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>days</span>
                               </div>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
                                 Processing runs older than this will be automatically deleted (default: 365 days / 1 year)
                               </p>
                             </div>
@@ -2061,7 +2180,7 @@ export default function Settings() {
 
                           {backgroundSettings.history_retention_type === 'count' && (
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">
+                              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
                                 Runs to Keep
                               </label>
                               <div className="flex gap-3 mb-2">
@@ -2071,11 +2190,16 @@ export default function Settings() {
                                   value={backgroundSettings.history_retention_count}
                                   onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_count: parseInt(e.target.value) || 100 })}
                                   disabled={!isAdmin}
-                                  className="w-32 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                  className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
+                                  style={{ 
+                                    border: '1px solid var(--app-border)', 
+                                    backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
+                                    color: 'var(--app-text)' 
+                                  }}
                                 />
-                                <span className="text-sm text-gray-500 self-center">runs</span>
+                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>runs</span>
                               </div>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
                                 Keep only the most recent N processing runs (default: 100 runs)
                               </p>
                             </div>
@@ -2093,7 +2217,7 @@ export default function Settings() {
                           Save Settings
                         </Button>
                         {!isAdmin && (
-                          <p className="mt-2 text-xs text-gray-500">
+                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
                             Only administrators can update background processing settings
                           </p>
                         )}

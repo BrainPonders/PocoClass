@@ -166,7 +166,7 @@ export default function OcrIdentifiersStep({
   // Check if values are at default/recommended
   const isOcrThresholdDefault = ocrThreshold === 75;
   const isMultiplierDefault = ocrMultiplier === 3;
-  const summaryTextColor = (isOcrThresholdDefault && isMultiplierDefault) ? 'text-blue-700' : 'text-gray-600';
+  const summaryTextColor = (isOcrThresholdDefault && isMultiplierDefault) ? 'var(--info-text)' : 'var(--app-text-secondary)';
 
   return (
     <div className="wizard-container">
@@ -175,9 +175,9 @@ export default function OcrIdentifiersStep({
           <h2 className="text-2xl font-bold">{t('step_2_title')}</h2>
           <Tooltip content={t('ocr_identifiers_tooltip')} />
         </div>
-        <p className="text-gray-600 mt-2">{t('ocr_identifiers_description')}</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('ocr_identifiers_description')}</p>
         {selectedDocumentId && selectedDocumentName && (
-          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+          <div className="mt-2 p-2 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
             📄 Working with: <span className="font-medium">{selectedDocumentName}</span>
           </div>
         )}
@@ -225,21 +225,22 @@ export default function OcrIdentifiersStep({
             onChange={handleOcrThresholdSliderChange}
             onMouseUp={handleOcrThresholdSliderRelease}
             onTouchEnd={handleOcrThresholdSliderRelease}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            style={{ backgroundColor: 'var(--app-bg-secondary)' }}
           />
           
           {/* Scale markers */}
           <div className="relative mt-2 px-2 pb-8">
-            <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
+            <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
               <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
               <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
               <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
               <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
-              <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">75</span>
+              <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">75</span>
               <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
                 <Tooltip content="Default: 75% is recommended as the minimum OCR confidence score for accurate pattern matching.">
-                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
               <span style={{position: 'absolute', left: '60%', transform: 'translateX(-50%)'}}>80</span>
@@ -268,18 +269,19 @@ export default function OcrIdentifiersStep({
             onChange={handleMultiplierSliderChange}
             onMouseUp={handleMultiplierSliderRelease}
             onTouchEnd={handleMultiplierSliderRelease}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            style={{ backgroundColor: 'var(--app-bg-secondary)' }}
           />
           
           {/* Scale markers */}
           <div className="relative mt-2 px-2 pb-8">
-            <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
+            <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>1</span>
               <span style={{position: 'absolute', left: '11.11%', transform: 'translateX(-50%)'}}>2</span>
-              <span style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">3</span>
+              <span style={{position: 'absolute', left: '22.22%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">3</span>
               <div style={{position: 'absolute', left: '22.22%', transform: 'translateX(8px)'}}>
                 <Tooltip content="Default: 3× multiplier gives OCR patterns strong weight in the final POCO score calculation.">
-                  <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
+                  <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                 </Tooltip>
               </div>
               <span style={{position: 'absolute', left: '33.33%', transform: 'translateX(-50%)'}}>4</span>
@@ -294,47 +296,47 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
+      <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span className="text-gray-600">Logic groups:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Logic groups:</span>
             <span className="ml-2 font-medium">{ruleData.ocrIdentifiers?.length || 0}</span>
           </div>
           <div>
-            <span className="text-gray-600">Total identifiers:</span>
-            <span className="ml-2 font-medium">{totalIdentifiers} <span className="text-gray-500 text-xs">(including AND)</span></span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Total identifiers:</span>
+            <span className="ml-2 font-medium">{totalIdentifiers} <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>(including AND)</span></span>
           </div>
           <div>
-            <span className="text-gray-600">OCR score requirement:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>OCR score requirement:</span>
             <span className="ml-2 font-medium">{ocrThreshold}%</span>
           </div>
           <div>
-            <span className="text-gray-600">OCR multiplier:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>OCR multiplier:</span>
             <span className="ml-2 font-medium">{ocrMultiplier}×</span>
           </div>
           <div>
-            <span className="text-gray-600">Pattern weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Pattern weight:</span>
             <span className="ml-2 font-medium">{totalIdentifiers}</span>
           </div>
           <div>
-            <span className="text-gray-600">Max OCR weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Max OCR weight:</span>
             <span className="ml-2 font-medium">{maxOcrWeight}</span>
           </div>
           {totalIdentifiers > 0 && (
-            <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
-              <span className="text-gray-500 text-xs italic">Example: If all {totalIdentifiers} pattern{totalIdentifiers !== 1 ? 's' : ''} match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
+            <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
+              <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: If all {totalIdentifiers} pattern{totalIdentifiers !== 1 ? 's' : ''} match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
             </div>
           )}
         </div>
         {ocrThreshold !== 75 && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>OCR Score requirement changed from default (75%).</span>
           </div>
         )}
         {ocrMultiplier !== 3 && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>OCR multiplier changed from default (3×).</span>
           </div>

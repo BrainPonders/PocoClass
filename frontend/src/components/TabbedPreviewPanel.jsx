@@ -17,9 +17,21 @@ export default function TabbedPreviewPanel({
   };
 
   const getTabClass = (tab) => {
-    return activeTab === tab
-      ? 'px-4 py-2 border-b-2 border-blue-600 text-blue-600 font-medium cursor-pointer transition-colors'
-      : 'px-4 py-2 border-b-2 border-transparent text-gray-600 hover:text-gray-900 cursor-pointer transition-colors';
+    const baseClass = 'px-4 py-2 border-b-2 font-medium cursor-pointer transition-colors';
+    if (activeTab === tab) {
+      return baseClass + ' border-transparent';
+    }
+    return baseClass + ' border-transparent text-gray-600 hover:text-gray-900';
+  };
+
+  const getTabStyle = (tab) => {
+    if (activeTab === tab) {
+      return {
+        borderBottomColor: 'var(--app-primary)',
+        color: 'var(--info-text)'
+      };
+    }
+    return {};
   };
 
   const handleCopyYaml = async () => {
@@ -75,6 +87,7 @@ export default function TabbedPreviewPanel({
           <button
             onClick={() => handleTabClick('yaml')}
             className={getTabClass('yaml')}
+            style={getTabStyle('yaml')}
           >
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
@@ -84,6 +97,7 @@ export default function TabbedPreviewPanel({
           <button
             onClick={() => handleTabClick('ocr')}
             className={getTabClass('ocr')}
+            style={getTabStyle('ocr')}
             disabled={!ocrContent}
           >
             <div className="flex items-center gap-2">
@@ -94,6 +108,7 @@ export default function TabbedPreviewPanel({
           <button
             onClick={() => handleTabClick('pdf')}
             className={getTabClass('pdf')}
+            style={getTabStyle('pdf')}
             disabled={!documentId}
           >
             <div className="flex items-center gap-2">

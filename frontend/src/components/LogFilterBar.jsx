@@ -36,11 +36,10 @@ export default function LogFilterBar({ filters, onFilterChange }) {
       default: hasValue = false;
     }
 
-    const baseClass = "px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 ";
-    if (hasValue) {
-      return baseClass + "bg-blue-600 text-white hover:bg-blue-700";
-    }
-    return baseClass + "bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300";
+    return {
+      className: "px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 border",
+      style: hasValue ? { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)', borderColor: 'var(--info-border)' } : {}
+    };
   };
 
   const renderFilterDropdown = (filterName, content) => {
@@ -49,7 +48,8 @@ export default function LogFilterBar({ filters, onFilterChange }) {
     return (
       <div
         ref={el => dropdownRefs.current[filterName] = el}
-        className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-300 z-50 min-w-[250px]"
+        className="absolute top-full left-0 mt-1 rounded-lg shadow-xl z-50 min-w-[250px]"
+        style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}
       >
         {content}
       </div>
@@ -58,22 +58,26 @@ export default function LogFilterBar({ filters, onFilterChange }) {
 
   return (
     <div className="mb-4">
-      <div className="flex items-center gap-3 flex-wrap bg-white p-4 rounded-lg border border-gray-200">
+      <div className="flex items-center gap-3 flex-wrap p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
         {/* Title/Search Filter */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Search:</label>
+          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>Search:</label>
           <div className="relative flex items-center">
             <input
               type="text"
               value={filters.search || ''}
               onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
               placeholder="Search logs..."
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded text-sm text-gray-900 placeholder-gray-400 w-48 focus:outline-none focus:border-blue-500"
+              className="px-3 py-1.5 rounded text-sm w-48 focus:outline-none"
+              style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
             />
             {filters.search && (
               <button
                 onClick={() => onFilterChange({ ...filters, search: '' })}
-                className="absolute right-2 text-gray-400 hover:text-gray-600"
+                className="absolute right-2"
+                style={{ color: 'var(--app-text-muted)' }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -85,7 +89,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'type' ? null : 'type')}
-            className={getFilterButtonClass('type')}
+            {...getFilterButtonClass('type')}
           >
             Type
             {filters.type !== 'all' && ` (1)`}
@@ -103,13 +107,16 @@ export default function LogFilterBar({ filters, onFilterChange }) {
               ].map(option => (
                 <div
                   key={option.value}
-                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.type === option.value ? 'bg-blue-50' : ''}`}
+                  className="px-4 py-2 cursor-pointer"
+                  style={filters.type === option.value ? { backgroundColor: 'var(--info-bg)' } : {}}
+                  onMouseEnter={(e) => filters.type !== option.value && (e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)')}
+                  onMouseLeave={(e) => filters.type !== option.value && (e.currentTarget.style.backgroundColor = filters.type === option.value ? 'var(--info-bg)' : '')}
                   onClick={() => {
                     onFilterChange({ ...filters, type: option.value });
                     setOpenFilter(null);
                   }}
                 >
-                  <span className="text-sm text-gray-900">
+                  <span className="text-sm" style={{ color: 'var(--app-text)' }}>
                     {filters.type === option.value && '✓ '}
                     {option.label}
                   </span>
@@ -123,7 +130,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'level' ? null : 'level')}
-            className={getFilterButtonClass('level')}
+            {...getFilterButtonClass('level')}
           >
             <AlertCircle className="w-4 h-4" />
             Level
@@ -141,13 +148,16 @@ export default function LogFilterBar({ filters, onFilterChange }) {
               ].map(option => (
                 <div
                   key={option.value}
-                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${filters.level === option.value ? 'bg-blue-50' : ''}`}
+                  className="px-4 py-2 cursor-pointer"
+                  style={filters.level === option.value ? { backgroundColor: 'var(--info-bg)' } : {}}
+                  onMouseEnter={(e) => filters.level !== option.value && (e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)')}
+                  onMouseLeave={(e) => filters.level !== option.value && (e.currentTarget.style.backgroundColor = filters.level === option.value ? 'var(--info-bg)' : '')}
                   onClick={() => {
                     onFilterChange({ ...filters, level: option.value });
                     setOpenFilter(null);
                   }}
                 >
-                  <span className="text-sm text-gray-900">
+                  <span className="text-sm" style={{ color: 'var(--app-text)' }}>
                     {filters.level === option.value && '✓ '}
                     {option.label}
                   </span>
@@ -161,7 +171,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'dates' ? null : 'dates')}
-            className={getFilterButtonClass('dates')}
+            {...getFilterButtonClass('dates')}
           >
             <Calendar className="w-4 h-4" />
             Dates
@@ -170,21 +180,23 @@ export default function LogFilterBar({ filters, onFilterChange }) {
           {renderFilterDropdown('dates', (
             <div className="p-3 min-w-[300px]">
               <div className="mb-3">
-                <label className="block text-xs text-gray-600 mb-1">Date Range</label>
+                <label className="block text-xs mb-1" style={{ color: 'var(--app-text-secondary)' }}>Date Range</label>
                 <div className="flex gap-2 items-center mb-2">
                   <input
                     type="date"
                     value={filters.dateFrom || ''}
                     onChange={(e) => onFilterChange({ ...filters, dateFrom: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900"
+                    className="flex-1 px-3 py-2 rounded text-sm"
+                    style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
                     placeholder="From"
                   />
-                  <span className="text-gray-600">to</span>
+                  <span style={{ color: 'var(--app-text-secondary)' }}>to</span>
                   <input
                     type="date"
                     value={filters.dateTo || ''}
                     onChange={(e) => onFilterChange({ ...filters, dateTo: e.target.value })}
-                    className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded text-sm text-gray-900"
+                    className="flex-1 px-3 py-2 rounded text-sm"
+                    style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
                     placeholder="To"
                   />
                 </div>
@@ -203,7 +215,8 @@ export default function LogFilterBar({ filters, onFilterChange }) {
               dateTo: '',
               search: ''
             })}
-            className="ml-auto text-sm text-gray-600 hover:text-gray-900 underline"
+            className="ml-auto text-sm underline"
+            style={{ color: 'var(--app-text-secondary)' }}
           >
             Reset filters
           </button>

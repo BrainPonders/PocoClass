@@ -41,13 +41,16 @@ export default function CoreIdentifiersStep({
         {!showInfoBoxes[2] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 2: true }))}
-            className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
+            className="btn btn-ghost btn-sm p-1"
+            style={{ color: 'var(--app-text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--app-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--app-text-muted)'}
           >
             <HelpCircle className="w-4 h-4" />
           </button>
         )}
       </div>
-      <p className="text-gray-600 mb-6">
+      <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
         Define the essential patterns that must be found in documents for identification. 
         These are the "must-have" elements that define your document type.
       </p>
@@ -74,7 +77,7 @@ export default function CoreIdentifiersStep({
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎯</div>
           <h3 className="text-xl font-semibold mb-2">No Core Identifiers Yet</h3>
-          <p className="text-gray-600 mb-6">Add your first logic group to define essential document patterns</p>
+          <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>Add your first logic group to define essential document patterns</p>
           <button 
             onClick={addCoreLogicGroup}
             className="btn btn-primary"
@@ -105,9 +108,9 @@ export default function CoreIdentifiersStep({
         </div>
       )}
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800">Score Summary</h4>
-        <p className="text-sm text-blue-700">
+      <div className="mt-6 p-4 border rounded-lg" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
+        <h4 className="font-semibold text-sm" style={{ color: 'var(--info-text)' }}>Score Summary</h4>
+        <p className="text-sm" style={{ color: 'var(--info-text)' }}>
           Total Core Score: {calculateCoreScore()}/100 points
           {calculateCoreScore() < 70 && (
             <span className="block mt-1">

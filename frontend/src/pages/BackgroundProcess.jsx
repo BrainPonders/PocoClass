@@ -469,13 +469,13 @@ export default function BackgroundProcess() {
   const getTriggerTypeBadge = (triggerType) => {
     switch (triggerType) {
       case 'manual_dry_run':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Dry Run</Badge>;
+        return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>Dry Run</Badge>;
       case 'manual_run':
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
       case 'automatic':
-        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">Automatic</Badge>;
+        return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>Automatic</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">{triggerType || 'Unknown'}</Badge>;
+        return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>{triggerType || 'Unknown'}</Badge>;
     }
   };
 
@@ -485,7 +485,7 @@ export default function BackgroundProcess() {
     } else if (classification === 'POCO-') {
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">POCO-</Badge>;
     }
-    return <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-100">{classification}</Badge>;
+    return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>{classification}</Badge>;
   };
 
   const isAdmin = currentUser?.role === 'admin';
@@ -495,7 +495,7 @@ export default function BackgroundProcess() {
     return (
       <div className="p-6">
         <div className="flex justify-center items-center h-96">
-          <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
+          <RefreshCw className="w-8 h-8 animate-spin" style={{ color: 'var(--info-text)' }} />
         </div>
       </div>
     );
@@ -520,19 +520,19 @@ export default function BackgroundProcess() {
             <RefreshCw className="w-4 h-4" />
             {loading ? 'Triggering...' : 'Trigger Now'}
           </Button>
-          <p className="text-xs text-gray-500 mt-1">Auto-discover & process documents tagged "NEW"</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--app-text-secondary)' }}>Auto-discover & process documents tagged "NEW"</p>
         </div>
       }
     >
 
       {/* Info Section */}
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
         <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-gray-700">
-            <p className="font-medium text-blue-900 mb-2">What is this section for?</p>
+          <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
+          <div className="text-sm" style={{ color: 'var(--info-text)' }}>
+            <p className="font-medium mb-2">What is this section for?</p>
             <p className="mb-3">Monitor and control document processing in Paperless. Use Dry Run to test rules without making changes, or Run to apply active rules to selected documents. Processing History shows all execution details with per-document results.</p>
-            <p className="text-xs text-blue-800">
+            <p className="text-xs">
               <strong>Trigger Now:</strong> Automatically discovers and processes all documents tagged "NEW" (operates independently of filters below).
             </p>
           </div>
@@ -551,40 +551,40 @@ export default function BackgroundProcess() {
             {processingStatus ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Status:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Status:</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     processingStatus.enabled 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                      ? 'bg-green-100 text-green-800' : ''
+                  }`}
+                  style={!processingStatus.enabled ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
                     {processingStatus.enabled ? 'Enabled' : 'Disabled'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Processing:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Processing:</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     processingStatus.is_processing 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                      ? '' : ''
+                  }`}
+                  style={processingStatus.is_processing ? { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>
                     {processingStatus.is_processing ? 'Active' : 'Idle'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Last Run:</span>
-                  <span className="text-sm text-gray-900">
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Last Run:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text)' }}>
                     {processingStatus.last_run ? formatDate(processingStatus.last_run) : 'Never'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Documents Processed:</span>
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Documents Processed:</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--app-text)' }}>
                     {processingStatus.documents_processed || 0}
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center py-8 text-gray-500">
+              <div className="flex items-center justify-center py-8" style={{ color: 'var(--app-text-muted)' }}>
                 <RefreshCw className="w-5 h-5 animate-spin mr-2" />
                 Loading status...
               </div>
@@ -602,19 +602,19 @@ export default function BackgroundProcess() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Total Runs:</span>
-                <span className="text-sm font-semibold text-gray-900">
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Total Runs:</span>
+                <span className="text-sm font-semibold" style={{ color: 'var(--app-text)' }}>
                   {processingHistory.length}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Successful:</span>
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Successful:</span>
                 <span className="text-sm font-semibold text-green-600">
                   {processingHistory.filter(h => h.status === 'success').length}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Failed:</span>
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Failed:</span>
                 <span className="text-sm font-semibold text-red-600">
                   {processingHistory.filter(h => h.status === 'error').length}
                 </span>
@@ -629,7 +629,7 @@ export default function BackgroundProcess() {
           <CardTitle>Manual Processing</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
             Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.
           </p>
           
@@ -645,56 +645,66 @@ export default function BackgroundProcess() {
 
           {/* Matching Documents List */}
           <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>
               Matching Documents ({matchingDocuments.length})
             </h3>
             {loadingDocuments ? (
               <div className="flex items-center justify-center py-8">
-                <RefreshCw className="w-6 h-6 text-gray-400 animate-spin" />
+                <RefreshCw className="w-6 h-6 animate-spin" style={{ color: 'var(--app-text-muted)' }} />
               </div>
             ) : matchingDocuments.length === 0 ? (
-              <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
-                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">No documents match the current filter criteria</p>
+              <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
+                <AlertCircle className="w-12 h-12 mx-auto mb-2" style={{ color: 'var(--app-text-muted)' }} />
+                <p className="text-sm" style={{ color: 'var(--app-text-muted)' }}>No documents match the current filter criteria</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50">
+                  <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                     <tr>
                       <th className="px-2 py-1 text-left">
-                        <button onClick={toggleSelectAll} className="hover:bg-gray-200 p-1 rounded">
+                        <button onClick={toggleSelectAll} className="p-1 rounded">
                           {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                         </button>
                       </th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                      <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
-                      <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Title</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>ID</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Date Created</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Added</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Correspondent</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Document Type</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>CF: Doc Category</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Tags</th>
+                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>POCO Score</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Owner</th>
+                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>View</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody style={{ backgroundColor: 'var(--app-surface)' }}>
                     {matchingDocuments.map((doc) => (
-                      <tr key={doc.id} className={`hover:bg-gray-50 cursor-pointer ${selectedDocuments.includes(doc.id) ? 'bg-blue-50' : ''}`} onClick={() => toggleDocumentSelection(doc.id)}>
+                      <tr 
+                        key={doc.id} 
+                        className="cursor-pointer" 
+                        style={{ 
+                          backgroundColor: selectedDocuments.includes(doc.id) ? 'var(--info-bg)' : 'transparent',
+                          borderBottom: '1px solid var(--app-border)'
+                        }}
+                        onMouseEnter={(e) => { if (!selectedDocuments.includes(doc.id)) e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'; }}
+                        onMouseLeave={(e) => { if (!selectedDocuments.includes(doc.id)) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        onClick={() => toggleDocumentSelection(doc.id)}
+                      >
                         <td className="px-2 py-1">
-                          <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="hover:bg-gray-200 p-1 rounded">
-                            {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+                          <button onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} className="p-1 rounded">
+                            {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4" style={{ color: 'var(--info-text)' }} /> : <Square className="w-4 h-4" />}
                           </button>
                         </td>
-                        <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.id}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.created)}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.added || doc.created)}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.correspondent || '-'}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.documentType || '-'}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.docCategory || '-'}</td>
                         <td className="px-2 py-1 whitespace-nowrap">
                           <div className="flex gap-1 flex-wrap">
                             {doc.tags && doc.tags.length > 0 ? (
@@ -723,7 +733,7 @@ export default function BackgroundProcess() {
                                 );
                               })
                             ) : (
-                              <span className="text-gray-400 text-xs">No tags</span>
+                              <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>No tags</span>
                             )}
                           </div>
                         </td>
@@ -731,16 +741,16 @@ export default function BackgroundProcess() {
                           {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
                             <span className={`text-xs font-semibold ${
                               doc.pocoScore >= 80 ? 'text-green-600' : 
-                              doc.pocoScore >= 1 ? 'text-amber-600' : 
-                              'text-gray-400'
-                            }`}>
+                              doc.pocoScore >= 1 ? 'text-amber-600' : ''
+                            }`}
+                            style={doc.pocoScore < 1 ? { color: 'var(--app-text-muted)' } : undefined}>
                               {doc.pocoScore.toFixed(1)}
                             </span>
                           ) : (
-                            <span className="text-gray-400 text-xs">-</span>
+                            <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>-</span>
                           )}
                         </td>
-                        <td className="px-2 py-1 text-xs text-gray-500">{doc.owner || '-'}</td>
+                        <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
                         <td className="px-2 py-1 whitespace-nowrap">
                           <div className="flex gap-2 justify-center items-center">
                             <button 
@@ -774,8 +784,8 @@ export default function BackgroundProcess() {
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Processing Actions</h4>
+          <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+            <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>Processing Actions</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Dry Run Button */}
@@ -783,12 +793,15 @@ export default function BackgroundProcess() {
                 <Button
                   onClick={() => handleManualProcess(true)}
                   disabled={loading || matchingDocuments.length === 0}
-                  className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="flex items-center justify-center gap-2"
+                  style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}
+                  onMouseEnter={(e) => !loading && matchingDocuments.length > 0 && (e.currentTarget.style.opacity = '0.8')}
+                  onMouseLeave={(e) => !loading && matchingDocuments.length > 0 && (e.currentTarget.style.opacity = '1')}
                 >
                   <Play className="w-4 h-4" />
                   {loading && currentDryRun === true ? 'Testing...' : 'Dry Run'}
                 </Button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
+                <p className="text-xs mt-2 text-center" style={{ color: 'var(--app-text-muted)' }}>
                   Test all rules without changing Paperless
                 </p>
               </div>
@@ -807,13 +820,13 @@ export default function BackgroundProcess() {
                   <Play className="w-4 h-4" />
                   {loading && currentDryRun === false ? 'Running...' : 'Run'}
                 </Button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
+                <p className="text-xs mt-2 text-center" style={{ color: 'var(--app-text-muted)' }}>
                   ⚠️ Apply active rules to Paperless
                 </p>
               </div>
             </div>
             
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+            <div className="mt-4 p-3 rounded text-xs" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
               <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
             </div>
           </div>
@@ -825,7 +838,7 @@ export default function BackgroundProcess() {
           <CardTitle>
             Processing History
             {backgroundSettings && (
-              <span className="text-sm font-normal text-gray-500 ml-2">
+              <span className="text-sm font-normal ml-2" style={{ color: 'var(--app-text-muted)' }}>
                 (Retention: {backgroundSettings.history_retention_type === 'days' 
                   ? `${backgroundSettings.history_retention_days || 365} days`
                   : `${backgroundSettings.history_retention_count || 100} runs`})
@@ -835,16 +848,20 @@ export default function BackgroundProcess() {
         </CardHeader>
         <CardContent>
           {processingHistory.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Processing History</h3>
-              <p className="text-gray-500">Background processing runs will appear here</p>
+            <div className="text-center py-8" style={{ color: 'var(--app-text-muted)' }}>
+              <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Processing History</h3>
+              <p style={{ color: 'var(--app-text-muted)' }}>Background processing runs will appear here</p>
             </div>
           ) : (
             <Accordion type="multiple" className="space-y-1">
               {processingHistory.map((entry) => (
                 <AccordionItem key={entry.id} value={`run-${entry.id}`} className="border rounded-lg">
-                  <AccordionTrigger className="px-3 py-1.5 hover:no-underline hover:bg-gray-50">
+                  <AccordionTrigger 
+                    className="px-3 py-1.5 hover:no-underline"
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
                     <div className="flex items-center gap-3 flex-1 text-left">
                       <div className="flex items-center gap-1.5">
                         {getTriggerTypeBadge(entry.trigger_type)}
@@ -858,27 +875,27 @@ export default function BackgroundProcess() {
                       </div>
                       <div className="flex-1 grid grid-cols-6 gap-2 text-xs">
                         <div>
-                          <div className="text-gray-500">Started</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Started</div>
                           <div className="font-medium">{formatDateTime(entry.started_at)}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Documents</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Documents</div>
                           <div className="font-medium">{entry.documents_found || 0}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Classified</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Classified</div>
                           <div className="font-medium text-green-600">{entry.documents_classified || 0}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Skipped</div>
-                          <div className="font-medium text-gray-600">{entry.documents_skipped || 0}</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Skipped</div>
+                          <div className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{entry.documents_skipped || 0}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Rules Applied</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Rules Applied</div>
                           <div className="font-medium">{entry.rules_applied || 0}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Status</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>Status</div>
                           <div className="font-medium">{entry.status}</div>
                         </div>
                       </div>
@@ -889,32 +906,32 @@ export default function BackgroundProcess() {
                       <div className="space-y-1 mt-1">
                         <div className="grid grid-cols-1 gap-1 max-h-96 overflow-y-auto">
                           {entry.details.map((detail) => (
-                            <div key={detail.id} className="bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                            <div key={detail.id} className="border rounded px-2 py-1" style={{ backgroundColor: 'var(--app-bg-secondary)', borderColor: 'var(--app-border)' }}>
                               <div className="flex items-center justify-between gap-3">
                                 {/* Left side: Document info in one compact line */}
                                 <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap text-xs">
-                                  <span className="font-medium text-gray-900 truncate max-w-xs">
+                                  <span className="font-medium truncate max-w-xs" style={{ color: 'var(--app-text)' }}>
                                     {detail.document_title || `Document #${detail.document_id}`}
                                   </span>
                                   {detail.document_created && (
                                     <>
-                                      <span className="text-gray-400">•</span>
-                                      <span className="text-gray-500">
+                                      <span style={{ color: 'var(--app-text-muted)' }}>•</span>
+                                      <span style={{ color: 'var(--app-text-muted)' }}>
                                         Created: {formatDate(detail.document_created)}
                                       </span>
                                     </>
                                   )}
-                                  <span className="text-gray-400">•</span>
-                                  <span className="text-gray-600">
+                                  <span style={{ color: 'var(--app-text-muted)' }}>•</span>
+                                  <span style={{ color: 'var(--app-text-secondary)' }}>
                                     {detail.rule_name || 'No Match'}
                                   </span>
-                                  <span className="text-gray-400">•</span>
-                                  <span className="text-gray-600">
+                                  <span style={{ color: 'var(--app-text-muted)' }}>•</span>
+                                  <span style={{ color: 'var(--app-text-secondary)' }}>
                                     POCO: {detail.poco_score?.toFixed(1) || 0}% / OCR: {detail.ocr_score?.toFixed(1) || 0}%
                                   </span>
                                   {detail.metadata_applied && detail.metadata_applied.length > 0 && (
                                     <>
-                                      <span className="text-gray-400">•</span>
+                                      <span style={{ color: 'var(--app-text-muted)' }}>•</span>
                                       {detail.metadata_applied.map((item, idx) => {
                                         // Handle both new object format and old string format
                                         let label, value, needsUpdate;
@@ -928,7 +945,7 @@ export default function BackgroundProcess() {
                                           // Old string format (backward compatibility)
                                           const colonIndex = item.indexOf(':');
                                           if (colonIndex === -1) {
-                                            return <span key={idx} className="text-gray-600">{item}</span>;
+                                            return <span key={idx} style={{ color: 'var(--app-text-secondary)' }}>{item}</span>;
                                           }
                                           label = item.substring(0, colonIndex);
                                           value = item.substring(colonIndex + 1).trim();
@@ -937,20 +954,25 @@ export default function BackgroundProcess() {
                                         
                                         // Get color based on label (only used if needsUpdate is true)
                                         const getValueColor = (labelText) => {
-                                          if (labelText.includes('Title')) return 'text-purple-700';
-                                          if (labelText.includes('Correspondent')) return 'text-green-700';
-                                          if (labelText.includes('Doc Type')) return 'text-orange-700';
-                                          if (labelText.includes('Tags')) return 'text-blue-700';
-                                          if (labelText.includes('Date')) return 'text-indigo-700';
-                                          return 'text-teal-700';
+                                          // No Tailwind classes - use inline styles via CSS variables
+                                          return null;
+                                        };
+                                        
+                                        const getValueStyle = (labelText) => {
+                                          if (labelText.includes('Title')) return { color: 'var(--warning-text)' };
+                                          if (labelText.includes('Correspondent')) return { color: 'var(--success-text)' };
+                                          if (labelText.includes('Doc Type')) return { color: 'var(--warning-text)' };
+                                          if (labelText.includes('Tags')) return { color: 'var(--info-text)' };
+                                          if (labelText.includes('Date')) return { color: 'var(--app-primary)' };
+                                          return { color: 'var(--info-text)' };
                                         };
                                         
                                         return (
                                           <span key={idx}>
-                                            {idx > 0 && <span className="text-gray-400 mx-1">|</span>}
-                                            <span className="text-gray-500">{label}:</span>
-                                            <span className="text-gray-500"> </span>
-                                            <span className={needsUpdate ? `${getValueColor(label)} font-medium` : 'text-gray-500'}>
+                                            {idx > 0 && <span className="mx-1" style={{ color: 'var(--app-text-muted)' }}>|</span>}
+                                            <span style={{ color: 'var(--app-text-muted)' }}>{label}:</span>
+                                            <span style={{ color: 'var(--app-text-muted)' }}> </span>
+                                            <span className={needsUpdate ? 'font-medium' : ''} style={needsUpdate ? { ...getValueStyle(label) } : { color: 'var(--app-text-muted)' }}>
                                               {value}
                                             </span>
                                           </span>
@@ -969,7 +991,7 @@ export default function BackgroundProcess() {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-sm text-gray-500 text-center py-4">
+                      <div className="text-sm text-center py-4" style={{ color: 'var(--app-text-muted)' }}>
                         No document details available
                       </div>
                     )}
@@ -984,17 +1006,17 @@ export default function BackgroundProcess() {
       {/* OCR Content Modal */}
       {ocrModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+          <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col" style={{ backgroundColor: 'var(--app-surface)' }}>
+            <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: 'var(--app-border)' }}>
+              <h2 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>OCR Content: {ocrDocumentTitle}</h2>
               <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="bg-gray-50 p-4 rounded border flex">
-                <div className="pr-4 border-r border-gray-300 text-right select-none">
-                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+              <div className="p-4 rounded border flex" style={{ backgroundColor: 'var(--app-bg-secondary)', borderColor: 'var(--app-border)' }}>
+                <div className="pr-4 border-r text-right select-none" style={{ borderColor: 'var(--app-border)' }}>
+                  <pre className="text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text-muted)' }}>
                     {ocrContent.split('\n').map((_, i) => (
                       <div key={i}>{i + 1}</div>
                     ))}

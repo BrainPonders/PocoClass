@@ -488,7 +488,7 @@ export default function Rules() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen" role="status" aria-live="polite">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--app-primary)' }}></div>
         <span className="sr-only">Loading rules...</span>
       </div>
     );
@@ -520,8 +520,8 @@ export default function Rules() {
       }
     >
       {/* Warning banner about rule activation */}
-      <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p className="text-sm text-yellow-800">
+      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+        <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
           <strong>⚠️ Rule Activation Warning:</strong> Active rules automatically process documents in your Paperless archive during background processing and manual "Run" operations. Only activate rules that you have thoroughly tested. Use the power icon (
           <Power className="w-3 h-3 inline mx-1" />) in each row to activate or deactivate rules directly.
         </p>
@@ -532,14 +532,16 @@ export default function Rules() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" aria-hidden="true" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none z-10" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={t('rules_search_placeholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                  style={{ paddingLeft: '2.5rem' }}
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none"
+                  style={{ paddingLeft: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                  onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                  onBlur={(e) => e.target.style.boxShadow = 'none'}
                   aria-label="Search rules by name, ID, or description"
                 />
               </div>
@@ -549,8 +551,10 @@ export default function Rules() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 appearance-none bg-white"
-                style={{ paddingRight: '2.5rem' }}
+                className="w-full px-3 py-2 rounded-lg focus:outline-none pr-10 appearance-none"
+                style={{ paddingRight: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                onBlur={(e) => e.target.style.boxShadow = 'none'}
                 aria-label="Filter rules by status"
               >
                 <option value="all">All Status</option>
@@ -562,12 +566,14 @@ export default function Rules() {
 
             <div>
               <div className="relative">
-                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none z-10" aria-hidden="true" />
+                <ArrowUpDown className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none z-10" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10 appearance-none bg-white"
-                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+                  className="w-full px-3 py-2 rounded-lg focus:outline-none pl-10 appearance-none"
+                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                  onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
+                  onBlur={(e) => e.target.style.boxShadow = 'none'}
                   aria-label="Sort rules"
                 >
                   <option value="date_newest">Newest First</option>
@@ -584,9 +590,9 @@ export default function Rules() {
         {/* Bulk Actions - Fixed height to prevent layout jumping */}
         <div className="mb-6" style={{ minHeight: selectedRules.length > 0 ? 'auto' : '0' }}>
           {selectedRules.length > 0 && (
-            <div className="card bg-blue-50 border-blue-200">
+            <div className="card" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-blue-900">
+                <span className="font-semibold" style={{ color: 'var(--info-text)' }}>
                   {selectedRules.length} rule(s) selected
                 </span>
                 <div className="flex gap-2">
@@ -623,9 +629,9 @@ export default function Rules() {
       {/* Rules Table */}
       {filteredRules.length === 0 ? (
         <div className="card text-center py-16">
-          <FileText className="w-20 h-20 text-gray-300 mx-auto mb-4" aria-hidden="true" />
-          <h3 className="text-2xl font-semibold text-gray-700 mb-2">{t('rules_no_rules')}</h3>
-          <p className="text-gray-500 mb-6">Get started by creating your first classification rule</p>
+          <FileText className="w-20 h-20 mx-auto mb-4" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
+          <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--app-text-secondary)' }}>{t('rules_no_rules')}</h3>
+          <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>Get started by creating your first classification rule</p>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
             className="btn btn-primary"
@@ -637,9 +643,9 @@ export default function Rules() {
         </div>
       ) : (
         <>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="rounded-lg shadow overflow-hidden" style={{ backgroundColor: 'var(--app-surface)' }}>
             <table className="w-full" role="table" aria-label="Rules table">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead style={{ backgroundColor: 'var(--app-bg-secondary)', borderBottom: '1px solid var(--app-border)' }}>
                 <tr>
                   <th className="px-4 py-3 text-left w-12" scope="col">
                     <input
@@ -650,18 +656,18 @@ export default function Rules() {
                       aria-label="Select all rules on this page"
                     />
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule Name</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Rule ID</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Source Document</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">{t('common_status')}</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Threshold</th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700" scope="col">Created</th>
-                  <th className="px-4 py-3 text-right font-semibold text-gray-700" scope="col">{t('common_actions')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Rule Name</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Rule ID</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Source Document</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('common_status')}</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Threshold</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Created</th>
+                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('common_actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody style={{ borderTop: '1px solid var(--app-border)' }}>
                 {paginatedRules.map((rule) => (
-                  <tr key={rule.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={rule.id} className="transition-colors" style={{ borderBottom: '1px solid var(--app-border)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -672,37 +678,37 @@ export default function Rules() {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900">{rule.ruleName}</div>
+                      <div className="font-medium" style={{ color: 'var(--app-text)' }}>{rule.ruleName}</div>
                       {rule.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-md">{rule.description}</div>
+                        <div className="text-sm truncate max-w-md" style={{ color: 'var(--app-text-secondary)' }}>{rule.description}</div>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs bg-gray-100 px-2 py-1 rounded">{rule.ruleId}</code>
+                      <code className="text-xs px-2 py-1 rounded" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>{rule.ruleId}</code>
                     </td>
                     <td className="px-4 py-3">
                       {rule.source_document_id ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-gray-700 font-mono">{rule.source_document_id}</span>
-                          <span className="text-xs text-gray-500">(Paperless ID)</span>
+                          <span className="text-sm font-mono" style={{ color: 'var(--app-text)' }}>{rule.source_document_id}</span>
+                          <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>(Paperless ID)</span>
                         </div>
                       ) : (
-                        <span className="text-sm text-gray-400">-</span>
+                        <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         rule.status === 'active' ? 'bg-green-100 text-green-800' :
-                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                        rule.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : ''
+                      }`}
+                      style={!['active', 'draft'].includes(rule.status) ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
                         {rule.status ? rule.status.charAt(0).toUpperCase() + rule.status.slice(1) : 'Unknown'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">
+                    <td className="px-4 py-3" style={{ color: 'var(--app-text)' }}>
                       {rule.threshold}%
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                       {rule.created_date ? new Date(rule.created_date).toLocaleDateString('en-GB', { 
                         day: 'numeric', 
                         month: 'short', 
@@ -714,8 +720,9 @@ export default function Rules() {
                         <button 
                           onClick={() => handleToggleStatus(rule)}
                           className={`btn btn-ghost btn-sm ${
-                            rule.status === 'active' ? 'text-green-600' : 'text-gray-400'
+                            rule.status === 'active' ? 'text-green-600' : ''
                           }`}
+                          style={rule.status !== 'active' ? { color: 'var(--app-text-muted)' } : undefined}
                           title={rule.status === 'active' ? 'Deactivate rule' : 'Activate rule'}
                           aria-label={rule.status === 'active' ? `Deactivate rule ${rule.ruleName}` : `Activate rule ${rule.ruleName}`}
                         >
@@ -761,7 +768,7 @@ export default function Rules() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-6" role="navigation" aria-label="Pagination">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                 Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredRules.length)} of {filteredRules.length} rules
               </div>
               <div className="flex gap-2">
@@ -826,9 +833,9 @@ export default function Rules() {
             </div>
           ) : documents.length === 0 ? (
             <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Found</h3>
-              <div className="text-gray-500 space-y-2">
+              <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Documents Found</h3>
+              <div className="space-y-2" style={{ color: 'var(--app-text-muted)' }}>
                 <p>No documents found. This could mean:</p>
                 <ul className="list-disc list-inside text-left max-w-md mx-auto">
                   <li>No documents exist in Paperless-ngx</li>
@@ -843,36 +850,42 @@ export default function Rules() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                   <tr>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">POCO Score</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Owner</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">View</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Title</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>ID</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Date Created</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Added</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Correspondent</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Document Type</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>CF: Doc Category</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Tags</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>POCO Score</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Owner</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>View</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody style={{ backgroundColor: 'var(--app-surface)' }}>
                   {documents.map((doc) => (
                     <tr 
                       key={doc.id} 
-                      className={`hover:bg-gray-50 cursor-pointer ${selectedDocument?.id === doc.id ? 'bg-blue-50' : ''}`}
+                      className={`cursor-pointer`}
+                      style={{ 
+                        backgroundColor: selectedDocument?.id === doc.id ? 'var(--info-bg)' : 'transparent',
+                        borderBottom: '1px solid var(--app-border)'
+                      }}
+                      onMouseEnter={(e) => { if (selectedDocument?.id !== doc.id) e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'; }}
+                      onMouseLeave={(e) => { if (selectedDocument?.id !== doc.id) e.currentTarget.style.backgroundColor = 'transparent'; }}
                       onClick={() => setSelectedDocument(doc)}
                     >
-                      <td className="px-2 py-1 text-xs text-gray-900">{doc.title}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.id}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.docCategory || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.id}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.created)}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.added || doc.created)}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.correspondent || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.documentType || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.docCategory || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-1 flex-wrap">
                           {doc.tags && doc.tags.length > 0 ? (
@@ -901,7 +914,7 @@ export default function Rules() {
                               );
                             })
                           ) : (
-                            <span className="text-gray-400 text-xs">No tags</span>
+                            <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>No tags</span>
                           )}
                         </div>
                       </td>
@@ -909,16 +922,16 @@ export default function Rules() {
                         {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
                           <span className={`text-xs font-semibold ${
                             doc.pocoScore >= 80 ? 'text-green-600' : 
-                            doc.pocoScore >= 1 ? 'text-amber-600' : 
-                            'text-gray-400'
-                          }`}>
+                            doc.pocoScore >= 1 ? 'text-amber-600' : ''
+                          }`}
+                          style={doc.pocoScore < 1 ? { color: 'var(--app-text-muted)' } : undefined}>
                             {doc.pocoScore.toFixed(1)}
                           </span>
                         ) : (
-                          <span className="text-gray-400 text-xs">-</span>
+                          <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>-</span>
                         )}
                       </td>
-                      <td className="px-2 py-1 text-xs text-gray-500">{doc.owner || '-'}</td>
+                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-2 justify-center items-center">
                           <button 
@@ -968,30 +981,30 @@ export default function Rules() {
       {/* OCR Content Modal */}
       {ocrModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-xl font-bold">OCR Content: {ocrDocumentTitle}</h2>
+          <div className="rounded-lg shadow-xl max-w-4xl w-full max-h-[80vh] flex flex-col" style={{ backgroundColor: 'var(--app-surface)' }}>
+            <div className="flex justify-between items-center p-6" style={{ borderBottom: '1px solid var(--app-border)' }}>
+              <h2 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>OCR Content: {ocrDocumentTitle}</h2>
               <button onClick={() => setOcrModalOpen(false)} className="btn btn-ghost">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1">
-              <div className="bg-gray-50 p-4 rounded border flex">
-                <div className="pr-4 border-r border-gray-300 text-right select-none">
-                  <pre className="text-sm font-mono text-gray-500 leading-relaxed">
+              <div className="p-4 rounded flex" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
+                <div className="pr-4 text-right select-none" style={{ borderRight: '1px solid var(--app-border)' }}>
+                  <pre className="text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text-secondary)' }}>
                     {ocrContent.split('\n').map((_, i) => (
                       <div key={i}>{i + 1}</div>
                     ))}
                   </pre>
                 </div>
                 <div className="flex-1 pl-4">
-                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed">
+                  <pre className="whitespace-pre-wrap text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text)' }}>
                     {ocrContent}
                   </pre>
                 </div>
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-6 border-t">
+            <div className="flex justify-end gap-2 p-6" style={{ borderTop: '1px solid var(--app-border)' }}>
               <button onClick={() => setOcrModalOpen(false)} className="btn btn-secondary">
                 Close
               </button>

@@ -95,7 +95,7 @@ export default function BasicInfoStep({
           <h2 className="text-2xl font-bold">{t('step_1_title')}</h2>
           <Tooltip content="Basic information helps identify your rule and control classification behavior. The POCO Score requirement determines how confident the system must be before classifying a document. For more details, see the Guide in the sidebar." />
         </div>
-        <p className="text-gray-600 mt-2">Define basic rule information and confidence requirements</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Define basic rule information and confidence requirements</p>
       </div>
 
       <div className="space-y-6">
@@ -154,21 +154,22 @@ export default function BasicInfoStep({
               onChange={handleThresholdSliderChange}
               onMouseUp={handleThresholdSliderRelease}
               onTouchEnd={handleThresholdSliderRelease}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+              style={{ backgroundColor: 'var(--app-bg-secondary)' }}
             />
             
             {/* Scale markers */}
             <div className="relative mt-2 px-2 pb-8">
-              <div className="relative text-gray-500" style={{fontSize: '0.7rem'}}>
+              <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
                 <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
                 <span style={{position: 'absolute', left: '10%', transform: 'translateX(-50%)'}}>55</span>
                 <span style={{position: 'absolute', left: '20%', transform: 'translateX(-50%)'}}>60</span>
                 <span style={{position: 'absolute', left: '30%', transform: 'translateX(-50%)'}}>65</span>
                 <span style={{position: 'absolute', left: '40%', transform: 'translateX(-50%)'}}>70</span>
-                <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}} className="text-blue-600 font-semibold">75</span>
+                <span style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', color: 'var(--info-text)'}} className="font-semibold">75</span>
                 <div style={{position: 'absolute', left: '50%', transform: 'translateX(12px)'}}>
                   <Tooltip content="Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.">
-                    <HelpCircle className="w-3 h-3 text-blue-400 hover:text-blue-600 cursor-help" />
+                    <HelpCircle className="w-3 h-3 cursor-help" style={{ color: 'var(--info-text)' }} />
                   </Tooltip>
                 </div>
                 <span style={{position: 'absolute', left: '60%', transform: 'translateX(-50%)'}}>80</span>
@@ -182,27 +183,27 @@ export default function BasicInfoStep({
         </div>
       </div>
 
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <h4 className="font-semibold text-sm text-blue-800 mb-2">Configuration Summary</h4>
+      <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="col-span-2">
-            <span className="text-gray-600">Rule Name:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Rule Name:</span>
             <span className="ml-2 font-medium">{ruleData.ruleName || 'Not set'}</span>
           </div>
           <div className="col-span-2">
-            <span className="text-gray-600">Rule ID:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>Rule ID:</span>
             <span className="ml-2 font-medium">{ruleData.ruleId || 'Not set'}</span>
           </div>
           <div className="col-span-2">
-            <span className="text-gray-600">POCO Score Requirement:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>POCO Score Requirement:</span>
             <span className="ml-2 font-medium">{ruleData.threshold || 75}%</span>
           </div>
-          <div className="col-span-2 mt-1 pt-2 border-t border-blue-200">
-            <span className="text-gray-500 text-xs italic">Example: A document must score ≥ {ruleData.threshold || 75}% to be classified. A score of {Math.min((ruleData.threshold || 75) + 5, 100)}% would pass.</span>
+          <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
+            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: A document must score ≥ {ruleData.threshold || 75}% to be classified. A score of {Math.min((ruleData.threshold || 75) + 5, 100)}% would pass.</span>
           </div>
         </div>
         {(ruleData.threshold || 75) !== 75 && (
-          <div className="mt-2 pt-2 border-t border-blue-300 text-amber-700 flex items-center gap-2">
+          <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
             <span>POCO Score requirement changed from default (75%).</span>
           </div>

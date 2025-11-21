@@ -55,13 +55,16 @@ export default function StaticDataStep({
         {!showInfoBoxes[3] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 3: true }))}
-            className="btn btn-ghost btn-sm text-gray-400 hover:text-gray-600 p-1"
+            className="btn btn-ghost btn-sm p-1"
+            style={{ color: 'var(--app-text-muted)' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--app-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--app-text-muted)'}
           >
             <HelpCircle className="w-4 h-4" />
           </button>
         )}
       </div>
-      <p className="text-gray-600 mb-6">
+      <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
         Configure fixed classification data that applies to all documents matching this rule.
       </p>
 
@@ -86,7 +89,8 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-generated from document"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
 
@@ -96,7 +100,8 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-generated"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
 
@@ -106,14 +111,15 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-generated"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
 
         <div className="form-group">
           <label className="form-label">Correspondent</label>
           {isLoading ? (
-            <div className="form-input bg-gray-100">Loading...</div>
+            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>Loading...</div>
           ) : (
             <select
               value={ruleData.predefinedData?.correspondent || ''}
@@ -126,7 +132,7 @@ export default function StaticDataStep({
               ))}
             </select>
           )}
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
             {correspondents.length > 0 ? `${correspondents.length} correspondents available` : 'No correspondents found. Run sync in Settings.'}
           </p>
         </div>
@@ -134,7 +140,7 @@ export default function StaticDataStep({
         <div className="form-group">
           <label className="form-label">Document Type</label>
           {isLoading ? (
-            <div className="form-input bg-gray-100">Loading...</div>
+            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>Loading...</div>
           ) : (
             <select
               value={ruleData.predefinedData?.documentType || ''}
@@ -147,7 +153,7 @@ export default function StaticDataStep({
               ))}
             </select>
           )}
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
             {documentTypes.length > 0 ? `${documentTypes.length} document types available` : 'No document types found. Run sync in Settings.'}
           </p>
         </div>
@@ -158,7 +164,8 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-generated based on rules"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
 
@@ -192,13 +199,16 @@ export default function StaticDataStep({
           </div>
           {availableTags.length > 0 && (
             <div className="mb-2">
-              <p className="text-xs text-gray-500 mb-1">Suggested tags:</p>
+              <p className="text-xs mb-1" style={{ color: 'var(--app-text-muted)' }}>Suggested tags:</p>
               <div className="flex flex-wrap gap-1">
                 {availableTags.slice(0, 10).map(tag => (
                   <button
                     key={tag}
                     onClick={() => addTag(tag)}
-                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                    className="px-2 py-1 text-xs rounded"
+                    style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--info-border)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--info-bg)'}
                     type="button"
                   >
                     + {tag}
@@ -209,11 +219,12 @@ export default function StaticDataStep({
           )}
           <div className="flex flex-wrap gap-2">
             {(ruleData.predefinedData?.tags || []).map((tag, index) => (
-              <span key={index} className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+              <span key={index} className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>
                 {tag}
                 <button 
                   onClick={() => removeTag(index)}
-                  className="text-gray-500 hover:text-red-500"
+                  className="hover:text-red-500"
+                  style={{ color: 'var(--app-text-muted)' }}
                   type="button"
                 >
                   ×
@@ -250,7 +261,8 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-calculated"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
 
@@ -260,7 +272,8 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder="Auto-populated from OCR"
-            className="form-input bg-gray-100 text-gray-500 cursor-not-allowed"
+            className="form-input cursor-not-allowed"
+            style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
       </div>

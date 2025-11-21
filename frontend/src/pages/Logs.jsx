@@ -85,25 +85,25 @@ export default function Logs() {
     applyFilters();
   }, [applyFilters]);
 
-  const getLevelBadgeClass = (level) => {
-    const classes = {
-      info: 'bg-blue-100 text-blue-800',
-      success: 'bg-green-100 text-green-800',
-      warning: 'bg-yellow-100 text-yellow-800',
-      error: 'bg-red-100 text-red-800'
+  const getLevelBadgeStyle = (level) => {
+    const styles = {
+      info: { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' },
+      success: { backgroundColor: '#dcfce7', color: '#166534' },
+      warning: { backgroundColor: '#fef3c7', color: '#92400e' },
+      error: { backgroundColor: '#fee2e2', color: '#991b1b' }
     };
-    return classes[level] || classes.info;
+    return styles[level] || styles.info;
   };
 
-  const getTypeBadgeClass = (type) => {
-    const classes = {
-      rule_execution: 'bg-purple-100 text-purple-800',
-      classification: 'bg-blue-100 text-blue-800',
-      system: 'bg-gray-100 text-gray-800',
-      error: 'bg-red-100 text-red-800',
-      paperless_api: 'bg-indigo-100 text-indigo-800'
+  const getTypeBadgeStyle = (type) => {
+    const styles = {
+      rule_execution: { backgroundColor: '#f3e8ff', color: '#6b21a8' },
+      classification: { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' },
+      system: { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' },
+      error: { backgroundColor: '#fee2e2', color: '#991b1b' },
+      paperless_api: { backgroundColor: '#e0e7ff', color: '#3730a3' }
     };
-    return classes[type] || classes.system;
+    return styles[type] || styles.system;
   };
 
   const exportLogs = () => {
@@ -143,7 +143,7 @@ export default function Logs() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--info-text)' }}></div>
       </div>
     );
   }
@@ -173,45 +173,57 @@ export default function Logs() {
 
       <div className="card">
         <div className="mb-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
             Showing {filteredLogs.length} of {logs.length} logs
           </p>
         </div>
 
         {filteredLogs.length === 0 ? (
           <div className="text-center py-12">
-            <FileStack className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('logs_no_logs')}</h3>
-            <p className="text-gray-500">Try adjusting your filters</p>
+            <FileStack className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-secondary)' }} />
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('logs_no_logs')}</h3>
+            <p style={{ color: 'var(--app-text-secondary)' }}>Try adjusting your filters</p>
           </div>
         ) : (
           <div className="space-y-3">
             {filteredLogs.map((log) => (
               <div 
                 key={log.id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                className="rounded-lg p-4 transition-colors"
+                style={{ border: '1px solid var(--app-border)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${getLevelBadgeClass(log.level)}`}>
+                      <span 
+                        className="px-2 py-1 rounded text-xs font-semibold"
+                        style={getLevelBadgeStyle(log.level)}
+                      >
                         {t(`logs_level_${log.level}`)}
                       </span>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${getTypeBadgeClass(log.type)}`}>
+                      <span 
+                        className="px-2 py-1 rounded text-xs font-semibold"
+                        style={getTypeBadgeStyle(log.type)}
+                      >
                         {log.type.replace('_', ' ')}
                       </span>
                       {log.source === 'paperless_api' && (
-                        <span className="px-2 py-1 rounded text-xs font-semibold bg-indigo-100 text-indigo-800">
+                        <span 
+                          className="px-2 py-1 rounded text-xs font-semibold"
+                          style={{ backgroundColor: '#e0e7ff', color: '#3730a3' }}
+                        >
                           Paperless API
                         </span>
                       )}
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
                         {formatDate(log.timestamp)}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-gray-900 mb-1">{log.message}</p>
+                    <p className="text-sm font-medium mb-1" style={{ color: 'var(--app-text)' }}>{log.message}</p>
                     {(log.rule_name || log.document_name) && (
-                      <div className="text-xs text-gray-600 space-y-1">
+                      <div className="text-xs space-y-1" style={{ color: 'var(--app-text-secondary)' }}>
                         {log.rule_name && <div>Rule: {log.rule_name}</div>}
                         {log.document_name && <div>Document: {log.document_name}</div>}
                         {log.poco_score !== null && log.poco_score !== undefined && (

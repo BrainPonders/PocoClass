@@ -508,20 +508,20 @@ export default function Layout({ children }) {
               }
             `}</style>
             <div className="min-h-screen flex w-full">
-              <Sidebar className="border-r border-gray-200">
-                <SidebarHeader className="border-b border-gray-200 px-6 py-7">
+              <Sidebar style={{ borderRight: '1px solid var(--app-border)' }}>
+                <SidebarHeader className="px-6 py-7" style={{ borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex items-center gap-3">
                     <img src="/logo.png" alt="PocoClass Logo" className="h-10 w-auto" />
                     <div>
-                      <span className="text-xs font-normal text-gray-500">v2.0</span>
-                      <p className="text-xs text-gray-500">Document Classification</p>
+                      <span className="text-xs font-normal" style={{ color: 'var(--app-text-secondary)' }}>v2.0</span>
+                      <p className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
                     </div>
                   </div>
                 </SidebarHeader>
                 
                 <SidebarContent className="p-2 flex flex-col h-full">
                   <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider px-2 py-2">
+                    <SidebarGroupLabel className="text-xs font-medium uppercase tracking-wider px-2 py-2" style={{ color: 'var(--app-text-secondary)' }}>
                       Navigation
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -532,13 +532,28 @@ export default function Layout({ children }) {
                             return null;
                           }
                           
+                          const isActive = location.pathname === item.url;
                           return (
                             <SidebarMenuItem key={item.title}>
                               <SidebarMenuButton 
                                 asChild 
-                                className={`hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 rounded-lg mb-1 ${
-                                  location.pathname === item.url ? 'bg-blue-50 text-blue-700' : ''
-                                }`}
+                                className="transition-colors duration-200 rounded-lg mb-1"
+                                style={isActive ? { 
+                                  backgroundColor: 'var(--app-primary-light)', 
+                                  color: 'var(--app-primary)' 
+                                } : {}}
+                                onMouseEnter={(e) => {
+                                  if (!isActive) {
+                                    e.currentTarget.style.backgroundColor = 'var(--app-primary-light)';
+                                    e.currentTarget.style.color = 'var(--app-primary)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!isActive) {
+                                    e.currentTarget.style.backgroundColor = '';
+                                    e.currentTarget.style.color = '';
+                                  }
+                                }}
                               >
                                 <GuardedLink to={item.url} className="flex items-center gap-3 px-3 py-2">
                                   <item.icon className="w-4 h-4" />
@@ -554,7 +569,15 @@ export default function Layout({ children }) {
                         <SidebarMenuItem>
                           <SidebarMenuButton 
                             onClick={() => setShowGuide(true)}
-                            className="hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 rounded-lg mb-1 cursor-pointer"
+                            className="transition-colors duration-200 rounded-lg mb-1 cursor-pointer"
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = 'var(--app-primary-light)';
+                              e.currentTarget.style.color = 'var(--app-primary)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '';
+                              e.currentTarget.style.color = '';
+                            }}
                           >
                             <div className="flex items-center gap-3 px-3 py-2 w-full">
                               <BookOpen className="w-4 h-4" />
@@ -568,24 +591,36 @@ export default function Layout({ children }) {
 
                   {currentUser && (
                     <SidebarGroup className="mt-auto">
-                      <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wider px-2 py-2">
+                      <SidebarGroupLabel className="text-xs font-medium uppercase tracking-wider px-2 py-2" style={{ color: 'var(--app-text-secondary)' }}>
                         User
                       </SidebarGroupLabel>
                       <SidebarGroupContent>
                         <SidebarMenu>
                           <SidebarMenuItem>
                             <div className="flex items-center gap-3 px-3 py-2 text-sm">
-                              <UserIcon className="w-4 h-4 text-gray-500" />
+                              <UserIcon className="w-4 h-4" style={{ color: 'var(--app-text-secondary)' }} />
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium text-gray-900 truncate">{currentUser.full_name}</p>
-                                <p className="text-xs text-gray-500 truncate">{currentUser.email}</p>
+                                <p className="font-medium truncate" style={{ color: 'var(--app-text)' }}>{currentUser.full_name}</p>
+                                <p className="text-xs truncate" style={{ color: 'var(--app-text-secondary)' }}>{currentUser.email}</p>
                               </div>
                             </div>
                           </SidebarMenuItem>
                           <SidebarMenuItem>
                             <SidebarMenuButton 
                               onClick={handleLogout}
-                              className="hover:bg-red-50 hover:text-red-700 transition-colors duration-200 rounded-lg cursor-pointer"
+                              className="transition-colors duration-200 rounded-lg cursor-pointer"
+                              style={{ 
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)', 
+                                color: '#dc2626' 
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                                e.currentTarget.style.color = '#b91c1c';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                                e.currentTarget.style.color = '#dc2626';
+                              }}
                             >
                               <div className="flex items-center gap-3 px-3 py-2 w-full">
                                 <LogOut className="w-4 h-4" />
@@ -602,9 +637,13 @@ export default function Layout({ children }) {
 
               <main className="flex-1 flex flex-col">
                 <ValidationBanner />
-                <header className="bg-white border-b border-gray-200 px-6 py-4 md:hidden">
+                <header className="px-6 py-4 md:hidden" style={{ backgroundColor: 'var(--app-surface)', borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex items-center gap-4">
-                    <SidebarTrigger className="hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200" />
+                    <SidebarTrigger 
+                      className="p-2 rounded-lg transition-colors duration-200" 
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = ''}
+                    />
                     <h1 className="text-xl font-semibold">PocoClass</h1>
                   </div>
                 </header>
@@ -619,8 +658,8 @@ export default function Layout({ children }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <div className="modal-header">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">PocoClass Guide</h2>
-                      <p className="text-sm text-gray-500 mt-1">A beginner-friendly guide to document classification</p>
+                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>PocoClass Guide</h2>
+                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>A beginner-friendly guide to document classification</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -634,7 +673,10 @@ export default function Layout({ children }) {
                       </button>
                       <button 
                         onClick={() => setShowGuide(false)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="transition-colors"
+                        style={{ color: 'var(--app-text-muted)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--app-text-secondary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--app-text-muted)'}
                       >
                         <X className="w-6 h-6" />
                       </button>
@@ -1083,8 +1125,8 @@ export default function Layout({ children }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <div className="modal-header">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Quick Reference Guide</h2>
-                      <p className="text-sm text-gray-500 mt-1">TL;DR - Key concepts and workflows</p>
+                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>Quick Reference Guide</h2>
+                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>TL;DR - Key concepts and workflows</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -1098,7 +1140,10 @@ export default function Layout({ children }) {
                       </button>
                       <button 
                         onClick={() => setShowQuickGuide(false)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="transition-colors"
+                        style={{ color: 'var(--app-text-muted)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--app-text-secondary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--app-text-muted)'}
                       >
                         <X className="w-6 h-6" />
                       </button>

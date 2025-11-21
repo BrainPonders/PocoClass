@@ -143,12 +143,13 @@ export default function DataVerificationStep({
           <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
             isStepEnabled() 
               ? 'bg-green-100 text-green-700' 
-              : 'bg-gray-100 text-gray-600'
-          }`}>
+              : ''
+          }`}
+            style={!isStepEnabled() ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : {}}>
             {isStepEnabled() ? 'Enabled' : 'Disabled'}
           </div>
         </div>
-        <p className="text-gray-600 mt-2">
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
           Select which Paperless placeholders must be verified and configure verification multiplier.
           <span className="block mt-2 text-sm italic">
             This step is optional. If you don't enable any fields, it will remain disabled and you can proceed to the next step.
@@ -160,8 +161,8 @@ export default function DataVerificationStep({
         <div>
           <h3 className="font-semibold text-lg mb-4">Select Placeholders for Verification</h3>
           {verificationFields.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-              <p className="text-gray-500">No placeholders enabled. Enable placeholders in Settings &gt; Step 5.</p>
+            <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
+              <p style={{ color: 'var(--app-text-muted)' }}>No placeholders enabled. Enable placeholders in Settings &gt; Step 5.</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -171,25 +172,29 @@ export default function DataVerificationStep({
                 return (
                   <div 
                     key={field.key} 
-                    className={`flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 ${
-                      field.isCustom ? 'bg-purple-50 border-purple-200' : 'border-gray-200'
+                    className={`flex items-center justify-between p-3 border rounded-lg ${
+                      field.isCustom ? 'bg-purple-50 border-purple-200' : ''
                     }`}
+                    style={!field.isCustom ? { borderColor: 'var(--app-border)' } : {}}
+                    onMouseEnter={(e) => !field.isCustom && (e.currentTarget.style.backgroundColor = 'var(--app-surface)')}
+                    onMouseLeave={(e) => !field.isCustom && (e.currentTarget.style.backgroundColor = 'transparent')}
                   >
                     <span className={`text-sm font-medium ${
-                      field.isCustom ? 'text-purple-900' : 'text-gray-900'
-                    }`}>
+                      field.isCustom ? 'text-purple-900' : ''
+                    }`}
+                      style={!field.isCustom ? { color: 'var(--app-text)' } : {}}>
                       {fieldLabel}
                     </span>
                     <button
                       onClick={() => toggleField(field.key)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        isEnabled ? 'bg-blue-600' : 'bg-gray-300'
-                      }`}
+                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
+                      style={{ backgroundColor: isEnabled ? 'var(--app-primary)' : 'var(--app-border)' }}
                     >
                       <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
                           isEnabled ? 'translate-x-6' : 'translate-x-1'
                         }`}
+                        style={{ backgroundColor: 'var(--app-surface)' }}
                       />
                     </button>
                   </div>
