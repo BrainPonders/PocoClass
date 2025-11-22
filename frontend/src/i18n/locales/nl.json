@@ -392,7 +392,7 @@
     "verifying": "Bezig met controleren...",
     "present": "Aanwezig",
     "missing": "Ontbreekt",
-    "optional": "Optioneel"
+    "optional": "Optional"
   },
   "processing": {
     "status": "Verwerkingsstatus",

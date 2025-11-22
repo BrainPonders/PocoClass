@@ -28,11 +28,11 @@
   },
   "filters": {
     "title": "Titel",
-    "tags": "Tags",
+    "tags": "Etiketten",
     "correspondent": "Korrespondent",
     "documentType": "Dokumenttyp",
     "datesAdded": "Hinzugefügt",
-    "limit": "Limit",
+    "limit": "Grenzwert",
     "type": "Typ",
     "level": "Ebene",
     "dates": "Daten",
@@ -65,7 +65,7 @@
     "oldestFirst": "Älteste zuerst"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Instrumententafel",
     "rules": "Regeln",
     "ruleEvaluation": "Regelbewertung",
     "backgroundProcess": "Hintergrundprozess",
@@ -84,7 +84,7 @@
     "sessionExpired": "Sitzung abgelaufen. Bitte melden Sie sich erneut an."
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Instrumententafel",
     "subtitle": "Systemübersicht und Statistiken",
     "welcome": "Willkommen bei PocoClass",
     "systemStatus": "Systemstatus",
@@ -276,7 +276,7 @@
       "syncHistorySubtitle": "Aktuelle Synchronisierungsereignisse von Paperless-ngx",
       "items": "Elemente",
       "correspondents": "Korrespondenten",
-      "tags": "Tags",
+      "tags": "Etiketten",
       "documentTypes": "Dokumenttypen",
       "customFields": "Benutzerdefinierte Felder",
       "users": "Benutzer",
@@ -372,7 +372,7 @@
       "runsToKeep": "Aufzubewahrende Läufe",
       "days": "Tage",
       "daysToKeepDesc": "Verarbeitungsläufe älter als dieser Zeit werden automatisch gelöscht (Standard: 365 Tage / 1 Jahr)",
-      "runs": "Läufe",
+      "runs": "Durchläufe",
       "saveSettings": "Einstellungen speichern"
     },
     "pocoPlus": "Erfolgstag - Wird hinzugefügt, wenn ein Dokument einer Regel entspricht und sowohl POCO- als auch OCR-Schwellwerte erfüllt",
@@ -477,12 +477,12 @@
       "noDetails": "Keine Dokumentdetails verfügbar"
     },
     "days": "Tage",
-    "runs": "Läufe",
+    "runs": "Durchläufe",
     "metadata": {
       "fieldTitle": "Titel",
       "fieldCorrespondent": "Korrespondent",
       "fieldDocType": "Dokumenttyp",
-      "fieldTags": "Tags",
+      "fieldTags": "Etiketten",
       "fieldDate": "Datum",
       "fieldStoragePath": "Speicherpfad",
       "fieldDocumentCategory": "Dokumentkategorie",
@@ -634,7 +634,7 @@
   },
   "table": {
     "title": "Titel",
-    "tags": "Tags",
+    "tags": "Etiketten",
     "correspondent": "Korrespondent",
     "documentType": "Dokumenttyp",
     "documentTypeShort": "Dokumenttyp",
@@ -668,7 +668,7 @@
     "correspondent": "Korrespondent",
     "documentType": "Dokumenttyp",
     "storagePath": "Speicherpfad",
-    "tags": "Tags",
+    "tags": "Etiketten",
     "documentCategory": "Dokumentkategorie",
     "customField": "Benutzerdefiniertes Feld",
     "customFieldLabel": "Benutzerdefiniertes Feld: {name}",
@@ -758,7 +758,7 @@
       "dateCreated": "Erstellungsdatum",
       "correspondent": "Korrespondent",
       "documentType": "Dokumenttyp",
-      "tags": "Tags",
+      "tags": "Etiketten",
       "customFieldLabel": "Benutzerdefiniertes Feld: {name}",
       "targetField": "Zielfeld",
       "beforeAnchor": "Vor Anker",
