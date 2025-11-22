@@ -56,9 +56,11 @@ export function LanguageProvider({ children }) {
 
   useEffect(() => {
     // Load translations when language changes
+    console.log('[LanguageContext] Language changed to:', language, '- loading translations...');
     const loadLanguageData = async () => {
       setLoading(true);
       const trans = await loadTranslations(language);
+      console.log('[LanguageContext] Translations loaded for', language, '- Keys:', Object.keys(trans).length);
       setTranslations(trans);
       setLoading(false);
     };
@@ -67,8 +69,10 @@ export function LanguageProvider({ children }) {
   }, [language]);
 
   const updateLanguage = (newLang) => {
+    console.log('[LanguageContext] updateLanguage called with:', newLang);
     setLanguage(newLang);
     saveSettings({ language: newLang });
+    console.log('[LanguageContext] Language state set to:', newLang);
   };
 
   const saveSettings = (settings) => {
