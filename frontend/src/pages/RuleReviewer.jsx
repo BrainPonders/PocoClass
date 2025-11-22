@@ -403,174 +403,24 @@ export default function RuleReviewer() {
           <CardTitle>{t('ruleEvaluation.testDocuments')}</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Paperless-style Filter Bar */}
-          <PaperlessFilterBar
+          <DocumentListSection
+            documents={documents}
+            isLoading={isLoadingDocuments}
             filters={filters}
-            onFilterChange={setFilters}
-            onResetFilters={handleResetFilters}
+            onFiltersChange={setFilters}
+            selectedDocuments={selectedDocuments}
+            onSelectionChange={toggleDocumentSelection}
+            allSelected={allSelected}
+            onSelectAllChange={toggleSelectAll}
             allTags={allTags}
             allCorrespondents={allCorrespondents}
             allDocTypes={allDocTypes}
-            allCustomFields={[]}
+            showSelectionCheckboxes={true}
+            showOwnerColumn={false}
+            onViewOCR={handleViewOCR}
+            onViewPDF={handleViewPDF}
+            noDocumentsMessage={t('ruleEvaluation.noDocumentsAvailable')}
           />
-          {isLoadingDocuments ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          ) : documents.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('ruleEvaluation.noDocumentsAvailable')}</h3>
-              <p className="text-gray-500">{t('ruleEvaluation.noDocumentsMatch')}</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead style={{ backgroundColor: 'var(--app-surface-light)' }}>
-                  <tr>
-                    <th className="px-2 py-1 text-left">
-                      <button 
-                        onClick={toggleSelectAll} 
-                        className="p-1 rounded"
-                        style={{ 
-                          backgroundColor: 'transparent',
-                          color: 'var(--app-text)'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                      >
-                        {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                      </button>
-                    </th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.title')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.id')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.dateCreated')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.added')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.correspondent')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.documentTypeShort')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.cfDocCategory')}</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.tags')}</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.pocoScore')}</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.view')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
-                  {documents.map((doc) => (
-                    <tr
-                      key={doc.id}
-                      className="cursor-pointer"
-                      style={{
-                        backgroundColor: selectedDocuments.includes(doc.id) ? 'rgba(var(--app-primary-light-rgb), 0.3)' : 'transparent'
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!selectedDocuments.includes(doc.id)) {
-                          e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!selectedDocuments.includes(doc.id)) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                        } else {
-                          e.currentTarget.style.backgroundColor = 'rgba(var(--app-primary-light-rgb), 0.3)';
-                        }
-                      }}
-                      onClick={() => toggleDocumentSelection(doc.id)}
-                    >
-                      <td className="px-2 py-1">
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); toggleDocumentSelection(doc.id); }} 
-                          className="p-1 rounded"
-                          style={{ 
-                            backgroundColor: 'transparent',
-                            color: 'var(--app-text)'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          {selectedDocuments.includes(doc.id) ? <CheckSquare className="w-4 h-4" style={{ color: 'var(--app-primary)' }} /> : <Square className="w-4 h-4" />}
-                        </button>
-                      </td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.id}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.docCategory || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        {doc.tags && doc.tags.length > 0 ? (
-                          doc.tags.map((tag, i) => {
-                            const tagObj = allTags.find(t => t.name === tag);
-                            const tagColor = tagObj?.color || '#1e40af';
-                            
-                            const getTextColor = (hexColor) => {
-                              const r = parseInt(hexColor.slice(1, 3), 16);
-                              const g = parseInt(hexColor.slice(3, 5), 16);
-                              const b = parseInt(hexColor.slice(5, 7), 16);
-                              const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                              return luminance > 0.5 ? '#111827' : '#FFFFFF';
-                            };
-                            
-                            return (
-                              <Badge 
-                                key={i} 
-                                className="text-xs mr-1"
-                                style={{ 
-                                  backgroundColor: tagColor,
-                                  color: getTextColor(tagColor)
-                                }}
-                              >
-                                {tag}
-                              </Badge>
-                            );
-                          })
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 text-center">
-                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
-                          <span className={`text-xs font-semibold ${
-                            doc.pocoScore >= 80 ? 'text-green-600' : 
-                            doc.pocoScore >= 1 ? 'text-amber-600' : 
-                            'text-gray-400'
-                          }`}>
-                            {doc.pocoScore.toFixed(1)}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-1 justify-center">
-                          <button 
-                            className="btn btn-ghost btn-sm p-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewPDF(doc);
-                            }}
-                            title="View PDF"
-                          >
-                            <Eye className="w-3 h-3" />
-                          </button>
-                          <button 
-                            className="btn btn-ghost btn-sm p-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewOCR(doc);
-                            }}
-                            title="View OCR Content"
-                          >
-                            <FileText className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
           {/* Rule Selector and Run Button at bottom */}
           <div className="flex justify-end items-center gap-3 mt-6">
             <select
