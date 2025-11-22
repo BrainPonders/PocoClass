@@ -468,10 +468,20 @@
       "rulesApplied": "Regels toegepast",
       "status": "Status",
       "created": "Gemaakt",
-      "noMatch": "Geen overeenkomst"
+      "noMatch": "Geen overeenkomst",
+      "noDetails": "Geen documentdetails beschikbaar"
     },
     "days": "dagen",
-    "runs": "runs"
+    "runs": "runs",
+    "metadata": {
+      "fieldTitle": "Titel",
+      "fieldCorrespondent": "Correspondent",
+      "fieldDocType": "Documenttype",
+      "fieldTags": "Tags",
+      "fieldDate": "Datum",
+      "fieldStoragePath": "Opslagpad",
+      "fieldDocumentCategory": "Documentcategorie"
+    }
   },
   "scores": {
     "pocoScore": "POCO-score",

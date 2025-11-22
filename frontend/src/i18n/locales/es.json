@@ -468,10 +468,20 @@
       "rulesApplied": "Reglas aplicadas",
       "status": "Estado",
       "created": "Creado",
-      "noMatch": "Sin coincidencia"
+      "noMatch": "Sin coincidencia",
+      "noDetails": "No hay detalles de documento disponibles"
     },
     "days": "días",
-    "runs": "ejecuciones"
+    "runs": "ejecuciones",
+    "metadata": {
+      "fieldTitle": "Título",
+      "fieldCorrespondent": "Remitente",
+      "fieldDocType": "Tipo de documento",
+      "fieldTags": "Etiquetas",
+      "fieldDate": "Fecha",
+      "fieldStoragePath": "Ruta de almacenamiento",
+      "fieldDocumentCategory": "Categoría de documento"
+    }
   },
   "scores": {
     "pocoScore": "Puntuación POCO",

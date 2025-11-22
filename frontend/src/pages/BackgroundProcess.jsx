@@ -828,10 +828,18 @@ export default function BackgroundProcess() {
                                           needsUpdate = true; // Assume old format always needs update
                                         }
                                         
-                                        // Get color based on label (only used if needsUpdate is true)
-                                        const getValueColor = (labelText) => {
-                                          // No Tailwind classes - use inline styles via CSS variables
-                                          return null;
+                                        // Map label to translation key
+                                        const getTranslatedLabel = (labelText) => {
+                                          const labelMap = {
+                                            'Title': t('backgroundProcess.metadata.fieldTitle'),
+                                            'Correspondent': t('backgroundProcess.metadata.fieldCorrespondent'),
+                                            'Doc Type': t('backgroundProcess.metadata.fieldDocType'),
+                                            'Tags': t('backgroundProcess.metadata.fieldTags'),
+                                            'Date': t('backgroundProcess.metadata.fieldDate'),
+                                            'Storage Path': t('backgroundProcess.metadata.fieldStoragePath'),
+                                            'Document Category': t('backgroundProcess.metadata.fieldDocumentCategory')
+                                          };
+                                          return labelMap[labelText] || labelText;
                                         };
                                         
                                         const getValueStyle = (labelText) => {
@@ -843,10 +851,12 @@ export default function BackgroundProcess() {
                                           return { color: 'var(--info-text)' };
                                         };
                                         
+                                        const translatedLabel = getTranslatedLabel(label);
+                                        
                                         return (
                                           <span key={idx}>
                                             {idx > 0 && <span className="mx-1" style={{ color: 'var(--app-text-muted)' }}>|</span>}
-                                            <span style={{ color: 'var(--app-text-muted)' }}>{label}:</span>
+                                            <span style={{ color: 'var(--app-text-muted)' }}>{translatedLabel}:</span>
                                             <span style={{ color: 'var(--app-text-muted)' }}> </span>
                                             <span className={needsUpdate ? 'font-medium' : ''} style={needsUpdate ? { ...getValueStyle(label) } : { color: 'var(--app-text-muted)' }}>
                                               {value}
@@ -868,7 +878,7 @@ export default function BackgroundProcess() {
                       </div>
                     ) : (
                       <div className="text-sm text-center py-4" style={{ color: 'var(--app-text-muted)' }}>
-                        No document details available
+                        {t('backgroundProcess.table.noDetails')}
                       </div>
                     )}
                   </AccordionContent>

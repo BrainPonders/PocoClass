@@ -468,10 +468,20 @@
       "rulesApplied": "Regeln angewendet",
       "status": "Status",
       "created": "Erstellt",
-      "noMatch": "Keine Übereinstimmung"
+      "noMatch": "Keine Übereinstimmung",
+      "noDetails": "Keine Dokumentdetails verfügbar"
     },
     "days": "Tage",
-    "runs": "Läufe"
+    "runs": "Läufe",
+    "metadata": {
+      "fieldTitle": "Titel",
+      "fieldCorrespondent": "Korrespondent",
+      "fieldDocType": "Dokumenttyp",
+      "fieldTags": "Tags",
+      "fieldDate": "Datum",
+      "fieldStoragePath": "Speicherpfad",
+      "fieldDocumentCategory": "Dokumentkategorie"
+    }
   },
   "scores": {
     "pocoScore": "POCO-Score",
