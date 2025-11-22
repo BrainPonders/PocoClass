@@ -527,7 +527,7 @@ function LayoutContent({ children }) {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2" style={{ marginLeft: '40px', marginTop: '-2px' }}>
+                    <div className="flex items-center gap-2" style={{ marginLeft: '41px', marginTop: '-2px' }}>
                       <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
                     </div>
                   </div>
