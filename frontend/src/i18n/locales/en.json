@@ -386,13 +386,13 @@
     "allRequiredDataPresent": "All required data is present",
     "ensureAllRequired": "Ensure all required items are configured",
     "allMandatoryConfigured": "All mandatory items are configured",
-    "newTag": "New Tag",
-    "pocoPlus": "POCO+",
-    "pocoMinus": "POCO-",
+    "newTag": "Discovery tag - Documents with this tag will be automatically processed by background processing",
+    "pocoPlus": "Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds",
+    "pocoMinus": "Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds",
     "pocoScoreDesc": "Actionable confidence score combining OCR, filename, and metadata verification",
     "pocoOcrDesc": "OCR pattern matching transparency score",
     "pocoOcrTransparencyField": "POCO OCR Transparency Field",
-    "pocoOcrTransparencyDesc": "Optional field to store the OCR transparency score"
+    "pocoOcrTransparencyDesc": "Optional field to store the OCR pattern matching transparency score. This score shows how well the document matches the OCR patterns (0-100%). Helps verify confidence in OCR-based classification."
   },
   "processing": {
     "status": "Processing Status",
