@@ -22,7 +22,25 @@ import requests
 from functools import wraps
 
 app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
-CORS(app)
+
+# Configure CORS with security restrictions
+# Allow Replit domain and localhost for development
+replit_domain = os.getenv('REPLIT_DEV_DOMAIN', '')
+allowed_origins = [
+    f'https://{replit_domain}',
+    'http://localhost:5173',  # Vite dev server
+    'http://127.0.0.1:5173',
+]
+
+# Filter out empty origins (when REPLIT_DEV_DOMAIN is not set)
+allowed_origins = [origin for origin in allowed_origins if origin and not origin.endswith('://')]
+
+CORS(app, 
+     origins=allowed_origins,
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization'],
+     supports_credentials=True,
+     max_age=3600)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
