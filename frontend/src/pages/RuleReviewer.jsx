@@ -378,7 +378,7 @@ export default function RuleReviewer() {
   return (
     <PageLayout 
       title={t('nav.ruleEvaluation')}
-      subtitle="Test and evaluate document classification rules"
+      subtitle={t('ruleEvaluation.subtitle')}
     >
 
       {/* Info Section */}
@@ -388,8 +388,8 @@ export default function RuleReviewer() {
             <div className="flex items-start gap-3">
               <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
               <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                <p className="font-medium mb-1" style={{ color: 'var(--info-text)' }}>What is this section for?</p>
-                <p>Test how your classification rules perform on documents. Select a rule, pick documents to test, and click Run to see detailed results showing POCO scores, pattern matches, and extracted metadata. Use this to fine-tune your rules before applying them in production.</p>
+                <p className="font-medium mb-1" style={{ color: 'var(--info-text)' }}>{t('ruleEvaluation.whatIsThisFor')}</p>
+                <p>{t('ruleEvaluation.description')}</p>
               </div>
             </div>
           </CardContent>
@@ -399,7 +399,7 @@ export default function RuleReviewer() {
       {/* Document Browser */}
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Test Documents</CardTitle>
+          <CardTitle>{t('ruleEvaluation.testDocuments')}</CardTitle>
         </CardHeader>
         <CardContent>
           {/* Paperless-style Filter Bar */}
@@ -419,8 +419,8 @@ export default function RuleReviewer() {
           ) : documents.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Documents Available</h3>
-              <p className="text-gray-500">No documents match the selected filters.</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('ruleEvaluation.noDocumentsAvailable')}</h3>
+              <p className="text-gray-500">{t('ruleEvaluation.noDocumentsMatch')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -441,16 +441,16 @@ export default function RuleReviewer() {
                         {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                       </button>
                     </th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>POCO Score</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>View</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.title')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.id')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.dateCreated')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.added')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.correspondent')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.documentTypeShort')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.cfDocCategory')}</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.tags')}</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.pocoScore')}</th>
+                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }}>{t('table.view')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
@@ -577,7 +577,7 @@ export default function RuleReviewer() {
               onChange={(e) => setSelectedRule(e.target.value)}
               className="form-select w-64 h-10"
             >
-              <option value="">Select a rule...</option>
+              <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (
                 <option key={rule.id} value={rule.id}>{rule.ruleName}</option>
               ))}

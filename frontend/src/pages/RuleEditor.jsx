@@ -585,9 +585,9 @@ export default function RuleEditor() {
                       loading={isSaving}
                       disabled={!canFinish()}
                       className={`btn btn-primary ${!canFinish() ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      loadingText={t('common_finish')}
+                      loadingText={t('common.finish')}
                     >
-                      {t('common_finish')}
+                      {t('common.finish')}
                     </LoadingButton>
                   ) : (
                     <button 

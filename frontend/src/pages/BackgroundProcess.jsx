@@ -511,7 +511,7 @@ export default function BackgroundProcess() {
   return (
     <PageLayout 
       title={t('nav.backgroundProcess')}
-      subtitle="Monitor and manage automatic document classification"
+      subtitle={t('backgroundProcess.subtitle')}
       actions={
         <div className="flex flex-col items-end">
           <Button
@@ -520,9 +520,9 @@ export default function BackgroundProcess() {
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
           >
             <RefreshCw className="w-4 h-4" />
-            {loading ? 'Triggering...' : t('processing.trigger') + ' Now'}
+            {loading ? t('backgroundProcess.triggering') : t('processing.trigger') + ' Now'}
           </Button>
-          <p className="text-xs mt-1" style={{ color: 'var(--app-text-secondary)' }}>Auto-discover & process documents tagged "NEW"</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--app-text-secondary)' }}>{t('backgroundProcess.autoDiscover')}</p>
         </div>
       }
     >
@@ -532,10 +532,10 @@ export default function BackgroundProcess() {
         <div className="flex items-start gap-3">
           <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
           <div className="text-sm" style={{ color: 'var(--info-text)' }}>
-            <p className="font-medium mb-2">What is this section for?</p>
-            <p className="mb-3">Monitor and control document processing in Paperless. Use Dry Run to test rules without making changes, or Run to apply active rules to selected documents. Processing History shows all execution details with per-document results.</p>
+            <p className="font-medium mb-2">{t('backgroundProcess.whatIsThisFor')}</p>
+            <p className="mb-3">{t('backgroundProcess.description')}</p>
             <p className="text-xs">
-              <strong>Trigger Now:</strong> Automatically discovers and processes all documents tagged "NEW" (operates independently of filters below).
+              <strong>{t('backgroundProcess.triggerNow')}</strong> {t('backgroundProcess.triggerNowDesc')}
             </p>
           </div>
         </div>
@@ -553,7 +553,7 @@ export default function BackgroundProcess() {
             {processingStatus ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Status:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('processing.status')}:</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     processingStatus.enabled 
                       ? 'bg-green-100 text-green-800' : ''
@@ -563,23 +563,23 @@ export default function BackgroundProcess() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Processing:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('processing.processing')}:</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                     processingStatus.is_processing 
                       ? '' : ''
                   }`}
                   style={processingStatus.is_processing ? { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>
-                    {processingStatus.is_processing ? 'Active' : 'Idle'}
+                    {processingStatus.is_processing ? t('processing.active') : t('processing.idle')}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Last Run:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('processing.lastRun')}:</span>
                   <span className="text-sm" style={{ color: 'var(--app-text)' }}>
-                    {processingStatus.last_run ? formatDate(processingStatus.last_run) : 'Never'}
+                    {processingStatus.last_run ? formatDate(processingStatus.last_run) : t('processing.never')}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Documents Processed:</span>
+                  <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('processing.documentsProcessed')}:</span>
                   <span className="text-sm font-semibold" style={{ color: 'var(--app-text)' }}>
                     {processingStatus.documents_processed || 0}
                   </span>
@@ -588,7 +588,7 @@ export default function BackgroundProcess() {
             ) : (
               <div className="flex items-center justify-center py-8" style={{ color: 'var(--app-text-muted)' }}>
                 <RefreshCw className="w-5 h-5 animate-spin mr-2" />
-                Loading status...
+                {t('processing.loadingStatus')}
               </div>
             )}
           </CardContent>
@@ -598,25 +598,25 @@ export default function BackgroundProcess() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="w-5 h-5" />
-              Quick Stats
+              {t('backgroundProcess.quickStats')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Total Runs:</span>
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('backgroundProcess.totalRuns')}:</span>
                 <span className="text-sm font-semibold" style={{ color: 'var(--app-text)' }}>
                   {processingHistory.length}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Successful:</span>
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('backgroundProcess.successful')}:</span>
                 <span className="text-sm font-semibold text-green-600">
                   {processingHistory.filter(h => h.status === 'success').length}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>Failed:</span>
+                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('backgroundProcess.failed')}:</span>
                 <span className="text-sm font-semibold text-red-600">
                   {processingHistory.filter(h => h.status === 'error').length}
                 </span>
@@ -628,11 +628,11 @@ export default function BackgroundProcess() {
 
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle>Manual Processing</CardTitle>
+          <CardTitle>{t('backgroundProcess.manualProcessing')}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-            Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.
+            {t('backgroundProcess.testRulesAgainst')}
           </p>
           
           <PaperlessFilterBar
@@ -648,7 +648,7 @@ export default function BackgroundProcess() {
           {/* Matching Documents List */}
           <div className="mt-6">
             <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>
-              Matching Documents ({matchingDocuments.length})
+              {t('backgroundProcess.matchingDocuments')} ({matchingDocuments.length})
             </h3>
             {loadingDocuments ? (
               <div className="flex items-center justify-center py-8">
@@ -657,7 +657,7 @@ export default function BackgroundProcess() {
             ) : matchingDocuments.length === 0 ? (
               <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
                 <AlertCircle className="w-12 h-12 mx-auto mb-2" style={{ color: 'var(--app-text-muted)' }} />
-                <p className="text-sm" style={{ color: 'var(--app-text-muted)' }}>No documents match the current filter criteria</p>
+                <p className="text-sm" style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.noDocumentsMatch')}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -669,17 +669,17 @@ export default function BackgroundProcess() {
                           {allSelected ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                         </button>
                       </th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Title</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>ID</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Date Created</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Added</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Correspondent</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Document Type</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>CF: Doc Category</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Tags</th>
-                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>POCO Score</th>
-                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Owner</th>
-                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>View</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.title')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.id')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.dateCreated')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.added')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.correspondent')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.documentTypeShort')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.cfDocCategory')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.tags')}</th>
+                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.pocoScore')}</th>
+                      <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.owner')}</th>
+                      <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.view')}</th>
                     </tr>
                   </thead>
                   <tbody style={{ backgroundColor: 'var(--app-surface)' }}>

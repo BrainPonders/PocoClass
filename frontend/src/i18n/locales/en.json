@@ -16,6 +16,7 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
+    "finish": "Finish",
     "submit": "Submit",
     "reset": "Reset"
   },
@@ -121,7 +122,25 @@
     "staticClassificationDataInfoText": "This is constant data you want to assign to a document once it's recognized. Greyed out fields are automatically populated by the system.",
     "staticMetadataInfoTitle": "Static Metadata",
     "staticMetadataInfoText": "This is constant data you want to assign to a document once it's recognized. For example, every statement of a certain type will always have the same correspondent assigned.",
-    "reviewBeforeSaving": "Review your rule configuration before saving"
+    "reviewBeforeSaving": "Review your rule configuration before saving",
+    "step2": {
+      "logicGroup": "Logic Group",
+      "searchLines": "Search lines",
+      "to": "to",
+      "first": "First",
+      "last": "Last",
+      "matchAnyOR": "Match any (OR)",
+      "matchAllAND": "Match all (AND)",
+      "mandatory": "Mandatory",
+      "pattern": "Pattern",
+      "addPattern": "Add Pattern",
+      "enterPattern": "Enter text or regex pattern or use regex generator",
+      "tooltipLogicGroup": "A logic group contains one or more patterns. Use 'Match any (OR)' when any pattern can identify the document. Use 'Match all (AND)' when all patterns must be present. Check 'Mandatory' to make this group required for classification - if mandatory groups don't match, the rule fails regardless of POCO score.",
+      "tooltipPattern": "Enter a simple text string to search for, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching.",
+      "deleteLogicGroup": "Delete logic group",
+      "removePattern": "Remove pattern",
+      "openPatternHelper": "Open Pattern Helper"
+    }
   },
   "ocr_identifiers_description": "Define patterns that identify this document type in OCR text",
   "ocr_identifiers_warning": "⚠️ Warning: You have filled only {filledGroups} of 3 required logic groups. Please add patterns to at least 3 logic groups for reliable classification.",
@@ -241,7 +260,15 @@
     "trigger": "Trigger Processing",
     "dryRun": "Dry Run",
     "history": "Processing History",
-    "noHistory": "No processing history available"
+    "noHistory": "No processing history available",
+    "active": "Active",
+    "idle": "Idle",
+    "never": "Never",
+    "processing": "Processing",
+    "lastRun": "Last Run",
+    "documentsProcessed": "Documents Processed",
+    "loadingStatus": "Loading status...",
+    "triggering": "Triggering..."
   },
   "logs": {
     "title": "Logs",
@@ -249,6 +276,32 @@
     "message": "Message",
     "timestamp": "Timestamp",
     "noLogs": "No logs found"
+  },
+  "ruleEvaluation": {
+    "subtitle": "Test and evaluate document classification rules",
+    "whatIsThisFor": "What is this section for?",
+    "description": "Test how your classification rules perform on documents. Select a rule, pick documents to test, and click Run to see detailed results showing POCO scores, pattern matches, and extracted metadata. Use this to fine-tune your rules before applying them in production.",
+    "testDocuments": "Test Documents",
+    "selectRule": "Select a rule...",
+    "noDocumentsAvailable": "No Documents Available",
+    "noDocumentsMatch": "No documents match the selected filters."
+  },
+  "backgroundProcess": {
+    "subtitle": "Monitor and manage automatic document classification",
+    "triggering": "Triggering...",
+    "autoDiscover": "Auto-discover & process documents tagged \"NEW\"",
+    "whatIsThisFor": "What is this section for?",
+    "description": "Monitor and control document processing in Paperless. Use Dry Run to test rules without making changes, or Run to apply active rules to selected documents. Processing History shows all execution details with per-document results.",
+    "triggerNow": "Trigger Now:",
+    "triggerNowDesc": "Automatically discovers and processes all documents tagged \"NEW\" (operates independently of filters below).",
+    "quickStats": "Quick Stats",
+    "totalRuns": "Total Runs",
+    "successful": "Successful",
+    "failed": "Failed",
+    "manualProcessing": "Manual Processing",
+    "testRulesAgainst": "Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.",
+    "matchingDocuments": "Matching Documents",
+    "noDocumentsMatch": "No documents match the current filter criteria"
   },
   "scores": {
     "pocoScore": "POCO Score",
@@ -392,11 +445,19 @@
     "tags": "Tags",
     "correspondent": "Correspondent",
     "documentType": "Document type",
+    "documentTypeShort": "Document Type",
     "dateAdded": "Date Added",
+    "dateCreated": "Date Created",
+    "added": "Added",
     "created": "Created",
     "actions": "Actions",
     "status": "Status",
-    "sourceDocument": "Source Document"
+    "sourceDocument": "Source Document",
+    "id": "ID",
+    "cfDocCategory": "CF: Doc Category",
+    "pocoScore": "POCO Score",
+    "view": "View",
+    "owner": "Owner"
   },
   "filters": {
     "allStatus": "All Status",

@@ -16,6 +16,7 @@
     "back": "Atrás",
     "next": "Siguiente",
     "previous": "Anterior",
+    "finish": "Finalizar",
     "submit": "Enviar",
     "reset": "Restablecer"
   },
@@ -148,7 +149,25 @@
     "staticClassificationDataInfoText": "Estos son datos constantes que desea asignar a un documento una vez que se reconoce. Los campos en gris son completados automáticamente por el sistema.",
     "staticMetadataInfoTitle": "Metadatos Estáticos",
     "staticMetadataInfoText": "Estos son datos constantes que desea asignar a un documento una vez que se reconoce. Por ejemplo, cada estado de cierto tipo siempre tendrá el mismo corresponsal asignado.",
-    "reviewBeforeSaving": "Revise la configuración de su regla antes de guardar"
+    "reviewBeforeSaving": "Revise la configuración de su regla antes de guardar",
+    "step2": {
+      "logicGroup": "Grupo Lógico",
+      "searchLines": "Buscar líneas",
+      "to": "a",
+      "first": "Primero",
+      "last": "Último",
+      "matchAnyOR": "Coincidir cualquiera (O)",
+      "matchAllAND": "Coincidir todos (Y)",
+      "mandatory": "Obligatorio",
+      "pattern": "Patrón",
+      "addPattern": "Añadir Patrón",
+      "enterPattern": "Ingrese texto o patrón regex o use el generador de regex",
+      "tooltipLogicGroup": "Un grupo lógico contiene uno o más patrones. Use 'Coincidir cualquiera (O)' cuando cualquier patrón puede identificar el documento. Use 'Coincidir todos (Y)' cuando todos los patrones deben estar presentes. Marque 'Obligatorio' para hacer este grupo requerido para la clasificación - si los grupos obligatorios no coinciden, la regla falla independientemente de la puntuación POCO.",
+      "tooltipPattern": "Ingrese una cadena de texto simple para buscar, o use el Asistente de Patrones para construir patrones flexibles, o escriba su propio regex para coincidencias avanzadas.",
+      "deleteLogicGroup": "Eliminar grupo lógico",
+      "removePattern": "Eliminar patrón",
+      "openPatternHelper": "Abrir Asistente de Patrones"
+    }
   },
   "ocr_identifiers_description": "Define patrones que identifican este tipo de documento en el texto OCR",
   "ocr_identifiers_warning": "⚠️ Advertencia: Ha llenado solo {filledGroups} de 3 grupos lógicos requeridos. Agregue patrones a al menos 3 grupos lógicos para una clasificación confiable.",
@@ -270,7 +289,15 @@
     "trigger": "Activar Procesamiento",
     "dryRun": "Ejecución de Prueba",
     "history": "Historial de Procesamiento",
-    "noHistory": "No hay historial de procesamiento disponible"
+    "noHistory": "No hay historial de procesamiento disponible",
+    "active": "Activo",
+    "idle": "Inactivo",
+    "never": "Nunca",
+    "processing": "Procesando",
+    "lastRun": "Última Ejecución",
+    "documentsProcessed": "Documentos Procesados",
+    "loadingStatus": "Cargando estado...",
+    "triggering": "Activando..."
   },
   "logs": {
     "title": "Registros",
@@ -278,6 +305,32 @@
     "message": "Mensaje",
     "timestamp": "Marca de Tiempo",
     "noLogs": "No se encontraron registros"
+  },
+  "ruleEvaluation": {
+    "subtitle": "Pruebe y evalúe reglas de clasificación de documentos",
+    "whatIsThisFor": "¿Para qué sirve esta sección?",
+    "description": "Pruebe cómo se desempeñan sus reglas de clasificación en documentos. Seleccione una regla, elija documentos para probar y haga clic en Ejecutar para ver resultados detallados que muestran puntuaciones POCO, coincidencias de patrones y metadatos extraídos. Úselo para ajustar sus reglas antes de aplicarlas en producción.",
+    "testDocuments": "Documentos de Prueba",
+    "selectRule": "Seleccione una regla...",
+    "noDocumentsAvailable": "No Hay Documentos Disponibles",
+    "noDocumentsMatch": "Ningún documento coincide con los filtros seleccionados."
+  },
+  "backgroundProcess": {
+    "subtitle": "Monitoree y administre la clasificación automática de documentos",
+    "triggering": "Activando...",
+    "autoDiscover": "Descubrir y procesar automáticamente documentos etiquetados como \"NUEVO\"",
+    "whatIsThisFor": "¿Para qué sirve esta sección?",
+    "description": "Monitoree y controle el procesamiento de documentos en Paperless. Use Ejecución de Prueba para probar reglas sin hacer cambios, o Ejecutar para aplicar reglas activas a documentos seleccionados. El Historial de Procesamiento muestra todos los detalles de ejecución con resultados por documento.",
+    "triggerNow": "Activar Ahora:",
+    "triggerNowDesc": "Descubre y procesa automáticamente todos los documentos etiquetados como \"NUEVO\" (opera independientemente de los filtros a continuación).",
+    "quickStats": "Estadísticas Rápidas",
+    "totalRuns": "Ejecuciones Totales",
+    "successful": "Exitosas",
+    "failed": "Fallidas",
+    "manualProcessing": "Procesamiento Manual",
+    "testRulesAgainst": "Pruebe reglas contra documentos filtrados. Seleccione documentos a continuación usando la barra de filtros, luego elija su modo de prueba.",
+    "matchingDocuments": "Documentos Coincidentes",
+    "noDocumentsMatch": "Ningún documento coincide con los criterios de filtro actuales"
   },
   "scores": {
     "pocoScore": "Puntuación POCO",
@@ -421,11 +474,19 @@
     "tags": "Etiquetas",
     "correspondent": "Corresponsal",
     "documentType": "Tipo de documento",
+    "documentTypeShort": "Tipo de Documento",
     "dateAdded": "Fecha Agregada",
+    "dateCreated": "Fecha de Creación",
+    "added": "Agregado",
     "created": "Creado",
     "actions": "Acciones",
     "status": "Estado",
-    "sourceDocument": "Documento Fuente"
+    "sourceDocument": "Documento Fuente",
+    "id": "ID",
+    "cfDocCategory": "CP: Categoría Doc",
+    "pocoScore": "Puntuación POCO",
+    "view": "Ver",
+    "owner": "Propietario"
   },
   "filters": {
     "allStatus": "Todos los Estados",
