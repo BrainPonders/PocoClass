@@ -1056,7 +1056,7 @@ export default function Settings() {
                   <div>
                     <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.title')}</h2>
                     <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                      Manage Paperless connection, users, and data synchronization
+                      {t('settings.system.subtitle')}
                     </p>
                   </div>
 
@@ -1069,7 +1069,7 @@ export default function Settings() {
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>
-                          {syncing ? 'Syncing data from Paperless-ngx...' : 'Loading settings from Paperless-ngx...'}
+                          {syncing ? t('settings.system.syncingData') : t('settings.appearance.loadingSettings')}
                         </span>
                       </div>
                     </div>
@@ -1119,7 +1119,7 @@ export default function Settings() {
                         </div>
                         {!isAdmin && (
                           <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            Only administrators can update the Paperless URL
+                            {t('settings.system.onlyAdminCanUpdate')}
                           </p>
                         )}
                       </div>
@@ -1130,7 +1130,7 @@ export default function Settings() {
                   <div className="border-t pt-6">
                     <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.sessionSettings')}</h3>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      Configure session timeout and automatic logout behavior
+                      {t('settings.system.sessionSettingsSubtitle')}
                     </p>
                     
                     <div>
@@ -1156,7 +1156,7 @@ export default function Settings() {
                         <label htmlFor="session-timeout" className="text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.system.sessionTimeout')}</label>
                       </div>
                       <div className="p-3 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-                        <strong>Background Processing Protection:</strong> The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.
+                        <strong>{t('settings.system.bgProtectionTitle')}</strong> {t('settings.system.bgProtectionDesc')}
                       </div>
                     </div>
                   </div>
@@ -1167,7 +1167,7 @@ export default function Settings() {
                       <div>
                         <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.paperlessSync')}</h3>
                         <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          Sync and view cached data from Paperless-ngx
+                          {t('settings.system.syncSubtitle')}
                         </p>
                       </div>
                       <Button
@@ -1211,7 +1211,7 @@ export default function Settings() {
                   <div className="border-t pt-6">
                     <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.userManagement')}</h3>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      All Paperless users with their PocoClass activation status
+                      {t('settings.system.userManagementSubtitle')}
                     </p>
                     
                     {users.length > 0 ? (
@@ -1339,7 +1339,7 @@ export default function Settings() {
                     <div className="border-t pt-6">
                       <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.syncHistory')}</h3>
                       <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                        Recent synchronization events from Paperless-ngx
+                        {t('settings.system.syncHistorySubtitle')}
                       </p>
                       <div className="space-y-2">
                         {syncHistory.map((entry, idx) => (
@@ -1349,8 +1349,8 @@ export default function Settings() {
                             ) : (
                               <XCircle className="w-4 h-4 text-red-600" />
                             )}
-                            <span className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{entry.entity_type}</span>
-                            <span style={{ color: 'var(--app-text-muted)' }}>{entry.items_synced} items</span>
+                            <span className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{t(`settings.system.${entry.entity_type}`)}</span>
+                            <span style={{ color: 'var(--app-text-muted)' }}>{entry.items_synced} {t('settings.system.items')}</span>
                             <span className="ml-auto" style={{ color: 'var(--app-text-muted)' }}>
                               {new Date(entry.synced_at).toLocaleString()}
                             </span>
