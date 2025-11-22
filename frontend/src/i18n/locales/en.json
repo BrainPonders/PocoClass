@@ -113,6 +113,7 @@
     "title": "Rules",
     "subtitle": "Manage your document classification rules",
     "createNew": "Create New Rule",
+    "newRule": "+ New Rule",
     "editRule": "Edit Rule",
     "deleteRule": "Delete Rule",
     "enableRule": "Enable Rule",
