@@ -808,7 +808,7 @@ export default function Rules() {
         renderCustomActions={(doc) => (
           <div className="flex items-center justify-center">
             <button 
-              className="btn btn-primary btn-sm py-1"
+              className="btn btn-primary btn-xs"
               onClick={(e) => {
                 e.stopPropagation();
                 handleCreateRuleForDocument(doc);
