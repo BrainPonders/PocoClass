@@ -378,7 +378,13 @@
     "optionalFeatures": "Optionele functies",
     "pocoOcrTransparencyField": "POCO OCR-transparantiescorefield",
     "pocoOcrTransparencyDesc": "Schakel het aangepaste POCO OCR-veld in Paperless-ngx in. Dit veld slaat de OCR-transparantiescore apart op van de hoofdscore POCO. Niet vereist voor PocoClass om te werken – dit biedt extra zichtbaarheid voor geavanceerde gebruikers die de kwaliteit van OCR-patroonherkenning willen zien.",
-    "pocoOcrDesc": "Slaat de OCR-betrouwbaarheidsscore (0-100%) op. Optioneel voor transparantie."
+    "pocoOcrDesc": "Slaat de OCR-betrouwbaarheidsscore (0-100%) op. Optioneel voor transparantie.",
+    "newTag": "Identificeert onverwerkte documenten voor achtergrondverwerking",
+    "pocoScoreDesc": "Slaat de algemene POCO-score (0-100%) op",
+    "verifying": "Bezig met controleren...",
+    "present": "Aanwezig",
+    "missing": "Ontbreekt",
+    "optional": "Optioneel"
   },
   "processing": {
     "status": "Verwerkingsstatus",

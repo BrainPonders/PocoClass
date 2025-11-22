@@ -378,7 +378,13 @@
     "optionalFeatures": "Optionale Funktionen",
     "pocoOcrTransparencyField": "POCO OCR-Transparenzbewertungsfeld",
     "pocoOcrTransparencyDesc": "Aktivieren Sie das benutzerdefinierte POCO OCR-Feld in Paperless-ngx. Dieses Feld speichert die OCR-Transparenzbewertung separat vom Haupt-POCO-Score. Nicht erforderlich für die Funktion von PocoClass – dies bietet zusätzliche Transparenz für fortgeschrittene Benutzer, die die Qualität der OCR-Mustererkennung sehen möchten.",
-    "pocoOcrDesc": "Speichert den OCR-Zuverlässigkeitsscore (0-100%). Optional zur Transparenz."
+    "pocoOcrDesc": "Speichert den OCR-Zuverlässigkeitsscore (0-100%). Optional zur Transparenz.",
+    "newTag": "Identifiziert unverarbeitete Dokumente für die Hintergrundverarbeitung",
+    "pocoScoreDesc": "Speichert die Gesamt-POCO-Punktzahl (0-100%)",
+    "verifying": "Wird überprüft...",
+    "present": "Vorhanden",
+    "missing": "Fehlend",
+    "optional": "Optional"
   },
   "processing": {
     "status": "Verarbeitungsstatus",

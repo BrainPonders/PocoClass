@@ -376,7 +376,15 @@
     "optionalFeatures": "Fonctionnalités optionnelles",
     "pocoOcrTransparencyField": "Champ de score de transparence POCO OCR",
     "pocoOcrTransparencyDesc": "Activez le champ personnalisé POCO OCR dans Paperless-ngx. Ce champ stocke le score de transparence OCR séparément du score POCO principal. Non requis pour que PocoClass fonctionne - cela fournit une visibilité supplémentaire pour les utilisateurs avancés qui veulent voir la qualité de la correspondance de motif OCR.",
-    "pocoOcrDesc": "Stocke le score de confiance OCR (0-100%). Optionnel pour la transparence."
+    "pocoOcrDesc": "Stocke le score de confiance OCR (0-100%). Optionnel pour la transparence.",
+    "pocoPlus": "Appliqué aux documents qui correspondent à une règle avec succès",
+    "pocoMinus": "Appliqué aux documents qui ne correspondent à aucune règle",
+    "newTag": "Identifie les documents non traités pour le traitement en arrière-plan",
+    "pocoScoreDesc": "Stocke le score POCO global (0-100%)",
+    "verifying": "Vérification en cours...",
+    "present": "Présent",
+    "missing": "Manquant",
+    "optional": "Optionnel"
   },
   "processing": {
     "status": "État du traitement",

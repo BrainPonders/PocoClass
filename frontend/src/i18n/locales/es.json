@@ -378,7 +378,13 @@
     "optionalFeatures": "Características opcionales",
     "pocoOcrTransparencyField": "Campo de puntuación de transparencia POCO OCR",
     "pocoOcrTransparencyDesc": "Habilite el campo personalizado POCO OCR en Paperless-ngx. Este campo almacena la puntuación de transparencia OCR por separado de la puntuación POCO principal. No es necesario para que PocoClass funcione, proporciona visibilidad adicional para usuarios avanzados que desean ver la calidad de coincidencia de patrones OCR.",
-    "pocoOcrDesc": "Almacena la puntuación de confianza OCR (0-100%). Opcional para transparencia."
+    "pocoOcrDesc": "Almacena la puntuación de confianza OCR (0-100%). Opcional para transparencia.",
+    "newTag": "Identifica documentos no procesados para procesamiento en segundo plano",
+    "pocoScoreDesc": "Almacena la puntuación general de POCO (0-100%)",
+    "verifying": "Verificando...",
+    "present": "Presente",
+    "missing": "Faltante",
+    "optional": "Opcional"
   },
   "processing": {
     "status": "Estado de procesamiento",

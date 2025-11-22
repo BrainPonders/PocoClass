@@ -1891,7 +1891,7 @@ export default function Settings() {
                                 : { backgroundColor: '#fee2e2', color: '#991b1b' }
                           }
                         >
-                          {loadingValidation ? t('settings.validation.verifying') : validationData?.tags?.poco_plus ? t('settings.validation.present') : t('settings.validation.missing')}
+                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.poco_plus ? t('settings.present') : t('settings.missing')}
                         </div>
                       </div>
 
@@ -1920,7 +1920,7 @@ export default function Settings() {
                                 : { backgroundColor: '#fee2e2', color: '#991b1b' }
                           }
                         >
-                          {loadingValidation ? 'Verifying...' : validationData?.tags?.poco_minus ? 'Present' : 'Missing'}
+                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.poco_minus ? t('settings.present') : t('settings.missing')}
                         </div>
                       </div>
 
@@ -1937,7 +1937,7 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Identifies unprocessed documents for background processing</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.newTag')}</div>
                         </div>
                         <div 
                           className="text-xs font-medium px-3 py-1 rounded"
@@ -1949,7 +1949,7 @@ export default function Settings() {
                                 : { backgroundColor: '#fee2e2', color: '#991b1b' }
                           }
                         >
-                          {loadingValidation ? 'Verifying...' : validationData?.tags?.new ? 'Present' : 'Missing'}
+                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.new ? t('settings.present') : t('settings.missing')}
                         </div>
                       </div>
                     </div>
@@ -1971,7 +1971,7 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO Score</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the overall POCO score (0-100%)</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoScoreDesc')}</div>
                         </div>
                         <div 
                           className="text-xs font-medium px-3 py-1 rounded"
@@ -1983,7 +1983,7 @@ export default function Settings() {
                                 : { backgroundColor: '#fee2e2', color: '#991b1b' }
                           }
                         >
-                          {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_score ? 'Present' : 'Missing'}
+                          {loadingValidation ? t('settings.verifying') : validationData?.fields?.poco_score ? t('settings.present') : t('settings.missing')}
                         </div>
                       </div>
                     </div>
@@ -2014,7 +2014,7 @@ export default function Settings() {
                               ? { backgroundColor: '#1e3a8a', color: '#dbeafe' }
                               : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }
                           }>
-                          {loadingValidation ? 'Verifying...' : validationData?.fields?.poco_ocr ? 'Present' : 'Optional'}
+                          {loadingValidation ? t('settings.verifying') : validationData?.fields?.poco_ocr ? t('settings.present') : t('settings.optional')}
                         </div>
                       </div>
                     </div>
