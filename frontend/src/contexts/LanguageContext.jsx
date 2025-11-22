@@ -35,32 +35,31 @@ const loadTranslations = (lang) => {
 };
 
 export function LanguageProvider({ children }) {
-  // Get initial language from localStorage
-  const getInitialLanguage = () => {
+  // Initialize both language and translations atomically in a single state
+  const [state, setState] = useState(() => {
+    let lang = 'en';
     try {
       const saved = localStorage.getItem('pococlass_settings');
       if (saved) {
         const settings = JSON.parse(saved);
-        return settings.language || 'en';
+        lang = settings.language || 'en';
       }
     } catch (e) {
       console.error('Error loading language:', e);
     }
-    return 'en';
-  };
+    return {
+      language: lang,
+      translations: loadTranslations(lang)
+    };
+  });
 
-  const [language, setLanguage] = useState(getInitialLanguage);
-  const [translations, setTranslations] = useState(() => loadTranslations(language));
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Load translations when language changes
-    const trans = loadTranslations(language);
-    setTranslations(trans);
-  }, [language]);
-
   const updateLanguage = (newLang) => {
-    setLanguage(newLang);
+    setState({
+      language: newLang,
+      translations: loadTranslations(newLang)
+    });
     saveSettings({ language: newLang });
   };
 
@@ -80,7 +79,7 @@ export function LanguageProvider({ children }) {
   // Translation function with fallback
   const t = (key, params = {}) => {
     const keys = key.split('.');
-    let value = translations;
+    let value = state.translations;
 
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
@@ -103,11 +102,11 @@ export function LanguageProvider({ children }) {
 
   return (
     <LanguageContext.Provider value={{ 
-      language, 
+      language: state.language, 
       updateLanguage, 
       t,
       loading,
-      translations 
+      translations: state.translations 
     }}>
       {children}
     </LanguageContext.Provider>
