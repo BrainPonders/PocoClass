@@ -1,45 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import API_BASE_URL from '@/config/api';
+import { usePOCOFields } from '@/contexts/POCOFieldsContext';
 
 export default function ValidationBanner() {
-  const [validationData, setValidationData] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    checkValidation();
-    
-    // Check every 30 seconds
-    const interval = setInterval(checkValidation, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const checkValidation = async () => {
-    try {
-      const sessionToken = localStorage.getItem('pococlass_session');
-      if (!sessionToken) return;
-
-      const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setValidationData(data);
-        
-        // Reset dismissed state if data becomes valid
-        if (data.valid && dismissed) {
-          setDismissed(false);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking validation:', error);
-    }
-  };
+  
+  // Consume validation state from shared context instead of polling independently
+  const { hasMissingFields, pocoScoreExists, pocoOcrExists } = usePOCOFields();
 
   const handleFixNow = () => {
     const settingsPath = createPageUrl('Settings');
@@ -59,12 +30,17 @@ export default function ValidationBanner() {
     setDismissed(true);
   };
 
-  // Don't show if valid, still loading, or dismissed
-  if (!validationData || validationData.valid || dismissed) {
+  // Don't show if valid or dismissed
+  if (!hasMissingFields || dismissed) {
     return null;
   }
 
-  const totalMissing = (validationData.missing_fields?.length || 0) + (validationData.missing_tags?.length || 0);
+  // Calculate missing items
+  const missingItems = [];
+  if (!pocoScoreExists) missingItems.push('POCO Score');
+  if (!pocoOcrExists) missingItems.push('POCO OCR');
+  
+  const totalMissing = missingItems.length;
 
   return (
     <div className="bg-red-50 border-b border-red-200 px-6 py-3">
@@ -72,14 +48,11 @@ export default function ValidationBanner() {
         <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-medium text-red-900">
-            PocoClass requires {totalMissing} missing {totalMissing === 1 ? 'item' : 'items'} to function correctly
+            PocoClass requires {totalMissing} missing custom {totalMissing === 1 ? 'field' : 'fields'} to function correctly
           </p>
           <p className="text-xs text-red-700 mt-0.5">
-            {validationData.missing_fields?.length > 0 && (
-              <span>Missing fields: {validationData.missing_fields.join(', ')}. </span>
-            )}
-            {validationData.missing_tags?.length > 0 && (
-              <span>Missing tags: {validationData.missing_tags.join(', ')}.</span>
+            {missingItems.length > 0 && (
+              <span>Missing fields: {missingItems.join(', ')}</span>
             )}
           </p>
         </div>

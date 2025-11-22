@@ -43,9 +43,17 @@ export function POCOFieldsProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    // Refresh only on initial mount
     refresh();
-    // Set up interval to refresh every 2 seconds to catch changes from other pages
-    const interval = setInterval(refresh, 2000);
+    
+    // Optional: Set up a passive refresh every 5 minutes (when tab is visible)
+    // This catches changes made externally without aggressive polling
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        refresh();
+      }
+    }, 300000); // 5 minutes
+    
     return () => clearInterval(interval);
   }, [refresh]);
 
