@@ -1400,7 +1400,7 @@ export default function Settings() {
                       onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
                       onBlur={(e) => e.target.style.boxShadow = 'none'}
                     >
-                      <option value="en">English</option>
+                      <option value="en">English (British)</option>
                       <option value="es">Español (Spanish)</option>
                       <option value="fr">Français (French)</option>
                       <option value="de">Deutsch (German)</option>
