@@ -27,10 +27,13 @@ const translationsMap = {
 // Translation loader - synchronous since all translations are pre-imported
 const loadTranslations = (lang) => {
   try {
-    return translationsMap[lang] || translationsMap.en;
+    const translations = translationsMap[lang] || translationsMap.en;
+    // Unwrap the .default property if it exists (Vite/ESM wraps JSON imports)
+    return translations?.default ?? translations;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
-    return translationsMap.en;
+    const fallback = translationsMap.en;
+    return fallback?.default ?? fallback;
   }
 };
 
