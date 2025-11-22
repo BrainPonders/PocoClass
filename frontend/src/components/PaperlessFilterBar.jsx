@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Filter, X, ChevronDown, Calendar } from 'lucide-react';
+import { Tag, User, FileText, X, ChevronDown, Calendar } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function PaperlessFilterBar({
@@ -161,7 +161,7 @@ export default function PaperlessFilterBar({
             onClick={() => toggleFilter('tags')}
             {...getFilterButtonClass('tags')}
           >
-            <Filter className="w-4 h-4" />
+            <Tag className="w-4 h-4" />
             {t('filters.tags')}
             {filters.tagStates && Object.keys(filters.tagStates).length > 0 && ` (${Object.keys(filters.tagStates).length})`}
             <ChevronDown className="w-3 h-3" />
@@ -271,7 +271,7 @@ export default function PaperlessFilterBar({
             onClick={() => toggleFilter('correspondent')}
             {...getFilterButtonClass('correspondent')}
           >
-            <Filter className="w-4 h-4" />
+            <User className="w-4 h-4" />
             {t('filters.correspondent')}
             {filters.correspondents.length > 0 && ` (${filters.correspondents.length})`}
             <ChevronDown className="w-3 h-3" />
@@ -349,7 +349,7 @@ export default function PaperlessFilterBar({
             onClick={() => toggleFilter('documentType')}
             {...getFilterButtonClass('documentType')}
           >
-            <Filter className="w-4 h-4" />
+            <FileText className="w-4 h-4" />
             {t('filters.documentType')}
             {filters.docTypes.length > 0 && ` (${filters.docTypes.length})`}
             <ChevronDown className="w-3 h-3" />
