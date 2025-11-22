@@ -99,7 +99,8 @@ export function LanguageProvider({ children }) {
       });
     }
 
-    return value || key;
+    // If value is not a string, return the key (prevents rendering objects as React children)
+    return typeof value === 'string' ? value : key;
   }, [state.translations]);
 
   // Memoize the context value to prevent infinite re-renders
