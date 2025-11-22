@@ -517,7 +517,7 @@ function LayoutContent({ children }) {
             `}</style>
             <div className="min-h-screen flex w-full">
               <Sidebar style={{ borderRight: '1px solid var(--app-border)' }}>
-                <SidebarHeader className="px-3 py-4" style={{ borderBottom: '1px solid var(--app-border)' }}>
+                <SidebarHeader className="px-3 py-2" style={{ borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex flex-col items-start gap-0">
                     <div className="flex items-start justify-start w-full h-16">
                       <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
