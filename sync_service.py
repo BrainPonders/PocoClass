@@ -272,7 +272,12 @@ class SyncService:
         }
     
     def _fetch_all_with_pagination(self, api_client: PaperlessAPIClient, url: str) -> List[Dict]:
-        """Fetch all items from a paginated endpoint"""
+        """Fetch all items from a paginated or bare-list endpoint
+        
+        Handles both Paperless response formats:
+        - Paginated: {"results": [...], "next": "url"}
+        - Bare list: [...]
+        """
         all_items = []
         
         while url:
@@ -280,8 +285,20 @@ class SyncService:
             response.raise_for_status()
             data = response.json()
             
-            all_items.extend(data.get('results', []))
-            url = data.get('next')
+            # Handle both paginated and bare-list responses
+            if isinstance(data, list):
+                # Bare list response (some self-hosted/compatibility endpoints)
+                all_items.extend(data)
+                url = None  # No pagination for bare lists
+            elif isinstance(data, dict):
+                # Paginated response (standard Paperless format)
+                results = data.get('results', [])
+                if not isinstance(results, list):
+                    raise ValueError(f"Invalid paginated response: 'results' is not a list (got {type(results).__name__})")
+                all_items.extend(results)
+                url = data.get('next')
+            else:
+                raise ValueError(f"Invalid response format: expected list or dict, got {type(data).__name__}")
         
         return all_items
     
