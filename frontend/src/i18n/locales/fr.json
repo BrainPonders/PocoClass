@@ -416,7 +416,12 @@
     "level": "Niveau",
     "message": "Message",
     "timestamp": "Horodatage",
-    "noLogs": "Aucun journal trouvé"
+    "noLogs": "Aucun journal trouvé",
+    "description": "Afficher et analyser les journaux système",
+    "refresh": "Actualiser",
+    "exportCSV": "Exporter CSV",
+    "showing": "Affichage de {{count}} sur {{total}} journaux",
+    "noLogsFound": "Aucun journal trouvé"
   },
   "ruleEvaluation": {
     "subtitle": "Testez et évaluez les règles de classification de documents",

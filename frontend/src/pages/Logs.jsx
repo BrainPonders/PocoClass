@@ -151,16 +151,16 @@ export default function Logs() {
   return (
     <PageLayout 
       title={t('logs.title')}
-      subtitle="View and analyze system logs"
+      subtitle={t('logs.description')}
       actions={
         <>
           <button onClick={loadLogs} className="btn btn-secondary">
             <RefreshCw className="w-4 h-4" />
-            Refresh
+            {t('logs.refresh')}
           </button>
           <button onClick={exportLogs} className="btn btn-primary">
             <Download className="w-4 h-4" />
-            Export CSV
+            {t('logs.exportCSV')}
           </button>
         </>
       }
@@ -174,14 +174,14 @@ export default function Logs() {
       <div className="card">
         <div className="mb-4">
           <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-            Showing {filteredLogs.length} of {logs.length} logs
+            {t('logs.showing', { count: filteredLogs.length, total: logs.length })}
           </p>
         </div>
 
         {filteredLogs.length === 0 ? (
           <div className="text-center py-12">
             <FileStack className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--app-text-secondary)' }} />
-            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No logs found</h3>
+            <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('logs.noLogsFound')}</h3>
             <p style={{ color: 'var(--app-text-secondary)' }}>Try adjusting your filters</p>
           </div>
         ) : (

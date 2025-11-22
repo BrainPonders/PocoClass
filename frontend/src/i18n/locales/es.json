@@ -416,7 +416,12 @@
     "level": "Nivel",
     "message": "Mensaje",
     "timestamp": "Marca de tiempo",
-    "noLogs": "No se encontraron registros"
+    "noLogs": "No se encontraron registros",
+    "description": "Ver y analizar registros del sistema",
+    "refresh": "Actualizar",
+    "exportCSV": "Exportar CSV",
+    "showing": "Mostrando {{count}} de {{total}} registros",
+    "noLogsFound": "No se encontraron registros"
   },
   "ruleEvaluation": {
     "subtitle": "Pruebe y evalúe reglas de clasificación de documentos",

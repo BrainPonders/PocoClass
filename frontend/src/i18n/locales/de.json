@@ -416,7 +416,12 @@
     "level": "Ebene",
     "message": "Nachricht",
     "timestamp": "Zeitstempel",
-    "noLogs": "Keine Protokolle gefunden"
+    "noLogs": "Keine Protokolle gefunden",
+    "description": "Systemprotokolle anzeigen und analysieren",
+    "refresh": "Aktualisieren",
+    "exportCSV": "CSV exportieren",
+    "showing": "Zeige {{count}} von {{total}} Protokollen",
+    "noLogsFound": "Keine Protokolle gefunden"
   },
   "ruleEvaluation": {
     "subtitle": "Testen und bewerten Sie Dokumentklassifizierungsregeln",

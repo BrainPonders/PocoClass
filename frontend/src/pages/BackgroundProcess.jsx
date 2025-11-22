@@ -808,7 +808,16 @@ export default function BackgroundProcess() {
                                   {detail.metadata_applied && detail.metadata_applied.length > 0 && (
                                     <>
                                       <span style={{ color: 'var(--app-text-muted)' }}>•</span>
-                                      {detail.metadata_applied.map((item, idx) => {
+                                      {detail.metadata_applied
+                                        .filter(item => {
+                                          // Filter out date_created as it's a duplicate of document_created shown above
+                                          if (typeof item === 'object') {
+                                            return item.label !== 'date_created';
+                                          } else {
+                                            return !item.startsWith('date_created');
+                                          }
+                                        })
+                                        .map((item, idx) => {
                                         // Handle both new object format and old string format
                                         let label, value, needsUpdate;
                                         

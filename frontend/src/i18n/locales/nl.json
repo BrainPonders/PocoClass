@@ -416,7 +416,12 @@
     "level": "Niveau",
     "message": "Bericht",
     "timestamp": "Tijdstempel",
-    "noLogs": "Geen logboeken gevonden"
+    "noLogs": "Geen logboeken gevonden",
+    "description": "Systeemlogboeken weergeven en analyseren",
+    "refresh": "Vernieuwen",
+    "exportCSV": "CSV exporteren",
+    "showing": "Toont {{count}} van {{total}} logboeken",
+    "noLogsFound": "Geen logboeken gevonden"
   },
   "ruleEvaluation": {
     "subtitle": "Test en evalueer documentclassificatieregels",
