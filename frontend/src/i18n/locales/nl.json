@@ -160,6 +160,7 @@
     },
     "appearance": {
       "title": "Appearance Settings",
+      "subtitle": "Customize theme, language, and accessibility options",
       "language": "Language",
       "theme": "Theme",
       "themeLight": "Light",
@@ -167,8 +168,8 @@
       "themeAuto": "Auto",
       "colorblindMode": "Enable Color Blind Mode",
       "colorblindModeDesc": "Adjusts colors for better accessibility",
-      "availableLanguages": "Available Languages"
-      "loadingSettings": "Loading settings...",
+      "availableLanguages": "Available Languages",
+      "loadingSettings": "Loading settings..."
     },
     "system": {
       "title": "System Management",
