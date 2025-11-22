@@ -236,10 +236,15 @@
     },
     "dateFormats": {
       "title": "Date Format Settings",
+      "subtitle": "Select date formats to appear in the wizard quick-select dropdown",
       "availableFormats": "Available Date Formats",
       "pattern": "Pattern",
       "example": "Example",
-      "selected": "Selected"
+      "selected": "Selected",
+      "dash": "Dash (-)",
+      "slash": "Slash (/)",
+      "dot": "Dot (.)",
+      "spaceText": "Space / Text"
     },
     "fieldVisibility": {
       "title": "Field Visibility Settings",

@@ -265,10 +265,15 @@
     },
     "dateFormats": {
       "title": "Configuración de Formatos de Fecha",
+      "subtitle": "Seleccione formatos de fecha para que aparezcan en el menú desplegable de selección rápida del asistente",
       "availableFormats": "Formatos de Fecha Disponibles",
       "pattern": "Patrón",
       "example": "Ejemplo",
-      "selected": "Seleccionado"
+      "selected": "Seleccionado",
+      "dash": "Guión (-)",
+      "slash": "Barra (/)",
+      "dot": "Punto (.)",
+      "spaceText": "Espacio / Texto"
     },
     "fieldVisibility": {
       "title": "Configuración de Visibilidad de Campos",

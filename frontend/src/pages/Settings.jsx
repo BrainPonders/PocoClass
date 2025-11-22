@@ -1457,7 +1457,7 @@ export default function Settings() {
                   <div>
                     <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.dateFormats.title')}</h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      Select date formats to appear in the wizard quick-select dropdown
+                      {t('settings.dateFormats.subtitle')}
                     </p>
                   </div>
 
@@ -1481,9 +1481,20 @@ export default function Settings() {
                         acc[fmt.format_category].push(fmt);
                         return acc;
                       }, {})
-                    ).map(([category, formats]) => (
+                    ).map(([category, formats]) => {
+                      const getCategoryTranslation = (cat) => {
+                        const categoryMap = {
+                          'Dash (-)': t('settings.dateFormats.dash'),
+                          'Slash (/)': t('settings.dateFormats.slash'),
+                          'Dot (.)': t('settings.dateFormats.dot'),
+                          'Space / Text': t('settings.dateFormats.spaceText')
+                        };
+                        return categoryMap[cat] || cat;
+                      };
+                      
+                      return (
                       <div key={category}>
-                        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text-secondary)' }}>{category}</h3>
+                        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text-secondary)' }}>{getCategoryTranslation(category)}</h3>
                         <div className="space-y-2">
                           {formats.map(fmt => (
                             <label key={fmt.id} className="flex items-start gap-2 p-2 rounded cursor-pointer" 
@@ -1510,7 +1521,7 @@ export default function Settings() {
                           ))}
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 </div>
               )}
