@@ -108,6 +108,13 @@
       "activeRules": "Reglas activas",
       "processedDocuments": "Documentos procesados",
       "successRate": "Tasa de éxito"
+    },
+    "ruleActivity": {
+      "lastActivity": "Última actividad",
+      "status": "Estado",
+      "executions": "Ejecuciones",
+      "successRate": "Tasa de éxito",
+      "new": "nuevo"
     }
   },
   "rules": {

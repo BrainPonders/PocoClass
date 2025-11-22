@@ -108,6 +108,13 @@
       "activeRules": "Actieve regels",
       "processedDocuments": "Verwerkte documenten",
       "successRate": "Slagingspercentage"
+    },
+    "ruleActivity": {
+      "lastActivity": "Laatste activiteit",
+      "status": "Status",
+      "executions": "Uitvoeringen",
+      "successRate": "Succespercentage",
+      "new": "nieuw"
     }
   },
   "rules": {

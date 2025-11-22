@@ -275,10 +275,10 @@ export default function Dashboard() {
                         <div className="mt-1 flex flex-wrap gap-3 text-sm" style={{ color: 'var(--app-text-secondary)' }}>
                           <span className="flex items-center gap-1">
                             <Activity className="w-4 h-4" />
-                            Last Activity: {lastActivity}
+                            {t('dashboard.ruleActivity.lastActivity')}: {lastActivity}
                           </span>
                           <span>•</span>
-                          <span>Status: 
+                          <span>{t('dashboard.ruleActivity.status')}: 
                             <span 
                               className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                                 rule.status === 'active' ? 'bg-green-100 text-green-800' : 
@@ -290,9 +290,9 @@ export default function Dashboard() {
                             </span>
                           </span>
                           <span>•</span>
-                          <span style={{ color: 'var(--app-text-muted)' }}>Executions: -</span>
+                          <span style={{ color: 'var(--app-text-muted)' }}>{t('dashboard.ruleActivity.executions')}: -</span>
                           <span>•</span>
-                          <span style={{ color: 'var(--app-text-muted)' }}>Success Rate: -</span>
+                          <span style={{ color: 'var(--app-text-muted)' }}>{t('dashboard.ruleActivity.successRate')}: -</span>
                         </div>
                       </div>
                     </div>
