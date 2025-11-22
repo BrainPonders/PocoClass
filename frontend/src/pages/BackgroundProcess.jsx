@@ -716,8 +716,8 @@ export default function BackgroundProcess() {
             {backgroundSettings && (
               <span className="text-sm font-normal ml-2" style={{ color: 'var(--app-text-muted)' }}>
                 ({t('backgroundProcess.retention')}: {backgroundSettings.history_retention_type === 'days' 
-                  ? `${backgroundSettings.history_retention_days || 365} days`
-                  : `${backgroundSettings.history_retention_count || 100} runs`})
+                  ? `${backgroundSettings.history_retention_days || 365} ${t('backgroundProcess.days')}`
+                  : `${backgroundSettings.history_retention_count || 100} ${t('backgroundProcess.runs')}`})
               </span>
             )}
           </CardTitle>

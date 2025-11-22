@@ -469,7 +469,9 @@
       "status": "Statut",
       "created": "Créé",
       "noMatch": "Pas de correspondance"
-    }
+    },
+    "days": "jours",
+    "runs": "exécutions"
   },
   "scores": {
     "pocoScore": "Score POCO",

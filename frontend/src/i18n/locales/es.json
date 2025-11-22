@@ -469,7 +469,9 @@
       "status": "Estado",
       "created": "Creado",
       "noMatch": "Sin coincidencia"
-    }
+    },
+    "days": "días",
+    "runs": "ejecuciones"
   },
   "scores": {
     "pocoScore": "Puntuación POCO",

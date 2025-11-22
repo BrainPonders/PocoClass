@@ -469,7 +469,9 @@
       "status": "Status",
       "created": "Gemaakt",
       "noMatch": "Geen overeenkomst"
-    }
+    },
+    "days": "dagen",
+    "runs": "runs"
   },
   "scores": {
     "pocoScore": "POCO-score",

@@ -469,7 +469,9 @@
       "status": "Status",
       "created": "Erstellt",
       "noMatch": "Keine Übereinstimmung"
-    }
+    },
+    "days": "Tage",
+    "runs": "Läufe"
   },
   "scores": {
     "pocoScore": "POCO-Score",
