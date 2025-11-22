@@ -235,6 +235,7 @@
     },
     "appearance": {
       "title": "Appearance Settings",
+      "subtitle": "Customize theme, language, and accessibility options",
       "language": "Language",
       "theme": "Theme",
       "themeLight": "Light",
@@ -242,7 +243,8 @@
       "themeAuto": "Auto",
       "colorblindMode": "Enable Color Blind Mode",
       "colorblindModeDesc": "Adjusts colors for better accessibility",
-      "availableLanguages": "Available Languages"
+      "availableLanguages": "Available Languages",
+      "loadingSettings": "Loading settings..."
     },
     "system": {
       "title": "System Management",
@@ -271,6 +273,8 @@
       "documentTypes": "Document Types",
       "customFields": "Custom Fields",
       "users": "Users",
+      "custom_fields": "Custom Fields",
+      "document_types": "Document Types",
       "userManagement": "User Management",
       "userManagementSubtitle": "All Paperless users with their PocoClass activation status",
       "username": "Username",
