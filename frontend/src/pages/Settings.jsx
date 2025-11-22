@@ -2056,7 +2056,7 @@ export default function Settings() {
                   <div>
                     <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.title')}</h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      Configure automatic document classification for newly uploaded documents
+                      {t('settings.backgroundProcessing.subtitle')}
                     </p>
                   </div>
 
@@ -2078,7 +2078,7 @@ export default function Settings() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <label className="block text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>
-                            Enable Background Processing
+                            {t('settings.backgroundProcessing.enableProcessing')}
                           </label>
                           <Switch
                             checked={backgroundSettings.bg_enabled}
@@ -2087,13 +2087,13 @@ export default function Settings() {
                           />
                         </div>
                         <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                          Automatically classify documents when they are uploaded to Paperless-ngx
+                          {t('settings.backgroundProcessing.enableProcessingDesc')}
                         </p>
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                          Debounce Time (seconds)
+                          {t('settings.backgroundProcessing.debounceTime')}
                         </label>
                         <div className="flex gap-3 mb-2">
                           <input
@@ -2110,26 +2110,26 @@ export default function Settings() {
                               color: 'var(--app-text)' 
                             }}
                           />
-                          <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>seconds</span>
+                          <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>{t('settings.backgroundProcessing.seconds')}</span>
                         </div>
                         <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                          Wait time after detecting new documents before processing (prevents multiple runs for batch uploads). Range: 5-300 seconds.
+                          {t('settings.backgroundProcessing.debounceDesc')}
                         </p>
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Tag Configuration</h3>
+                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagConfiguration')}</h3>
                         <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
-                          PocoClass uses these fixed tags for document processing and classification
+                          {t('settings.backgroundProcessing.tagConfigurationDesc')}
                         </p>
                         
                         <div className="space-y-3">
                           <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                             <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--info-text)' }}></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagNew')}</div>
                               <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                Discovery tag - Documents with this tag will be automatically processed by background processing
+                                {t('settings.backgroundProcessing.tagNewDesc')}
                               </div>
                             </div>
                           </div>
@@ -2137,9 +2137,9 @@ export default function Settings() {
                           <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
                             <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagPocoPlus')}</div>
                               <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds
+                                {t('settings.backgroundProcessing.tagPocoPlusDesc')}
                               </div>
                             </div>
                           </div>
@@ -2147,9 +2147,9 @@ export default function Settings() {
                           <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
                             <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
                             <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
+                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagPocoMinus')}</div>
                               <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds
+                                {t('settings.backgroundProcessing.tagPocoMinusDesc')}
                               </div>
                             </div>
                           </div>
@@ -2157,15 +2157,15 @@ export default function Settings() {
                       </div>
 
                       <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Processing History Retention Policy</h3>
+                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.retentionPolicy')}</h3>
                         <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
-                          Control how long processing history is kept in the database
+                          {t('settings.backgroundProcessing.retentionPolicyDesc')}
                         </p>
 
                         <div className="space-y-4">
                           <div>
                             <label className="block text-sm font-medium mb-3" style={{ color: 'var(--app-text-secondary)' }}>
-                              Retention Type
+                              {t('settings.backgroundProcessing.retentionType')}
                             </label>
                             <div className="flex gap-4">
                               <label className="flex items-center gap-2 cursor-pointer">
@@ -2178,7 +2178,7 @@ export default function Settings() {
                                   disabled={!isAdmin}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
                                 />
-                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>By Days</span>
+                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.backgroundProcessing.byDays')}</span>
                               </label>
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -2190,7 +2190,7 @@ export default function Settings() {
                                   disabled={!isAdmin}
                                   className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
                                 />
-                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>By Number of Runs</span>
+                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.backgroundProcessing.byRuns')}</span>
                               </label>
                             </div>
                           </div>
@@ -2198,7 +2198,7 @@ export default function Settings() {
                           {backgroundSettings.history_retention_type === 'days' && (
                             <div>
                               <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                                Days to Keep
+                                {t('settings.backgroundProcessing.daysToKeep')}
                               </label>
                               <div className="flex gap-3 mb-2">
                                 <input
@@ -2214,10 +2214,10 @@ export default function Settings() {
                                     color: 'var(--app-text)' 
                                   }}
                                 />
-                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>days</span>
+                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>{t('settings.backgroundProcessing.days')}</span>
                               </div>
                               <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                                Processing runs older than this will be automatically deleted (default: 365 days / 1 year)
+                                {t('settings.backgroundProcessing.daysToKeepDesc')}
                               </p>
                             </div>
                           )}
@@ -2225,7 +2225,7 @@ export default function Settings() {
                           {backgroundSettings.history_retention_type === 'count' && (
                             <div>
                               <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                                Runs to Keep
+                                {t('settings.backgroundProcessing.runsToKeep')}
                               </label>
                               <div className="flex gap-3 mb-2">
                                 <input
@@ -2258,7 +2258,7 @@ export default function Settings() {
                           className="flex items-center gap-2"
                         >
                           <CheckCircle className="w-4 h-4" />
-                          Save Settings
+                          {t('settings.backgroundProcessing.saveSettings')}
                         </Button>
                         {!isAdmin && (
                           <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
