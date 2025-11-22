@@ -29,7 +29,12 @@ const loadTranslations = (lang) => {
   try {
     const translations = translationsMap[lang] || translationsMap.en;
     // Unwrap the .default property if it exists (Vite/ESM wraps JSON imports)
-    return translations?.default ?? translations;
+    const unwrapped = translations?.default ?? translations;
+    console.log('[LanguageContext] Loading translations for:', lang);
+    console.log('[LanguageContext] translationsMap[lang]:', translations);
+    console.log('[LanguageContext] Unwrapped translations:', unwrapped);
+    console.log('[LanguageContext] filters.title value:', unwrapped?.filters?.title);
+    return unwrapped;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
     const fallback = translationsMap.en;
@@ -88,7 +93,9 @@ export function LanguageProvider({ children }) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        // Return key if translation not found
+        // Debug: log when key is not found
+        console.warn(`[LanguageContext] Translation key not found: ${key} (failed at: ${k})`);
+        console.warn('[LanguageContext] Current translations object:', state.translations);
         return key;
       }
     }
