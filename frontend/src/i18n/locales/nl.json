@@ -23,7 +23,8 @@
     "notSet": "Niet ingesteld",
     "patterns": "patronen",
     "tags": "labels",
-    "points": "punten"
+    "points": "punten",
+    "note": "Opmerking"
   },
   "filters": {
     "title": "Titel",

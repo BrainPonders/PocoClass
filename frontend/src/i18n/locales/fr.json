@@ -23,7 +23,8 @@
     "notSet": "Non défini",
     "patterns": "motifs",
     "tags": "étiquettes",
-    "points": "points"
+    "points": "points",
+    "note": "Remarque"
   },
   "filters": {
     "title": "Titre",
