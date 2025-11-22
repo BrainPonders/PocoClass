@@ -451,7 +451,17 @@
     "retention": "Aufbewahrung",
     "noProcessingHistory": "Kein Verarbeitungsverlauf",
     "processingRunsAppear": "Hintergrundverarbeitungsläufe werden hier angezeigt",
-    "processingFailed": "Verarbeitung fehlgeschlagen"
+    "processingFailed": "Verarbeitung fehlgeschlagen",
+    "table": {
+      "started": "Gestartet",
+      "documents": "Dokumente",
+      "classified": "Klassifiziert",
+      "skipped": "Übersprungen",
+      "rulesApplied": "Regeln angewendet",
+      "status": "Status",
+      "created": "Erstellt",
+      "noMatch": "Keine Übereinstimmung"
+    }
   },
   "scores": {
     "pocoScore": "POCO-Score",

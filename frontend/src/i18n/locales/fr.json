@@ -451,7 +451,17 @@
     "retention": "Conservation",
     "noProcessingHistory": "Aucun historique de traitement",
     "processingRunsAppear": "Les exécutions de traitement en arrière-plan apparaîtront ici",
-    "processingFailed": "Traitement échoué"
+    "processingFailed": "Traitement échoué",
+    "table": {
+      "started": "Démarré",
+      "documents": "Documents",
+      "classified": "Classifiés",
+      "skipped": "Ignorés",
+      "rulesApplied": "Règles appliquées",
+      "status": "Statut",
+      "created": "Créé",
+      "noMatch": "Pas de correspondance"
+    }
   },
   "scores": {
     "pocoScore": "Score POCO",

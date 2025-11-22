@@ -451,7 +451,17 @@
     "retention": "Retentie",
     "noProcessingHistory": "Geen verwerkingsgeschiedenis",
     "processingRunsAppear": "Achtergrondverwerkingsruns worden hier weergegeven",
-    "processingFailed": "Verwerking mislukt"
+    "processingFailed": "Verwerking mislukt",
+    "table": {
+      "started": "Gestart",
+      "documents": "Documenten",
+      "classified": "Geclassificeerd",
+      "skipped": "Overgeslagen",
+      "rulesApplied": "Regels toegepast",
+      "status": "Status",
+      "created": "Gemaakt",
+      "noMatch": "Geen overeenkomst"
+    }
   },
   "scores": {
     "pocoScore": "POCO-score",

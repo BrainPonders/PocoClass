@@ -751,27 +751,27 @@ export default function BackgroundProcess() {
                       </div>
                       <div className="flex-1 grid grid-cols-6 gap-2 text-xs">
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Started</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.started')}</div>
                           <div className="font-medium">{formatDateTime(entry.started_at)}</div>
                         </div>
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Documents</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.documents')}</div>
                           <div className="font-medium">{entry.documents_found || 0}</div>
                         </div>
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Classified</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.classified')}</div>
                           <div className="font-medium text-green-600">{entry.documents_classified || 0}</div>
                         </div>
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Skipped</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.skipped')}</div>
                           <div className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{entry.documents_skipped || 0}</div>
                         </div>
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Rules Applied</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.rulesApplied')}</div>
                           <div className="font-medium">{entry.rules_applied || 0}</div>
                         </div>
                         <div>
-                          <div style={{ color: 'var(--app-text-muted)' }}>Status</div>
+                          <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.status')}</div>
                           <div className="font-medium">{entry.status}</div>
                         </div>
                       </div>
@@ -793,13 +793,13 @@ export default function BackgroundProcess() {
                                     <>
                                       <span style={{ color: 'var(--app-text-muted)' }}>•</span>
                                       <span style={{ color: 'var(--app-text-muted)' }}>
-                                        Created: {formatDate(detail.document_created)}
+                                        {t('backgroundProcess.table.created')} {formatDate(detail.document_created)}
                                       </span>
                                     </>
                                   )}
                                   <span style={{ color: 'var(--app-text-muted)' }}>•</span>
                                   <span style={{ color: 'var(--app-text-secondary)' }}>
-                                    {detail.rule_name || 'No Match'}
+                                    {detail.rule_name || t('backgroundProcess.table.noMatch')}
                                   </span>
                                   <span style={{ color: 'var(--app-text-muted)' }}>•</span>
                                   <span style={{ color: 'var(--app-text-secondary)' }}>
