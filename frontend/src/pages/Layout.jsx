@@ -523,7 +523,7 @@ function LayoutContent({ children }) {
                       <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
                       <span className="text-xs font-normal" style={{ color: 'var(--app-text-secondary)', marginTop: '10px' }}>v2.0</span>
                     </div>
-                    <p className="text-xs font-medium -mt-1 ml-0" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
+                    <p className="text-xs font-medium -mt-1" style={{ color: 'var(--app-text-secondary)', marginLeft: '40px' }}>Document Classification</p>
                   </div>
                 </SidebarHeader>
                 
