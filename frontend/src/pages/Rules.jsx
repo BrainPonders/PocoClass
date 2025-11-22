@@ -480,6 +480,7 @@ export default function Rules() {
     <PageLayout
       title={t('rules.title')}
       subtitle={t('rules.subtitle')}
+      headerClassName="h-16"
       actions={
         <>
           <button 
@@ -488,7 +489,7 @@ export default function Rules() {
             aria-label="Open trash can"
           >
             <Trash2 className="w-5 h-5" />
-            Trash
+            {t('rulesPage.trash')}
           </button>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}

@@ -19,7 +19,11 @@
     "finish": "Finish",
     "submit": "Submit",
     "reset": "Reset",
-    "resetFilters": "Reset filters"
+    "resetFilters": "Reset filters",
+    "notSet": "Not set",
+    "patterns": "patterns",
+    "tags": "tags",
+    "points": "points"
   },
   "filters": {
     "title": "Title",
