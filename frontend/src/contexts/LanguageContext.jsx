@@ -35,24 +35,24 @@ const loadTranslations = (lang) => {
 };
 
 export function LanguageProvider({ children }) {
-  // Initialize language from localStorage or default to 'en'
-  const [language, setLanguage] = useState(() => {
+  // Initialize both language and translations from localStorage
+  const getInitialState = () => {
+    let lang = 'en';
     try {
       const saved = localStorage.getItem('pococlass_settings');
       if (saved) {
         const settings = JSON.parse(saved);
-        return settings.language || 'en';
+        lang = settings.language || 'en';
       }
     } catch (e) {
       console.error('Error loading language:', e);
     }
-    return 'en';
-  });
+    return { lang, trans: loadTranslations(lang) };
+  };
 
-  // Initialize translations synchronously with the initial language
-  const [translations, setTranslations] = useState(() => {
-    return translationsMap['en'] || {};
-  });
+  const { lang: initialLang, trans: initialTrans } = getInitialState();
+  const [language, setLanguage] = useState(initialLang);
+  const [translations, setTranslations] = useState(initialTrans);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
