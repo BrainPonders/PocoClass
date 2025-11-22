@@ -104,7 +104,7 @@ export default function Login() {
             <div className="flex justify-center mb-4">
               <div className="relative inline-block">
                 <img src="/logo.png" alt="PocoClass Logo" className="h-20 w-auto" />
-                <div className="absolute bottom-0 right-0 transform translate-x-[10px] -translate-y-[3px]">
+                <div className="absolute bottom-0 right-0 transform translate-x-[20px] -translate-y-[3px]">
                   <span className="text-xs font-semibold text-gray-500">v2.0</span>
                 </div>
               </div>
