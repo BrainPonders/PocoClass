@@ -17,7 +17,8 @@
     "next": "Next",
     "previous": "Previous",
     "submit": "Submit",
-    "reset": "Reset"
+    "reset": "Reset",
+    "resetFilters": "Filter zurücksetzen"
   },
   "nav": {
     "dashboard": "Dashboard",
