@@ -24,11 +24,10 @@ const translationsMap = {
   nl: nlTranslations
 };
 
-// Translation loader
-const loadTranslations = async (lang) => {
+// Translation loader - synchronous since all translations are pre-imported
+const loadTranslations = (lang) => {
   try {
-    const translations = translationsMap[lang] || translationsMap.en;
-    return translations;
+    return translationsMap[lang] || translationsMap.en;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
     return translationsMap.en;
