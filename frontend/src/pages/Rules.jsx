@@ -584,7 +584,7 @@ export default function Rules() {
                     aria-label="Activate selected rules"
                   >
                     <Power className="w-4 h-4" />
-                    Activate
+                    {t('rulesPage.activate')}
                   </button>
                   <button 
                     onClick={() => handleBulkAction('deactivate')} 
@@ -592,7 +592,7 @@ export default function Rules() {
                     aria-label="Deactivate selected rules"
                   >
                     <PowerOff className="w-4 h-4" />
-                    Deactivate
+                    {t('rulesPage.deactivate')}
                   </button>
                   <button 
                     onClick={() => handleBulkAction('delete')} 
@@ -600,7 +600,7 @@ export default function Rules() {
                     aria-label="Delete selected rules"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -613,7 +613,7 @@ export default function Rules() {
         <div className="card text-center py-16">
           <FileText className="w-20 h-20 mx-auto mb-4" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
           <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--app-text-secondary)' }}>{t('rules.noRules')}</h3>
-          <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>Get started by creating your first classification rule</p>
+          <p className="mb-6" style={{ color: 'var(--app-text-muted)' }}>{t('rules.createFirstRuleDesc')}</p>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
             className="btn btn-primary"
@@ -640,11 +640,11 @@ export default function Rules() {
                   </th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleName')}</th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.ruleId')}</th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Source Document</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.sourceDocument')}</th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.status')}</th>
                   <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('rules.threshold')}</th>
-                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Created</th>
-                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">Actions</th>
+                  <th className="px-4 py-3 text-left font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.created')}</th>
+                  <th className="px-4 py-3 text-right font-semibold" style={{ color: 'var(--app-text-secondary)' }} scope="col">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody style={{ borderTop: '1px solid var(--app-border)' }}>
@@ -672,7 +672,7 @@ export default function Rules() {
                       {rule.source_document_id ? (
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-mono" style={{ color: 'var(--app-text)' }}>{rule.source_document_id}</span>
-                          <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>(Paperless ID)</span>
+                          <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>({t('filters.searchPlaceholder') === 'Rechercher...' ? 'ID Paperless' : 'Paperless ID'})</span>
                         </div>
                       ) : (
                         <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>-</span>
@@ -705,8 +705,8 @@ export default function Rules() {
                             rule.status === 'active' ? 'text-green-600' : ''
                           }`}
                           style={rule.status !== 'active' ? { color: 'var(--app-text-muted)' } : undefined}
-                          title={rule.status === 'active' ? 'Deactivate rule' : 'Activate rule'}
-                          aria-label={rule.status === 'active' ? `Deactivate rule ${rule.ruleName}` : `Activate rule ${rule.ruleName}`}
+                          title={rule.status === 'active' ? t('rules.disableRule') : t('rules.enableRule')}
+                          aria-label={rule.status === 'active' ? `${t('rules.disableRule')} ${rule.ruleName}` : `${t('rules.enableRule')} ${rule.ruleName}`}
                         >
                           {rule.status === 'active' ? (
                             <Power className="w-4 h-4" />
@@ -726,8 +726,8 @@ export default function Rules() {
                         <button 
                           onClick={() => handleDuplicate(rule)}
                           className="btn btn-ghost btn-sm"
-                          title="Duplicate"
-                          aria-label={`Duplicate rule ${rule.ruleName}`}
+                          title={t('rules.duplicateRule')}
+                          aria-label={`${t('rules.duplicateRule')} ${rule.ruleName}`}
                         >
                           <Copy className="w-4 h-4" />
                         </button>
