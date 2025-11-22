@@ -361,7 +361,7 @@ export default function BackgroundProcess() {
 
       const data = await response.json();
       toast({
-        title: dryRunMode ? 'Dry Run Complete' : 'Processing Complete',
+        title: dryRunMode ? t('backgroundProcess.dryRunComplete') : t('backgroundProcess.processingComplete'),
         description: `${data.documents_found || 0} documents found, ${data.classified || 0} classified, ${data.rules_applied || 0} rules applied`,
         duration: 5000,
       });
@@ -370,7 +370,7 @@ export default function BackgroundProcess() {
       await loadHistory();
     } catch (error) {
       toast({
-        title: 'Processing Failed',
+        title: t('backgroundProcess.processingFailed'),
         description: error.message,
         variant: 'destructive',
         duration: 5000,
@@ -662,7 +662,7 @@ export default function BackgroundProcess() {
       <Card className="mb-8">
         <CardContent className="pt-6">
 
-          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>Processing Actions</h4>
+          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>{t('backgroundProcess.processingActions')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Dry Run Button */}
@@ -676,10 +676,10 @@ export default function BackgroundProcess() {
                   onMouseLeave={(e) => !loading && matchingDocuments.length > 0 && (e.currentTarget.style.opacity = '1')}
                 >
                   <Play className="w-4 h-4" />
-                  {loading && currentDryRun === true ? 'Testing...' : t('processing.dryRun')}
+                  {loading && currentDryRun === true ? t('backgroundProcess.testing') : t('processing.dryRun')}
                 </Button>
                 <p className="text-xs mt-2 text-center" style={{ color: 'var(--app-text-muted)' }}>
-                  Test all rules without changing Paperless
+                  {t('backgroundProcess.testAllRules')}
                 </p>
               </div>
 
@@ -687,7 +687,7 @@ export default function BackgroundProcess() {
               <div className="flex flex-col">
                 <Button
                   onClick={() => {
-                    if (window.confirm('⚠️ WARNING: This will apply active rules to your Paperless documents and make real changes. Are you sure you want to proceed?')) {
+                    if (window.confirm(t('backgroundProcess.warningMessage'))) {
                       handleManualProcess(false);
                     }
                   }}
@@ -695,16 +695,16 @@ export default function BackgroundProcess() {
                   className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700"
                 >
                   <Play className="w-4 h-4" />
-                  {loading && currentDryRun === false ? 'Running...' : 'Run'}
+                  {loading && currentDryRun === false ? t('backgroundProcess.running') : t('backgroundProcess.run')}
                 </Button>
                 <p className="text-xs mt-2 text-center" style={{ color: 'var(--app-text-muted)' }}>
-                  ⚠️ Apply active rules to Paperless
+                  {t('backgroundProcess.applyRulesToPaperless')}
                 </p>
               </div>
             </div>
             
           <div className="mt-4 p-3 rounded text-xs" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-            <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
+            <strong>{t('common.note')}:</strong> {t('backgroundProcess.dryRunNote')}
           </div>
         </CardContent>
       </Card>
@@ -715,7 +715,7 @@ export default function BackgroundProcess() {
             {t('processing.history')}
             {backgroundSettings && (
               <span className="text-sm font-normal ml-2" style={{ color: 'var(--app-text-muted)' }}>
-                (Retention: {backgroundSettings.history_retention_type === 'days' 
+                ({t('backgroundProcess.retention')}: {backgroundSettings.history_retention_type === 'days' 
                   ? `${backgroundSettings.history_retention_days || 365} days`
                   : `${backgroundSettings.history_retention_count || 100} runs`})
               </span>
@@ -726,8 +726,8 @@ export default function BackgroundProcess() {
           {processingHistory.length === 0 ? (
             <div className="text-center py-8" style={{ color: 'var(--app-text-muted)' }}>
               <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Processing History</h3>
-              <p style={{ color: 'var(--app-text-muted)' }}>Background processing runs will appear here</p>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('backgroundProcess.noProcessingHistory')}</h3>
+              <p style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.processingRunsAppear')}</p>
             </div>
           ) : (
             <Accordion type="multiple" className="space-y-1">

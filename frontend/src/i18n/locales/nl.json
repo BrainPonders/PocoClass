@@ -441,7 +441,17 @@
     "processingComplete": "Verwerking voltooid",
     "dryRunNote": "Opmerking: Alleen regels met status \"actief\" worden toegepast tijdens het uitvoeren. Testronde test alle regels ongeacht de status.",
     "accessDenied": "Toegang geweigerd",
-    "adminOnly": "Alleen beheerders hebben toegang tot achtergrondverwerking"
+    "adminOnly": "Alleen beheerders hebben toegang tot achtergrondverwerking",
+    "testAllRules": "Test alle regels zonder Paperless te wijzigen",
+    "run": "Uitvoeren",
+    "testing": "Testen...",
+    "running": "Wordt uitgevoerd...",
+    "applyRulesToPaperless": "⚠️ Actieve regels op Paperless toepassen",
+    "warningMessage": "⚠️ WAARSCHUWING: Dit zal actieve regels op uw Paperless-documenten toepassen en echte wijzigingen aanbrengen. Weet u zeker dat u wilt doorgaan?",
+    "retention": "Retentie",
+    "noProcessingHistory": "Geen verwerkingsgeschiedenis",
+    "processingRunsAppear": "Achtergrondverwerkingsruns worden hier weergegeven",
+    "processingFailed": "Verwerking mislukt"
   },
   "scores": {
     "pocoScore": "POCO-score",

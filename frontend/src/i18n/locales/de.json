@@ -441,7 +441,17 @@
     "processingComplete": "Verarbeitung abgeschlossen",
     "dryRunNote": "Hinweis: Während der Ausführung werden nur Regeln mit dem Status \"aktiv\" angewendet. Testlauf testet alle Regeln unabhängig vom Status.",
     "accessDenied": "Zugriff verweigert",
-    "adminOnly": "Nur Administratoren können auf die Hintergrundverarbeitung zugreifen"
+    "adminOnly": "Nur Administratoren können auf die Hintergrundverarbeitung zugreifen",
+    "testAllRules": "Alle Regeln testen, ohne Paperless zu ändern",
+    "run": "Ausführen",
+    "testing": "Testen...",
+    "running": "Wird ausgeführt...",
+    "applyRulesToPaperless": "⚠️ Aktive Regeln auf Paperless anwenden",
+    "warningMessage": "⚠️ WARNUNG: Dies wendet aktive Regeln auf Ihre Paperless-Dokumente an und führt echte Änderungen durch. Sind Sie sicher, dass Sie fortfahren möchten?",
+    "retention": "Aufbewahrung",
+    "noProcessingHistory": "Kein Verarbeitungsverlauf",
+    "processingRunsAppear": "Hintergrundverarbeitungsläufe werden hier angezeigt",
+    "processingFailed": "Verarbeitung fehlgeschlagen"
   },
   "scores": {
     "pocoScore": "POCO-Score",

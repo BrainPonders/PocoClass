@@ -441,7 +441,17 @@
     "processingComplete": "Traitement terminé",
     "dryRunNote": "Remarque: Seules les règles avec le statut \"active\" sont appliquées lors de l'exécution. L'exécution d'essai teste toutes les règles indépendamment du statut.",
     "accessDenied": "Accès refusé",
-    "adminOnly": "Seuls les administrateurs peuvent accéder au traitement en arrière-plan"
+    "adminOnly": "Seuls les administrateurs peuvent accéder au traitement en arrière-plan",
+    "testAllRules": "Tester toutes les règles sans modifier Paperless",
+    "run": "Exécuter",
+    "testing": "Analyse en cours...",
+    "running": "Exécution en cours...",
+    "applyRulesToPaperless": "⚠️ Appliquer les règles actives à Paperless",
+    "warningMessage": "⚠️ AVERTISSEMENT: Cela appliquera les règles actives à vos documents Paperless et apportera des modifications réelles. Êtes-vous sûr de vouloir continuer?",
+    "retention": "Conservation",
+    "noProcessingHistory": "Aucun historique de traitement",
+    "processingRunsAppear": "Les exécutions de traitement en arrière-plan apparaîtront ici",
+    "processingFailed": "Traitement échoué"
   },
   "scores": {
     "pocoScore": "Score POCO",
