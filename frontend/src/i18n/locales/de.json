@@ -424,7 +424,7 @@
     "inactive": "Inactive"
   },
   "warnings": {
-    "ruleActivationWarning": "Rule Activation Warning: Active rules automatically process documents in your Paperless archive during background processing and 'execute' runs. Only activate rules you have thoroughly tested. Use the power (⚡) icon to activate or deactivate rules directly."
+    "ruleActivationWarning": "Rule Activation Warning: Active rules automatically process documents in your Paperless archive during background processing and 'execute' runs. Only activate rules you have thoroughly tested. Use the power (⏻) icon to activate or deactivate rules directly."
   },
   "validation": {
     "required": "{field} is required",

@@ -580,7 +580,7 @@
     "inactive": "Inactivo"
   },
   "warnings": {
-    "ruleActivationWarning": "Advertencia de Activación de Regla: Las reglas activas procesan automáticamente documentos en su archivo de Paperless durante el procesamiento en segundo plano y las ejecuciones de 'ejecutar'. Solo active reglas que haya probado exhaustivamente. Use el icono de encendido (⚡) para activar o desactivar reglas directamente."
+    "ruleActivationWarning": "Advertencia de Activación de Regla: Las reglas activas procesan automáticamente documentos en su archivo de Paperless durante el procesamiento en segundo plano y las ejecuciones de 'ejecutar'. Solo active reglas que haya probado exhaustivamente. Use el icono de encendido (⏻) para activar o desactivar reglas directamente."
   },
   "validation": {
     "required": "{field} es obligatorio",
