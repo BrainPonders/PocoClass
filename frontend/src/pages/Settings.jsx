@@ -1522,7 +1522,7 @@ export default function Settings() {
                       {t('settings.fieldVisibility.title')}
                     </h2>
                     <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      Control which fields appear in the wizard and how they behave
+                      {t('settings.fieldVisibility.subtitle')}
                     </p>
                   </div>
 
@@ -1540,16 +1540,16 @@ export default function Settings() {
                   )}
 
                   <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                    <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--info-text)' }}>Visibility Modes</h3>
+                    <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--info-text)' }}>{t('settings.fieldVisibility.visibilityModes')}</h3>
                     <ul className="text-xs space-y-1" style={{ color: 'var(--info-text)' }}>
-                      <li><strong>Disabled:</strong> Field is hidden from the wizard</li>
-                      <li><strong>Predefined:</strong> Show dropdown with existing values from Paperless (used for static assignment and verification)</li>
-                      <li><strong>Dynamic:</strong> Extract value from document content using patterns and anchors</li>
-                      <li><strong>Both Enabled:</strong> Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically</li>
+                      <li><strong>{t('settings.fieldVisibility.modeDisabled')}</strong> {t('settings.fieldVisibility.modeDisabledDesc')}</li>
+                      <li><strong>{t('settings.fieldVisibility.modePredefined')}</strong> {t('settings.fieldVisibility.modePredefinedDesc')}</li>
+                      <li><strong>{t('settings.fieldVisibility.modeDynamic')}</strong> {t('settings.fieldVisibility.modeDynamicDesc')}</li>
+                      <li><strong>{t('settings.fieldVisibility.modeBothEnabled')}</strong> {t('settings.fieldVisibility.modeBothEnabledDesc')}</li>
                     </ul>
                     <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--info-border)' }}>
                       <p className="text-xs" style={{ color: 'var(--info-text)' }}>
-                        <strong>Note:</strong> Any field not disabled will also be available in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata.
+                        <strong>{t('settings.fieldVisibility.noteVerification')}</strong> {t('settings.fieldVisibility.noteVerificationDesc')}
                       </p>
                     </div>
                   </div>
@@ -1582,13 +1582,13 @@ export default function Settings() {
                             </div>
                             <div className="text-xs mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
                               {placeholder.is_locked ? (
-                                <span className="italic" style={{ color: 'var(--app-text-muted)' }}>Not available in this version of PocoClass</span>
+                                <span className="italic" style={{ color: 'var(--app-text-muted)' }}>{t('settings.fieldVisibility.notAvailable')}</span>
                               ) : placeholder.is_custom_field ? (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                  Custom Field
+                                  {t('settings.fieldVisibility.customField')}
                                 </span>
                               ) : (
-                                <span style={{ color: 'var(--app-text-muted)' }}>Built-in Field</span>
+                                <span style={{ color: 'var(--app-text-muted)' }}>{t('settings.fieldVisibility.builtInField')}</span>
                               )}
                             </div>
                           </div>

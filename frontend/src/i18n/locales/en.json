@@ -243,8 +243,23 @@
     },
     "fieldVisibility": {
       "title": "Field Visibility Settings",
+      "subtitle": "Control which fields appear in the wizard and how they behave",
       "fieldName": "Field Name",
-      "visibility": "Visibility"
+      "visibility": "Visibility",
+      "visibilityModes": "Visibility Modes",
+      "modeDisabled": "Disabled:",
+      "modeDisabledDesc": "Field is hidden from the wizard",
+      "modePredefined": "Predefined:",
+      "modePredefinedDesc": "Shown with existing values from Paperless (used for static assignment and verification)",
+      "modeDynamic": "Dynamic:",
+      "modeDynamicDesc": "Extract value from document content using patterns and anchors",
+      "modeBothEnabled": "Both Enabled:",
+      "modeBothEnabledDesc": "Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically",
+      "noteVerification": "Note:",
+      "noteVerificationDesc": "Any field not disabled will also be available in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata.",
+      "builtInField": "Built-in Field",
+      "customField": "Custom Field",
+      "notAvailable": "Not available in this version of PocoClass"
     },
     "backgroundProcessing": {
       "title": "Background Processing",

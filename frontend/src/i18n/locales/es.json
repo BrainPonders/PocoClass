@@ -272,8 +272,23 @@
     },
     "fieldVisibility": {
       "title": "Configuración de Visibilidad de Campos",
+      "subtitle": "Controlar qué campos aparecen en el asistente y cómo se comportan",
       "fieldName": "Nombre del Campo",
-      "visibility": "Visibilidad"
+      "visibility": "Visibilidad",
+      "visibilityModes": "Modos de Visibilidad",
+      "modeDisabled": "Desactivado:",
+      "modeDisabledDesc": "El campo está oculto del asistente",
+      "modePredefined": "Predefinido:",
+      "modePredefinedDesc": "Mostrado con valores existentes de Paperless (usado para asignación estática y verificación)",
+      "modeDynamic": "Dinámico:",
+      "modeDynamicDesc": "Extraer valor del contenido del documento usando patrones y anclajes",
+      "modeBothEnabled": "Ambos Activados:",
+      "modeBothEnabledDesc": "Activar ambos modos Predefinido y Dinámico - el campo puede ser asignado estáticamente y/o extraído dinámicamente",
+      "noteVerification": "Nota:",
+      "noteVerificationDesc": "Cualquier campo que no esté desactivado también estará disponible en el Paso 5 (Verificación) para verificar los datos extraídos contra los metadatos existentes de Paperless.",
+      "builtInField": "Campo Integrado",
+      "customField": "Campo Personalizado",
+      "notAvailable": "No disponible en esta versión de PocoClass"
     },
     "backgroundProcessing": {
       "title": "Procesamiento en Segundo Plano",
