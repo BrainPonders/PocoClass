@@ -517,7 +517,7 @@ function LayoutContent({ children }) {
             `}</style>
             <div className="min-h-screen flex w-full">
               <Sidebar style={{ borderRight: '1px solid var(--app-border)' }}>
-                <SidebarHeader className="px-3" style={{ borderBottom: '1px solid var(--app-border)', paddingTop: '0.5rem', paddingBottom: '11px' }}>
+                <SidebarHeader className="px-3" style={{ borderBottom: '1px solid var(--app-border)', paddingTop: '0.5rem', paddingBottom: '10px' }}>
                   <div className="flex flex-col items-start gap-0">
                     <div className="flex items-start justify-start w-full h-16">
                       <div className="relative inline-block">
