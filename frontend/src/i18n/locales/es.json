@@ -84,7 +84,7 @@
   },
   "dashboard": {
     "title": "Panel",
-    "subtitle": "Ver y administrar documentos",
+    "subtitle": "Subtítulo del panel",
     "welcome": "Bienvenido a PocoClass",
     "systemStatus": "Estado del Sistema",
     "backgroundProcessing": "Procesamiento en Segundo Plano",
