@@ -59,9 +59,9 @@ export default function DataVerificationStep({
         const parsed = JSON.parse(settings);
         setFieldDisplaySettings(parsed.fieldDisplaySettings || {});
         setCustomFieldNames(parsed.customFieldNames || {
-          customField1: 'Invoice Number',
-          customField2: 'Reference ID',
-          documentCategory: 'Document Category'
+          customField1: t('documentClassifications.invoiceNumberDefault'),
+          customField2: t('documentClassifications.referenceIdDefault'),
+          documentCategory: t('documentClassifications.documentCategoryDefault')
         });
       }
     } catch (e) {
