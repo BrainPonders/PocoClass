@@ -366,7 +366,17 @@
       "daysToKeepDesc": "Les passages de traitement antérieurs à cela seront supprimés automatiquement (par défaut : 365 jours / 1 an)",
       "runs": "passages",
       "saveSettings": "Enregistrer les paramètres"
-    }
+    },
+    "allRequiredDataPresent": "Toutes les données requises présentes",
+    "ensureAllRequired": "Assurez-vous que tous les champs personnalisés requis et les étiquettes existent dans Paperless-ngx pour que PocoClass fonctionne correctement",
+    "allMandatoryConfigured": "Tous les champs personnalisés et les étiquettes obligatoires sont configurés correctement dans Paperless-ngx.",
+    "requiredTags": "Étiquettes requises",
+    "requiredCustomFields": "Champs personnalisés requis",
+    "optionalCustomFields": "Champs personnalisés optionnels",
+    "optionalFeatures": "Fonctionnalités optionnelles",
+    "pocoOcrTransparencyField": "Champ de score de transparence POCO OCR",
+    "pocoOcrTransparencyDesc": "Activez le champ personnalisé POCO OCR dans Paperless-ngx. Ce champ stocke le score de transparence OCR séparément du score POCO principal. Non requis pour que PocoClass fonctionne - cela fournit une visibilité supplémentaire pour les utilisateurs avancés qui veulent voir la qualité de la correspondance de motif OCR.",
+    "pocoOcrDesc": "Stocke le score de confiance OCR (0-100%). Optionnel pour la transparence."
   },
   "processing": {
     "status": "État du traitement",

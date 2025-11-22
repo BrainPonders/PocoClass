@@ -366,7 +366,19 @@
       "daysToKeepDesc": "Processing runs older than this will be automatically deleted (default: 365 days / 1 year)",
       "runs": "runs",
       "saveSettings": "Save Settings"
-    }
+    },
+    "pocoPlus": "Aplicado a documentos que coinciden con una regla exitosamente",
+    "pocoMinus": "Aplicado a documentos que no coinciden con ninguna regla",
+    "ensureAllRequired": "Asegúrese de que todos los campos personalizados y etiquetas requeridos existan en Paperless-ngx para que PocoClass funcione correctamente",
+    "allRequiredDataPresent": "Todos los datos requeridos presentes",
+    "allMandatoryConfigured": "Todos los campos personalizados y etiquetas obligatorios están configurados correctamente en Paperless-ngx.",
+    "requiredTags": "Etiquetas requeridas",
+    "requiredCustomFields": "Campos personalizados requeridos",
+    "optionalCustomFields": "Campos personalizados opcionales",
+    "optionalFeatures": "Características opcionales",
+    "pocoOcrTransparencyField": "Campo de puntuación de transparencia POCO OCR",
+    "pocoOcrTransparencyDesc": "Habilite el campo personalizado POCO OCR en Paperless-ngx. Este campo almacena la puntuación de transparencia OCR por separado de la puntuación POCO principal. No es necesario para que PocoClass funcione, proporciona visibilidad adicional para usuarios avanzados que desean ver la calidad de coincidencia de patrones OCR.",
+    "pocoOcrDesc": "Almacena la puntuación de confianza OCR (0-100%). Opcional para transparencia."
   },
   "processing": {
     "status": "Estado de procesamiento",

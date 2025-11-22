@@ -1789,7 +1789,7 @@ export default function Settings() {
                       </Button>
                     </div>
                     <p className="text-sm mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                      Ensure all required custom fields and tags exist in Paperless-ngx for PocoClass to function correctly
+                      {t('settings.ensureAllRequired')}
                     </p>
                   </div>
 
@@ -1854,9 +1854,9 @@ export default function Settings() {
                       <div className="flex items-start gap-3">
                         <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
                         <div>
-                          <h3 className="text-sm font-semibold mb-1" style={{ color: '#14532d' }}>All Required Data Present</h3>
+                          <h3 className="text-sm font-semibold mb-1" style={{ color: '#14532d' }}>{t('settings.allRequiredDataPresent')}</h3>
                           <p className="text-sm" style={{ color: '#15803d' }}>
-                            All mandatory custom fields and tags are configured correctly in Paperless-ngx.
+                            {t('settings.allMandatoryConfigured')}
                           </p>
                         </div>
                       </div>
@@ -1864,7 +1864,7 @@ export default function Settings() {
                   ) : null}
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Required Tags</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.requiredTags')}</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
@@ -1879,7 +1879,7 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that match a rule successfully</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoPlus')}</div>
                         </div>
                         <div 
                           className="text-xs font-medium px-3 py-1 rounded"
@@ -1908,7 +1908,7 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Applied to documents that do not match any rule</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoMinus')}</div>
                         </div>
                         <div 
                           className="text-xs font-medium px-3 py-1 rounded"
@@ -1956,7 +1956,7 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Required Custom Fields</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.requiredCustomFields')}</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
@@ -1990,7 +1990,7 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Optional Custom Fields</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.optionalCustomFields')}</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
                         {loadingValidation ? (
@@ -2005,7 +2005,7 @@ export default function Settings() {
                         )}
                         <div className="flex-1">
                           <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO OCR</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Stores the OCR confidence score (0-100%). Optional for transparency.</div>
+                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoOcrDesc')}</div>
                         </div>
                         <div 
                           className="text-xs font-medium px-3 py-1 rounded"
@@ -2021,15 +2021,15 @@ export default function Settings() {
                   </div>
 
                   <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>Optional Features</h3>
+                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.optionalFeatures')}</h3>
                     <div className="space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <label className="block text-sm font-medium mb-1" style={{ color: 'var(--app-text)' }}>
-                            POCO OCR Transparency Score Field
+                            {t('settings.pocoOcrTransparencyField')}
                           </label>
                           <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                            Enable the POCO OCR custom field in Paperless-ngx. This field stores the OCR transparency score separately from the main POCO Score. <strong>Not required for PocoClass to work</strong> - this provides additional visibility for advanced users who want to see the OCR pattern matching quality.
+                            {t('settings.pocoOcrTransparencyDesc')}
                           </p>
                         </div>
                         <Switch

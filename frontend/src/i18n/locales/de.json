@@ -366,7 +366,19 @@
       "daysToKeepDesc": "Verarbeitungsläufe älter als dieser Zeit werden automatisch gelöscht (Standard: 365 Tage / 1 Jahr)",
       "runs": "Läufe",
       "saveSettings": "Einstellungen speichern"
-    }
+    },
+    "pocoPlus": "Angewendet auf Dokumente, die einer Regel erfolgreich entsprechen",
+    "pocoMinus": "Angewendet auf Dokumente, die keiner Regel entsprechen",
+    "ensureAllRequired": "Stellen Sie sicher, dass alle erforderlichen benutzerdefinierten Felder und Tags in Paperless-ngx vorhanden sind, damit PocoClass korrekt funktioniert",
+    "allRequiredDataPresent": "Alle erforderlichen Daten vorhanden",
+    "allMandatoryConfigured": "Alle erforderlichen benutzerdefinierten Felder und Tags sind in Paperless-ngx korrekt konfiguriert.",
+    "requiredTags": "Erforderliche Tags",
+    "requiredCustomFields": "Erforderliche benutzerdefinierte Felder",
+    "optionalCustomFields": "Optionale benutzerdefinierte Felder",
+    "optionalFeatures": "Optionale Funktionen",
+    "pocoOcrTransparencyField": "POCO OCR-Transparenzbewertungsfeld",
+    "pocoOcrTransparencyDesc": "Aktivieren Sie das benutzerdefinierte POCO OCR-Feld in Paperless-ngx. Dieses Feld speichert die OCR-Transparenzbewertung separat vom Haupt-POCO-Score. Nicht erforderlich für die Funktion von PocoClass – dies bietet zusätzliche Transparenz für fortgeschrittene Benutzer, die die Qualität der OCR-Mustererkennung sehen möchten.",
+    "pocoOcrDesc": "Speichert den OCR-Zuverlässigkeitsscore (0-100%). Optional zur Transparenz."
   },
   "processing": {
     "status": "Verarbeitungsstatus",
