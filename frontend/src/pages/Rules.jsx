@@ -12,6 +12,7 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 import YamlExportButton from '@/components/YamlExportButton';
 import TrashCanModal from '@/components/TrashCanModal';
 import PaperlessFilterBar from '@/components/PaperlessFilterBar';
+import DocumentListSection from '@/components/DocumentListSection';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PageLayout from '@/components/PageLayout';

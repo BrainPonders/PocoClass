@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
+import DocumentListSection from '@/components/DocumentListSection';
 import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';

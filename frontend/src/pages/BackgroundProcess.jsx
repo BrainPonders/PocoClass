@@ -11,6 +11,7 @@ import { User, Paperless } from '@/api/entities';
 import { apiClient } from "@/api/apiClient";
 import API_BASE_URL from '@/config/api';
 import PaperlessFilterBar from "@/components/PaperlessFilterBar";
+import DocumentListSection from '@/components/DocumentListSection';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
 
