@@ -31,19 +31,14 @@ class TokenEncryption:
         key = os.getenv('POCOCLASS_SECRET_KEY')
         
         if not key:
-            # Check if we're in a development environment
-            # Development mode indicators: localhost, dev domain, or explicit dev flag
-            is_dev = (
-                os.getenv('REPLIT_DEV_DOMAIN') or 
-                os.getenv('FLASK_ENV') == 'development' or
-                os.getenv('POCOCLASS_DEV_MODE') == 'true'
-            )
+            # Check for explicit development mode flag (REQUIRED for dev fallback)
+            is_dev = os.getenv('POCOCLASS_DEV_MODE') == 'true'
             
             if is_dev:
                 # DEVELOPMENT MODE: Generate temporary key with warning
                 warning_msg = (
                     "⚠️  WARNING: POCOCLASS_SECRET_KEY not set - using TEMPORARY encryption key!\n"
-                    "   This is OK for development, but tokens will NOT persist across restarts.\n"
+                    "   This is OK for development (POCOCLASS_DEV_MODE=true), but tokens will NOT persist across restarts.\n"
                     "   For production, generate a persistent key:\n"
                     "     python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n"
                     "   Then set: POCOCLASS_SECRET_KEY=<your-generated-key>"
@@ -63,6 +58,8 @@ class TokenEncryption:
                     "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
                     "Then add it to your environment:\n"
                     "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
+                    "For development testing only, you can bypass this check with:\n"
+                    "  export POCOCLASS_DEV_MODE=true\n\n"
                     "Application startup ABORTED for security."
                 )
                 logger.critical(error_msg)
@@ -601,8 +598,19 @@ class Database:
         
         session = dict(row)
         
-        # Check if session expired
+        # Check if session expired (sliding window)
         if datetime.fromisoformat(session['expires_at']) < datetime.now():
+            logger.info(f"Session expired (sliding window timeout)")
+            self.delete_session(session_token)
+            return None
+        
+        # Check absolute session lifetime (prevents indefinite session extension)
+        absolute_max_hours = int(self.get_app_setting('session_absolute_max_hours', '168'))  # Default 7 days
+        created_at = datetime.fromisoformat(session['created_at'])
+        absolute_expiry = created_at + timedelta(hours=absolute_max_hours)
+        
+        if absolute_expiry < datetime.now():
+            logger.info(f"Session expired (absolute max lifetime of {absolute_max_hours} hours reached)")
             self.delete_session(session_token)
             return None
         
@@ -614,7 +622,7 @@ class Database:
             self.delete_session(session_token)
             return None
         
-        # Refresh session expiry on activity (activity-based timeout)
+        # Refresh session expiry on activity (sliding window timeout)
         self.refresh_session(session_token)
         
         return session
