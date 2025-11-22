@@ -480,7 +480,6 @@ export default function Rules() {
     <PageLayout
       title={t('rules.title')}
       subtitle={t('rules.subtitle')}
-      headerPadding="py-6"
       actions={
         <>
           <button 
@@ -834,18 +833,18 @@ export default function Rules() {
               <table className="w-full">
                 <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
                   <tr>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Title</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>ID</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Date Created</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Added</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Correspondent</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Document Type</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>CF: Doc Category</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Tags</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>POCO Score</th>
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Owner</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>View</th>
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>Actions</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.title')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.id')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.dateCreated')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.added')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.correspondent')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.documentTypeShort')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.cfDocCategory')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.tags')}</th>
+                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.pocoScore')}</th>
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.owner')}</th>
+                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.view')}</th>
+                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody style={{ backgroundColor: 'var(--app-surface)' }}>

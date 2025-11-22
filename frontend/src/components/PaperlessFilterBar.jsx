@@ -54,11 +54,14 @@ export default function PaperlessFilterBar({
     // Check if date range is different from default (last 7 days)
     const hasCustomDateRange = !isDefaultDateRange() && (filters.dateFrom || filters.dateTo);
     
+    // Only consider limit as active if it's different from default (10)
+    const hasCustomLimit = filters.limit && filters.limit !== 10;
+    
     return filters.title ||
            (filters.tagStates && Object.keys(filters.tagStates).length > 0) ||
            filters.correspondents.length > 0 ||
            filters.docTypes.length > 0 ||
-           (filters.limit && filters.limit > 0) ||
+           hasCustomLimit ||
            hasCustomDateRange;
   };
 
@@ -480,19 +483,18 @@ export default function PaperlessFilterBar({
         <div className="flex-grow"></div>
 
         {/* Reset Filters Button - Pill style */}
-        <button
-          onClick={onResetFilters}
-          disabled={!hasActiveFilters()}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all ${
-            hasActiveFilters() ? 'cursor-pointer' : 'cursor-not-allowed'
-          }`}
-          style={hasActiveFilters() ? { backgroundColor: 'transparent', color: 'var(--error-text)', border: '1px solid var(--error-border)' } : { backgroundColor: 'transparent', color: 'var(--app-text-muted)', border: '1px solid var(--app-border)' }}
-          onMouseEnter={(e) => hasActiveFilters() && (e.currentTarget.style.backgroundColor = 'var(--error-bg)')}
-          onMouseLeave={(e) => hasActiveFilters() && (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          <X className="w-4 h-4" />
-          {t('common.resetFilters')}
-        </button>
+        {hasActiveFilters() && (
+          <button
+            onClick={onResetFilters}
+            className="px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
+            style={{ backgroundColor: 'transparent', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--error-bg)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
+            <X className="w-4 h-4" />
+            {t('common.resetFilters')}
+          </button>
+        )}
       </div>
     </div>
   );
