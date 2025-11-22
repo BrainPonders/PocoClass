@@ -697,7 +697,7 @@
     "dynamicDataSection": "Dynamic Data Extraction",
     "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
     "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
-    "noDynamicRulesTitle": "No Dynamic Extraction Rules",
+    "noDynamicRulesTitle": "Keine dynamischen Extraktionsregeln",
     "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
     "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
     "labels": {
@@ -754,7 +754,16 @@
     "dropdown": {
       "alreadyUsed": " (already used)",
       "removePredefinedFirst": " (remove predefined value first)"
-    }
+    },
+    "invoiceNumberDefault": "Rechnungsnummer",
+    "referenceIdDefault": "Referenz-ID",
+    "documentCategoryDefault": "Dokumentkategorie",
+    "customFieldDefault": "Benutzerdefiniertes Feld",
+    "removePredefinedFirstMsg": "Entfernen Sie zuerst den vordefinierten Wert",
+    "dateCreatedLabel": "Erstellungsdatum",
+    "noDynamicRulesDesc": "Fügen Sie Regeln hinzu, um Daten aus OCR-Inhalten dynamisch zu extrahieren",
+    "dynamicExtractionRuleNum": "Dynamische Extraktionsregel #{number}",
+    "noOcrContent": "Kein OCR-Inhalt verfügbar"
   },
   "summary": {
     "reviewTooltip": "Überprüfen Sie Ihre Regelkonfiguration vor dem Speichern",

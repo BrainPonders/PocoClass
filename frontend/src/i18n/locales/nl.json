@@ -697,7 +697,7 @@
     "dynamicDataSection": "Dynamic Data Extraction",
     "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
     "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
-    "noDynamicRulesTitle": "No Dynamic Extraction Rules",
+    "noDynamicRulesTitle": "Geen dynamische extractieregels",
     "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
     "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
     "labels": {
@@ -754,7 +754,16 @@
     "dropdown": {
       "alreadyUsed": " (already used)",
       "removePredefinedFirst": " (remove predefined value first)"
-    }
+    },
+    "invoiceNumberDefault": "Factuurnummer",
+    "referenceIdDefault": "Referentie-ID",
+    "documentCategoryDefault": "Documentcategorie",
+    "customFieldDefault": "Aangepast veld",
+    "removePredefinedFirstMsg": "Verwijder eerst de voorgedefinieerde waarde",
+    "dateCreatedLabel": "Gemaaktdatum",
+    "noDynamicRulesDesc": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren",
+    "dynamicExtractionRuleNum": "Dynamische extractieregel #{number}",
+    "noOcrContent": "Geen OCR-inhoud beschikbaar"
   },
   "summary": {
     "reviewTooltip": "Controleer uw regelconfiguratie voordat u deze opslaat",

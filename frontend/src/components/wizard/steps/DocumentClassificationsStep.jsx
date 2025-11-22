@@ -73,9 +73,9 @@ export default function DocumentClassificationsStep({
       };
       
       const defaultCustomNames = {
-        customField1: 'Invoice Number',
-        customField2: 'Reference ID',
-        documentCategory: 'Document Category'
+        customField1: t('documentClassifications.invoiceNumberDefault'),
+        customField2: t('documentClassifications.referenceIdDefault'),
+        documentCategory: t('documentClassifications.documentCategoryDefault')
       };
       
       setFieldDisplaySettings(parsed.fieldDisplaySettings || defaultFieldSettings);
@@ -87,7 +87,7 @@ export default function DocumentClassificationsStep({
       const safeNames = {};
       Object.keys(rawNames).forEach(key => {
         const value = rawNames[key];
-        safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || 'Custom Field');
+        safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || t('documentClassifications.customFieldDefault'));
       });
       
       setCustomFieldNames(safeNames);
@@ -105,9 +105,9 @@ export default function DocumentClassificationsStep({
         documentCategory: 'predefined'
       });
       setCustomFieldNames({
-        customField1: 'Invoice Number',
-        customField2: 'Reference ID',
-        documentCategory: 'Document Category'
+        customField1: t('documentClassifications.invoiceNumberDefault'),
+        customField2: t('documentClassifications.referenceIdDefault'),
+        documentCategory: t('documentClassifications.documentCategoryDefault')
       });
     }
   };
@@ -369,10 +369,10 @@ export default function DocumentClassificationsStep({
         const hasPredefined = hasPredefinedValue('dateCreated');
         fields.push({ 
           value: 'dateCreated', 
-          label: 'Date Created', 
+          label: t('documentClassifications.dateCreatedLabel'), 
           canRepeat: false, 
           disabled: hasPredefined,
-          disabledReason: hasPredefined ? 'Remove predefined value first' : null
+          disabledReason: hasPredefined ? t('documentClassifications.removePredefinedFirstMsg') : null
         });
       }
       
@@ -392,11 +392,11 @@ export default function DocumentClassificationsStep({
           
           fields.push({ 
             value: fieldName,  // Use actual field name as value (e.g., "Total Price")
-            label: `Custom Field: ${fieldName}`, 
+            label: `${t('documentClassifications.labels.customFieldLabel', { name: fieldName })}`, 
             canRepeat: false,
             fieldKey: fieldKey,
             disabled: hasPredefined,
-            disabledReason: hasPredefined ? 'Remove predefined value first' : null
+            disabledReason: hasPredefined ? t('documentClassifications.removePredefinedFirstMsg') : null
           });
         }
       });
@@ -701,7 +701,7 @@ export default function DocumentClassificationsStep({
                       >
                         <option value="">{t('documentClassifications.placeholders.selectTargetField')}</option>
                         {targetFields.map(field => {
-                          const safeLabel = typeof field.label === 'string' ? field.label : String(field.label?.label || field.label?.name || 'Field');
+                          const safeLabel = typeof field.label === 'string' ? field.label : String(field.label?.label || field.label?.name || t('documentClassifications.customFieldDefault'));
                           const alreadyUsed = isFieldDisabled(field.value, index);
                           const hasPredefined = field.disabled;
                           const isDisabled = alreadyUsed || hasPredefined;
