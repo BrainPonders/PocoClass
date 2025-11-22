@@ -59,18 +59,18 @@ export default function LogFilterBar({ filters, onFilterChange }) {
   };
 
   return (
-    <div className="mb-4">
-      <div className="flex items-center gap-2 flex-wrap p-3 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+    <div className="mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
         {/* Title/Search Filter */}
-        <div className="flex items-center gap-2 px-3 py-2">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('common.search')}:</label>
-          <div className="relative flex items-center">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+          <label className="text-sm font-medium whitespace-nowrap min-w-fit" style={{ color: 'var(--app-text-secondary)' }}>{t('common.search')}:</label>
+          <div className="relative flex items-center flex-1">
             <input
               type="text"
               value={filters.search || ''}
               onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
               placeholder={t('filters.searchLogsPlaceholder')}
-              className="px-3 py-1.5 rounded text-sm w-56 focus:outline-none"
+              className="px-3 py-2 rounded text-sm w-full focus:outline-none"
               style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
               onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
@@ -88,10 +88,11 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         </div>
 
         {/* Type Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => setOpenFilter(openFilter === 'type' ? null : 'type')}
             {...getFilterButtonClass('type')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             {t('filters.type')}
             {filters.type !== 'all' && ` (1)`}
@@ -129,10 +130,11 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         </div>
 
         {/* Level Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => setOpenFilter(openFilter === 'level' ? null : 'level')}
             {...getFilterButtonClass('level')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <AlertCircle className="w-4 h-4" />
             {t('filters.level')}
@@ -170,10 +172,11 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         </div>
 
         {/* Dates Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => setOpenFilter(openFilter === 'dates' ? null : 'dates')}
             {...getFilterButtonClass('dates')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Calendar className="w-4 h-4" />
             {t('filters.dates')}
@@ -207,6 +210,10 @@ export default function LogFilterBar({ filters, onFilterChange }) {
           ))}
         </div>
 
+      </div>
+
+      {/* Status Bar - Reset Button */}
+      <div className="flex items-center justify-end gap-4 pt-2">
         {/* Reset Filters Button */}
         {hasActiveFilters() && (
           <button
@@ -217,9 +224,12 @@ export default function LogFilterBar({ filters, onFilterChange }) {
               dateTo: '',
               search: ''
             })}
-            className="ml-auto text-sm underline"
-            style={{ color: 'var(--app-text-secondary)' }}
+            className="px-4 py-2 rounded text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
+            style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
+            <X className="w-4 h-4" />
             {t('common.resetFilters')}
           </button>
         )}
