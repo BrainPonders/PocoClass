@@ -1,5 +1,6 @@
 import React from 'react';
 import { HelpCircle, Plus } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import InfoBox from '../InfoBox';
 import LogicGroupEditor from '../LogicGroupEditor';
 
@@ -9,6 +10,7 @@ export default function CoreIdentifiersStep({
   showInfoBoxes, 
   setShowInfoBoxes 
 }) {
+  const { t } = useLanguage();
   const addCoreLogicGroup = () => {
     const newGroup = {
       type: 'match',
@@ -37,7 +39,7 @@ export default function CoreIdentifiersStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">Step 2 of 7: Core Identifiers by OCR</h2>
+        <h2 className="text-2xl font-bold">{t('coreIdentifiers.title')}</h2>
         {!showInfoBoxes[2] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 2: true }))}
@@ -51,8 +53,7 @@ export default function CoreIdentifiersStep({
         )}
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
-        Define the essential patterns that must be found in documents for identification. 
-        These are the "must-have" elements that define your document type.
+        {t('coreIdentifiers.description')}
       </p>
 
       <InfoBox 
@@ -61,14 +62,13 @@ export default function CoreIdentifiersStep({
         setShowInfoBoxes={setShowInfoBoxes}
       >
         <div>
-          <h4 className="font-semibold text-sm mb-1">Core Identifiers</h4>
+          <h4 className="font-semibold text-sm mb-1">{t('coreIdentifiers.infoBoxTitle')}</h4>
           <p className="text-sm mb-2">
-            Core identifiers are the essential patterns that must be found for document identification. 
-            These are the "must-have" elements that define your document type.
+            {t('coreIdentifiers.infoBoxDescription')}
           </p>
           <p className="text-sm">
-            <strong>Scoring:</strong> Should total 70-100 points for reliable identification<br/>
-            <strong>Logic Groups:</strong> Each group can contain multiple conditions that work together
+            <strong>{t('coreIdentifiers.infoBoxScoringLabel')}</strong> {t('coreIdentifiers.infoBoxScoringValue')}<br/>
+            <strong>{t('coreIdentifiers.infoBoxLogicGroupsLabel')}</strong> {t('coreIdentifiers.infoBoxLogicGroupsValue')}
           </p>
         </div>
       </InfoBox>
@@ -76,14 +76,14 @@ export default function CoreIdentifiersStep({
       {ruleData.coreIdentifiers.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎯</div>
-          <h3 className="text-xl font-semibold mb-2">No Core Identifiers Yet</h3>
-          <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>Add your first logic group to define essential document patterns</p>
+          <h3 className="text-xl font-semibold mb-2">{t('coreIdentifiers.emptyStateTitle')}</h3>
+          <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>{t('coreIdentifiers.emptyStateDescription')}</p>
           <button 
             onClick={addCoreLogicGroup}
             className="btn btn-primary"
           >
             <Plus className="w-4 h-4" />
-            Add Logic Group
+            {t('coreIdentifiers.addLogicGroupButton')}
           </button>
         </div>
       ) : (
@@ -103,18 +103,18 @@ export default function CoreIdentifiersStep({
             className="btn btn-outline w-full"
           >
             <Plus className="w-4 h-4" />
-            Add Logic Group
+            {t('coreIdentifiers.addLogicGroupButton')}
           </button>
         </div>
       )}
 
       <div className="mt-6 p-4 border rounded-lg" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
-        <h4 className="font-semibold text-sm" style={{ color: 'var(--info-text)' }}>Score Summary</h4>
+        <h4 className="font-semibold text-sm" style={{ color: 'var(--info-text)' }}>{t('coreIdentifiers.scoreSummaryTitle')}</h4>
         <p className="text-sm" style={{ color: 'var(--info-text)' }}>
-          Total Core Score: {calculateCoreScore()}/100 points
+          {t('coreIdentifiers.totalCoreScore')} {calculateCoreScore()}/100 {t('coreIdentifiers.pointsUnit')}
           {calculateCoreScore() < 70 && (
             <span className="block mt-1">
-              ⚠️ Consider adding more points - core identifiers should total 70-100 points
+              {t('coreIdentifiers.lowScoreWarning')}
             </span>
           )}
         </p>

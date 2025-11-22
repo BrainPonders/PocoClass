@@ -1,15 +1,14 @@
 
 import React from 'react';
-import { Plus, Trash2 } from 'lucide-react'; // Changed from HelpCircle, added Trash2
-import Tooltip from '../Tooltip'; // Assuming Tooltip is a custom component
-import { useTranslation } from 'react-i18next'; // Added for t function
+import { Plus, Trash2 } from 'lucide-react';
+import Tooltip from '../Tooltip';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function BonusIdentifiersStep({ 
   ruleData, 
-  updateRuleData, 
-  // Removed showInfoBoxes, setShowInfoBoxes props
+  updateRuleData
 }) {
-  const { t } = useTranslation(); // Initialize useTranslation
+  const { t } = useLanguage();
 
   // Renamed and refactored from addBonusLogicGroup
   const addBonusIdentifier = () => {
@@ -35,9 +34,9 @@ export default function BonusIdentifiersStep({
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{t('step_3_title')}</h2>
-          <Tooltip content="Bonus identifiers are additional metadata fields that can help confirm document classification. They add extra points to the POCO score but are not required for classification." />
+          <Tooltip content={t('bonusIdentifiers.tooltip')} />
         </div>
-        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Add optional metadata fields that can increase classification confidence</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('bonusIdentifiers.description')}</p>
       </div>
 
       <div className="space-y-4 mb-6">
@@ -47,15 +46,15 @@ export default function BonusIdentifiersStep({
             <div key={index} className="card p-4 border rounded-lg shadow-sm" style={{ backgroundColor: 'var(--app-surface)' }}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <h4 className="font-semibold">Bonus Identifier {index + 1}</h4>
-                  <Tooltip content="Specify a metadata field name and its expected value. If the document's metadata matches this field and value, bonus points are added to the POCO score." />
+                  <h4 className="font-semibold">{t('bonusIdentifiers.identifierTitle')} {index + 1}</h4>
+                  <Tooltip content={t('bonusIdentifiers.identifierTooltip')} />
                 </div>
                 {ruleData.bonusIdentifiers.length > 1 && (
                   <button
                     onClick={() => removeBonusIdentifier(index)}
                     className="hover:text-red-500 transition-colors"
                     style={{ color: 'var(--app-text-muted)' }}
-                    aria-label={`Remove bonus identifier ${index + 1}`}
+                    aria-label={`${t('bonusIdentifiers.removeAriaLabel')} ${index + 1}`}
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -64,22 +63,22 @@ export default function BonusIdentifiersStep({
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 form-label" style={{ color: 'var(--app-text-secondary)' }}>Field Name</label>
+                  <label className="block text-sm font-medium mb-1 form-label" style={{ color: 'var(--app-text-secondary)' }}>{t('bonusIdentifiers.fieldNameLabel')}</label>
                   <input
                     type="text"
                     value={identifier.field}
                     onChange={(e) => updateBonusIdentifier(index, 'field', e.target.value)}
-                    placeholder="e.g., author, department"
+                    placeholder={t('bonusIdentifiers.fieldNamePlaceholder')}
                     className="mt-1 block w-full rounded-md shadow-sm sm:text-sm form-input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 form-label" style={{ color: 'var(--app-text-secondary)' }}>Expected Value</label>
+                  <label className="block text-sm font-medium mb-1 form-label" style={{ color: 'var(--app-text-secondary)' }}>{t('bonusIdentifiers.expectedValueLabel')}</label>
                   <input
                     type="text"
                     value={identifier.value}
                     onChange={(e) => updateBonusIdentifier(index, 'value', e.target.value)}
-                    placeholder="e.g., John Doe, Finance"
+                    placeholder={t('bonusIdentifiers.expectedValuePlaceholder')}
                     className="mt-1 block w-full rounded-md shadow-sm sm:text-sm form-input"
                   />
                 </div>
@@ -89,7 +88,7 @@ export default function BonusIdentifiersStep({
         ) : (
           <div className="text-center py-12 border border-dashed rounded-lg" style={{ color: 'var(--app-text-muted)' }}>
             <div className="text-4xl mb-3">✨</div>
-            <p className="mb-4">No bonus identifiers added yet. Click the button below to add one.</p>
+            <p className="mb-4">{t('bonusIdentifiers.emptyStateMessage')}</p>
           </div>
         )}
 
@@ -101,17 +100,17 @@ export default function BonusIdentifiersStep({
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
         >
           <Plus className="w-4 h-4" />
-          Add Bonus Identifier
+          {t('bonusIdentifiers.addButton')}
         </button>
       </div>
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">Bonus Weight Multiplier: {ruleData.bonusMultiplier || 1}×</h3>
-          <Tooltip content="Controls how much influence bonus identifiers have in the final POCO score. Higher values mean metadata matching is more important." />
+          <h3 className="font-semibold text-lg">{t('bonusIdentifiers.multiplierTitle')} {ruleData.bonusMultiplier || 1}×</h3>
+          <Tooltip content={t('bonusIdentifiers.multiplierTooltip')} />
         </div>
         <p className="text-sm mb-3" style={{ color: 'var(--app-text-secondary)' }}>
-          Controls how much weight bonus identifiers have in the final POCO score. Default is 1× for moderate influence.
+          {t('bonusIdentifiers.multiplierDescription')}
         </p>
         <div className="mt-2">
           <input
@@ -127,9 +126,9 @@ export default function BonusIdentifiersStep({
             }}
           />
           <div className="flex justify-between text-xs mt-1 px-1" style={{ color: 'var(--app-text-muted)' }}>
-            <span>1× (Default)</span>
-            <span>3× (Moderate)</span>
-            <span>5× (High)</span>
+            <span>{t('bonusIdentifiers.multiplierDefault')}</span>
+            <span>{t('bonusIdentifiers.multiplierModerate')}</span>
+            <span>{t('bonusIdentifiers.multiplierHigh')}</span>
           </div>
         </div>
       </div>

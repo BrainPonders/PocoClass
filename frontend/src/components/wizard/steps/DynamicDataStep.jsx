@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Wand2 } from 'lucide-react';
-import { useTranslation } from '@/components/translations';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import TagSelector from '@/components/TagSelector';
 import PatternHelperModal from '@/components/PatternHelperModal';
@@ -9,7 +9,7 @@ export default function DynamicDataStep({
   ruleData, 
   updateRuleData
 }) {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const isInitialized = useRef(false);
   const [showPatternHelper, setShowPatternHelper] = useState(false);
   const [patternHelperContext, setPatternHelperContext] = useState({ ruleIndex: null, field: null });
@@ -56,10 +56,10 @@ export default function DynamicDataStep({
   };
 
   const extractionTypes = [
-    { value: 'text', label: 'Text (until end of line)' },
-    { value: 'amount', label: 'Amount/Number' },
-    { value: 'date', label: 'Date' },
-    { value: 'multiple_lines', label: 'Multiple Lines' }
+    { value: 'text', label: t('dynamicData.extractionTypes.text') },
+    { value: 'amount', label: t('dynamicData.extractionTypes.amount') },
+    { value: 'date', label: t('dynamicData.extractionTypes.date') },
+    { value: 'multiple_lines', label: t('dynamicData.extractionTypes.multipleLines') }
   ];
 
   return (
@@ -69,7 +69,7 @@ export default function DynamicDataStep({
           <h2 className="text-2xl font-bold">{t('step_6_title')}</h2>
           <Tooltip content={t('tooltips.dynamicDataHelp')} />
         </div>
-        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>Configure data extraction rules to capture specific information from documents</p>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('dynamicData.configureDescription')}</p>
       </div>
 
       <div className="space-y-6">
@@ -77,7 +77,7 @@ export default function DynamicDataStep({
           <div key={index} className="card">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <h4 className="font-semibold text-lg">Extraction Rule {index + 1}</h4>
+                <h4 className="font-semibold text-lg">{t('dynamicData.extractionRule')} {index + 1}</h4>
                 <Tooltip content={t('tooltips.extractionRuleHelp')} />
               </div>
               {ruleData.dynamicData.length > 1 && (
@@ -85,7 +85,7 @@ export default function DynamicDataStep({
                   onClick={() => removeExtractionRule(index)}
                   className="hover:text-red-500 transition-colors"
                   style={{ color: 'var(--app-text-muted)' }}
-                  title="Remove extraction rule"
+                  title={t('dynamicData.removeExtractionRule')}
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -96,7 +96,7 @@ export default function DynamicDataStep({
               {/* Before Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>Before Anchor</h5>
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>{t('dynamicData.beforeAnchor')}</h5>
                   <Tooltip content={t('tooltips.beforeAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export default function DynamicDataStep({
                     onClick={() => openPatternHelper(index, 'before_anchor')}
                     className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                     type="button"
-                    title="Open Pattern Helper"
+                    title={t('wizard.openPatternHelper')}
                   >
                     <Wand2 className="w-5 h-5" />
                   </button>
@@ -121,7 +121,7 @@ export default function DynamicDataStep({
               {/* Extraction Type */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold text-green-600">Extraction Type</h5>
+                  <h5 className="text-sm font-semibold text-green-600">{t('dynamicData.extractionType')}</h5>
                   <Tooltip content={t('tooltips.extractTypeHelp')} />
                 </div>
                 <select
@@ -138,7 +138,7 @@ export default function DynamicDataStep({
               {/* After Anchor */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>After Anchor</h5>
+                  <h5 className="text-sm font-semibold" style={{ color: 'var(--info-text)' }}>{t('dynamicData.afterAnchor')}</h5>
                   <Tooltip content={t('tooltips.afterAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export default function DynamicDataStep({
                     onClick={() => openPatternHelper(index, 'after_anchor')}
                     className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                     type="button"
-                    title="Open Pattern Helper"
+                    title={t('wizard.openPatternHelper')}
                   >
                     <Wand2 className="w-5 h-5" />
                   </button>
@@ -163,7 +163,7 @@ export default function DynamicDataStep({
               {/* Target Field with Tag Selector */}
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h5 className="text-sm font-semibold">Target Field (Tags)</h5>
+                  <h5 className="text-sm font-semibold">{t('dynamicData.targetField')}</h5>
                   <Tooltip content={t('tooltips.targetTagHelp')} />
                 </div>
                 <TagSelector
@@ -186,7 +186,7 @@ export default function DynamicDataStep({
           onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
         >
           <Plus className="w-4 h-4" />
-          Add Extraction Rule
+          {t('dynamicData.addExtractionRule')}
         </button>
       </div>
 

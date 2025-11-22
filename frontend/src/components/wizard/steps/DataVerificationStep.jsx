@@ -70,16 +70,16 @@ export default function DataVerificationStep({
   };
 
   const allVerificationFields = [
-    { key: 'title', label: 'Title' },
-    { key: 'archiveSerialNumber', label: 'Archive Serial Number' },
-    { key: 'dateCreated', label: 'Date Created' },
-    { key: 'correspondent', label: 'Correspondent' },
-    { key: 'documentType', label: 'Document Type' },
-    { key: 'storagePath', label: 'Storage Path' },
-    { key: 'tags', label: 'Tags' },
-    { key: 'documentCategory', label: 'Document Category', isCustom: true },
-    { key: 'customField1', label: 'Custom Field 1', isCustom: true },
-    { key: 'customField2', label: 'Custom Field 2', isCustom: true }
+    { key: 'title', label: t('fields.title') },
+    { key: 'archiveSerialNumber', label: t('fields.archiveSerialNumber') },
+    { key: 'dateCreated', label: t('fields.dateCreated') },
+    { key: 'correspondent', label: t('fields.correspondent') },
+    { key: 'documentType', label: t('fields.documentType') },
+    { key: 'storagePath', label: t('fields.storagePath') },
+    { key: 'tags', label: t('fields.tags') },
+    { key: 'documentCategory', label: t('fields.documentCategory'), isCustom: true },
+    { key: 'customField1', label: t('fields.customField') + ' 1', isCustom: true },
+    { key: 'customField2', label: t('fields.customField') + ' 2', isCustom: true }
   ];
 
   const verificationFields = allVerificationFields.filter(field => 
@@ -104,7 +104,7 @@ export default function DataVerificationStep({
     if (field.isCustom) {
       const rawName = customFieldNames[field.key];
       const fieldName = typeof rawName === 'string' ? rawName : (rawName?.label || rawName?.name || field.label);
-      return `Custom Field: ${fieldName}`;
+      return t('fields.customFieldLabel', { name: fieldName });
     }
     return field.label;
   };
@@ -148,23 +148,23 @@ export default function DataVerificationStep({
               : ''
           }`}
             style={!isStepEnabled() ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : {}}>
-            {isStepEnabled() ? 'Enabled' : 'Disabled'}
+            {isStepEnabled() ? t('status.enabled') : t('status.disabled')}
           </div>
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
-          Select which Paperless placeholders must be verified and configure verification multiplier.
+          {t('wizard.verificationDescription')}
           <span className="block mt-2 text-sm italic">
-            This step is optional. If you don't enable any fields, it will remain disabled and you can proceed to the next step.
+            {t('wizard.verificationOptionalNote')}
           </span>
         </p>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h3 className="font-semibold text-lg mb-4">Select Placeholders for Verification</h3>
+          <h3 className="font-semibold text-lg mb-4">{t('wizard.selectPlaceholdersLabel')}</h3>
           {verificationFields.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
-              <p style={{ color: 'var(--app-text-muted)' }}>No placeholders enabled. Enable placeholders in Settings &gt; Step 5.</p>
+              <p style={{ color: 'var(--app-text-muted)' }}>{t('wizard.noPlaceholdersEnabled')}</p>
             </div>
           ) : (
             <div className="space-y-2">

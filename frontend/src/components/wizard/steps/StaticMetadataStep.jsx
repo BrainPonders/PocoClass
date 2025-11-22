@@ -42,7 +42,7 @@ export default function StaticMetadataStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">Step 4 of 7: Static Metadata</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step4Of7Title')}</h2>
         {!showInfoBoxes[4] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 4: true }))}
@@ -56,8 +56,7 @@ export default function StaticMetadataStep({
         )}
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
-        Configure fixed information that applies to all documents matching this rule. 
-        This is constant data assigned once a document is recognized.
+        {t('wizard.staticMetadataDescription')}
       </p>
 
       <InfoBox 
@@ -66,10 +65,9 @@ export default function StaticMetadataStep({
         setShowInfoBoxes={setShowInfoBoxes}
       >
         <div>
-          <h4 className="font-semibold text-sm mb-1">Static Metadata</h4>
+          <h4 className="font-semibold text-sm mb-1">{t('wizard.staticMetadataInfoTitle')}</h4>
           <p className="text-sm">
-            This is constant data you want to assign to a document once it's recognized. 
-            For example, every statement of a certain type will always have the same correspondent assigned.
+            {t('wizard.staticMetadataInfoText')}
           </p>
         </div>
       </InfoBox>
@@ -77,7 +75,7 @@ export default function StaticMetadataStep({
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
-            <label className="form-label">Correspondent</label>
+            <label className="form-label">{t('fields.correspondent')}</label>
             <input
               type="text"
               value={ruleData.staticMetadata.correspondent}
@@ -85,11 +83,11 @@ export default function StaticMetadataStep({
               placeholder={t('placeholders.organizationName')}
               className="form-input"
             />
-            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown from your system.</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>{t('fields.ideallyDropdownFromSystem')}</p>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Document Type</label>
+            <label className="form-label">{t('fields.documentType')}</label>
             <input
               type="text"
               value={ruleData.staticMetadata.documentType}
@@ -97,12 +95,12 @@ export default function StaticMetadataStep({
               placeholder={t('placeholders.yearStatement')}
               className="form-input"
             />
-            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>Ideally, this would be a dropdown.</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>{t('fields.ideallyDropdown')}</p>
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Tags</label>
+          <label className="form-label">{t('fields.tags')}</label>
           <div className="flex gap-2 mb-2">
             <input
               type="text"
@@ -126,7 +124,7 @@ export default function StaticMetadataStep({
               }}
               className="btn btn-secondary"
             >
-              Add
+              {t('common.add')}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -147,13 +145,13 @@ export default function StaticMetadataStep({
 
         <div className="form-group">
           <div className="flex justify-between items-center mb-3">
-            <label className="form-label">Custom Fields</label>
+            <label className="form-label">{t('fields.customFields')}</label>
             <button 
               onClick={addCustomField}
               className="btn btn-secondary btn-sm"
             >
               <Plus className="w-4 h-4" />
-              Add Custom Field
+              {t('fields.addCustomField')}
             </button>
           </div>
           {ruleData.staticMetadata?.customFields?.map((field, index) => (

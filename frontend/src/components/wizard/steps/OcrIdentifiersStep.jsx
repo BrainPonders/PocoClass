@@ -178,7 +178,7 @@ export default function OcrIdentifiersStep({
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step2Description')}</p>
         {selectedDocumentId && selectedDocumentName && (
           <div className="mt-2 p-2 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-            📄 Working with: <span className="font-medium">{selectedDocumentName}</span>
+            📄 {t('wizard.workingWith')} <span className="font-medium">{selectedDocumentName}</span>
           </div>
         )}
         {filledGroups < 3 && (
@@ -211,7 +211,7 @@ export default function OcrIdentifiersStep({
 
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">OCR Score Requirement</h3>
+          <h3 className="font-semibold text-lg">{t('wizard.ocrScoreRequirement')}</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
         </div>
         
@@ -255,7 +255,7 @@ export default function OcrIdentifiersStep({
 
       <div className="mt-8">
         <div className="flex items-center gap-2 mb-2">
-          <h3 className="font-semibold text-lg">OCR Weight Multiplier</h3>
+          <h3 className="font-semibold text-lg">{t('wizard.ocrWeightMultiplier')}</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
         </div>
         
@@ -297,48 +297,48 @@ export default function OcrIdentifiersStep({
       </div>
 
       <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>Configuration Summary</h4>
+        <h4 className="font-semibold text-sm mb-2" style={{ color: 'var(--info-text)' }}>{t('wizard.configSummary')}</h4>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Logic groups:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.logicGroups')}:</span>
             <span className="ml-2 font-medium">{ruleData.ocrIdentifiers?.length || 0}</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Total identifiers:</span>
-            <span className="ml-2 font-medium">{totalIdentifiers} <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>(including AND)</span></span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.totalIdentifiers')}:</span>
+            <span className="ml-2 font-medium">{totalIdentifiers} <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('wizard.includingAnd')}</span></span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>OCR score requirement:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.ocrScoreRequirementLabel')}:</span>
             <span className="ml-2 font-medium">{ocrThreshold}%</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>OCR multiplier:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.ocrMultiplier')}:</span>
             <span className="ml-2 font-medium">{ocrMultiplier}×</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Pattern weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.patternWeight')}:</span>
             <span className="ml-2 font-medium">{totalIdentifiers}</span>
           </div>
           <div>
-            <span style={{ color: 'var(--app-text-secondary)' }}>Max OCR weight:</span>
+            <span style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.maxOcrWeight')}:</span>
             <span className="ml-2 font-medium">{maxOcrWeight}</span>
           </div>
           {totalIdentifiers > 0 && (
             <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
-              <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: If all {totalIdentifiers} pattern{totalIdentifiers !== 1 ? 's' : ''} match, OCR Score = ({totalIdentifiers}/{totalIdentifiers}) × 100 = 100%. Max OCR weight = {maxOcrWeight} points.</span>
+              <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>{t('wizard.ocrExampleText', { count: totalIdentifiers, plural: totalIdentifiers !== 1 ? 's' : '', weight: maxOcrWeight })}</span>
             </div>
           )}
         </div>
         {ocrThreshold !== 75 && (
           <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
-            <span>OCR Score requirement changed from default (75%).</span>
+            <span>{t('wizard.ocrScoreChangedWarning')}</span>
           </div>
         )}
         {ocrMultiplier !== 3 && (
           <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
-            <span>OCR multiplier changed from default (3×).</span>
+            <span>{t('wizard.ocrMultiplierChangedWarning')}</span>
           </div>
         )}
       </div>

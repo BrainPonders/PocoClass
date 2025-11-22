@@ -78,9 +78,9 @@ export default function Rules() {
         if (isMounted) {
           console.error('Error loading rules:', error);
           if (error.message && error.message.includes('Rate limit')) {
-            showToast('Too many requests. Please wait a moment.', 'warning');
+            showToast(t('toasts.tooManyRequests'), 'warning');
           } else {
-            showToast('Error loading rules', 'error');
+            showToast(t('toasts.errorLoadingRules'), 'error');
           }
         }
       } finally {

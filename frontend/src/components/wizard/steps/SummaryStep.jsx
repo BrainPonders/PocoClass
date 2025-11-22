@@ -41,39 +41,39 @@ export default function SummaryStep({
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
         <h2 className="text-2xl font-bold">{t('wizard.step6')}</h2>
-        <Tooltip content="Review all your rule configurations before saving. You can go back to any step to make changes if needed." />
+        <Tooltip content={t('summary.reviewTooltip')} />
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
-        Review your rule configuration before saving
+        {t('summary.reviewConfiguration')}
       </p>
 
       <div className="space-y-6">
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">Basic Information</h3>
+            <h3 className="font-semibold text-lg">{t('summary.basicInformation')}</h3>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Rule Name:</span>
-              <span className="font-medium">{ruleData.ruleName || 'Not set'}</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.ruleName')}</span>
+              <span className="font-medium">{ruleData.ruleName || t('common.notSet')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Rule ID:</span>
-              <span className="font-medium font-mono text-xs">{ruleData.ruleId || 'Not set'}</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.ruleId')}</span>
+              <span className="font-medium font-mono text-xs">{ruleData.ruleId || t('common.notSet')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Threshold:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.threshold')}</span>
               <span className="font-medium">{ruleData.threshold}%</span>
             </div>
             <div className="flex justify-between items-center">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Status:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.status')}</span>
               <select
                 value={ruleData.status || 'new'}
                 onChange={(e) => {
                   const newStatus = e.target.value;
                   if (newStatus === 'active') {
-                    if (window.confirm('⚠️ WARNING: Activating this rule will allow it to automatically process documents in your Paperless archive during background processing. This may modify your documents. Are you sure you want to activate this rule?')) {
+                    if (window.confirm(t('summary.activateRuleWarning'))) {
                       updateRuleData('status', newStatus);
                     } else {
                       // Reset dropdown to current value
@@ -94,21 +94,21 @@ export default function SummaryStep({
               >
                 {ruleData.status === 'new' ? (
                   <>
-                    <option value="new">New</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="new">{t('status.new')}</option>
+                    <option value="active">{t('status.active')}</option>
+                    <option value="inactive">{t('status.inactive')}</option>
                   </>
                 ) : (
                   <>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">{t('status.active')}</option>
+                    <option value="inactive">{t('status.inactive')}</option>
                   </>
                 )}
               </select>
             </div>
             {ruleData.status === 'active' && (
               <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-                <strong>⚠️ Active Rule:</strong> This rule will process documents automatically during background processing.
+                {t('summary.activeRuleNote')}
               </div>
             )}
           </div>
@@ -117,28 +117,28 @@ export default function SummaryStep({
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">OCR Identifiers</h3>
+            <h3 className="font-semibold text-lg">{t('summary.ocrIdentifiers')}</h3>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Logic Groups:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.logicGroups')}</span>
               <span className="font-medium">{ruleData.ocrIdentifiers?.length || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Total Identifiers:</span>
-              <span className="font-medium">{totalOcrIdentifiers} patterns</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.totalIdentifiers')}</span>
+              <span className="font-medium">{totalOcrIdentifiers} {t('common.patterns')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>OCR Threshold:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.ocrThreshold')}</span>
               <span className="font-medium">{ruleData.ocrThreshold || 75}%</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>OCR Multiplier:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.ocrMultiplier')}</span>
               <span className="font-medium">{ocrMultiplier}×</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Maximum OCR Weight:</span>
-              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.ocrMax} points</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.maxOcrWeight')}</span>
+              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.ocrMax} {t('common.points')}</span>
             </div>
           </div>
         </div>
@@ -146,28 +146,28 @@ export default function SummaryStep({
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">Filename Identification</h3>
+            <h3 className="font-semibold text-lg">{t('summary.filenameIdentification')}</h3>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Filename Patterns:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.filenamePatterns')}</span>
               <span className="font-medium">{ruleData.filenamePatterns?.patterns?.length || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Date Formats:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.dateFormats')}</span>
               <span className="font-medium">{ruleData.filenamePatterns?.dateFormats?.length || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Total Patterns:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.totalPatterns')}</span>
               <span className="font-medium">{totalFilenamePatterns}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Filename Multiplier:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.filenameMultiplier')}</span>
               <span className="font-medium">{filenameMultiplier}×</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Maximum Filename Weight:</span>
-              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.filenameMax} points</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.maxFilenameWeight')}</span>
+              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.filenameMax} {t('common.points')}</span>
             </div>
           </div>
         </div>
@@ -175,24 +175,24 @@ export default function SummaryStep({
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">Data Verification</h3>
+            <h3 className="font-semibold text-lg">{t('summary.dataVerification')}</h3>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Enabled Fields:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.enabledFields')}</span>
               <span className="font-medium">{totalVerificationFields}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Verification Multiplier:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.verificationMultiplier')}</span>
               <span className="font-medium">
                 {verificationMultiplierConfig.mode === 'auto' 
-                  ? `Auto (${verificationMultiplier.toFixed(2)}×)` 
+                  ? `${t('summary.auto')} (${verificationMultiplier.toFixed(2)}×)` 
                   : `${verificationMultiplier.toFixed(2)}×`}
               </span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Maximum Verification Weight:</span>
-              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.verificationMax.toFixed(1)} points</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.maxVerificationWeight')}</span>
+              <span className="font-medium" style={{ color: 'var(--info-text)' }}>{weights.verificationMax.toFixed(1)} {t('common.points')}</span>
             </div>
           </div>
         </div>
@@ -200,60 +200,60 @@ export default function SummaryStep({
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
-            <h3 className="font-semibold text-lg">Document Classifications</h3>
+            <h3 className="font-semibold text-lg">{t('summary.documentClassifications')}</h3>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Correspondent:</span>
-              <span className="font-medium">{ruleData.predefinedData?.correspondent || 'Not set'}</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.correspondent')}</span>
+              <span className="font-medium">{ruleData.predefinedData?.correspondent || t('common.notSet')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Document Type:</span>
-              <span className="font-medium">{ruleData.predefinedData?.documentType || 'Not set'}</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.documentType')}</span>
+              <span className="font-medium">{ruleData.predefinedData?.documentType || t('common.notSet')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Tags:</span>
-              <span className="font-medium">{ruleData.predefinedData?.tags?.length || 0} tags</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.tags')}</span>
+              <span className="font-medium">{ruleData.predefinedData?.tags?.length || 0} {t('common.tags')}</span>
             </div>
             <div className="flex justify-between">
-              <span style={{ color: 'var(--app-text-secondary)' }}>Dynamic Extraction Rules:</span>
+              <span style={{ color: 'var(--app-text-secondary)' }}>{t('summary.dynamicExtractionRules')}</span>
               <span className="font-medium">{ruleData.dynamicData?.extractionRules?.length || 0}</span>
             </div>
           </div>
         </div>
 
         <div className="card" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
-          <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--info-text)' }}>POCO Score Calculation</h3>
+          <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--info-text)' }}>{t('summary.pocoScoreCalculation')}</h3>
           <div className="space-y-3 text-sm">
             <div>
-              <p className="font-semibold mb-2" style={{ color: 'var(--info-text)' }}>Maximum Possible Weights:</p>
+              <p className="font-semibold mb-2" style={{ color: 'var(--info-text)' }}>{t('summary.maxPossibleWeights')}</p>
               <div className="space-y-1 ml-4" style={{ color: 'var(--info-text)' }}>
-                <p>• OCR: {weights.ocrMax.toFixed(1)} points</p>
-                <p>• Filename: {weights.filenameMax.toFixed(1)} points</p>
-                <p>• Verification: {weights.verificationMax.toFixed(1)} points</p>
+                <p>• {t('summary.ocrLabel')} {weights.ocrMax.toFixed(1)} {t('common.points')}</p>
+                <p>• {t('summary.filenameLabel')} {weights.filenameMax.toFixed(1)} {t('common.points')}</p>
+                <p>• {t('summary.verificationLabel')} {weights.verificationMax.toFixed(1)} {t('common.points')}</p>
                 <p className="font-semibold pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
-                  Total Maximum Weight: {weights.totalMax.toFixed(1)} points
+                  {t('summary.totalMaxWeight')} {weights.totalMax.toFixed(1)} {t('common.points')}
                 </p>
               </div>
             </div>
 
             <div>
-              <p className="font-semibold mb-2" style={{ color: 'var(--info-text)' }}>Example Calculation ({exampleMatchRate * 100}% match rate):</p>
+              <p className="font-semibold mb-2" style={{ color: 'var(--info-text)' }}>{t('summary.exampleCalculation', { matchRate: exampleMatchRate * 100 })}</p>
               <div className="space-y-1 ml-4" style={{ color: 'var(--info-text)' }}>
-                <p>• OCR Score: {exampleScore.ocrScore.toFixed(1)}</p>
-                <p>• Filename Score: {exampleScore.filenameScore.toFixed(1)}</p>
-                <p>• Verification Score: {exampleScore.verificationScore.toFixed(1)}</p>
+                <p>• {t('summary.ocrScoreLabel')} {exampleScore.ocrScore.toFixed(1)}</p>
+                <p>• {t('summary.filenameScoreLabel')} {exampleScore.filenameScore.toFixed(1)}</p>
+                <p>• {t('summary.verificationScoreLabel')} {exampleScore.verificationScore.toFixed(1)}</p>
                 <p className="font-semibold pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
-                  POCO Score: {exampleScore.pocoPercentage}%
+                  {t('summary.pocoScoreLabel')} {exampleScore.pocoPercentage}%
                 </p>
               </div>
             </div>
 
             <div className="pt-3" style={{ borderTop: '1px solid var(--info-border)' }}>
-              <p className="font-semibold mb-1" style={{ color: 'var(--info-text)' }}>Thresholds:</p>
+              <p className="font-semibold mb-1" style={{ color: 'var(--info-text)' }}>{t('summary.thresholds')}</p>
               <div className="space-y-1 ml-4" style={{ color: 'var(--info-text)' }}>
-                <p>• OCR Threshold: {ruleData.ocrThreshold || 75}% (must be reached for rule to pass)</p>
-                <p>• POCO Threshold: {ruleData.threshold}% (must be reached for classification)</p>
+                <p>{t('summary.ocrThresholdLabel', { threshold: ruleData.ocrThreshold || 75 })}</p>
+                <p>{t('summary.pocoThresholdLabel', { threshold: ruleData.threshold })}</p>
               </div>
             </div>
           </div>

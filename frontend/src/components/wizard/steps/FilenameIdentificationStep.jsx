@@ -111,7 +111,7 @@ export default function FilenameIdentificationStep({
         {patterns.map((pattern, index) => (
           <div key={index}>
             <div className="flex items-center gap-2 mb-2">
-              <label className="text-sm font-semibold">Filename Pattern {index + 1}</label>
+              <label className="text-sm font-semibold">{t('wizard.filenamePattern')} {index + 1}</label>
               <Tooltip content={t('tooltips.filenamePatternHelp')} />
               {patterns.length > 1 && (
                 <button
@@ -119,7 +119,7 @@ export default function FilenameIdentificationStep({
                   className="hover:text-red-500 transition-colors ml-auto"
                   style={{ color: 'var(--app-text-muted)' }}
                   type="button"
-                  title="Remove pattern"
+                  title={t('wizard.removePattern')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -138,7 +138,7 @@ export default function FilenameIdentificationStep({
                 onClick={() => openPatternHelper(index)}
                 className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
                 type="button"
-                title="Open Pattern Helper"
+                title={t('wizard.openPatternHelper')}
               >
                 <Wand2 className="w-5 h-5" />
               </button>
@@ -220,19 +220,19 @@ export default function FilenameIdentificationStep({
             <span className="ml-2 font-medium">{maxFilenameWeight}</span>
           </div>
           <div className="col-span-2 mt-1 pt-2" style={{ borderTop: '1px solid var(--info-border)' }}>
-            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>Example: With {totalPatterns} pattern{totalPatterns !== 1 ? 's' : ''} defined, max filename weight = {totalPatterns} × {totalPatterns} × {filenameMultiplier} = {maxFilenameWeight} points.</span>
+            <span className="text-xs italic" style={{ color: 'var(--app-text-muted)' }}>{t('wizard.filenameExampleText', { count: totalPatterns, plural: totalPatterns !== 1 ? 's' : '', multiplier: filenameMultiplier, weight: maxFilenameWeight })}</span>
           </div>
         </div>
         {filenameMultiplier > 1 && (
           <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
-            <span>Filename multiplier increased from default (1×).</span>
+            <span>{t('wizard.filenameMultiplierWarning')}</span>
           </div>
         )}
         {maxFilenameWeight > maxOcrWeight && totalPatterns > 0 && (
           <div className="mt-2 pt-2 text-amber-700 flex items-center gap-2" style={{ borderTop: '1px solid var(--info-border)' }}>
             <AlertTriangle className="w-4 h-4" />
-            <span>Filename weight exceeds OCR weight.</span>
+            <span>{t('wizard.filenameWeightExceedsOcr')}</span>
           </div>
         )}
       </div>

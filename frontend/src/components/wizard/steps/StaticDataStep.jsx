@@ -53,7 +53,7 @@ export default function StaticDataStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">Step 3 of 6: Defining Static Classification Data</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step3Of6Title')}</h2>
         {!showInfoBoxes[3] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 3: true }))}
@@ -67,7 +67,7 @@ export default function StaticDataStep({
         )}
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>
-        Configure fixed classification data that applies to all documents matching this rule.
+        {t('wizard.staticDataDescription')}
       </p>
 
       <InfoBox 
@@ -76,17 +76,16 @@ export default function StaticDataStep({
         setShowInfoBoxes={setShowInfoBoxes}
       >
         <div>
-          <h4 className="font-semibold text-sm mb-1">Static Classification Data</h4>
+          <h4 className="font-semibold text-sm mb-1">{t('wizard.staticClassificationDataInfoTitle')}</h4>
           <p className="text-sm">
-            This is constant data you want to assign to a document once it's recognized. 
-            Greyed out fields are automatically populated by the system.
+            {t('wizard.staticClassificationDataInfoText')}
           </p>
         </div>
       </InfoBox>
 
       <div className="space-y-6">
         <div className="form-group">
-          <label className="form-label">Title</label>
+          <label className="form-label">{t('fields.title')}</label>
           <input
             type="text"
             disabled
@@ -97,7 +96,7 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Archive Serial Number</label>
+          <label className="form-label">{t('fields.archiveSerialNumber')}</label>
           <input
             type="text"
             disabled
@@ -108,7 +107,7 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Date Created</label>
+          <label className="form-label">{t('fields.dateCreated')}</label>
           <input
             type="text"
             disabled
@@ -119,49 +118,49 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Correspondent</label>
+          <label className="form-label">{t('fields.correspondent')}</label>
           {isLoading ? (
-            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>Loading...</div>
+            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
           ) : (
             <select
               value={ruleData.predefinedData?.correspondent || ''}
               onChange={(e) => updateRuleData('predefinedData', { correspondent: e.target.value })}
               className="form-input"
             >
-              <option value="">-- Select Correspondent --</option>
+              <option value="">{t('fields.selectCorrespondent')}</option>
               {correspondents.map(corr => (
                 <option key={corr} value={corr}>{corr}</option>
               ))}
             </select>
           )}
           <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
-            {correspondents.length > 0 ? `${correspondents.length} correspondents available` : 'No correspondents found. Run sync in Settings.'}
+            {correspondents.length > 0 ? t('fields.correspondentsAvailable', { count: correspondents.length }) : t('fields.noCorrespondentsFound')}
           </p>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Document Type</label>
+          <label className="form-label">{t('fields.documentType')}</label>
           {isLoading ? (
-            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>Loading...</div>
+            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
           ) : (
             <select
               value={ruleData.predefinedData?.documentType || ''}
               onChange={(e) => updateRuleData('predefinedData', { documentType: e.target.value })}
               className="form-input"
             >
-              <option value="">-- Select Document Type --</option>
+              <option value="">{t('fields.selectDocumentType')}</option>
               {documentTypes.map(dt => (
                 <option key={dt} value={dt}>{dt}</option>
               ))}
             </select>
           )}
           <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>
-            {documentTypes.length > 0 ? `${documentTypes.length} document types available` : 'No document types found. Run sync in Settings.'}
+            {documentTypes.length > 0 ? t('fields.documentTypesAvailable', { count: documentTypes.length }) : t('fields.noDocumentTypesFound')}
           </p>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Storage Path</label>
+          <label className="form-label">{t('fields.storagePath')}</label>
           <input
             type="text"
             disabled
@@ -172,7 +171,7 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Tags</label>
+          <label className="form-label">{t('fields.tags')}</label>
           <div className="flex gap-2 mb-2">
             <input
               type="text"
@@ -196,12 +195,12 @@ export default function StaticDataStep({
               }}
               className="btn btn-secondary"
             >
-              Add
+              {t('common.add')}
             </button>
           </div>
           {availableTags.length > 0 && (
             <div className="mb-2">
-              <p className="text-xs mb-1" style={{ color: 'var(--app-text-muted)' }}>Suggested tags:</p>
+              <p className="text-xs mb-1" style={{ color: 'var(--app-text-muted)' }}>{t('fields.suggestedTags')}</p>
               <div className="flex flex-wrap gap-1">
                 {availableTags.slice(0, 10).map(tag => (
                   <button
@@ -237,17 +236,17 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">Custom Field</label>
+          <label className="form-label">{t('fields.customField')}</label>
           <input
             type="text"
             placeholder={t('placeholders.definedPaperless')}
             className="form-input"
           />
-          <p className="text-xs text-gray-500 mt-1">Custom fields are predefined in Paperless.</p>
+          <p className="text-xs text-gray-500 mt-1">{t('fields.customFieldsPredefinedNote')}</p>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Document Category</label>
+          <label className="form-label">{t('fields.documentCategory')}</label>
           <input
             type="text"
             value={ruleData.predefinedData?.documentCategory || ''}
@@ -258,7 +257,7 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">POCO Score</label>
+          <label className="form-label">{t('fields.pocoScore')}</label>
           <input
             type="text"
             disabled
@@ -269,7 +268,7 @@ export default function StaticDataStep({
         </div>
 
         <div className="form-group">
-          <label className="form-label">POCO OCR</label>
+          <label className="form-label">{t('fields.pocoOcr')}</label>
           <input
             type="text"
             disabled
