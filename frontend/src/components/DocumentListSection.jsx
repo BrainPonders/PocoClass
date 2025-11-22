@@ -153,21 +153,21 @@ export default function DocumentListSection({
                       </button>
                     </th>
                   )}
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.title')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.id')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.dateCreated')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.added')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.correspondent')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.documentTypeShort')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.cfDocCategory')}</th>
-                  <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.tags')}</th>
-                  <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.pocoScore')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.title')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.id')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.dateCreated')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.added')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.correspondent')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.documentTypeShort')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.cfDocCategory')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.tags')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-center text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.pocoScore')}</th>
                   {showOwnerColumn && (
-                    <th className="px-2 py-1 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.owner')}</th>
+                    <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-left text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.owner')}</th>
                   )}
-                  <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.view')}</th>
+                  <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-center text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.view')}</th>
                   {renderCustomActions && (
-                    <th className="px-2 py-1 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.actions')}</th>
+                    <th className={`px-2 ${!showSelectionCheckboxes ? 'py-2' : 'py-1'} text-center text-xs font-medium uppercase`} style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.actions')}</th>
                   )}
                 </tr>
               </thead>
