@@ -635,34 +635,34 @@ export default function BackgroundProcess() {
           <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
             {t('backgroundProcess.testRulesAgainst')}
           </p>
-          
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>
-              {t('backgroundProcess.matchingDocuments')} ({matchingDocuments.length})
-            </h3>
-            <DocumentListSection
-              documents={matchingDocuments}
-              isLoading={loadingDocuments}
-              filters={filters}
-              onFiltersChange={setFilters}
-              selectedDocuments={selectedDocuments}
-              onSelectionChange={toggleDocumentSelection}
-              allSelected={allSelected}
-              onSelectAllChange={toggleSelectAll}
-              allTags={allTags}
-              allCorrespondents={allCorrespondents}
-              allDocTypes={allDocTypes}
-              showSelectionCheckboxes={true}
-              showOwnerColumn={true}
-              onViewOCR={handleViewOCR}
-              onViewPDF={handleViewPDF}
-              noDocumentsMessage={t('backgroundProcess.noDocumentsMatch')}
-            />
-          </div>
+        </CardContent>
+      </Card>
 
-          {/* Action Buttons */}
-          <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-            <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>Processing Actions</h4>
+      <DocumentListSection
+        title={`${t('backgroundProcess.matchingDocuments')} (${matchingDocuments.length})`}
+        documents={matchingDocuments}
+        isLoading={loadingDocuments}
+        filters={filters}
+        onFiltersChange={setFilters}
+        selectedDocuments={selectedDocuments}
+        onSelectionChange={toggleDocumentSelection}
+        allSelected={allSelected}
+        onSelectAllChange={toggleSelectAll}
+        allTags={allTags}
+        allCorrespondents={allCorrespondents}
+        allDocTypes={allDocTypes}
+        showSelectionCheckboxes={true}
+        showOwnerColumn={true}
+        onViewOCR={handleViewOCR}
+        onViewPDF={handleViewPDF}
+        noDocumentsMessage={t('backgroundProcess.noDocumentsMatch')}
+        cardClassName="mb-8"
+      />
+
+      <Card className="mb-8">
+        <CardContent className="pt-6">
+
+          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>Processing Actions</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Dry Run Button */}
@@ -703,9 +703,8 @@ export default function BackgroundProcess() {
               </div>
             </div>
             
-            <div className="mt-4 p-3 rounded text-xs" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-              <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
-            </div>
+          <div className="mt-4 p-3 rounded text-xs" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
+            <strong>Note:</strong> Only rules with status "active" are applied during Run. Dry Run tests all rules regardless of status.
           </div>
         </CardContent>
       </Card>

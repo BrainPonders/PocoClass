@@ -398,31 +398,31 @@ export default function RuleReviewer() {
       )}
 
       {/* Document Browser */}
+      <DocumentListSection
+        title={t('ruleEvaluation.testDocuments')}
+        documents={documents}
+        isLoading={isLoadingDocuments}
+        filters={filters}
+        onFiltersChange={setFilters}
+        selectedDocuments={selectedDocuments}
+        onSelectionChange={toggleDocumentSelection}
+        allSelected={allSelected}
+        onSelectAllChange={toggleSelectAll}
+        allTags={allTags}
+        allCorrespondents={allCorrespondents}
+        allDocTypes={allDocTypes}
+        showSelectionCheckboxes={true}
+        showOwnerColumn={false}
+        onViewOCR={handleViewOCR}
+        onViewPDF={handleViewPDF}
+        noDocumentsMessage={t('ruleEvaluation.noDocumentsAvailable')}
+        cardClassName="mb-6"
+      />
+
+      {/* Rule Selector and Run Button */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>{t('ruleEvaluation.testDocuments')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DocumentListSection
-            documents={documents}
-            isLoading={isLoadingDocuments}
-            filters={filters}
-            onFiltersChange={setFilters}
-            selectedDocuments={selectedDocuments}
-            onSelectionChange={toggleDocumentSelection}
-            allSelected={allSelected}
-            onSelectAllChange={toggleSelectAll}
-            allTags={allTags}
-            allCorrespondents={allCorrespondents}
-            allDocTypes={allDocTypes}
-            showSelectionCheckboxes={true}
-            showOwnerColumn={false}
-            onViewOCR={handleViewOCR}
-            onViewPDF={handleViewPDF}
-            noDocumentsMessage={t('ruleEvaluation.noDocumentsAvailable')}
-          />
-          {/* Rule Selector and Run Button at bottom */}
-          <div className="flex justify-end items-center gap-3 mt-6">
+        <CardContent className="pt-6">
+          <div className="flex justify-end items-center gap-3">
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
