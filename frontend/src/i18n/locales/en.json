@@ -790,7 +790,8 @@
       "selectTargetField": "Select a target field to configure extraction",
       "extractedValueLabel": "Extracted Value:",
       "extractionFailedLabel": "Extraction Failed:",
-      "defineAnchorPoints": "Define anchor points to extract data from documents"
+      "defineAnchorPoints": "Define anchor points to extract data from documents",
+      "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically"
     },
     "buttons": {
       "testExtraction": "Test Extraction on OCR Content",
