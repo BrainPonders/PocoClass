@@ -38,9 +38,19 @@ export default function LogFilterBar({ filters, onFilterChange }) {
       default: hasValue = false;
     }
 
+    if (hasValue) {
+      return {
+        className: "px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-2",
+        style: { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)', border: '1px solid var(--info-border)' },
+        onMouseEnter: (e) => e.currentTarget.style.opacity = '0.85',
+        onMouseLeave: (e) => e.currentTarget.style.opacity = '1'
+      };
+    }
     return {
-      className: "px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 border",
-      style: hasValue ? { backgroundColor: 'var(--info-bg)', color: 'var(--info-text)', borderColor: 'var(--info-border)' } : {}
+      className: "px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-2",
+      style: { backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border)' },
+      onMouseEnter: (e) => e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)',
+      onMouseLeave: (e) => e.currentTarget.style.backgroundColor = 'transparent'
     };
   };
 
@@ -60,35 +70,39 @@ export default function LogFilterBar({ filters, onFilterChange }) {
 
   return (
     <div className="mb-6">
-      <div className="flex flex-wrap items-center gap-3 mb-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
-        {/* Title/Search Filter */}
-        <div className="flex items-center gap-2 px-3 py-2">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('common.search')}:</label>
-          <div className="relative flex items-center">
-            <input
-              type="text"
-              value={filters.search || ''}
-              onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
-              placeholder={t('filters.searchLogsPlaceholder')}
-              className="px-3 py-2 rounded text-sm w-48 focus:outline-none"
-              style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
-              onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
-              onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
-            />
-            {filters.search && (
-              <button
-                onClick={() => onFilterChange({ ...filters, search: '' })}
-                className="absolute right-2"
-                style={{ color: 'var(--app-text-muted)' }}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+      <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+        {/* Title/Search Filter - Pill style */}
+        <div className="relative flex items-center px-3 py-1.5 rounded-full" style={{ 
+          backgroundColor: filters.search ? 'var(--info-bg)' : 'transparent',
+          border: '1px solid ' + (filters.search ? 'var(--info-border)' : 'var(--app-border)'),
+          color: filters.search ? 'var(--info-text)' : 'var(--app-text-secondary)'
+        }}>
+          <label className="text-sm font-medium whitespace-nowrap flex items-center gap-2 cursor-pointer">
+            {t('common.search')}
+          </label>
+          <input
+            type="text"
+            value={filters.search || ''}
+            onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
+            placeholder={t('filters.searchLogsPlaceholder')}
+            className="px-2 py-1 rounded text-sm focus:outline-none"
+            style={{ backgroundColor: 'transparent', border: 'none', color: 'inherit', width: '100px' }}
+            onFocus={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.1)'}
+            onBlur={(e) => e.target.style.backgroundColor = 'transparent'}
+          />
+          {filters.search && (
+            <button
+              onClick={() => onFilterChange({ ...filters, search: '' })}
+              className="ml-1"
+              style={{ color: 'inherit' }}
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
         {/* Type Filter */}
-        <div className="relative px-2">
+        <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'type' ? null : 'type')}
             {...getFilterButtonClass('type')}
@@ -129,7 +143,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         </div>
 
         {/* Level Filter */}
-        <div className="relative px-2">
+        <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'level' ? null : 'level')}
             {...getFilterButtonClass('level')}
@@ -170,7 +184,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
         </div>
 
         {/* Dates Filter */}
-        <div className="relative px-2">
+        <div className="relative">
           <button
             onClick={() => setOpenFilter(openFilter === 'dates' ? null : 'dates')}
             {...getFilterButtonClass('dates')}
@@ -207,11 +221,10 @@ export default function LogFilterBar({ filters, onFilterChange }) {
           ))}
         </div>
 
-      </div>
+        {/* Spacer */}
+        <div className="flex-grow"></div>
 
-      {/* Status Bar - Reset Button */}
-      <div className="flex items-center justify-end gap-4 pt-2">
-        {/* Reset Filters Button */}
+        {/* Reset Filters Button - Pill style */}
         {hasActiveFilters() && (
           <button
             onClick={() => onFilterChange({
@@ -221,10 +234,10 @@ export default function LogFilterBar({ filters, onFilterChange }) {
               dateTo: '',
               search: ''
             })}
-            className="px-4 py-2 rounded text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
-            style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)' }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            className="px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
+            style={{ backgroundColor: 'transparent', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--error-bg)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <X className="w-4 h-4" />
             {t('common.resetFilters')}
