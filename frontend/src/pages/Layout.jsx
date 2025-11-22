@@ -518,11 +518,11 @@ function LayoutContent({ children }) {
             <div className="min-h-screen flex w-full">
               <Sidebar style={{ borderRight: '1px solid var(--app-border)' }}>
                 <SidebarHeader className="px-6 py-7" style={{ borderBottom: '1px solid var(--app-border)' }}>
-                  <div className="flex items-center gap-3">
-                    <img src="/logo.png" alt="PocoClass Logo" className="h-10 w-auto" />
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <img src="/logo.png" alt="PocoClass Logo" className="h-12 w-auto" />
                     <div>
                       <span className="text-xs font-normal" style={{ color: 'var(--app-text-secondary)' }}>v2.0</span>
-                      <p className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
+                      <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
                     </div>
                   </div>
                 </SidebarHeader>
