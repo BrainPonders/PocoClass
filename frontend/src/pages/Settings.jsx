@@ -1008,7 +1008,7 @@ export default function Settings() {
           </div>
 
           <div className="flex">
-            <div className="w-64" style={{ borderRight: '1px solid var(--app-border)' }}>
+            <div className="w-80" style={{ borderRight: '1px solid var(--app-border)' }}>
               <nav className="p-4 space-y-1">
                 {tabs.map(tab => {
                   const Icon = tab.icon;
