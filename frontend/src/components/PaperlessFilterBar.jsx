@@ -486,10 +486,7 @@ export default function PaperlessFilterBar({
         {hasActiveFilters() && (
           <button
             onClick={onResetFilters}
-            className="px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all cursor-pointer"
-            style={{ backgroundColor: 'transparent', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--error-bg)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            className="px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2 transition-all cursor-pointer border border-red-300 text-red-700 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30"
           >
             <X className="w-4 h-4" />
             {t('common.resetFilters')}
