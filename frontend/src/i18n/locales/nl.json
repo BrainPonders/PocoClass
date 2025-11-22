@@ -69,7 +69,16 @@
     "status": "Status",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "noRules": "No rules found"
+    "noRules": "No rules found",
+    "documentsWithoutRules": "Documenten zonder Regels ({count})",
+    "noDocumentsFound": "Geen Documenten Gevonden",
+    "noDocumentsDesc": "Er zijn geen documenten gevonden. Dit kan betekenen:",
+    "noDocumentsReasons": {
+      "noDocs": "Er zijn geen documenten in Paperless-ngx",
+      "allProcessed": "Alle documenten zijn verwerkt",
+      "filtersRestrictive": "De huidige filters zijn te restrictief"
+    },
+    "checkConsole": "Controleer de browserconsole voor API-antwoorddetails."
   },
   "wizard": {
     "step1": "Basic Information",
