@@ -520,11 +520,15 @@ function LayoutContent({ children }) {
                 <SidebarHeader className="px-3 py-2" style={{ borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex flex-col items-start gap-0">
                     <div className="flex items-start justify-start w-full h-16">
-                      <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
+                      <div className="relative inline-block">
+                        <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
+                        <div className="absolute bottom-0 right-0 transform translate-x-[30px] -translate-y-[1px]">
+                          <span className="text-xs font-semibold text-gray-500">v2.0</span>
+                        </div>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2" style={{ marginLeft: '40px', marginTop: '-2px' }}>
                       <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
-                      <span className="text-xs font-normal" style={{ color: 'var(--app-text-secondary)' }}>v2.0</span>
                     </div>
                   </div>
                 </SidebarHeader>
