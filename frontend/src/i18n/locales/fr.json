@@ -485,7 +485,8 @@
       "fieldTags": "Étiquettes",
       "fieldDate": "Date",
       "fieldStoragePath": "Chemin de stockage",
-      "fieldDocumentCategory": "Catégorie de document"
+      "fieldDocumentCategory": "Catégorie de document",
+      "dateCreated": "Date de création"
     }
   },
   "scores": {

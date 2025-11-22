@@ -485,7 +485,8 @@
       "fieldTags": "Tags",
       "fieldDate": "Datum",
       "fieldStoragePath": "Opslagpad",
-      "fieldDocumentCategory": "Documentcategorie"
+      "fieldDocumentCategory": "Documentcategorie",
+      "dateCreated": "Aanmaakdatum"
     }
   },
   "scores": {

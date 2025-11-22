@@ -485,7 +485,8 @@
       "fieldTags": "Tags",
       "fieldDate": "Datum",
       "fieldStoragePath": "Speicherpfad",
-      "fieldDocumentCategory": "Dokumentkategorie"
+      "fieldDocumentCategory": "Dokumentkategorie",
+      "dateCreated": "Erstellungsdatum"
     }
   },
   "scores": {
