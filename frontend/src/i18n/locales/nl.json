@@ -698,7 +698,7 @@
     "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
     "dynamicDataDescription": "Definieer ankerpunten en extractiepatronen voor dynamische veldvulling",
     "noDynamicRulesTitle": "Geen dynamische extractieregels",
-    "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
+    "noDynamicRulesDescription": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren",
     "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
     "labels": {
       "title": "Titel",
