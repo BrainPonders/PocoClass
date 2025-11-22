@@ -137,7 +137,7 @@ export default function DocumentListSection({
               <thead style={{ backgroundColor: 'var(--app-surface-light)' }}>
                 <tr>
                   {showSelectionCheckboxes && (
-                    <th className="px-2 py-3 text-left">
+                    <th className="px-2 py-2 text-left">
                       <button 
                         onClick={() => onSelectAllChange?.(!allSelected)} 
                         className="p-1 rounded"
@@ -153,21 +153,21 @@ export default function DocumentListSection({
                       </button>
                     </th>
                   )}
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.title')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.id')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.dateCreated')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.added')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.correspondent')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.documentTypeShort')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.cfDocCategory')}</th>
-                  <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.tags')}</th>
-                  <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.pocoScore')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.title')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.id')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.dateCreated')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.added')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.correspondent')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.documentTypeShort')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.cfDocCategory')}</th>
+                  <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.tags')}</th>
+                  <th className="px-2 py-2 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.pocoScore')}</th>
                   {showOwnerColumn && (
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.owner')}</th>
+                    <th className="px-2 py-2 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.owner')}</th>
                   )}
-                  <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.view')}</th>
+                  <th className="px-2 py-2 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.view')}</th>
                   {renderCustomActions && (
-                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.actions')}</th>
+                    <th className="px-2 py-2 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.actions')}</th>
                   )}
                 </tr>
               </thead>
@@ -200,7 +200,7 @@ export default function DocumentListSection({
                     }}
                   >
                     {showSelectionCheckboxes && (
-                      <td className="px-2 py-3">
+                      <td className="px-2 py-2">
                         <button 
                           onClick={(e) => { 
                             e.stopPropagation(); 
@@ -219,14 +219,14 @@ export default function DocumentListSection({
                         </button>
                       </td>
                     )}
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.id}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.created)}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.added || doc.created)}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.correspondent || '-'}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.documentType || '-'}</td>
-                    <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.docCategory || '-'}</td>
-                    <td className="px-2 py-3 whitespace-nowrap">
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.id}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.created)}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{formatDate(doc.added || doc.created)}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.correspondent || '-'}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.documentType || '-'}</td>
+                    <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.docCategory || '-'}</td>
+                    <td className="px-2 py-2 whitespace-nowrap">
                       {doc.tags && doc.tags.length > 0 ? (
                         doc.tags.map((tag, i) => {
                           const tagObj = tagsToUse.find(t => t.name === tag);
@@ -257,7 +257,7 @@ export default function DocumentListSection({
                         <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>-</span>
                       )}
                     </td>
-                    <td className="px-2 py-3 text-center">
+                    <td className="px-2 py-2 text-center">
                       {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
                         <span className={`text-xs font-semibold ${
                           doc.pocoScore >= 80 ? 'text-green-600' : 
@@ -271,9 +271,9 @@ export default function DocumentListSection({
                       )}
                     </td>
                     {showOwnerColumn && (
-                      <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
+                      <td className="px-2 py-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
                     )}
-                    <td className="px-2 py-3 text-center">
+                    <td className="px-2 py-2 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <button 
                           onClick={(e) => { e.stopPropagation(); onViewOCR?.(doc); }}
@@ -292,7 +292,7 @@ export default function DocumentListSection({
                       </div>
                     </td>
                     {renderCustomActions && (
-                      <td className="px-2 py-3 text-center">
+                      <td className="px-2 py-2 text-center">
                         {renderCustomActions(doc)}
                       </td>
                     )}
