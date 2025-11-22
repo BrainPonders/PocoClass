@@ -434,7 +434,14 @@
     "manualProcessing": "Procesamiento manual",
     "testRulesAgainst": "Pruebe reglas contra documentos filtrados. Seleccione documentos a continuación usando la barra de filtros y luego elija su modo de prueba.",
     "matchingDocuments": "Documentos coincidentes",
-    "noDocumentsMatch": "Ningún documento coincide con los criterios de filtro actuales"
+    "noDocumentsMatch": "Ningún documento coincide con los criterios de filtro actuales",
+    "processingActions": "Acciones de procesamiento",
+    "dryRun": "Ejecución de prueba",
+    "dryRunComplete": "Ejecución de prueba completada",
+    "processingComplete": "Procesamiento completado",
+    "dryRunNote": "Nota: Solo se aplican las reglas con estado \"activo\" durante la ejecución. La ejecución de prueba prueba todas las reglas independientemente del estado.",
+    "accessDenied": "Acceso denegado",
+    "adminOnly": "Solo los administradores pueden acceder al procesamiento en segundo plano"
   },
   "scores": {
     "pocoScore": "Puntuación POCO",

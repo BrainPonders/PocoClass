@@ -434,7 +434,14 @@
     "manualProcessing": "Manuelle Verarbeitung",
     "testRulesAgainst": "Testen Sie Regeln gegen gefilterte Dokumente. Wählen Sie Dokumente unten mit der Filterleiste aus und wählen Sie dann Ihren Testmodus.",
     "matchingDocuments": "Entsprechende Dokumente",
-    "noDocumentsMatch": "Keine Dokumente entsprechen den aktuellen Filterkriterien"
+    "noDocumentsMatch": "Keine Dokumente entsprechen den aktuellen Filterkriterien",
+    "processingActions": "Verarbeitungsaktionen",
+    "dryRun": "Testlauf",
+    "dryRunComplete": "Testlauf abgeschlossen",
+    "processingComplete": "Verarbeitung abgeschlossen",
+    "dryRunNote": "Hinweis: Während der Ausführung werden nur Regeln mit dem Status \"aktiv\" angewendet. Testlauf testet alle Regeln unabhängig vom Status.",
+    "accessDenied": "Zugriff verweigert",
+    "adminOnly": "Nur Administratoren können auf die Hintergrundverarbeitung zugreifen"
   },
   "scores": {
     "pocoScore": "POCO-Score",

@@ -65,8 +65,8 @@ export default function BackgroundProcess() {
     if (currentUser) {
       if (currentUser.role !== 'admin') {
         toast({
-          title: 'Access Denied',
-          description: 'Only administrators can access Background Processing',
+          title: t('backgroundProcess.accessDenied'),
+          description: t('backgroundProcess.adminOnly'),
           variant: 'destructive',
           duration: 3000,
         });
@@ -472,7 +472,7 @@ export default function BackgroundProcess() {
   const getTriggerTypeBadge = (triggerType) => {
     switch (triggerType) {
       case 'manual_dry_run':
-        return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>Dry Run</Badge>;
+        return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>{t('backgroundProcess.dryRun')}</Badge>;
       case 'manual_run':
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
       case 'automatic':

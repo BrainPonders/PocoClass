@@ -434,7 +434,14 @@
     "manualProcessing": "Traitement manuel",
     "testRulesAgainst": "Testez les règles par rapport aux documents filtrés. Sélectionnez les documents ci-dessous à l'aide de la barre de filtrage, puis choisissez votre mode de test.",
     "matchingDocuments": "Documents correspondants",
-    "noDocumentsMatch": "Aucun document ne correspond aux critères de filtre actuels"
+    "noDocumentsMatch": "Aucun document ne correspond aux critères de filtre actuels",
+    "processingActions": "Actions de traitement",
+    "dryRun": "Exécution d'essai",
+    "dryRunComplete": "Exécution d'essai terminée",
+    "processingComplete": "Traitement terminé",
+    "dryRunNote": "Remarque: Seules les règles avec le statut \"active\" sont appliquées lors de l'exécution. L'exécution d'essai teste toutes les règles indépendamment du statut.",
+    "accessDenied": "Accès refusé",
+    "adminOnly": "Seuls les administrateurs peuvent accéder au traitement en arrière-plan"
   },
   "scores": {
     "pocoScore": "Score POCO",

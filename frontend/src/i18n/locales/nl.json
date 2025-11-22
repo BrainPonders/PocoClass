@@ -434,7 +434,14 @@
     "manualProcessing": "Handmatige verwerking",
     "testRulesAgainst": "Test regels tegen gefilterde documenten. Selecteer documenten hieronder met de filterbalk en kies vervolgens uw testmodus.",
     "matchingDocuments": "Overeenkomende documenten",
-    "noDocumentsMatch": "Geen documenten komen overeen met de huidige filtercriteria"
+    "noDocumentsMatch": "Geen documenten komen overeen met de huidige filtercriteria",
+    "processingActions": "Verwerkingsacties",
+    "dryRun": "Testronde",
+    "dryRunComplete": "Testronde voltooid",
+    "processingComplete": "Verwerking voltooid",
+    "dryRunNote": "Opmerking: Alleen regels met status \"actief\" worden toegepast tijdens het uitvoeren. Testronde test alle regels ongeacht de status.",
+    "accessDenied": "Toegang geweigerd",
+    "adminOnly": "Alleen beheerders hebben toegang tot achtergrondverwerking"
   },
   "scores": {
     "pocoScore": "POCO-score",
