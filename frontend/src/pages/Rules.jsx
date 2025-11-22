@@ -793,7 +793,7 @@ export default function Rules() {
       <Card className="mt-8">
         <CardHeader>
           <CardTitle>
-            Documents without Rules ({documents.length} found)
+            {t('rules.documentsWithoutRules', { count: documents.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -815,16 +815,16 @@ export default function Rules() {
           ) : documents.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Documents Found</h3>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('rules.noDocumentsFound')}</h3>
               <div className="space-y-2" style={{ color: 'var(--app-text-muted)' }}>
-                <p>No documents found. This could mean:</p>
+                <p>{t('rules.noDocumentsDesc')}</p>
                 <ul className="list-disc list-inside text-left max-w-md mx-auto">
-                  <li>No documents exist in Paperless-ngx</li>
-                  <li>All documents have been processed</li>
-                  <li>Current filters are too restrictive</li>
+                  <li>{t('rules.noDocumentsReasons.noDocs')}</li>
+                  <li>{t('rules.noDocumentsReasons.allProcessed')}</li>
+                  <li>{t('rules.noDocumentsReasons.filtersRestrictive')}</li>
                 </ul>
                 <p className="mt-4 text-sm">
-                  Check the browser console for API response details.
+                  {t('rules.checkConsole')}
                 </p>
               </div>
             </div>
@@ -946,7 +946,7 @@ export default function Rules() {
                               handleCreateRuleForDocument(doc);
                             }}
                           >
-                            + New Rule
+                            {t('rules.newRule')}
                           </button>
                         </div>
                       </td>

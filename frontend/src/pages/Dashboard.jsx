@@ -71,7 +71,7 @@ export default function Dashboard() {
   return (
     <PageLayout 
       title={t('dashboard.title')}
-      subtitle="View and manage documents"
+      subtitle={t('dashboard.subtitle')}
       actions={
         <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
           <Plus className="w-5 h-5" />
@@ -86,7 +86,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Activity className="h-5 w-5" />
-              System Status
+              {t('dashboard.systemStatus')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -102,14 +102,14 @@ export default function Dashboard() {
                     )}
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Background Processing</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('dashboard.backgroundProcessing')}</div>
                     <div className={`text-xs ${backgroundSettings.bg_enabled ? 'text-green-600' : ''}`} style={{ color: backgroundSettings.bg_enabled ? undefined : 'var(--app-text-muted)' }}>
-                      {backgroundSettings.bg_enabled ? 'Enabled' : 'Disabled'}
+                      {backgroundSettings.bg_enabled ? t('dashboard.enabled') : t('dashboard.disabled')}
                     </div>
                     {backgroundStatus?.is_paused && (
                       <div className="mt-1 text-xs flex items-center gap-1" style={{ color: 'var(--app-warning)' }}>
                         <Activity className="h-3 w-3" />
-                        Paused (Active session)
+                        {t('dashboard.paused')}
                       </div>
                     )}
                   </div>
@@ -123,7 +123,7 @@ export default function Dashboard() {
                     <Users className="h-6 w-6" style={{ color: 'var(--info-text)' }} />
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Correspondents</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('dashboard.correspondents')}</div>
                     <div className="text-2xl font-bold" style={{ color: 'var(--info-text)' }}>
                       {syncStatus.correspondents?.count || 0}
                     </div>
@@ -138,7 +138,7 @@ export default function Dashboard() {
                     <Tag className="h-6 w-6 text-purple-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Tags</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.system.tags')}</div>
                     <div className="text-2xl font-bold text-purple-600">
                       {syncStatus.tags?.count || 0}
                     </div>
@@ -153,7 +153,7 @@ export default function Dashboard() {
                     <FileType className="h-6 w-6 text-orange-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Document Types</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('dashboard.documentTypes')}</div>
                     <div className="text-2xl font-bold text-orange-600">
                       {syncStatus.document_types?.count || 0}
                     </div>
@@ -168,7 +168,7 @@ export default function Dashboard() {
                     <Database className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Custom Fields</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('dashboard.customFields')}</div>
                     <div className="text-2xl font-bold text-teal-600">
                       {syncStatus.custom_fields?.count || 0}
                     </div>
@@ -183,7 +183,7 @@ export default function Dashboard() {
                     <Users className="h-6 w-6 text-indigo-600" />
                   </div>
                   <div>
-                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>Users</div>
+                    <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('dashboard.users')}</div>
                     <div className="text-2xl font-bold text-indigo-600">
                       {syncStatus.users?.count || 0}
                     </div>
@@ -219,7 +219,7 @@ export default function Dashboard() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Deactivated Rules</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.deactivatedRules')}</CardTitle>
             <Settings className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
@@ -233,7 +233,7 @@ export default function Dashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Recent Rule Activity
+            {t('dashboard.recentRuleActivity')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -244,18 +244,18 @@ export default function Dashboard() {
           ) : rules.length === 0 ? (
             <div className="text-center py-8">
               <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>No Rules Yet</h3>
-              <p className="mb-4" style={{ color: 'var(--app-text-muted)' }}>Create your first document classification rule to get started</p>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('dashboard.noRulesYet')}</h3>
+              <p className="mb-4" style={{ color: 'var(--app-text-muted)' }}>{t('dashboard.createFirstRuleDesc')}</p>
               <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
                 <Plus className="w-4 h-4" />
-                Create First Rule
+                {t('dashboard.createFirstRule')}
               </Link>
             </div>
           ) : (
             <>
               <div className="mb-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
                 <p className="text-sm" style={{ color: 'var(--info-text)' }}>
-                  📊 <strong>Note:</strong> Execution tracking coming soon. Currently showing rule creation dates as activity indicators.
+                  📊 <strong>{t('dashboard.noteExecutionTracking')}</strong> {t('dashboard.executionTrackingDesc')}
                 </p>
               </div>
               <div className="space-y-3">

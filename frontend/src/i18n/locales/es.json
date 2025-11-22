@@ -40,7 +40,24 @@
   },
   "dashboard": {
     "title": "Panel",
+    "subtitle": "Ver y administrar documentos",
     "welcome": "Bienvenido a PocoClass",
+    "systemStatus": "Estado del Sistema",
+    "backgroundProcessing": "Procesamiento en Segundo Plano",
+    "enabled": "Activado",
+    "disabled": "Desactivado",
+    "paused": "Pausado (Sesión activa)",
+    "correspondents": "Corresponsales",
+    "documentTypes": "Tipos de Documento",
+    "customFields": "Campos Personalizados",
+    "users": "Usuarios",
+    "recentRuleActivity": "Actividad Reciente de Reglas",
+    "noRulesYet": "Aún No Hay Reglas",
+    "createFirstRule": "Crear Primera Regla",
+    "createFirstRuleDesc": "Cree su primera regla de clasificación de documentos para comenzar",
+    "noteExecutionTracking": "Nota:",
+    "executionTrackingDesc": "El seguimiento de ejecución llegará pronto. Actualmente mostrando fechas de creación de reglas como indicadores de actividad.",
+    "deactivatedRules": "Reglas Desactivadas",
     "stats": {
       "totalRules": "Total de Reglas",
       "activeRules": "Reglas Activas",
@@ -52,6 +69,7 @@
     "title": "Reglas",
     "subtitle": "Administre sus reglas de clasificación de documentos",
     "createNew": "Crear Nueva Regla",
+    "newRule": "+ Nueva Regla",
     "editRule": "Editar Regla",
     "deleteRule": "Eliminar Regla",
     "enableRule": "Activar Regla",
@@ -64,7 +82,16 @@
     "status": "Estado",
     "enabled": "Activada",
     "disabled": "Desactivada",
-    "noRules": "No se encontraron reglas"
+    "noRules": "No se encontraron reglas",
+    "documentsWithoutRules": "Documentos sin Reglas ({count} encontrados)",
+    "noDocumentsFound": "No se Encontraron Documentos",
+    "noDocumentsDesc": "No se encontraron documentos. Esto podría significar:",
+    "noDocumentsReasons": {
+      "noDocs": "No existen documentos en Paperless-ngx",
+      "allProcessed": "Todos los documentos han sido procesados",
+      "filtersRestrictive": "Los filtros actuales son demasiado restrictivos"
+    },
+    "checkConsole": "Verifique la consola del navegador para detalles de respuesta de la API."
   },
   "wizard": {
     "step1": "Información Básica",
@@ -146,6 +173,7 @@
     },
     "appearance": {
       "title": "Configuración de Apariencia",
+      "subtitle": "Personalice la apariencia de su interfaz",
       "language": "Idioma",
       "theme": "Tema",
       "themeLight": "Claro",
@@ -153,7 +181,8 @@
       "themeAuto": "Automático",
       "colorblindMode": "Activar Modo para Daltonismo",
       "colorblindModeDesc": "Ajusta los colores para mejor accesibilidad",
-      "availableLanguages": "Idiomas Disponibles"
+      "availableLanguages": "Idiomas Disponibles",
+      "loadingSettings": "Cargando configuración desde Paperless-ngx..."
     },
     "system": {
       "title": "Gestión del Sistema",

@@ -117,9 +117,9 @@ export default function PaperlessFilterBar({
   return (
     <div className="mb-4">
       {/* Filter Bar */}
-      <div className="flex items-center gap-2 flex-wrap mb-2">
+      <div className="flex items-center gap-4 flex-wrap mb-3">
         {/* Title Filter - Inline */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>Title:</label>
           <div className="relative flex items-center">
             <input
@@ -452,7 +452,7 @@ export default function PaperlessFilterBar({
 
         {/* Date Range Display - Inline after Dates Added */}
         {(filters.dateFrom || filters.dateTo) && (
-          <div className="flex items-center gap-2 text-xs px-2 py-1" style={{ color: 'var(--app-text-secondary)' }}>
+          <div className="flex items-center gap-3 text-xs px-3 py-1.5" style={{ color: 'var(--app-text-secondary)' }}>
             <span>
               {isDefaultDateRange() ? (
                 <strong>Last 7 days</strong>
@@ -466,7 +466,7 @@ export default function PaperlessFilterBar({
         )}
 
         {/* Limit Filter - Inline Dropdown */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>Limit:</label>
           <select
             value={filters.limit || 10}
