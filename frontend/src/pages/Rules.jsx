@@ -510,8 +510,8 @@ export default function Rules() {
 
         {/* Search, Filter, Sort Bar */}
         <div className="card mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none z-10" aria-hidden="true" style={{ color: 'var(--app-text-muted)' }} />
                 <input

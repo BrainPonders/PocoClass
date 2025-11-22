@@ -86,7 +86,7 @@ export default function LogFilterBar({ filters, onFilterChange }) {
             onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
             placeholder={t('filters.searchLogsPlaceholder')}
             className="px-2 py-1 rounded text-sm focus:outline-none"
-            style={{ backgroundColor: 'transparent', border: 'none', color: 'inherit', width: '100px' }}
+            style={{ backgroundColor: 'transparent', border: 'none', color: 'inherit', width: '250px' }}
             onFocus={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.1)'}
             onBlur={(e) => e.target.style.backgroundColor = 'transparent'}
           />
