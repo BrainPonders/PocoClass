@@ -117,19 +117,19 @@ export default function PaperlessFilterBar({
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-6">
       {/* Filter Bar */}
-      <div className="flex items-center gap-2 flex-wrap mb-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
         {/* Title Filter - Inline */}
-        <div className="flex items-center gap-2 px-3 py-2">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.title')}:</label>
-          <div className="relative flex items-center">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+          <label className="text-sm font-medium whitespace-nowrap min-w-fit" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.title')}:</label>
+          <div className="relative flex items-center flex-1">
             <input
               type="text"
               value={filters.title || ''}
               onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
               placeholder={t('filters.searchPlaceholder')}
-              className="px-3 py-1.5 rounded text-sm w-56 focus:outline-none"
+              className="px-3 py-2 rounded text-sm w-full focus:outline-none"
               style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
               onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
@@ -149,10 +149,11 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Tags Filter - Tri-state */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => toggleFilter('tags')}
             className={getFilterButtonClass('tags')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.tags')}
@@ -259,10 +260,11 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Correspondent Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => toggleFilter('correspondent')}
             className={getFilterButtonClass('correspondent')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.correspondent')}
@@ -337,10 +339,11 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Document Type Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => toggleFilter('documentType')}
             className={getFilterButtonClass('documentType')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.documentType')}
@@ -415,10 +418,11 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Dates Added Filter */}
-        <div className="relative px-2">
+        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
           <button
             onClick={() => toggleFilter('dates')}
             className={getFilterButtonClass('dates')}
+            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Calendar className="w-4 h-4" />
             {t('filters.datesAdded')}
@@ -452,9 +456,30 @@ export default function PaperlessFilterBar({
           ))}
         </div>
 
-        {/* Date Range Display - Inline after Dates Added */}
+        {/* Limit Filter - Inline Dropdown */}
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+          <label className="text-sm font-medium whitespace-nowrap min-w-fit" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.limit')}:</label>
+          <select
+            value={filters.limit || 10}
+            onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) })}
+            className="px-3 py-2 rounded text-sm w-full max-w-xs focus:outline-none"
+            style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+            onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
+            onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Status Bar - Date Range Display & Reset Button */}
+      <div className="flex items-center justify-between gap-4 pt-2">
         {(filters.dateFrom || filters.dateTo) && (
-          <div className="flex items-center gap-3 text-xs px-3 py-1.5" style={{ color: 'var(--app-text-secondary)' }}>
+          <div className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
+            <span className="font-medium">{t('filters.dateRange')}:</span>
             <span>
               {isDefaultDateRange() ? (
                 <strong>{t('filters.last7Days')}</strong>
@@ -467,36 +492,15 @@ export default function PaperlessFilterBar({
           </div>
         )}
 
-        {/* Limit Filter - Inline Dropdown */}
-        <div className="flex items-center gap-2 px-3 py-2">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.limit')}:</label>
-          <select
-            value={filters.limit || 10}
-            onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) })}
-            className="px-3 py-1.5 rounded text-sm w-20 focus:outline-none"
-            style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
-            onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
-            onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
-
-        {/* Spacer to push Reset button to the right */}
-        <div className="flex-grow"></div>
-
         {/* Reset Filters Button - Always visible */}
         <button
           onClick={onResetFilters}
           disabled={!hasActiveFilters()}
-          className={`px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 ml-auto ${
-            hasActiveFilters() ? 'cursor-pointer' : 'cursor-not-allowed'
+          className={`px-4 py-2 rounded text-sm font-medium flex items-center gap-2 ml-auto transition-all ${
+            hasActiveFilters() ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
           }`}
-          style={hasActiveFilters() ? { backgroundColor: 'var(--app-text-secondary)', color: 'var(--app-surface)' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' }}
-          onMouseEnter={(e) => hasActiveFilters() && (e.currentTarget.style.opacity = '0.8')}
+          style={hasActiveFilters() ? { backgroundColor: 'var(--error-bg)', color: 'var(--error-text)' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' }}
+          onMouseEnter={(e) => hasActiveFilters() && (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={(e) => hasActiveFilters() && (e.currentTarget.style.opacity = '1')}
         >
           <X className="w-4 h-4" />
