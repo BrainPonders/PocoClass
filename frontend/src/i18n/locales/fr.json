@@ -708,9 +708,9 @@
       "tags": "Tags",
       "customFieldLabel": "Custom Field: {name}",
       "targetField": "Target Field",
-      "beforeAnchor": "Before Anchor",
+      "beforeAnchor": "Avant Ancre",
       "extractionType": "Extraction Type",
-      "afterAnchor": "After Anchor",
+      "afterAnchor": "Après Ancre",
       "dateFormat": "Date Format",
       "selectTagToExtract": "Select Tag to Extract",
       "patternToMatch": "Pattern to Match"
@@ -732,7 +732,8 @@
       "fieldInUseWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
       "selectTargetField": "Select a target field to configure extraction",
       "extractedValueLabel": "Extracted Value:",
-      "extractionFailedLabel": "Extraction Failed:"
+      "extractionFailedLabel": "Extraction Failed:",
+      "defineAnchorPoints": "Définir les points d'ancrage et les modèles d'extraction pour le remplissage dynamique des champs"
     },
     "buttons": {
       "testExtraction": "Test Extraction on OCR Content",

@@ -558,7 +558,7 @@ export default function RuleEditor() {
       }
     >
         <div className="max-w-[1800px] mx-auto" style={{paddingLeft: '24px', paddingRight: '24px'}}>
-          <div style={{marginLeft: '30px'}}>
+          <div>
             <StepProgress 
               currentStep={currentStep}
               stepStatus={stepStatus}
