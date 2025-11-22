@@ -23,7 +23,8 @@
     "notSet": "Not set",
     "patterns": "patterns",
     "tags": "tags",
-    "points": "points"
+    "points": "points",
+    "note": "Note"
   },
   "filters": {
     "title": "Title",
@@ -107,6 +108,13 @@
       "activeRules": "Active Rules",
       "processedDocuments": "Processed Documents",
       "successRate": "Success Rate"
+    },
+    "ruleActivity": {
+      "lastActivity": "Last Activity",
+      "status": "Status",
+      "executions": "Executions",
+      "successRate": "Success Rate",
+      "new": "new"
     }
   },
   "rules": {
@@ -140,7 +148,24 @@
   "wizard": {
     "step1": "Basic Information",
     "step1Description": "Define basic rule information and confidence requirements",
-    "step2": "OCR Patterns",
+    "step2": {
+      "logicGroup": "Logic Group",
+      "searchLines": "Search lines",
+      "to": "to",
+      "first": "First",
+      "last": "Last",
+      "matchAnyOR": "Match any (OR)",
+      "matchAllAND": "Match all (AND)",
+      "mandatory": "Mandatory",
+      "pattern": "Pattern",
+      "addPattern": "Add Pattern",
+      "enterPattern": "Enter text or regex pattern or use regex generator",
+      "tooltipLogicGroup": "A logic group contains one or more patterns. Use 'Match any (OR)' when any pattern can identify the document. Use 'Match all (AND)' when all patterns must be present. Check 'Mandatory' to make this group required for classification - if mandatory groups don't match, the rule fails regardless of POCO score.",
+      "tooltipPattern": "Enter a simple text string to search for, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching.",
+      "deleteLogicGroup": "Delete logic group",
+      "removePattern": "Remove pattern",
+      "openPatternHelper": "Open Pattern Helper"
+    },
     "step2Description": "Define patterns that identify this document type in OCR text",
     "step3": "Filename Patterns",
     "step3Description": "Define patterns that identify this document type by filename",
@@ -192,25 +217,7 @@
     "staticClassificationDataInfoText": "This is constant data you want to assign to a document once it's recognized. Greyed out fields are automatically populated by the system.",
     "staticMetadataInfoTitle": "Static Metadata",
     "staticMetadataInfoText": "This is constant data you want to assign to a document once it's recognized. For example, every statement of a certain type will always have the same correspondent assigned.",
-    "reviewBeforeSaving": "Review your rule configuration before saving",
-    "step2": {
-      "logicGroup": "Logic Group",
-      "searchLines": "Search lines",
-      "to": "to",
-      "first": "First",
-      "last": "Last",
-      "matchAnyOR": "Match any (OR)",
-      "matchAllAND": "Match all (AND)",
-      "mandatory": "Mandatory",
-      "pattern": "Pattern",
-      "addPattern": "Add Pattern",
-      "enterPattern": "Enter text or regex pattern or use regex generator",
-      "tooltipLogicGroup": "A logic group contains one or more patterns. Use 'Match any (OR)' when any pattern can identify the document. Use 'Match all (AND)' when all patterns must be present. Check 'Mandatory' to make this group required for classification - if mandatory groups don't match, the rule fails regardless of POCO score.",
-      "tooltipPattern": "Enter a simple text string to search for, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching.",
-      "deleteLogicGroup": "Delete logic group",
-      "removePattern": "Remove pattern",
-      "openPatternHelper": "Open Pattern Helper"
-    }
+    "reviewBeforeSaving": "Review your rule configuration before saving"
   },
   "ocr_identifiers_description": "Define patterns that identify this document type in OCR text",
   "ocr_identifiers_warning": "⚠️ Warning: You have filled only {filledGroups} of 3 required logic groups. Please add patterns to at least 3 logic groups for reliable classification.",
@@ -367,7 +374,25 @@
       "daysToKeepDesc": "Processing runs older than this will be automatically deleted (default: 365 days / 1 year)",
       "runs": "runs",
       "saveSettings": "Save Settings"
-    }
+    },
+    "requiredCustomFields": "Required Custom Fields",
+    "optionalCustomFields": "Optional Custom Fields",
+    "requiredTags": "Required Tags",
+    "optionalFeatures": "Optional Features",
+    "present": "Present",
+    "missing": "Missing",
+    "optional": "Optional",
+    "verifying": "Verifying...",
+    "allRequiredDataPresent": "All required data is present",
+    "ensureAllRequired": "Ensure all required items are configured",
+    "allMandatoryConfigured": "All mandatory items are configured",
+    "newTag": "New Tag",
+    "pocoPlus": "POCO+",
+    "pocoMinus": "POCO-",
+    "pocoScoreDesc": "Actionable confidence score combining OCR, filename, and metadata verification",
+    "pocoOcrDesc": "OCR pattern matching transparency score",
+    "pocoOcrTransparencyField": "POCO OCR Transparency Field",
+    "pocoOcrTransparencyDesc": "Optional field to store the OCR transparency score"
   },
   "processing": {
     "status": "Processing Status",
@@ -391,7 +416,12 @@
     "level": "Level",
     "message": "Message",
     "timestamp": "Timestamp",
-    "noLogs": "No logs found"
+    "noLogs": "No logs found",
+    "description": "View and analyze system logs",
+    "refresh": "Refresh",
+    "exportCSV": "Export CSV",
+    "showing": "Showing {{count}} of {{total}} logs",
+    "noLogsFound": "No logs found"
   },
   "ruleEvaluation": {
     "subtitle": "Test and evaluate document classification rules",
@@ -417,7 +447,47 @@
     "manualProcessing": "Manual Processing",
     "testRulesAgainst": "Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.",
     "matchingDocuments": "Matching Documents",
-    "noDocumentsMatch": "No documents match the current filter criteria"
+    "noDocumentsMatch": "No documents match the current filter criteria",
+    "days": "days",
+    "runs": "runs",
+    "retention": "Retention",
+    "run": "Run",
+    "running": "Running",
+    "testing": "Testing",
+    "dryRun": "Dry Run",
+    "dryRunNote": "This is a test run. No changes will be made to Paperless.",
+    "dryRunComplete": "Dry run completed",
+    "processingComplete": "Processing completed",
+    "processingFailed": "Processing failed",
+    "testAllRules": "Test All Rules",
+    "applyRulesToPaperless": "Apply Rules to Paperless",
+    "warningMessage": "Warning: This will modify documents in Paperless",
+    "processingRunsAppear": "Processing runs will appear in the history below",
+    "noProcessingHistory": "No processing history",
+    "adminOnly": "Admin only",
+    "accessDenied": "Access denied",
+    "processingActions": "Processing Actions",
+    "metadata": {
+      "fieldTitle": "Title",
+      "fieldCorrespondent": "Correspondent",
+      "fieldDocType": "Doc Type",
+      "fieldTags": "Tags",
+      "fieldDate": "Date",
+      "fieldStoragePath": "Storage Path",
+      "fieldDocumentCategory": "Document Category",
+      "dateCreated": "Document Date"
+    },
+    "table": {
+      "created": "Created",
+      "started": "Started",
+      "status": "Status",
+      "documents": "Documents",
+      "rulesApplied": "Rules Applied",
+      "classified": "Classified",
+      "skipped": "Skipped",
+      "noMatch": "No match",
+      "noDetails": "No document details available"
+    }
   },
   "scores": {
     "pocoScore": "POCO Score",
@@ -428,10 +498,16 @@
     "notClassified": "Not Classified"
   },
   "validation": {
-    "required": "This field is required",
-    "invalidFormat": "Invalid format",
-    "minLength": "Minimum length is {min} characters",
-    "maxLength": "Maximum length is {max} characters"
+    "required": "{field} is required",
+    "minLength": "{field} must be at least {min} characters",
+    "invalidFormat": "{field} has an invalid format",
+    "lowercaseOnly": "Only lowercase letters, numbers, and underscores allowed",
+    "ruleNameRequired": "Rule Name is required",
+    "ruleNameMinLength": "Name must be at least 3 characters",
+    "ruleIdRequired": "Rule ID is required",
+    "ruleIdFormat": "Only lowercase letters, numbers, and underscores",
+    "descriptionRequired": "Description is required",
+    "descriptionMinLength": "Description should be at least 10 characters"
   },
   "patterns": {
     "logicGroup": "Logic Group",
@@ -576,25 +652,14 @@
     "owner": "Owner"
   },
   "status": {
-    "disabled": "Disabled",
-    "enabled": "Enabled",
+    "new": "New",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
   },
   "warnings": {
     "ruleActivationWarning": "Rule Activation Warning: Active rules automatically process documents in your Paperless archive during background processing and 'execute' runs. Only activate rules you have thoroughly tested. Use the power (⏻) icon to activate or deactivate rules directly."
-  },
-  "validation": {
-    "required": "{field} is required",
-    "minLength": "{field} must be at least {min} characters",
-    "invalidFormat": "{field} has an invalid format",
-    "lowercaseOnly": "Only lowercase letters, numbers, and underscores allowed",
-    "ruleNameRequired": "Rule Name is required",
-    "ruleNameMinLength": "Name must be at least 3 characters",
-    "ruleIdRequired": "Rule ID is required",
-    "ruleIdFormat": "Only lowercase letters, numbers, and underscores",
-    "descriptionRequired": "Description is required",
-    "descriptionMinLength": "Description should be at least 10 characters"
   },
   "fields": {
     "title": "Title",
@@ -678,14 +743,90 @@
     "lowScoreWarning": "⚠️ Consider adding more points - core identifiers should total 70-100 points"
   },
   "documentClassifications": {
-    "predefinedData": "Predefined Data",
-    "autoGeneratedFromDocument": "Auto generated from document",
-    "selectCorrespondentPlaceholder": "Select correspondent...",
-    "selectDocTypePlaceholder": "Select document type...",
-    "selectTagsPlaceholder": "Select tags...",
-    "removeDynamicRuleFirst": "Disabled - remove dynamic rule first",
-    "dynamicRuleWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
-    "documentClassificationsHelp": "Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5."
+    "stepTitle": "Step 5 of 6: Document Classifications",
+    "stepDescription": "Configure document classification data extracted from OCR",
+    "stepTooltip": "Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5.",
+    "predefinedDataSection": "Predefined Data",
+    "dynamicDataSection": "Dynamic Data Extraction",
+    "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
+    "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
+    "noDynamicRulesTitle": "No Dynamic Extraction Rules",
+    "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
+    "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
+    "labels": {
+      "title": "Title",
+      "dateCreated": "Date Created",
+      "correspondent": "Correspondent",
+      "documentType": "Document Type",
+      "tags": "Tags",
+      "customFieldLabel": "Custom Field: {name}",
+      "targetField": "Target Field",
+      "beforeAnchor": "Before Anchor",
+      "extractionType": "Extraction Type",
+      "afterAnchor": "After Anchor",
+      "dateFormat": "Date Format",
+      "selectTagToExtract": "Select Tag to Extract",
+      "patternToMatch": "Pattern to Match",
+      "archiveSerialNumber": "Archive Serial Number",
+      "documentCategory": "Document Category",
+      "storagePath": "Storage Path"
+    },
+    "placeholders": {
+      "autoGenerated": "Auto generated from document",
+      "disabledDynamicRule": "Disabled - remove dynamic rule first",
+      "enterFieldName": "Enter {fieldName}...",
+      "selectCorrespondent": "Select correspondent...",
+      "selectDocumentType": "Select document type...",
+      "selectTags": "Select tags...",
+      "selectOption": "Select an option...",
+      "selectTargetField": "Select target field...",
+      "enterTextOrRegex": "Enter text or regex pattern...",
+      "selectDateFormat": "Select or enter date format...",
+      "selectTag": "Select tag...",
+      "enterFieldValue": "Enter field value"
+    },
+    "messages": {
+      "fieldInUseWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
+      "selectTargetField": "Select a target field to configure extraction",
+      "extractedValueLabel": "Extracted Value:",
+      "extractionFailedLabel": "Extraction Failed:",
+      "defineAnchorPoints": "Define anchor points to extract data from documents"
+    },
+    "buttons": {
+      "testExtraction": "Test Extraction on OCR Content",
+      "addExtractionRule": "Add Extraction Rule",
+      "addFirstRule": "Add First Rule",
+      "beforeAnchorLabel": "Before Anchor",
+      "afterAnchorLabel": "After Anchor",
+      "extractedDataLabel": "Extracted Data"
+    },
+    "visualization": {
+      "beforeAnchor": "Before Anchor",
+      "extractedData": "Extracted Data",
+      "afterAnchor": "After Anchor"
+    },
+    "errors": {
+      "noOcrContent": "No OCR content available",
+      "beforeAnchorNotFound": "Before anchor pattern \"{pattern}\" not found",
+      "afterAnchorNotFound": "After anchor pattern \"{pattern}\" not found",
+      "extractionTypeNoMatch": "Extraction type filter \"{type}\" did not match any data",
+      "extractionPatternNoMatch": "Extraction pattern \"{pattern}\" did not match"
+    },
+    "dropdown": {
+      "alreadyUsed": " (already used)",
+      "removePredefinedFirst": " (remove predefined value first)"
+    },
+    "noDynamicRulesMessage": "No Dynamic Rules Defined",
+    "noDynamicRulesDesc": "Enable dynamic extraction in Settings > Field Visibility to extract data from documents",
+    "noDynamicRulesHint": "No fields are set to Dynamic mode",
+    "noOcrContent": "No OCR content available",
+    "dateCreatedLabel": "Document Date (from OCR)",
+    "invoiceNumberDefault": "Invoice Number",
+    "referenceIdDefault": "Reference ID",
+    "documentCategoryDefault": "Document Category",
+    "customFieldDefault": "Custom Field",
+    "dynamicExtractionRuleNum": "Dynamic Extraction Rule {num}",
+    "removePredefinedFirstMsg": "Remove the predefined value first"
   },
   "summary": {
     "reviewTooltip": "Review all your rule configurations before saving. You can go back to any step to make changes if needed.",
@@ -734,13 +875,6 @@
     "activateRuleWarning": "⚠️ WARNING: Activating this rule will allow it to automatically process documents in your Paperless archive during background processing. This may modify your documents. Are you sure you want to activate this rule?",
     "activeRuleNote": "⚠️ Active Rule: This rule will process documents automatically during background processing."
   },
-  "status": {
-    "new": "New",
-    "active": "Active",
-    "inactive": "Inactive",
-    "disabled": "Disabled",
-    "enabled": "Enabled"
-  },
   "rulesPage": {
     "trash": "Trash",
     "rulesSelected": "{count} rule(s) selected",
@@ -749,72 +883,5 @@
     "new": "New",
     "nameAZ": "Name (A-Z)",
     "nameZA": "Name (Z-A)"
-  },
-  "documentClassifications": {
-    "stepTitle": "Step 5 of 6: Document Classifications",
-    "stepDescription": "Configure document classification data extracted from OCR",
-    "stepTooltip": "Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5.",
-    "predefinedDataSection": "Predefined Data",
-    "dynamicDataSection": "Dynamic Data Extraction",
-    "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
-    "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
-    "noDynamicRulesTitle": "No Dynamic Extraction Rules",
-    "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
-    "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
-    "labels": {
-      "title": "Title",
-      "dateCreated": "Date Created",
-      "correspondent": "Correspondent",
-      "documentType": "Document Type",
-      "tags": "Tags",
-      "customFieldLabel": "Custom Field: {name}",
-      "targetField": "Target Field",
-      "beforeAnchor": "Before Anchor",
-      "extractionType": "Extraction Type",
-      "afterAnchor": "After Anchor",
-      "dateFormat": "Date Format",
-      "selectTagToExtract": "Select Tag to Extract",
-      "patternToMatch": "Pattern to Match"
-    },
-    "placeholders": {
-      "autoGenerated": "Auto generated from document",
-      "disabledDynamicRule": "Disabled - remove dynamic rule first",
-      "enterFieldName": "Enter {fieldName}...",
-      "selectCorrespondent": "Select correspondent...",
-      "selectDocumentType": "Select document type...",
-      "selectTags": "Select tags...",
-      "selectOption": "Select an option...",
-      "selectTargetField": "Select target field...",
-      "enterTextOrRegex": "Enter text or regex pattern...",
-      "selectDateFormat": "Select or enter date format...",
-      "selectTag": "Select tag..."
-    },
-    "messages": {
-      "fieldInUseWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
-      "selectTargetField": "Select a target field to configure extraction",
-      "extractedValueLabel": "Extracted Value:",
-      "extractionFailedLabel": "Extraction Failed:"
-    },
-    "buttons": {
-      "testExtraction": "Test Extraction on OCR Content",
-      "addExtractionRule": "Add Extraction Rule",
-      "addFirstRule": "Add First Rule"
-    },
-    "visualization": {
-      "beforeAnchor": "Before Anchor",
-      "extractedData": "Extracted Data",
-      "afterAnchor": "After Anchor"
-    },
-    "errors": {
-      "noOcrContent": "No OCR content available",
-      "beforeAnchorNotFound": "Before anchor pattern \"{pattern}\" not found",
-      "afterAnchorNotFound": "After anchor pattern \"{pattern}\" not found",
-      "extractionTypeNoMatch": "Extraction type filter \"{type}\" did not match any data",
-      "extractionPatternNoMatch": "Extraction pattern \"{pattern}\" did not match"
-    },
-    "dropdown": {
-      "alreadyUsed": " (already used)",
-      "removePredefinedFirst": " (remove predefined value first)"
-    }
   }
 }
