@@ -791,174 +791,35 @@ export default function Rules() {
       )}
 
       {/* Documents without Rules */}
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>
-            {t('rules.documentsWithoutRules', { count: documents.length })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* New Paperless-style Filter Bar */}
-          <PaperlessFilterBar
-            filters={filters}
-            onFilterChange={setFilters}
-            onResetFilters={handleResetFilters}
-            allTags={allTags}
-            allCorrespondents={allCorrespondents}
-            allDocTypes={allDocTypes}
-            allCustomFields={[]}
-          />
-          
-          {isLoadingDocuments ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          ) : documents.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--app-text-muted)' }} />
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('rules.noDocumentsFound')}</h3>
-              <div className="space-y-2" style={{ color: 'var(--app-text-muted)' }}>
-                <p>{t('rules.noDocumentsDesc')}</p>
-                <ul className="list-disc list-inside text-left max-w-md mx-auto">
-                  <li>{t('rules.noDocumentsReasons.noDocs')}</li>
-                  <li>{t('rules.noDocumentsReasons.allProcessed')}</li>
-                  <li>{t('rules.noDocumentsReasons.filtersRestrictive')}</li>
-                </ul>
-                <p className="mt-4 text-sm">
-                  {t('rules.checkConsole')}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-                  <tr>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.title')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.id')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.dateCreated')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.added')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.correspondent')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.documentTypeShort')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.cfDocCategory')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.tags')}</th>
-                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.pocoScore')}</th>
-                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.owner')}</th>
-                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.view')}</th>
-                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-secondary)' }}>{t('table.actions')}</th>
-                  </tr>
-                </thead>
-                <tbody style={{ backgroundColor: 'var(--app-surface)' }}>
-                  {documents.map((doc) => (
-                    <tr 
-                      key={doc.id} 
-                      className={`cursor-pointer`}
-                      style={{ 
-                        backgroundColor: selectedDocument?.id === doc.id ? 'var(--info-bg)' : 'transparent',
-                        borderBottom: '1px solid var(--app-border)'
-                      }}
-                      onMouseEnter={(e) => { if (selectedDocument?.id !== doc.id) e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)'; }}
-                      onMouseLeave={(e) => { if (selectedDocument?.id !== doc.id) e.currentTarget.style.backgroundColor = 'transparent'; }}
-                      onClick={() => setSelectedDocument(doc)}
-                    >
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text)' }}>{doc.title}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.id}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.created)}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{formatDate(doc.added || doc.created)}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.correspondent || '-'}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.documentType || '-'}</td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-secondary)' }}>{doc.docCategory || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-1 flex-wrap">
-                          {doc.tags && doc.tags.length > 0 ? (
-                            doc.tags.map((tag, i) => {
-                              const tagObj = allTags.find(t => t.name === tag);
-                              const tagColor = tagObj?.color || '#1e40af';
-                              
-                              const getTextColor = (hexColor) => {
-                                const r = parseInt(hexColor.slice(1, 3), 16);
-                                const g = parseInt(hexColor.slice(3, 5), 16);
-                                const b = parseInt(hexColor.slice(5, 7), 16);
-                                const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                                return luminance > 0.5 ? '#111827' : '#FFFFFF';
-                              };
-                              
-                              return (
-                                <Badge 
-                                  key={i} 
-                                  style={{ 
-                                    backgroundColor: tagColor,
-                                    color: getTextColor(tagColor)
-                                  }}
-                                >
-                                  {tag}
-                                </Badge>
-                              );
-                            })
-                          ) : (
-                            <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>No tags</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-2 py-1 text-center">
-                        {doc.pocoScore !== null && doc.pocoScore !== undefined ? (
-                          <span className={`text-xs font-semibold ${
-                            doc.pocoScore >= 80 ? 'text-green-600' : 
-                            doc.pocoScore >= 1 ? 'text-amber-600' : ''
-                          }`}
-                          style={doc.pocoScore < 1 ? { color: 'var(--app-text-muted)' } : undefined}>
-                            {doc.pocoScore.toFixed(1)}
-                          </span>
-                        ) : (
-                          <span className="text-xs" style={{ color: 'var(--app-text-muted)' }}>-</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-1 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-2 justify-center items-center">
-                          <button 
-                            className="btn btn-ghost btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewPDF(doc);
-                            }}
-                            title="View PDF"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            className="btn btn-ghost btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleViewOCR(doc);
-                            }}
-                            title="View OCR Content"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex justify-center">
-                          <button 
-                            className="btn btn-primary btn-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCreateRuleForDocument(doc);
-                            }}
-                          >
-                            {t('rules.newRule')}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <DocumentListSection
+        title={t('rules.documentsWithoutRules', { count: documents.length })}
+        documents={documents}
+        isLoading={isLoadingDocuments}
+        filters={filters}
+        onFiltersChange={setFilters}
+        allTags={allTags}
+        allCorrespondents={allCorrespondents}
+        allDocTypes={allDocTypes}
+        showSelectionCheckboxes={false}
+        showOwnerColumn={true}
+        onViewOCR={handleViewOCR}
+        onViewPDF={handleViewPDF}
+        onRowClick={setSelectedDocument}
+        renderCustomActions={(doc) => (
+          <div className="flex justify-center">
+            <button 
+              className="btn btn-primary btn-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateRuleForDocument(doc);
+              }}
+            >
+              {t('rules.newRule')}
+            </button>
+          </div>
+        )}
+        cardClassName="mt-8"
+      />
 
       {/* OCR Content Modal */}
       {ocrModalOpen && (

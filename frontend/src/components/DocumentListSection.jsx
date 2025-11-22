@@ -20,13 +20,16 @@ export default function DocumentListSection({
   onViewOCR,
   onViewPDF,
   showSelectionCheckboxes = true,
+  showOwnerColumn = false,
   title = null,
   cardClassName = '',
   allTags = [],
   allCorrespondents = [],
   allDocTypes = [],
   onCacheDataLoad,
-  noDocumentsMessage = null
+  noDocumentsMessage = null,
+  renderCustomActions = null,
+  onRowClick = null
 }) {
   const { t } = useLanguage();
   const [localAllTags, setLocalAllTags] = useState(allTags);
@@ -159,7 +162,13 @@ export default function DocumentListSection({
                   <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.cfDocCategory')}</th>
                   <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.tags')}</th>
                   <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.pocoScore')}</th>
+                  {showOwnerColumn && (
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.owner')}</th>
+                  )}
                   <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.view')}</th>
+                  {renderCustomActions && (
+                    <th className="px-2 py-3 text-center text-xs font-medium uppercase" style={{ color: 'var(--app-text-muted)' }} scope="col">{t('table.actions')}</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
@@ -182,7 +191,13 @@ export default function DocumentListSection({
                         e.currentTarget.style.backgroundColor = 'rgba(var(--app-primary-light-rgb), 0.3)';
                       }
                     }}
-                    onClick={() => showSelectionCheckboxes && onSelectionChange?.(doc.id)}
+                    onClick={() => {
+                      if (onRowClick) {
+                        onRowClick(doc);
+                      } else if (showSelectionCheckboxes) {
+                        onSelectionChange?.(doc.id);
+                      }
+                    }}
                   >
                     {showSelectionCheckboxes && (
                       <td className="px-2 py-3">
@@ -255,6 +270,9 @@ export default function DocumentListSection({
                         <span className="text-gray-400 text-xs">-</span>
                       )}
                     </td>
+                    {showOwnerColumn && (
+                      <td className="px-2 py-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>{doc.owner || '-'}</td>
+                    )}
                     <td className="px-2 py-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <button 
@@ -273,6 +291,11 @@ export default function DocumentListSection({
                         </button>
                       </div>
                     </td>
+                    {renderCustomActions && (
+                      <td className="px-2 py-3 text-center">
+                        {renderCustomActions(doc)}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
