@@ -23,25 +23,50 @@ class TokenEncryption:
     
     def __init__(self):
         self._cipher = None
+        self._is_dev_mode = False
         self._load_key()
     
     def _load_key(self):
-        """Load encryption key from environment - REQUIRED for production"""
+        """Load encryption key from environment with development mode fallback"""
         key = os.getenv('POCOCLASS_SECRET_KEY')
         
         if not key:
-            # CRITICAL: Must set POCOCLASS_SECRET_KEY environment variable
-            error_msg = (
-                "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
-                "Token encryption requires a persistent encryption key.\n\n"
-                "To generate a secure key, run:\n"
-                "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
-                "Then add it to your environment:\n"
-                "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
-                "Application startup ABORTED for security."
+            # Check if we're in a development environment
+            # Development mode indicators: localhost, dev domain, or explicit dev flag
+            is_dev = (
+                os.getenv('REPLIT_DEV_DOMAIN') or 
+                os.getenv('FLASK_ENV') == 'development' or
+                os.getenv('POCOCLASS_DEV_MODE') == 'true'
             )
-            logger.critical(error_msg)
-            raise ValueError("POCOCLASS_SECRET_KEY environment variable is required")
+            
+            if is_dev:
+                # DEVELOPMENT MODE: Generate temporary key with warning
+                warning_msg = (
+                    "⚠️  WARNING: POCOCLASS_SECRET_KEY not set - using TEMPORARY encryption key!\n"
+                    "   This is OK for development, but tokens will NOT persist across restarts.\n"
+                    "   For production, generate a persistent key:\n"
+                    "     python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n"
+                    "   Then set: POCOCLASS_SECRET_KEY=<your-generated-key>"
+                )
+                logger.warning(warning_msg)
+                print(f"\n{warning_msg}\n")
+                
+                # Generate a temporary key for this session only
+                key = Fernet.generate_key()
+                self._is_dev_mode = True
+            else:
+                # PRODUCTION MODE: Require explicit key
+                error_msg = (
+                    "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
+                    "Token encryption requires a persistent encryption key.\n\n"
+                    "To generate a secure key, run:\n"
+                    "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
+                    "Then add it to your environment:\n"
+                    "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
+                    "Application startup ABORTED for security."
+                )
+                logger.critical(error_msg)
+                raise ValueError("POCOCLASS_SECRET_KEY environment variable is required")
         
         # Ensure key is bytes
         if isinstance(key, str):
@@ -50,7 +75,10 @@ class TokenEncryption:
         # Validate and create cipher
         try:
             self._cipher = Fernet(key)
-            logger.info("Token encryption initialized successfully")
+            if self._is_dev_mode:
+                logger.info("Token encryption initialized (DEVELOPMENT MODE - temporary key)")
+            else:
+                logger.info("Token encryption initialized successfully")
         except Exception as e:
             logger.critical(f"Invalid POCOCLASS_SECRET_KEY: {e}")
             raise ValueError(f"Invalid encryption key format: {e}")

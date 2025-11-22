@@ -162,14 +162,12 @@ class RuleLoader:
             return False
         
         # Validate core_identifiers structure
-        if not self.validate_identifiers(rule.get('core_identifiers', {}), 'core_identifiers', filename):
-            errors.append(f"Invalid core_identifiers structure")
+        if not self.validate_identifiers_with_errors(rule.get('core_identifiers', {}), 'core_identifiers', filename, errors):
             return False
         
         # Validate bonus_identifiers if present
         if 'bonus_identifiers' in rule:
-            if not self.validate_identifiers(rule['bonus_identifiers'], 'bonus_identifiers', filename):
-                errors.append(f"Invalid bonus_identifiers structure")
+            if not self.validate_identifiers_with_errors(rule['bonus_identifiers'], 'bonus_identifiers', filename, errors):
                 return False
         
         # Validate static_metadata if present
@@ -215,48 +213,80 @@ class RuleLoader:
         return True
     
     def validate_identifiers(self, identifiers: Dict[str, Any], section_name: str, filename: str) -> bool:
-        """Validate identifiers section structure"""
+        """Validate identifiers section structure (backwards compatible)"""
+        errors = []
+        return self.validate_identifiers_with_errors(identifiers, section_name, filename, errors)
+    
+    def validate_identifiers_with_errors(self, identifiers: Dict[str, Any], section_name: str, filename: str, errors: List[str]) -> bool:
+        """
+        Validate identifiers section structure with error collection
+        Args:
+            identifiers: Identifiers data to validate
+            section_name: Name of the section (e.g., 'core_identifiers')
+            filename: Name of the rule file
+            errors: List to append error messages to
+        Returns:
+            True if valid, False otherwise
+        """
         if not isinstance(identifiers, dict):
-            self.logger.error(f"Rule {filename} {section_name} must be a dictionary")
+            error_msg = f"{section_name} must be a dictionary"
+            self.logger.error(f"Rule {filename} {error_msg}")
+            errors.append(error_msg)
             return False
         
         if 'logic_groups' not in identifiers:
-            self.logger.error(f"Rule {filename} {section_name} missing logic_groups")
+            error_msg = f"{section_name} missing logic_groups"
+            self.logger.error(f"Rule {filename} {error_msg}")
+            errors.append(error_msg)
             return False
         
         logic_groups = identifiers['logic_groups']
         if not isinstance(logic_groups, list):
-            self.logger.error(f"Rule {filename} {section_name}.logic_groups must be a list")
+            error_msg = f"{section_name}.logic_groups must be a list"
+            self.logger.error(f"Rule {filename} {error_msg}")
+            errors.append(error_msg)
             return False
         
         total_score = 0
         for i, group in enumerate(logic_groups):
             if not isinstance(group, dict):
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] must be a dictionary")
+                error_msg = f"{section_name}.logic_groups[{i}] must be a dictionary"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             # Validate required fields
             if 'type' not in group:
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] missing 'type'")
+                error_msg = f"{section_name}.logic_groups[{i}] missing 'type'"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             if 'score' not in group:
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] missing 'score'")
+                error_msg = f"{section_name}.logic_groups[{i}] missing 'score'"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             if 'conditions' not in group:
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] missing 'conditions'")
+                error_msg = f"{section_name}.logic_groups[{i}] missing 'conditions'"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             # Validate type
             if group['type'] not in ['match', 'or']:
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] type must be 'match' or 'or'")
+                error_msg = f"{section_name}.logic_groups[{i}] type must be 'match' or 'or'"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             # Validate score
             score = group['score']
             if not isinstance(score, (int, float)) or score < 0:
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] score must be a non-negative number")
+                error_msg = f"{section_name}.logic_groups[{i}] score must be a non-negative number"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             total_score += score
@@ -264,29 +294,41 @@ class RuleLoader:
             # Validate conditions
             conditions = group['conditions']
             if not isinstance(conditions, list):
-                self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}] conditions must be a list")
+                error_msg = f"{section_name}.logic_groups[{i}] conditions must be a list"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             for j, condition in enumerate(conditions):
                 if not isinstance(condition, dict):
-                    self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}].conditions[{j}] must be a dictionary")
+                    error_msg = f"{section_name}.logic_groups[{i}].conditions[{j}] must be a dictionary"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
                     return False
                 
                 if 'pattern' not in condition:
-                    self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}].conditions[{j}] missing 'pattern'")
+                    error_msg = f"{section_name}.logic_groups[{i}].conditions[{j}] missing 'pattern'"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
                     return False
                 
                 if 'source' not in condition:
-                    self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}].conditions[{j}] missing 'source'")
+                    error_msg = f"{section_name}.logic_groups[{i}].conditions[{j}] missing 'source'"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
                     return False
                 
                 if condition['source'] not in ['content', 'filename']:
-                    self.logger.error(f"Rule {filename} {section_name}.logic_groups[{i}].conditions[{j}] source must be 'content' or 'filename'")
+                    error_msg = f"{section_name}.logic_groups[{i}].conditions[{j}] source must be 'content' or 'filename'"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
                     return False
         
         # Validate total score for core identifiers
         if section_name == 'core_identifiers' and total_score != 100:
-            self.logger.warning(f"Rule {filename} {section_name} total score is {total_score}, should be 100")
+            warning_msg = f"{section_name} total score is {total_score}, should be 100"
+            self.logger.warning(f"Rule {filename} {warning_msg}")
+            # This is just a warning, not an error - don't add to errors list
         
         return True
     
