@@ -696,7 +696,7 @@
     "predefinedDataSection": "Vordefinierte Daten",
     "dynamicDataSection": "Dynamische Datenextraktion",
     "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
-    "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
+    "dynamicDataDescription": "Definieren Sie Ankerpunkte und Extraktionsmuster für die dynamische Feldfüllung",
     "noDynamicRulesTitle": "Keine dynamischen Extraktionsregeln",
     "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
     "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
@@ -725,11 +725,12 @@
       "selectCorrespondent": "Wählen Sie einen Korrespondenten...",
       "selectDocumentType": "Wählen Sie einen Dokumenttyp...",
       "selectTags": "Tags auswählen...",
-      "selectOption": "Select an option...",
+      "selectOption": "Eine Option auswählen...",
       "selectTargetField": "Wählen Sie ein Zielfeld",
       "enterTextOrRegex": "Text oder Regex eingeben...",
       "selectDateFormat": "Datumsformat auswählen",
-      "selectTag": "Tag auswählen"
+      "selectTag": "Tag auswählen",
+      "enterFieldValue": "Feldwert eingeben..."
     },
     "messages": {
       "fieldInUseWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
@@ -748,9 +749,9 @@
       "afterAnchorLabel": "Nach Anker"
     },
     "visualization": {
-      "beforeAnchor": "Before Anchor",
-      "extractedData": "Extracted Data",
-      "afterAnchor": "After Anchor"
+      "beforeAnchor": "Vor Anker",
+      "extractedData": "Extrahierte Daten",
+      "afterAnchor": "Nach Anker"
     },
     "errors": {
       "noOcrContent": "No OCR content available",
@@ -771,7 +772,9 @@
     "dateCreatedLabel": "Erstellungsdatum",
     "noDynamicRulesDesc": "Fügen Sie Regeln hinzu, um Daten aus OCR-Inhalten dynamisch zu extrahieren",
     "dynamicExtractionRuleNum": "Dynamische Extraktionsregel #{number}",
-    "noOcrContent": "Kein OCR-Inhalt verfügbar"
+    "noOcrContent": "Kein OCR-Inhalt verfügbar",
+    "noDynamicRulesMessage": "Keine dynamischen Extraktionsregeln",
+    "noDynamicRulesHint": "Fügen Sie Regeln hinzu, um Daten aus OCR-Inhalten dynamisch zu extrahieren"
   },
   "summary": {
     "reviewTooltip": "Überprüfen Sie Ihre Regelkonfiguration vor dem Speichern",
