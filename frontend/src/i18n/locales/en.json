@@ -475,7 +475,7 @@
       "fieldDate": "Date",
       "fieldStoragePath": "Storage Path",
       "fieldDocumentCategory": "Document Category",
-      "dateCreated": "Document Date"
+      "dateCreated": "Creation Date"
     },
     "table": {
       "created": "Created",
