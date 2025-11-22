@@ -135,84 +135,7 @@
       "allProcessed": "Todos los documentos han sido procesados",
       "filtersRestrictive": "Los filtros actuales son demasiado restrictivos"
     },
-    "checkConsole": "Consulte la consola del navegador para obtener detalles de la respuesta de la API.",
-    "viewRule": "Ver regla",
-    "ruleTemplate": "Plantilla de regla",
-    "activeRules": "Reglas activas",
-    "inactiveRules": "Reglas inactivas",
-    "deactivatedRules": "Reglas deshabilitadas",
-    "deletedRules": "Reglas eliminadas",
-    "activate": "Activar",
-    "deactivate": "Desactivar",
-    "duplicateRule": "Duplicar regla",
-    "bulkActions": "Acciones en lote",
-    "selectAll": "Seleccionar todo",
-    "deselectAll": "Deseleccionar todo"
-  },
-  "processing": {
-    "status": "Estado de procesamiento",
-    "enabled": "Habilitado",
-    "disabled": "Deshabilitado",
-    "trigger": "Procesamiento de activación",
-    "dryRun": "Ejecución de prueba",
-    "history": "Historial de procesamiento",
-    "noHistory": "No hay historial de procesamiento disponible",
-    "active": "Activo",
-    "idle": "Inactivo",
-    "never": "Nunca",
-    "processing": "Procesando",
-    "lastRun": "Última ejecución",
-    "documentsProcessed": "Documentos procesados",
-    "loadingStatus": "Cargando estado...",
-    "triggering": "Activando..."
-  },
-  "logs": {
-    "title": "Registros",
-    "level": "Nivel",
-    "message": "Mensaje",
-    "timestamp": "Marca de tiempo",
-    "noLogs": "No se encontraron registros"
-  },
-  "scores": {
-    "pocoScore": "Puntuación POCO",
-    "ocrScore": "Puntuación OCR",
-    "threshold": "Umbral",
-    "classification": "Clasificación",
-    "classified": "Clasificado",
-    "notClassified": "No clasificado"
-  },
-  "status": {
-    "active": "Activo",
-    "disabled": "Deshabilitado",
-    "enabled": "Habilitado",
-    "inactive": "Inactivo",
-    "new": "Nuevo"
-  },
-  "backgroundProcess": {
-    "subtitle": "Supervisar y administrar la clasificación automática de documentos",
-    "triggering": "Activando...",
-    "autoDiscover": "Descubrir y procesar automáticamente documentos etiquetados con \"NEW\"",
-    "whatIsThisFor": "¿Para qué sirve esta sección?",
-    "description": "Supervise y controle el procesamiento de documentos en Paperless. Utilize la ejecución de prueba para probar reglas sin hacer cambios, o Ejecutar para aplicar reglas activas a documentos seleccionados. El historial de procesamiento muestra todos los detalles de ejecución con resultados por documento.",
-    "triggerNow": "Activar ahora:",
-    "triggerNowDesc": "Descubre y procesa automáticamente todos los documentos etiquetados con \"NEW\" (funciona independientemente de los filtros a continuación).",
-    "quickStats": "Estadísticas rápidas",
-    "totalRuns": "Ejecuciones totales",
-    "successful": "Exitoso",
-    "failed": "Fallido",
-    "manualProcessing": "Procesamiento manual",
-    "testRulesAgainst": "Pruebe reglas contra documentos filtrados. Seleccione documentos a continuación usando la barra de filtros y luego elija su modo de prueba.",
-    "matchingDocuments": "Documentos coincidentes",
-    "noDocumentsMatch": "Ningún documento coincide con los criterios de filtro actuales"
-  },
-  "ruleEvaluation": {
-    "subtitle": "Pruebe y evalúe reglas de clasificación de documentos",
-    "whatIsThisFor": "¿Para qué sirve esta sección?",
-    "description": "Pruebe cómo funcionan sus reglas de clasificación en documentos. Seleccione una regla, elija documentos para probar y haga clic en Ejecutar para ver resultados detallados con puntuaciones POCO, coincidencias de patrones y metadatos extraídos. Use esto para ajustar sus reglas antes de usarlas en producción.",
-    "testDocuments": "Documentos de prueba",
-    "selectRule": "Seleccionar regla...",
-    "noDocumentsAvailable": "No hay documentos disponibles",
-    "noDocumentsMatch": "Ningún documento coincide con los filtros seleccionados."
+    "checkConsole": "Consulte la consola del navegador para obtener detalles de la respuesta de la API."
   },
   "wizard": {
     "step1": "Basic Information",
@@ -445,6 +368,64 @@
       "saveSettings": "Save Settings"
     }
   },
+  "processing": {
+    "status": "Estado de procesamiento",
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "trigger": "Procesamiento de activación",
+    "dryRun": "Ejecución de prueba",
+    "history": "Historial de procesamiento",
+    "noHistory": "No hay historial de procesamiento disponible",
+    "active": "Activo",
+    "idle": "Inactivo",
+    "never": "Nunca",
+    "processing": "Procesando",
+    "lastRun": "Última ejecución",
+    "documentsProcessed": "Documentos procesados",
+    "loadingStatus": "Cargando estado...",
+    "triggering": "Activando..."
+  },
+  "logs": {
+    "title": "Registros",
+    "level": "Nivel",
+    "message": "Mensaje",
+    "timestamp": "Marca de tiempo",
+    "noLogs": "No se encontraron registros"
+  },
+  "ruleEvaluation": {
+    "subtitle": "Pruebe y evalúe reglas de clasificación de documentos",
+    "whatIsThisFor": "¿Para qué sirve esta sección?",
+    "description": "Pruebe cómo funcionan sus reglas de clasificación en documentos. Seleccione una regla, elija documentos para probar y haga clic en Ejecutar para ver resultados detallados con puntuaciones POCO, coincidencias de patrones y metadatos extraídos. Use esto para ajustar sus reglas antes de usarlas en producción.",
+    "testDocuments": "Documentos de prueba",
+    "selectRule": "Seleccionar regla...",
+    "noDocumentsAvailable": "No hay documentos disponibles",
+    "noDocumentsMatch": "Ningún documento coincide con los filtros seleccionados."
+  },
+  "backgroundProcess": {
+    "subtitle": "Supervisar y administrar la clasificación automática de documentos",
+    "triggering": "Activando...",
+    "autoDiscover": "Descubrir y procesar automáticamente documentos etiquetados con \"NEW\"",
+    "whatIsThisFor": "¿Para qué sirve esta sección?",
+    "description": "Supervise y controle el procesamiento de documentos en Paperless. Utilize la ejecución de prueba para probar reglas sin hacer cambios, o Ejecutar para aplicar reglas activas a documentos seleccionados. El historial de procesamiento muestra todos los detalles de ejecución con resultados por documento.",
+    "triggerNow": "Activar ahora:",
+    "triggerNowDesc": "Descubre y procesa automáticamente todos los documentos etiquetados con \"NEW\" (funciona independientemente de los filtros a continuación).",
+    "quickStats": "Estadísticas rápidas",
+    "totalRuns": "Ejecuciones totales",
+    "successful": "Exitoso",
+    "failed": "Fallido",
+    "manualProcessing": "Procesamiento manual",
+    "testRulesAgainst": "Pruebe reglas contra documentos filtrados. Seleccione documentos a continuación usando la barra de filtros y luego elija su modo de prueba.",
+    "matchingDocuments": "Documentos coincidentes",
+    "noDocumentsMatch": "Ningún documento coincide con los criterios de filtro actuales"
+  },
+  "scores": {
+    "pocoScore": "Puntuación POCO",
+    "ocrScore": "Puntuación OCR",
+    "threshold": "Umbral",
+    "classification": "Clasificación",
+    "classified": "Clasificado",
+    "notClassified": "No clasificado"
+  },
   "validation": {
     "required": "{field} is required",
     "minLength": "{field} must be at least {min} characters",
@@ -598,6 +579,13 @@
     "pocoScore": "POCO Score",
     "view": "View",
     "owner": "Owner"
+  },
+  "status": {
+    "new": "Nuevo",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "disabled": "Deshabilitado",
+    "enabled": "Habilitado"
   },
   "warnings": {
     "ruleActivationWarning": "Rule Activation Warning: Active rules automatically process documents in your Paperless archive during background processing and 'execute' runs. Only activate rules you have thoroughly tested. Use the power (⏻) icon to activate or deactivate rules directly."
