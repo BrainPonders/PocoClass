@@ -15,65 +15,138 @@ class RuleLoader:
         self.rules_directory = Path(rules_directory)
         self.logger = logging.getLogger(__name__)
         self.rules = {}
+        self.load_errors = []  # Track errors during rule loading
     
     def load_all_rules(self) -> Dict[str, Dict[str, Any]]:
         """Load all YAML rule files from the rules directory"""
-        # Clear the rules dictionary to avoid stale data
+        # Clear the rules dictionary and errors to avoid stale data
         self.rules = {}
+        self.load_errors = []
         
         if not self.rules_directory.exists():
-            self.logger.error(f"Rules directory does not exist: {self.rules_directory}")
+            error_msg = f"Rules directory does not exist: {self.rules_directory}"
+            self.logger.error(error_msg)
+            self.load_errors.append({
+                'file': 'N/A',
+                'error': error_msg,
+                'type': 'directory_not_found'
+            })
             return {}
         
         rule_files = list(self.rules_directory.glob("*.yaml")) + list(self.rules_directory.glob("*.yml"))
         
         if not rule_files:
-            self.logger.warning(f"No YAML rule files found in: {self.rules_directory}")
+            warning_msg = f"No YAML rule files found in: {self.rules_directory}"
+            self.logger.warning(warning_msg)
+            # This is just a warning, not an error
             return {}
         
         self.logger.info(f"Loading {len(rule_files)} rule files from {self.rules_directory}")
         
         for rule_file in rule_files:
             try:
-                rule = self.load_rule_file(rule_file)
+                rule, error = self.load_rule_file_with_error(rule_file)
                 if rule:
                     rule_id = rule.get('rule_id')
                     if rule_id:
                         self.rules[rule_id] = rule
                         self.logger.debug(f"Loaded rule: {rule_id} from {rule_file.name}")
                     else:
-                        self.logger.warning(f"Rule file {rule_file.name} missing rule_id")
+                        error_msg = f"Rule file {rule_file.name} missing rule_id"
+                        self.logger.warning(error_msg)
+                        self.load_errors.append({
+                            'file': rule_file.name,
+                            'error': error_msg,
+                            'type': 'missing_rule_id'
+                        })
+                elif error:
+                    # Error already tracked by load_rule_file_with_error
+                    pass
             except Exception as e:
-                self.logger.error(f"Failed to load rule file {rule_file.name}: {e}")
+                error_msg = f"Failed to load rule file {rule_file.name}: {e}"
+                self.logger.error(error_msg)
+                self.load_errors.append({
+                    'file': rule_file.name,
+                    'error': str(e),
+                    'type': 'unexpected_error'
+                })
         
-        self.logger.info(f"Successfully loaded {len(self.rules)} rules")
+        if self.load_errors:
+            self.logger.warning(f"Loaded {len(self.rules)} rules with {len(self.load_errors)} error(s)")
+        else:
+            self.logger.info(f"Successfully loaded {len(self.rules)} rules")
+        
         return self.rules
     
     def load_rule_file(self, rule_file: Path) -> Optional[Dict[str, Any]]:
-        """Load and validate a single YAML rule file"""
+        """Load and validate a single YAML rule file (backwards compatible)"""
+        rule, _ = self.load_rule_file_with_error(rule_file)
+        return rule
+    
+    def load_rule_file_with_error(self, rule_file: Path) -> tuple[Optional[Dict[str, Any]], Optional[str]]:
+        """
+        Load and validate a single YAML rule file with error tracking
+        Returns: (rule_data, error_message) tuple
+        """
         try:
             with open(rule_file, 'r', encoding='utf-8') as f:
                 rule = yaml.safe_load(f)
             
-            if not self.validate_rule(rule, rule_file.name):
-                return None
+            validation_errors = []
+            if not self.validate_rule_with_errors(rule, rule_file.name, validation_errors):
+                error_msg = '; '.join(validation_errors)
+                self.logger.error(f"Validation failed for {rule_file.name}: {error_msg}")
+                self.load_errors.append({
+                    'file': rule_file.name,
+                    'error': error_msg,
+                    'type': 'validation_error',
+                    'details': validation_errors
+                })
+                return None, error_msg
             
-            return rule
+            return rule, None
             
         except yaml.YAMLError as e:
-            self.logger.error(f"YAML parsing error in {rule_file.name}: {e}")
-            return None
+            error_msg = f"YAML parsing error: {e}"
+            self.logger.error(f"{error_msg} in {rule_file.name}")
+            self.load_errors.append({
+                'file': rule_file.name,
+                'error': error_msg,
+                'type': 'yaml_parse_error'
+            })
+            return None, error_msg
         except Exception as e:
-            self.logger.error(f"Error loading rule file {rule_file.name}: {e}")
-            return None
+            error_msg = f"Error loading file: {e}"
+            self.logger.error(f"{error_msg} ({rule_file.name})")
+            self.load_errors.append({
+                'file': rule_file.name,
+                'error': str(e),
+                'type': 'file_error'
+            })
+            return None, str(e)
     
     def validate_rule(self, rule: Dict[str, Any], filename: str) -> bool:
-        """Validate rule structure and required fields"""
+        """Validate rule structure and required fields (backwards compatible)"""
+        errors = []
+        return self.validate_rule_with_errors(rule, filename, errors)
+    
+    def validate_rule_with_errors(self, rule: Dict[str, Any], filename: str, errors: List[str]) -> bool:
+        """
+        Validate rule structure and required fields, collecting errors
+        Args:
+            rule: Rule data to validate
+            filename: Name of the rule file
+            errors: List to append error messages to
+        Returns:
+            True if valid, False otherwise
+        """
         required_fields = ['rule_name', 'rule_id', 'threshold']
         
         for field in required_fields:
             if field not in rule:
-                self.logger.error(f"Rule {filename} missing required field: {field}")
+                error_msg = f"Missing required field: {field}"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
         
         # core_identifiers is optional - initialize if missing
@@ -83,46 +156,60 @@ class RuleLoader:
         # Validate threshold
         threshold = rule.get('threshold')
         if not isinstance(threshold, int) or threshold < 0 or threshold > 100:
-            self.logger.error(f"Rule {filename} has invalid threshold: {threshold}")
+            error_msg = f"Invalid threshold: {threshold} (must be integer 0-100)"
+            self.logger.error(f"Rule {filename} {error_msg}")
+            errors.append(error_msg)
             return False
         
         # Validate core_identifiers structure
         if not self.validate_identifiers(rule.get('core_identifiers', {}), 'core_identifiers', filename):
+            errors.append(f"Invalid core_identifiers structure")
             return False
         
         # Validate bonus_identifiers if present
         if 'bonus_identifiers' in rule:
             if not self.validate_identifiers(rule['bonus_identifiers'], 'bonus_identifiers', filename):
+                errors.append(f"Invalid bonus_identifiers structure")
                 return False
         
         # Validate static_metadata if present
         if 'static_metadata' in rule:
             if not isinstance(rule['static_metadata'], dict):
-                self.logger.error(f"Rule {filename} static_metadata must be a dictionary")
+                error_msg = "static_metadata must be a dictionary"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
         
         # Validate dynamic_metadata if present
         if 'dynamic_metadata' in rule:
             if not isinstance(rule['dynamic_metadata'], dict):
-                self.logger.error(f"Rule {filename} dynamic_metadata must be a dictionary")
+                error_msg = "dynamic_metadata must be a dictionary"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
         
         # Validate filename_metadata if present
         if 'filename_metadata' in rule:
             if not isinstance(rule['filename_metadata'], dict):
-                self.logger.error(f"Rule {filename} filename_metadata must be a dictionary")
+                error_msg = "filename_metadata must be a dictionary"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
         
         # Validate poco_weights if present
         if 'poco_weights' in rule:
             weights = rule['poco_weights']
             if not isinstance(weights, dict):
-                self.logger.error(f"Rule {filename} poco_weights must be a dictionary")
+                error_msg = "poco_weights must be a dictionary"
+                self.logger.error(f"Rule {filename} {error_msg}")
+                errors.append(error_msg)
                 return False
             
             for weight_name, weight_value in weights.items():
                 if not isinstance(weight_value, (int, float)) or weight_value < 0:
-                    self.logger.error(f"Rule {filename} poco_weights.{weight_name} must be a non-negative number")
+                    error_msg = f"poco_weights.{weight_name} must be a non-negative number"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
                     return False
         
         return True
@@ -217,3 +304,15 @@ class RuleLoader:
         for rule_id, rule in self.rules.items():
             summary[rule_id] = rule.get('rule_name', 'Unknown')
         return summary
+    
+    def get_load_errors(self) -> List[Dict[str, Any]]:
+        """
+        Get all errors encountered during rule loading
+        Returns:
+            List of error dictionaries with keys: file, error, type, and optionally details
+        """
+        return self.load_errors
+    
+    def has_load_errors(self) -> bool:
+        """Check if any errors occurred during rule loading"""
+        return len(self.load_errors) > 0
