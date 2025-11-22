@@ -236,12 +236,9 @@
       "backgroundProcessing": "Procesamiento en Segundo Plano"
     },
     "appearance": {
-      "subtitle": "Personaliza tema, idioma y opciones de accesibilidad",
-      "loadingSettings": "Cargando configuración...",
-      "title": "Configuración de Apariencia",
       "title": "Configuración de Apariencia",
       "subtitle": "Personaliza tema, idioma y opciones de accesibilidad",
-      "loadingSettings": "Cargando configuración...",
+      "language": "Idioma",
       "theme": "Tema",
       "themeLight": "Claro",
       "themeDark": "Oscuro",
@@ -249,7 +246,7 @@
       "colorblindMode": "Activar Modo para Daltonismo",
       "colorblindModeDesc": "Ajusta los colores para mejor accesibilidad",
       "availableLanguages": "Idiomas Disponibles",
-      "loadingSettings": "Cargando configuración desde Paperless-ngx..."
+      "loadingSettings": "Cargando configuración..."
     },
     "system": {
       "title": "Gestión del Sistema",
@@ -278,6 +275,8 @@
       "documentTypes": "Tipos de Documento",
       "customFields": "Campos Personalizados",
       "users": "Usuarios",
+      "custom_fields": "Campos Personalizados",
+      "document_types": "Tipos de Documento",
       "custom_fields": "Campos Personalizados",
       "document_types": "Tipos de Documento",
       "userManagement": "Gestión de Usuarios",
