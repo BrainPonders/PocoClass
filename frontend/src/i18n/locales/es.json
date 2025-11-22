@@ -54,7 +54,10 @@
     "success": "Éxito",
     "warning": "Advertencia",
     "dateRange": "Rango de Fechas",
-    "last7Days": "Últimos 7 días"
+    "last7Days": "Últimos 7 días",
+    "allStatus": "Todos los Estados",
+    "newestFirst": "Más Recientes Primero",
+    "oldestFirst": "Más Antiguos Primero"
   },
   "nav": {
     "dashboard": "Panel",
@@ -565,11 +568,6 @@
     "pocoScore": "Puntuación POCO",
     "view": "Ver",
     "owner": "Propietario"
-  },
-  "filters": {
-    "allStatus": "Todos los Estados",
-    "newestFirst": "Más Recientes Primero",
-    "oldestFirst": "Más Antiguos Primero"
   },
   "status": {
     "disabled": "Desactivado",

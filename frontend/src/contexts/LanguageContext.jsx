@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import enTranslations from '../i18n/locales/en.json';
 import esTranslations from '../i18n/locales/es.json';
 import frTranslations from '../i18n/locales/fr.json';
@@ -29,12 +29,7 @@ const loadTranslations = (lang) => {
   try {
     const translations = translationsMap[lang] || translationsMap.en;
     // Unwrap the .default property if it exists (Vite/ESM wraps JSON imports)
-    const unwrapped = translations?.default ?? translations;
-    console.log('[LanguageContext] Loading translations for:', lang);
-    console.log('[LanguageContext] translationsMap[lang]:', translations);
-    console.log('[LanguageContext] Unwrapped translations:', unwrapped);
-    console.log('[LanguageContext] filters.title value:', unwrapped?.filters?.title);
-    return unwrapped;
+    return translations?.default ?? translations;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
     const fallback = translationsMap.en;
@@ -63,15 +58,7 @@ export function LanguageProvider({ children }) {
 
   const [loading, setLoading] = useState(false);
 
-  const updateLanguage = (newLang) => {
-    setState({
-      language: newLang,
-      translations: loadTranslations(newLang)
-    });
-    saveSettings({ language: newLang });
-  };
-
-  const saveSettings = (settings) => {
+  const saveSettings = useCallback((settings) => {
     try {
       const saved = localStorage.getItem('pococlass_settings');
       const existing = saved ? JSON.parse(saved) : {};
@@ -82,10 +69,18 @@ export function LanguageProvider({ children }) {
     } catch (e) {
       console.error('Error saving language:', e);
     }
-  };
+  }, []);
 
-  // Translation function with fallback
-  const t = (key, params = {}) => {
+  const updateLanguage = useCallback((newLang) => {
+    setState({
+      language: newLang,
+      translations: loadTranslations(newLang)
+    });
+    saveSettings({ language: newLang });
+  }, [saveSettings]);
+
+  // Translation function with fallback - memoized to prevent re-renders
+  const t = useCallback((key, params = {}) => {
     const keys = key.split('.');
     let value = state.translations;
 
@@ -93,9 +88,6 @@ export function LanguageProvider({ children }) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
       } else {
-        // Debug: log when key is not found
-        console.warn(`[LanguageContext] Translation key not found: ${key} (failed at: ${k})`);
-        console.warn('[LanguageContext] Current translations object:', state.translations);
         return key;
       }
     }
@@ -108,16 +100,19 @@ export function LanguageProvider({ children }) {
     }
 
     return value || key;
-  };
+  }, [state.translations]);
+
+  // Memoize the context value to prevent infinite re-renders
+  const contextValue = useMemo(() => ({
+    language: state.language,
+    updateLanguage,
+    t,
+    loading,
+    translations: state.translations
+  }), [state.language, state.translations, updateLanguage, t, loading]);
 
   return (
-    <LanguageContext.Provider value={{ 
-      language: state.language, 
-      updateLanguage, 
-      t,
-      loading,
-      translations: state.translations 
-    }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );
