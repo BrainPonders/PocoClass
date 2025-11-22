@@ -217,9 +217,7 @@
     "staticClassificationDataInfoText": "Estos son datos constantes que desea asignar a un documento una vez que se reconozca. Los campos atenuados se rellenan automáticamente con el sistema.",
     "staticMetadataInfoTitle": "Metadatos estáticos",
     "staticMetadataInfoText": "Estos son datos constantes que desea asignar a un documento una vez que se reconozca. Por ejemplo, cada declaración de un cierto tipo siempre tendrá el mismo corresponsal asignado.",
-    "reviewBeforeSaving": "Revise su configuración de regla antes de guardar",
-    "step4Description": "Configurar datos de clasificación estática que se aplique a todos los documentos coincidentes",
-    "step5Description": "Configurar datos de clasificación extraídos del OCR"
+    "reviewBeforeSaving": "Revise su configuración de regla antes de guardar"
   },
   "ocr_identifiers_description": "Defina patrones que identifiquen este tipo de documento en texto OCR",
   "ocr_identifiers_warning": "⚠️ Advertencia: Ha llenado solo {filledGroups} de 3 grupos de lógica requeridos. Agregue patrones a al menos 3 grupos de lógica para una clasificación confiable.",
@@ -509,8 +507,7 @@
     "ruleIdRequired": "El ID de regla es obligatorio",
     "ruleIdFormat": "Solo letras minúsculas, números y guiones bajos",
     "descriptionRequired": "La descripción es obligatoria",
-    "descriptionMinLength": "La descripción debe tener al menos 10 caracteres",
-    "maxLength": "La longitud máxima es {max} caracteres"
+    "descriptionMinLength": "La descripción debe tener al menos 10 caracteres"
   },
   "patterns": {
     "logicGroup": "Grupo de lógica",
@@ -887,6 +884,5 @@
     "new": "New",
     "nameAZ": "Name (A-Z)",
     "nameZA": "Name (Z-A)"
-  },
-  "messageLow": "Está cambiando el requisito de puntuación POCO del 75% (recomendado) al {threshold}%. Los valores más bajos pueden resultar en falsos positivos (clasificaciones incorrectas). ¿Está seguro?"
+  }
 }
