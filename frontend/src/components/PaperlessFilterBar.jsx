@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Filter, X, ChevronDown, Calendar } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function PaperlessFilterBar({
   filters,
@@ -10,6 +11,7 @@ export default function PaperlessFilterBar({
   allDocTypes = [],
   allCustomFields = []
 }) {
+  const { t } = useLanguage();
   const [openFilter, setOpenFilter] = useState(null);
   const dropdownRefs = useRef({});
 
@@ -117,17 +119,17 @@ export default function PaperlessFilterBar({
   return (
     <div className="mb-4">
       {/* Filter Bar */}
-      <div className="flex items-center gap-4 flex-wrap mb-3">
+      <div className="flex items-center gap-2 flex-wrap mb-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
         {/* Title Filter - Inline */}
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>Title:</label>
+        <div className="flex items-center gap-2 px-3 py-2">
+          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.title')}:</label>
           <div className="relative flex items-center">
             <input
               type="text"
               value={filters.title || ''}
               onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
-              placeholder="Search..."
-              className="px-3 py-1.5 rounded text-sm w-48 focus:outline-none"
+              placeholder={t('filters.searchPlaceholder')}
+              className="px-3 py-1.5 rounded text-sm w-56 focus:outline-none"
               style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
               onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
@@ -147,13 +149,13 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Tags Filter - Tri-state */}
-        <div className="relative">
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('tags')}
             className={getFilterButtonClass('tags')}
           >
             <Filter className="w-4 h-4" />
-            Tags
+            {t('filters.tags')}
             {filters.tagStates && Object.keys(filters.tagStates).length > 0 && ` (${Object.keys(filters.tagStates).length})`}
             <ChevronDown className="w-3 h-3" />
           </button>
@@ -166,19 +168,19 @@ export default function PaperlessFilterBar({
                     style={ filters.tagsLogic === 'any' ? { backgroundColor: 'var(--app-primary)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, tagsLogic: 'any' })}
                   >
-                    Any
+                    {t('filters.any')}
                   </button>
                   <button
                     className="flex-1 px-3 py-1.5 text-sm rounded"
                     style={ filters.tagsLogic === 'all' ? { backgroundColor: 'var(--app-primary)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, tagsLogic: 'all' })}
                   >
-                    All
+                    {t('filters.all')}
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Filter tags"
+                  placeholder={t('filters.filterTags')}
                   value={filters.tagsSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, tagsSearch: e.target.value })}
                   className="w-full px-3 py-2 rounded text-sm"
@@ -245,7 +247,7 @@ export default function PaperlessFilterBar({
                               : { backgroundColor: 'var(--error-border)', color: 'white' }
                             }
                           >
-                            {tagState === 'include' ? 'Include' : 'Exclude'}
+                            {tagState === 'include' ? t('filters.include') : t('filters.exclude')}
                           </span>
                         )}
                       </div>
@@ -257,13 +259,13 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Correspondent Filter */}
-        <div className="relative">
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('correspondent')}
             className={getFilterButtonClass('correspondent')}
           >
             <Filter className="w-4 h-4" />
-            Correspondent
+            {t('filters.correspondent')}
             {filters.correspondents.length > 0 && ` (${filters.correspondents.length})`}
             <ChevronDown className="w-3 h-3" />
           </button>
@@ -276,19 +278,19 @@ export default function PaperlessFilterBar({
                     style={ filters.correspondentsMode === 'include' ? { backgroundColor: 'var(--app-primary)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, correspondentsMode: 'include' })}
                   >
-                    Include
+                    {t('filters.include')}
                   </button>
                   <button
                     className="flex-1 px-3 py-1.5 text-sm rounded"
                     style={ filters.correspondentsMode === 'exclude' ? { backgroundColor: 'var(--error-border)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, correspondentsMode: 'exclude' })}
                   >
-                    Exclude
+                    {t('filters.exclude')}
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Filter correspondents"
+                  placeholder={t('filters.filterCorrespondents')}
                   value={filters.correspondentsSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, correspondentsSearch: e.target.value })}
                   className="w-full px-3 py-2 rounded text-sm"
@@ -308,7 +310,7 @@ export default function PaperlessFilterBar({
                     onFilterChange({ ...filters, correspondents: newCorr });
                   }}
                 >
-                  <span className="text-sm italic" style={{ color: 'var(--app-text-secondary)' }}>Not assigned</span>
+                  <span className="text-sm italic" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.notAssigned')}</span>
                 </div>
                 {allCorrespondents
                   .filter(corr => !filters.correspondentsSearch || corr.toLowerCase().includes(filters.correspondentsSearch.toLowerCase()))
@@ -335,13 +337,13 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Document Type Filter */}
-        <div className="relative">
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('documentType')}
             className={getFilterButtonClass('documentType')}
           >
             <Filter className="w-4 h-4" />
-            Document type
+            {t('filters.documentType')}
             {filters.docTypes.length > 0 && ` (${filters.docTypes.length})`}
             <ChevronDown className="w-3 h-3" />
           </button>
@@ -354,19 +356,19 @@ export default function PaperlessFilterBar({
                     style={ filters.docTypesMode === 'include' ? { backgroundColor: 'var(--app-primary)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, docTypesMode: 'include' })}
                   >
-                    Include
+                    {t('filters.include')}
                   </button>
                   <button
                     className="flex-1 px-3 py-1.5 text-sm rounded"
                     style={ filters.docTypesMode === 'exclude' ? { backgroundColor: 'var(--error-border)', color: 'white' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } }
                     onClick={() => onFilterChange({ ...filters, docTypesMode: 'exclude' })}
                   >
-                    Exclude
+                    {t('filters.exclude')}
                   </button>
                 </div>
                 <input
                   type="text"
-                  placeholder="Filter document types"
+                  placeholder={t('filters.filterDocumentTypes')}
                   value={filters.docTypesSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, docTypesSearch: e.target.value })}
                   className="w-full px-3 py-2 rounded text-sm"
@@ -386,7 +388,7 @@ export default function PaperlessFilterBar({
                     onFilterChange({ ...filters, docTypes: newTypes });
                   }}
                 >
-                  <span className="text-sm italic" style={{ color: 'var(--app-text-secondary)' }}>Not assigned</span>
+                  <span className="text-sm italic" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.notAssigned')}</span>
                 </div>
                 {allDocTypes
                   .filter(type => !filters.docTypesSearch || type.toLowerCase().includes(filters.docTypesSearch.toLowerCase()))
@@ -413,19 +415,19 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Dates Added Filter */}
-        <div className="relative">
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('dates')}
             className={getFilterButtonClass('dates')}
           >
             <Calendar className="w-4 h-4" />
-            Dates Added
+            {t('filters.datesAdded')}
             <ChevronDown className="w-3 h-3" />
           </button>
           {renderFilterDropdown('dates', (
             <div className="p-3 min-w-[300px]">
               <div className="mb-3">
-                <label className="block text-xs mb-1" style={{ color: 'var(--app-text-secondary)' }}>Added</label>
+                <label className="block text-xs mb-1" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.dateRange')}</label>
                 <div className="flex gap-2 items-center mb-2">
                   <input
                     type="date"
@@ -433,16 +435,16 @@ export default function PaperlessFilterBar({
                     onChange={(e) => onFilterChange({ ...filters, dateFrom: e.target.value })}
                     className="flex-1 px-3 py-2 rounded text-sm"
                     style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
-                    placeholder="From"
+                    placeholder={t('filters.from')}
                   />
-                  <span style={{ color: 'var(--app-text-secondary)' }}>to</span>
+                  <span style={{ color: 'var(--app-text-secondary)' }}>{t('filters.to')}</span>
                   <input
                     type="date"
                     value={filters.dateTo || ''}
                     onChange={(e) => onFilterChange({ ...filters, dateTo: e.target.value })}
                     className="flex-1 px-3 py-2 rounded text-sm"
                     style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
-                    placeholder="To"
+                    placeholder={t('filters.to')}
                   />
                 </div>
               </div>
@@ -455,10 +457,10 @@ export default function PaperlessFilterBar({
           <div className="flex items-center gap-3 text-xs px-3 py-1.5" style={{ color: 'var(--app-text-secondary)' }}>
             <span>
               {isDefaultDateRange() ? (
-                <strong>Last 7 days</strong>
+                <strong>{t('filters.last7Days')}</strong>
               ) : (
                 <span>
-                  {filters.dateFrom || '...'} to {filters.dateTo || '...'}
+                  {filters.dateFrom || '...'} {t('filters.to')} {filters.dateTo || '...'}
                 </span>
               )}
             </span>
@@ -466,8 +468,8 @@ export default function PaperlessFilterBar({
         )}
 
         {/* Limit Filter - Inline Dropdown */}
-        <div className="flex items-center gap-3">
-          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>Limit:</label>
+        <div className="flex items-center gap-2 px-3 py-2">
+          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.limit')}:</label>
           <select
             value={filters.limit || 10}
             onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) })}
@@ -490,7 +492,7 @@ export default function PaperlessFilterBar({
         <button
           onClick={onResetFilters}
           disabled={!hasActiveFilters()}
-          className={`px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 ${
+          className={`px-3 py-1.5 rounded text-sm font-medium flex items-center gap-1 ml-auto ${
             hasActiveFilters() ? 'cursor-pointer' : 'cursor-not-allowed'
           }`}
           style={hasActiveFilters() ? { backgroundColor: 'var(--app-text-secondary)', color: 'var(--app-surface)' } : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' }}
@@ -498,7 +500,7 @@ export default function PaperlessFilterBar({
           onMouseLeave={(e) => hasActiveFilters() && (e.currentTarget.style.opacity = '1')}
         >
           <X className="w-4 h-4" />
-          Reset filters
+          {t('common.resetFilters')}
         </button>
       </div>
     </div>
