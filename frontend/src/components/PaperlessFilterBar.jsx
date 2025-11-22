@@ -119,17 +119,17 @@ export default function PaperlessFilterBar({
   return (
     <div className="mb-6">
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
+      <div className="flex flex-wrap items-center gap-3 mb-4 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)' }}>
         {/* Title Filter - Inline */}
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-          <label className="text-sm font-medium whitespace-nowrap min-w-fit" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.title')}:</label>
-          <div className="relative flex items-center flex-1">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.title')}:</label>
+          <div className="relative flex items-center">
             <input
               type="text"
               value={filters.title || ''}
               onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
               placeholder={t('filters.searchPlaceholder')}
-              className="px-3 py-2 rounded text-sm w-full focus:outline-none"
+              className="px-3 py-2 rounded text-sm w-48 focus:outline-none"
               style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
               onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
               onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
@@ -149,11 +149,10 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Tags Filter - Tri-state */}
-        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('tags')}
             className={getFilterButtonClass('tags')}
-            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.tags')}
@@ -260,11 +259,10 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Correspondent Filter */}
-        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('correspondent')}
             className={getFilterButtonClass('correspondent')}
-            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.correspondent')}
@@ -339,11 +337,10 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Document Type Filter */}
-        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('documentType')}
             className={getFilterButtonClass('documentType')}
-            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Filter className="w-4 h-4" />
             {t('filters.documentType')}
@@ -418,11 +415,10 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Dates Added Filter */}
-        <div className="relative px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+        <div className="relative px-2">
           <button
             onClick={() => toggleFilter('dates')}
             className={getFilterButtonClass('dates')}
-            style={{ width: '100%', justifyContent: 'flex-start' }}
           >
             <Calendar className="w-4 h-4" />
             {t('filters.datesAdded')}
@@ -457,12 +453,12 @@ export default function PaperlessFilterBar({
         </div>
 
         {/* Limit Filter - Inline Dropdown */}
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-          <label className="text-sm font-medium whitespace-nowrap min-w-fit" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.limit')}:</label>
+        <div className="flex items-center gap-2 px-3 py-2">
+          <label className="text-sm font-medium whitespace-nowrap" style={{ color: 'var(--app-text-secondary)' }}>{t('filters.limit')}:</label>
           <select
             value={filters.limit || 10}
             onChange={(e) => onFilterChange({ ...filters, limit: parseInt(e.target.value) })}
-            className="px-3 py-2 rounded text-sm w-full max-w-xs focus:outline-none"
+            className="px-3 py-2 rounded text-sm w-20 focus:outline-none"
             style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
             onFocus={(e) => e.target.style.borderColor = 'var(--app-primary)'}
             onBlur={(e) => e.target.style.borderColor = 'var(--app-border)'}
