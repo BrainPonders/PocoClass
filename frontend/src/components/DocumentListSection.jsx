@@ -137,7 +137,7 @@ export default function DocumentListSection({
               <thead style={{ backgroundColor: 'var(--app-surface-light)' }}>
                 <tr>
                   {showSelectionCheckboxes && (
-                    <th className="px-2 py-2 text-left">
+                    <th className="px-2 py-1 text-left">
                       <button 
                         onClick={() => onSelectAllChange?.(!allSelected)} 
                         className="p-1 rounded"
