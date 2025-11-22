@@ -480,7 +480,7 @@ export default function Rules() {
     <PageLayout
       title={t('rules.title')}
       subtitle={t('rules.subtitle')}
-      headerClassName="h-16"
+      headerPadding="py-6"
       actions={
         <>
           <button 

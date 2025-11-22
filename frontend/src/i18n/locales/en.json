@@ -656,13 +656,6 @@
     "dynamicRuleWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
     "documentClassificationsHelp": "Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5."
   },
-  "common": {
-    "notSet": "Not set",
-    "patterns": "patterns",
-    "tags": "tags",
-    "points": "points",
-    "add": "Add"
-  },
   "summary": {
     "reviewTooltip": "Review all your rule configurations before saving. You can go back to any step to make changes if needed.",
     "reviewConfiguration": "Review your rule configuration before saving",

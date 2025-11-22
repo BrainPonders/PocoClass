@@ -685,13 +685,6 @@
     "dynamicRuleWarning": "⚠️ Este campo está siendo utilizado en extracción dinámica. Elimine la regla dinámica para habilitar valores predefinidos.",
     "documentClassificationsHelp": "Configure datos de clasificación de documentos extraídos del OCR. Defina metadatos estáticos predefinidos y reglas de extracción dinámica para datos variables. Nota: Los campos pueden ser predefinidos O extraídos dinámicamente, no ambos. Configure la visibilidad de campos en Configuración > Paso 5."
   },
-  "common": {
-    "notSet": "No establecido",
-    "patterns": "patrones",
-    "tags": "etiquetas",
-    "points": "puntos",
-    "add": "Añadir"
-  },
   "summary": {
     "reviewTooltip": "Revise todas las configuraciones de su regla antes de guardar. Puede volver a cualquier paso para hacer cambios si es necesario.",
     "reviewConfiguration": "Revise la configuración de su regla antes de guardar",
