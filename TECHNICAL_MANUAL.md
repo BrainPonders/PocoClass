@@ -1147,13 +1147,69 @@ def values_match(extracted, paperless):
 
 ### 7.1 Architecture Overview
 
+**Trigger Mechanism**: PocoClass uses Paperless-ngx's **post-consumption script** feature to automatically process documents after they are consumed (imported) by Paperless.
+
 **Components**:
-1. **Trigger System**: Debounced trigger via webhooks or manual activation
-2. **Document Discovery**: Tag-based filtering (NEW tag)
-3. **Processing Lock**: Prevents concurrent processing runs
-4. **Auto-Pause**: Skips processing when Web UI is active
+1. **Post-Consumption Webhook**: Paperless calls PocoClass after consuming each document
+2. **Debounced Trigger**: 30-second timer batches multiple rapid triggers into a single run
+3. **Document Discovery**: Tag-based filtering finds documents with NEW tag (no POCO+/POCO-)
+4. **Processing Lock**: Prevents concurrent processing runs
 5. **Processing History**: Audit trail of all runs
 6. **Rerun Flag**: Queues another run if triggered during processing
+
+### 7.1.1 Paperless-ngx Post-Consumption Script Setup
+
+To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents:
+
+**In Paperless-ngx configuration** (docker-compose.yml or environment):
+```yaml
+environment:
+  - PAPERLESS_POST_CONSUME_SCRIPT=/usr/src/paperless/scripts/post_consume_pococlass.sh
+```
+
+**Create the script** (`/usr/src/paperless/scripts/post_consume_pococlass.sh`):
+```bash
+#!/bin/bash
+# Post-consumption script for PocoClass integration
+# Called by Paperless-ngx after consuming each document
+
+POCOCLASS_URL="http://pococlass:8000"  # Adjust to your PocoClass URL
+ENDPOINT="${POCOCLASS_URL}/api/background/trigger"
+
+# Make HTTP POST request to trigger PocoClass processing
+curl -X POST "$ENDPOINT" \
+  -H "Content-Type: application/json" \
+  -d '{"source": "post-consumption"}' \
+  --max-time 5 \
+  --silent \
+  --show-error
+
+exit 0  # Always exit 0 so Paperless doesn't fail on network issues
+```
+
+**Make script executable**:
+```bash
+chmod +x /usr/src/paperless/scripts/post_consume_pococlass.sh
+```
+
+**Flow**:
+```
+1. Paperless consumes document → adds NEW tag (manual or auto-tagging rule)
+2. Paperless runs post-consumption script
+3. Script calls POST /api/background/trigger
+4. PocoClass debouncer resets 30-second timer
+5. (More documents trigger, timer keeps resetting...)
+6. Timer expires → Processing batch starts
+7. PocoClass discovers all NEW-tagged documents
+8. Processes documents, applies POCO scoring
+9. Updates documents, removes NEW tag, adds POCO+ or POCO- tag
+```
+
+**Benefits**:
+- ✅ **Immediate Response**: Triggers right after document consumption
+- ✅ **Efficient Batching**: Debouncer handles bulk imports gracefully (e.g., 100 documents → 1 batch)
+- ✅ **No Polling**: Event-driven, minimal resource usage
+- ✅ **Resilient**: Failed triggers don't block Paperless consumption
 
 ### 7.2 Tag-Based Discovery
 
