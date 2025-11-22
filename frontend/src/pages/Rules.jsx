@@ -806,17 +806,16 @@ export default function Rules() {
         onViewPDF={handleViewPDF}
         onRowClick={setSelectedDocument}
         renderCustomActions={(doc) => (
-          <div className="flex items-center justify-center">
-            <button 
-              className="btn btn-primary btn-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCreateRuleForDocument(doc);
-              }}
-            >
-              {t('rules.newRule')}
-            </button>
-          </div>
+          <button 
+            className="btn btn-primary btn-sm"
+            style={{ padding: '2px 8px', height: '22px', fontSize: '11px' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCreateRuleForDocument(doc);
+            }}
+          >
+            {t('rules.newRule')}
+          </button>
         )}
         cardClassName="mt-8"
       />
