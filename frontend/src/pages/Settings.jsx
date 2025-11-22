@@ -329,14 +329,11 @@ export default function Settings() {
   };
 
   const handleAppSettingChange = async (key, value) => {
-    console.log('[Settings] handleAppSettingChange called:', key, value);
     try {
       // Update theme and language contexts immediately
       if (key === 'theme') {
-        console.log('[Settings] Calling updateTheme with:', value);
         updateTheme(value);
       } else if (key === 'language') {
-        console.log('[Settings] Calling updateLanguage with:', value);
         updateLanguage(value);
       } else if (key === 'colorblind_mode') {
         updateColorBlindMode(value === 'true' ? 'protanopia' : 'none');
