@@ -181,10 +181,10 @@ export default function SetupWizard() {
               borderRadius: '12px',
               paddingTop: '20px',
               paddingBottom: '20px',
-              marginLeft: '-50px',
-              marginRight: '-50px',
-              paddingLeft: '50px',
-              paddingRight: '50px'
+              marginLeft: '-70px',
+              marginRight: '-70px',
+              paddingLeft: '70px',
+              paddingRight: '70px'
             }}>
               <div className="flex" style={{ 
                 marginBottom: '34px'
