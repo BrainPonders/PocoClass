@@ -344,7 +344,7 @@ export default function SetupWizard() {
               }}>
                 <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0, marginLeft: '-20px' }} />
                 
-                <div style={{ flex: 1, marginTop: '30px' }}>
+                <div style={{ flex: 1, marginTop: '28px' }}>
                   <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
                     Connect to Paperless-ngx
                   </h2>
