@@ -172,7 +172,7 @@ export default function SetupWizard() {
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
         }
       `}</style>
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-xl">
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
