@@ -190,7 +190,7 @@ export default function SetupWizard() {
                 Welcome to PocoClass
               </h1>
               
-              <p className="text-lg mb-2 text-left" style={{ color: 'var(--app-text-secondary)' }}>
+              <p className="text-lg mb-2 text-left" style={{ color: '#6b7280' }}>
                 Your rule-driven document classification system for Paperless-ngx
               </p>
 
@@ -213,7 +213,7 @@ export default function SetupWizard() {
                   <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                    <p className="text-sm" style={{ color: '#6b7280' }}>
                       Log in with your existing Paperless-ngx credentials — no extra passwords or accounts required.
                     </p>
                   </div>
@@ -223,7 +223,7 @@ export default function SetupWizard() {
                   <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                    <p className="text-sm" style={{ color: '#6b7280' }}>
                       Each user operates strictly within their own Paperless permissions. No shared admin tokens or elevated access.
                     </p>
                   </div>
@@ -233,7 +233,7 @@ export default function SetupWizard() {
                   <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                    <p className="text-sm" style={{ color: '#6b7280' }}>
                       A clean, wizard-based interface guides you through building accurate classification rules in minutes.
                     </p>
                   </div>
@@ -243,14 +243,14 @@ export default function SetupWizard() {
                   <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Fully Automated Processing</h4>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                    <p className="text-sm" style={{ color: '#6b7280' }}>
                       Once configured, PocoClass continuously processes new documents in the background — no manual triggers needed.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <Button onClick={() => setStep(2)} className="btn btn-primary btn-lg w-full">
+              <Button onClick={() => setStep(2)} className="btn btn-primary btn-lg w-full" style={{ backgroundColor: '#3b82f6', borderColor: '#3b82f6' }}>
                 Let's Get Started
               </Button>
             </div>
