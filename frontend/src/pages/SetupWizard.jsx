@@ -325,7 +325,16 @@ export default function SetupWizard() {
 
           {/* Step 2: Connect to Paperless */}
           {step === 2 && (
-            <div>
+            <div style={{ 
+              background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
+              borderRadius: '12px',
+              paddingTop: '20px',
+              paddingBottom: '20px',
+              marginLeft: '-70px',
+              marginRight: '-70px',
+              paddingLeft: '70px',
+              paddingRight: '70px'
+            }}>
               <div className="flex justify-center mb-6">
                 <Server className="w-16 h-16 text-blue-600" />
               </div>
