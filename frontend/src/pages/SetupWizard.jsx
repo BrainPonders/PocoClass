@@ -181,9 +181,6 @@ export default function SetupWizard() {
         }
       `}</style>
       <div className="w-full max-w-xl">
-        <div className="flex justify-center mb-8">
-          <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '280px', height: 'auto' }} />
-        </div>
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
@@ -341,7 +338,7 @@ export default function SetupWizard() {
               paddingRight: '70px'
             }}>
               <div className="flex justify-center mb-6">
-                <Server className="w-16 h-16 text-blue-600" />
+                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto' }} />
               </div>
 
               <h2 className="text-3xl font-bold text-center mb-2" style={{ color: 'var(--app-text)' }}>
