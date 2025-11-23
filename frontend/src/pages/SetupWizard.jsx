@@ -327,23 +327,24 @@ export default function SetupWizard() {
 
           {/* Step 2: Connect to Paperless */}
           {step === 2 && (
-            <div>
+            <div style={{ 
+              background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
+              borderRadius: '12px',
+              paddingTop: '20px',
+              paddingBottom: '20px',
+              marginLeft: '-70px',
+              marginRight: '-70px',
+              paddingLeft: '70px',
+              paddingRight: '70px'
+            }}>
               <div style={{ 
-                background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
-                borderRadius: '12px',
-                paddingTop: '20px',
-                paddingBottom: '20px',
-                marginLeft: '-70px',
-                marginRight: '-70px',
-                paddingLeft: '70px',
-                paddingRight: '70px',
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '24px'
               }}>
                 <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0 }} />
                 
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, marginTop: '30px' }}>
                   <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
                     Connect to Paperless-ngx
                   </h2>
