@@ -180,7 +180,7 @@ export default function SetupWizard() {
               <div className="flex mb-6">
                 <div className="relative inline-block" style={{ marginLeft: '-50px' }}>
                   <img src="/logo.png" alt="PocoClass Logo" className="h-48 w-auto" />
-                  <div className="absolute bottom-0 right-0 transform translate-x-[30px] -translate-y-[1px]">
+                  <div className="absolute bottom-0 right-0 transform translate-x-[33px] -translate-y-[6px]">
                     <span className="text-sm font-semibold text-gray-500">v2.0</span>
                   </div>
                 </div>
