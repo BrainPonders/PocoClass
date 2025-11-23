@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Server, Check, AlertCircle, XCircle, Database, Info } from 'lucide-react';
+import { FileText, Server, Check, AlertCircle, XCircle, Database, Info, Shield } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
@@ -420,9 +420,12 @@ export default function SetupWizard() {
                     placeholder="Enter your password"
                     required
                   />
-                  <p className="text-xs mt-2" style={{ color: '#9ca3af', marginTop: '18px' }}>
-                    Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
-                  </p>
+                  <div className="flex items-start gap-1.5 mt-2" style={{ marginTop: '18px' }}>
+                    <Shield className="w-3 h-3 flex-shrink-0" style={{ color: '#999', marginTop: '2px' }} />
+                    <p style={{ fontSize: '10.5px', color: '#999', lineHeight: '1.4' }}>
+                      Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex gap-3">
