@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Server, Check, AlertCircle, XCircle, Database } from 'lucide-react';
+import { FileText, Server, Check, AlertCircle, XCircle, Database, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
@@ -340,9 +340,18 @@ export default function SetupWizard() {
 
               <div className="space-y-6">
                 <div className="setup-form-group">
-                  <label className="setup-form-label">
-                    Paperless-ngx URL
-                  </label>
+                  <div className="flex items-center gap-2 mb-3.5">
+                    <label className="setup-form-label" style={{ marginBottom: 0 }}>
+                      Paperless-ngx URL
+                    </label>
+                    <div className="group relative">
+                      <Info className="w-4 h-4 text-gray-400 cursor-help hover:text-gray-600" />
+                      <div className="invisible group-hover:visible absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-normal z-10">
+                        Enter the base URL of your Paperless instance without the /api/ path
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </div>
+                  </div>
                   <input
                     type="url"
                     name="paperlessUrl"
@@ -353,7 +362,7 @@ export default function SetupWizard() {
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
-                    The URL where your Paperless-ngx instance is hosted
+                    Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> or <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
                   </p>
                 </div>
 
