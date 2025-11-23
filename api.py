@@ -28,7 +28,9 @@ app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
 replit_domain = os.getenv('REPLIT_DEV_DOMAIN', '')
 allowed_origins = [
     f'https://{replit_domain}',
-    'http://localhost:5173',  # Vite dev server
+    'http://localhost:5000',  # Vite dev server (custom port)
+    'http://127.0.0.1:5000',
+    'http://localhost:5173',  # Vite dev server (default port)
     'http://127.0.0.1:5173',
 ]
 
@@ -1278,7 +1280,39 @@ def fix_mandatory_data():
         logger.error(f"Error fixing mandatory data: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Serve React App
+# Proxy to Vite dev server in development mode
+@app.before_request
+def proxy_to_vite():
+    # Only proxy non-API requests in development mode
+    if request.path.startswith('/api/'):
+        return None
+    
+    if os.getenv('FLASK_ENV') == 'development' or os.getenv('FLASK_DEBUG') == '1':
+        try:
+            # Proxy all non-API requests to Vite dev server
+            vite_url = f'http://localhost:5000{request.full_path.rstrip("?")}'
+            response = requests.request(
+                method=request.method,
+                url=vite_url,
+                headers={k: v for k, v in request.headers if k.lower() != 'host'},
+                data=request.get_data(),
+                cookies=request.cookies,
+                allow_redirects=False,
+                timeout=5
+            )
+            
+            # Build response
+            excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+            headers = [(k, v) for k, v in response.raw.headers.items() if k.lower() not in excluded_headers]
+            
+            return response.content, response.status_code, headers
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Vite proxy failed: {e}")
+            return None
+    
+    return None
+
+# Serve React App (fallback for production)
 @app.route('/')
 @app.route('/<path:path>')
 def serve_react_app(path=''):
