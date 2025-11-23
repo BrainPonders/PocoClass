@@ -171,6 +171,12 @@ export default function SetupWizard() {
           background: white;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+        
+        .btn:hover {
+          background-color: #356dff !important;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+          transition: all 0.2s ease;
+        }
       `}</style>
       <div className="w-full max-w-xl">
         <div className="wizard-container">
