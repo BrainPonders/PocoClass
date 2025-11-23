@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Server, Check, AlertCircle, XCircle, Database, Info, Shield, Lightbulb } from 'lucide-react';
+import { FileText, Server, Check, AlertCircle, XCircle, CheckCircle, Database, Info, Shield, Lightbulb } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
@@ -21,6 +21,9 @@ export default function SetupWizard() {
   const [loadingValidation, setLoadingValidation] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [fixingMandatoryData, setFixingMandatoryData] = useState(false);
+  const [showSkipWarning, setShowSkipWarning] = useState(false);
+  const [skipWarningConfirmed, setSkipWarningConfirmed] = useState(false);
+  const [showCreateConfirmation, setShowCreateConfirmation] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -102,6 +105,7 @@ export default function SetupWizard() {
   const handleFixMandatoryData = async () => {
     try {
       setFixingMandatoryData(true);
+      setShowCreateConfirmation(false);
       const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/validation/fix-mandatory-data`, {
         method: 'POST',
@@ -150,7 +154,8 @@ export default function SetupWizard() {
         headers: { 
           'Authorization': `Bearer ${sessionToken}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ skipMissingData: !validationData?.valid })
       });
 
       if (!response.ok) {
@@ -477,18 +482,35 @@ export default function SetupWizard() {
 
           {/* Step 3: Validate System Requirements (Merged Information + Validation) */}
           {step === 3 && (
-            <div>
-              <div className="flex justify-center mb-6">
-                <Database className="w-16 h-16 text-blue-600" />
+            <div style={{ 
+              background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
+              borderRadius: '12px',
+              paddingTop: '20px',
+              paddingBottom: '20px',
+              marginLeft: '-70px',
+              marginRight: '-70px',
+              paddingLeft: '70px',
+              paddingRight: '70px'
+            }}>
+              <div style={{ 
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '24px'
+              }}>
+                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0, marginLeft: '-20px', opacity: 0.92 }} />
+                
+                <div style={{ flex: 1, marginTop: '28px' }}>
+                  <h2 className="text-4xl font-bold text-left mb-3" style={{ color: 'var(--app-text)' }}>
+                    Data Setup Requirements
+                  </h2>
+                  
+                  <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem', marginLeft: '2px' }}>
+                    Verifying required custom fields and tags in Paperless-ngx
+                  </p>
+                </div>
               </div>
 
-              <h2 className="text-3xl font-bold text-center mb-2" style={{ color: 'var(--app-text)' }}>
-                System Requirements Check
-              </h2>
-              
-              <p className="text-center mb-8" style={{ color: 'var(--app-text-secondary)' }}>
-                Checking for required custom fields and tags in Paperless-ngx
-              </p>
+              <div style={{ marginTop: '40px' }}>
 
               {loadingValidation ? (
                 <div className="bg-blue-50 border border-blue-200 rounded-md px-4 py-3 mb-6">
@@ -541,11 +563,11 @@ export default function SetupWizard() {
               ) : validationData && validationData.valid ? (
                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                   <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <div>
-                      <h3 className="text-sm font-semibold text-green-900 mb-1">All Requirements Met</h3>
+                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-green-900 mb-1">Everything is ready</h3>
                       <p className="text-sm text-green-800">
-                        All required custom fields and tags are properly configured.
+                        All required custom fields and tags are present. You can now start using PocoClass.
                       </p>
                     </div>
                   </div>
@@ -554,7 +576,7 @@ export default function SetupWizard() {
 
               {!validationError && (
                 <>
-                  <div className="border-t pt-6 mb-6">
+                  <div className="border-t mt-12 pt-8 mb-8">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Required Custom Fields</h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -589,7 +611,7 @@ export default function SetupWizard() {
                     </div>
                   </div>
 
-                  <div className="border-t pt-6">
+                  <div className="border-t mt-12 pt-8">
                     <h3 className="text-md font-semibold text-gray-900 mb-4">Required Tags</h3>
                     <div className="space-y-2">
                       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -641,38 +663,279 @@ export default function SetupWizard() {
                 </>
               )}
 
-              {validationData && validationData.valid && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 mt-8">
-                  <p className="text-sm text-blue-900">
-                    Everything is ready! Click the button below to start using PocoClass.
-                  </p>
-                </div>
-              )}
 
-              <div className="flex gap-3 mt-8">
+              <div style={{ marginTop: '32px' }} className="flex gap-3">
+                <Button 
+                  onClick={() => setStep(2)} 
+                  style={{
+                    border: '1px solid #d1d5db',
+                    backgroundColor: 'transparent',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    flex: 0.15
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f3f4f6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  Back
+                </Button>
                 {validationData && !validationData.valid ? (
-                  <Button
-                    onClick={handleFixMandatoryData}
-                    disabled={fixingMandatoryData}
-                    className="btn btn-primary flex-1"
-                    style={{ backgroundColor: '#3b82f6', borderColor: '#3b82f6' }}
-                  >
-                    {fixingMandatoryData ? 'Creating Missing Items...' : 'Create Missing Items'}
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() => setShowCreateConfirmation(true)}
+                      disabled={fixingMandatoryData}
+                      className="btn btn-primary"
+                      style={{ backgroundColor: '#3b82f6', borderColor: '#3b82f6', flex: 1 }}
+                    >
+                      {fixingMandatoryData ? 'Creating...' : 'Create Missing Items'}
+                    </Button>
+                    <Button
+                      onClick={() => setShowSkipWarning(true)}
+                      style={{
+                        backgroundColor: 'transparent',
+                        color: '#ef4444',
+                        border: '1px solid #fca5a5',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        flex: 1
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#fee2e2';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      Continue Anyway
+                    </Button>
+                  </>
                 ) : (
                   <Button 
                     onClick={handleContinueToDashboard}
-                    className="btn btn-primary flex-1"
+                    className="btn btn-primary"
                     disabled={!validationData?.valid}
                     style={{ 
                       backgroundColor: validationData?.valid ? '#3b82f6' : '#d1d5db',
                       borderColor: validationData?.valid ? '#3b82f6' : '#d1d5db',
-                      cursor: validationData?.valid ? 'pointer' : 'not-allowed'
+                      cursor: validationData?.valid ? 'pointer' : 'not-allowed',
+                      flex: 1
                     }}
                   >
                     Continue to Dashboard
                   </Button>
                 )}
+              </div>
+
+              {showSkipWarning && (
+                <div style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1000
+                }}>
+                  {!skipWarningConfirmed ? (
+                    <div style={{
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      padding: '32px',
+                      maxWidth: '500px',
+                      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      <div className="flex items-start gap-3 mb-4">
+                        <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-3">⚠️ You are about to continue without required items</h3>
+                          <p className="text-sm text-gray-700 mb-3">
+                            If you proceed without creating the missing custom fields and tags:
+                          </p>
+                          <ul className="text-sm text-gray-700 space-y-2 mb-4 ml-4">
+                            <li>• PocoClass rules will not function correctly without the POCO Score custom field.</li>
+                            <li>• Document classification will fail without the POCO+, POCO-, and NEW tags.</li>
+                            <li>• You will need to create these items manually in Paperless-ngx before using PocoClass.</li>
+                          </ul>
+                          <p className="text-sm text-gray-700">
+                            It is strongly recommended to click Create Missing Items instead.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => setShowSkipWarning(false)}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#f3f4f6',
+                            color: '#374151',
+                            border: '1px solid #d1d5db',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={() => setSkipWarningConfirmed(true)}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          I Understand, Continue
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{
+                      backgroundColor: 'white',
+                      borderRadius: '12px',
+                      padding: '32px',
+                      maxWidth: '500px',
+                      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                    }}>
+                      <div className="flex items-start gap-3 mb-4">
+                        <AlertCircle className="w-8 h-8 text-red-600 flex-shrink-0 mt-0.5" style={{ animation: 'pulse 2s infinite' }} />
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900 mb-3">Critical: NEW Tag Requirement</h3>
+                          <p className="text-sm text-gray-700 mb-4">
+                            Every document you consume in Paperless <strong>MUST</strong> be manually tagged with the <strong>NEW</strong> tag in Paperless-ngx for PocoClass to process it.
+                          </p>
+                          <div style={{
+                            backgroundColor: '#fef2f2',
+                            border: '1px solid #fecaca',
+                            borderRadius: '8px',
+                            padding: '12px',
+                            marginBottom: '16px'
+                          }}>
+                            <p className="text-sm text-red-900 font-semibold mb-2">Without the NEW tag:</p>
+                            <ul className="text-sm text-red-800 space-y-1 ml-4">
+                              <li>• Documents won't be classified</li>
+                              <li>• Rules won't execute</li>
+                              <li>• The system won't process your documents</li>
+                            </ul>
+                          </div>
+                          <p className="text-xs text-gray-600 italic">
+                            This is a manual requirement in your Paperless workflow. Plan to apply the NEW tag consistently.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => {
+                            setShowSkipWarning(false);
+                            setSkipWarningConfirmed(false);
+                          }}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#f3f4f6',
+                            color: '#374151',
+                            border: '1px solid #d1d5db',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Go Back
+                        </Button>
+                        <Button
+                          onClick={handleContinueToDashboard}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: '600'
+                          }}
+                        >
+                          I Confirm, Continue
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {showCreateConfirmation && (
+                <div style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1000
+                }}>
+                  <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '32px',
+                    maxWidth: '500px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    <div className="flex items-start gap-3 mb-4">
+                      <AlertCircle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-3">Create Missing Items?</h3>
+                        <p className="text-sm text-gray-700 mb-3">
+                          PocoClass will create the required fields and tags in your Paperless-ngx instance:
+                        </p>
+                        <div className="mb-4 ml-4">
+                          <p className="text-sm text-gray-700 mb-2">• Custom fields:</p>
+                          <p className="text-sm text-gray-700 ml-4">– POCO Score</p>
+                          <p className="text-sm text-gray-700 mb-2 mt-2">• Tags:</p>
+                          <p className="text-sm text-gray-700 ml-4">– POCO+, POCO-, NEW</p>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-2">
+                          These items are needed for PocoClass to classify documents correctly.
+                        </p>
+                        <p className="text-sm text-gray-700">
+                          This action completes your setup automatically.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => setShowCreateConfirmation(false)}
+                        style={{
+                          flex: 1,
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          border: '1px solid #d1d5db',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleFixMandatoryData}
+                        style={{
+                          flex: 1,
+                          backgroundColor: '#3b82f6',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontWeight: '600'
+                        }}
+                      >
+                        Create Items
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
               </div>
             </div>
           )}

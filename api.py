@@ -307,10 +307,10 @@ def setup():
             # Create session
             session_token = db.create_session(user_id, paperless_token)
             
-            # Initial sync on setup
+            # Initial sync on setup (without auto-creating mandatory items)
             try:
                 logger.info(f"Performing initial sync of Paperless data...")
-                sync_service.sync_all(paperless_token, paperless_url)
+                sync_service.sync_all(paperless_token, paperless_url, ensure_mandatory=False)
                 logger.info(f"Initial sync completed successfully")
             except Exception as e:
                 logger.warning(f"Initial sync failed (non-critical): {e}")
@@ -340,9 +340,15 @@ def setup():
 def complete_setup_endpoint():
     """Mark setup as completed after step 3 validation"""
     try:
+        data = request.json or {}
+        skip_missing_data = data.get('skipMissingData', False)
+        
         paperless_url = db.get_config('paperless_url')
         if not paperless_url:
             return jsonify({'error': 'Paperless URL not configured'}), 400
+        
+        if skip_missing_data:
+            logger.warning(f"Setup completed with missing mandatory data - user skipped creation")
         
         db.complete_setup(paperless_url)
         logger.info(f"Setup completed successfully")
