@@ -205,7 +205,7 @@ export default function SetupWizard() {
                 Your rule-driven document classification engine for Paperless-ngx
               </p>
 
-              <div className="text-left mb-8" style={{ 
+              <div className="text-left mb-5" style={{ 
                 backgroundColor: 'var(--app-bg-secondary)', 
                 border: '2px solid var(--app-border)',
                 borderRadius: '12px',
