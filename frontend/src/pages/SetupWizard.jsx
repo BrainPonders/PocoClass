@@ -415,8 +415,15 @@ export default function SetupWizard() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => setStep(1)} 
-                    className="btn btn-secondary"
+                    className="btn"
                     disabled={loading}
+                    style={{
+                      border: '1.5px solid #d1d5db',
+                      backgroundColor: 'transparent',
+                      color: '#6b7280',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.6 : 1
+                    }}
                   >
                     Back
                   </Button>
