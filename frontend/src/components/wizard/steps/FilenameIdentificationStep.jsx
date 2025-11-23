@@ -4,6 +4,7 @@ import { Plus, Wand2, Trash2, HelpCircle, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import PatternHelperModal from '@/components/PatternHelperModal';
+import FormInput from '@/components/FormInput';
 
 export default function FilenameIdentificationStep({ 
   ruleData, 
@@ -127,12 +128,12 @@ export default function FilenameIdentificationStep({
             </div>
             
             <div className="flex items-center gap-2">
-              <input
+              <FormInput
                 type="text"
                 value={pattern}
                 onChange={(e) => updatePattern(index, e.target.value)}
                 placeholder={t('placeholders.enterFilenamePattern')}
-                className="form-input flex-1"
+                className="flex-1"
               />
               <button
                 onClick={() => openPatternHelper(index)}

@@ -2,6 +2,7 @@ import React from 'react';
 import { HelpCircle, Plus, Trash2 } from 'lucide-react';
 import InfoBox from '../InfoBox';
 import { useLanguage } from '@/contexts/LanguageContext';
+import FormInput from '@/components/FormInput';
 
 export default function StaticMetadataStep({ 
   ruleData, 
@@ -76,24 +77,22 @@ export default function StaticMetadataStep({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="form-group">
             <label className="form-label">{t('fields.correspondent')}</label>
-            <input
+            <FormInput
               type="text"
               value={ruleData.staticMetadata.correspondent}
               onChange={(e) => updateRuleData('staticMetadata', { correspondent: e.target.value })}
               placeholder={t('placeholders.organizationName')}
-              className="form-input"
             />
             <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>{t('fields.ideallyDropdownFromSystem')}</p>
           </div>
 
           <div className="form-group">
             <label className="form-label">{t('fields.documentType')}</label>
-            <input
+            <FormInput
               type="text"
               value={ruleData.staticMetadata.documentType}
               onChange={(e) => updateRuleData('staticMetadata', { documentType: e.target.value })}
               placeholder={t('placeholders.yearStatement')}
-              className="form-input"
             />
             <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>{t('fields.ideallyDropdown')}</p>
           </div>
@@ -102,10 +101,10 @@ export default function StaticMetadataStep({
         <div className="form-group">
           <label className="form-label">{t('fields.tags')}</label>
           <div className="flex gap-2 mb-2">
-            <input
+            <FormInput
               type="text"
               placeholder={t('placeholders.addTag')}
-              className="form-input flex-1"
+              className="flex-1"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && e.target.value.trim()) {
                   e.preventDefault();
@@ -156,19 +155,19 @@ export default function StaticMetadataStep({
           </div>
           {ruleData.staticMetadata?.customFields?.map((field, index) => (
             <div key={index} className="flex gap-2 mb-2">
-              <input
+              <FormInput
                 type="text"
                 value={field.name}
                 onChange={(e) => updateCustomField(index, 'name', e.target.value)}
                 placeholder={t('placeholders.fieldName')}
-                className="form-input flex-1"
+                className="flex-1"
               />
-              <input
+              <FormInput
                 type="text"
                 value={field.value}
                 onChange={(e) => updateCustomField(index, 'value', e.target.value)}
                 placeholder={t('placeholders.fieldValue')}
-                className="form-input flex-1"
+                className="flex-1"
               />
               <button 
                 onClick={() => removeCustomField(index)}
