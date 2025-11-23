@@ -337,15 +337,15 @@ export default function SetupWizard() {
               paddingLeft: '70px',
               paddingRight: '70px'
             }}>
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-8">
                 <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto' }} />
               </div>
 
-              <h2 className="text-3xl font-bold text-center mb-2" style={{ color: 'var(--app-text)' }}>
+              <h2 className="text-3xl font-semibold text-center mb-3" style={{ color: 'var(--app-text)' }}>
                 Connect to Paperless-ngx
               </h2>
               
-              <p className="text-center mb-8" style={{ color: 'var(--app-text-secondary)' }}>
+              <p className="text-center mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
                 Enter your Paperless instance details and your admin credentials
               </p>
 
@@ -372,8 +372,7 @@ export default function SetupWizard() {
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
-                    Examples:<br />
-                    <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
+                    Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
                   </p>
                 </div>
 
