@@ -191,7 +191,7 @@ export default function SetupWizard() {
               </h1>
               
               <p className="text-lg mb-2 text-left" style={{ color: '#6b7280' }}>
-                Your rule-driven document classification system for Paperless-ngx
+                Your rule-driven document classification engine for Paperless-ngx
               </p>
 
               <div className="text-left mb-8" style={{ 
