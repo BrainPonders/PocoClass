@@ -327,33 +327,34 @@ export default function SetupWizard() {
 
           {/* Step 2: Connect to Paperless */}
           {step === 2 && (
-            <div style={{ 
-              background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
-              borderRadius: '12px',
-              paddingTop: '20px',
-              paddingBottom: '20px',
-              marginLeft: '-70px',
-              marginRight: '-70px',
-              paddingLeft: '70px',
-              paddingRight: '70px',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '24px'
-            }}>
-              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0 }} />
-              
-              <div style={{ flex: 1 }}>
-                <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
-                  Connect to Paperless-ngx
-                </h2>
+            <div>
+              <div style={{ 
+                background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
+                borderRadius: '12px',
+                paddingTop: '20px',
+                paddingBottom: '20px',
+                marginLeft: '-70px',
+                marginRight: '-70px',
+                paddingLeft: '70px',
+                paddingRight: '70px',
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '24px'
+              }}>
+                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0 }} />
                 
-                <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
-                  Enter your Paperless instance details and your admin credentials
-                </p>
+                <div style={{ flex: 1 }}>
+                  <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
+                    Connect to Paperless-ngx
+                  </h2>
+                  
+                  <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+                    Enter your Paperless instance details and your admin credentials
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-6" style={{ marginTop: '32px' }}>
+              <div className="space-y-6" style={{ marginTop: '32px' }}>
                 <div className="setup-form-group">
                   <div className="flex items-center gap-2 mb-3.5">
                     <label className="setup-form-label" style={{ marginBottom: 0 }}>
