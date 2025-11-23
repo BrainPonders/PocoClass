@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Server, CheckCircle, AlertCircle, XCircle, Database } from 'lucide-react';
+import { FileText, Server, Check, AlertCircle, XCircle, Database } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
@@ -210,9 +210,21 @@ export default function SetupWizard() {
 
               <div style={{ borderTop: '1px solid #d1d5db', marginBottom: '32px' }}></div>
 
-              <div className="space-y-5 mb-8">
+              <div className="space-y-4 mb-8" style={{ maxWidth: '550px' }}>
                 <div className="flex items-start gap-3 text-left">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    border: '2px solid #16a34a', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px'
+                  }}>
+                    <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={3} />
+                  </div>
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
@@ -222,7 +234,19 @@ export default function SetupWizard() {
                 </div>
 
                 <div className="flex items-start gap-3 text-left">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    border: '2px solid #16a34a', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px'
+                  }}>
+                    <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={3} />
+                  </div>
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
@@ -232,7 +256,19 @@ export default function SetupWizard() {
                 </div>
 
                 <div className="flex items-start gap-3 text-left">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    border: '2px solid #16a34a', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px'
+                  }}>
+                    <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={3} />
+                  </div>
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
@@ -242,7 +278,19 @@ export default function SetupWizard() {
                 </div>
 
                 <div className="flex items-start gap-3 text-left">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div style={{ 
+                    width: '20px', 
+                    height: '20px', 
+                    border: '2px solid #16a34a', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginTop: '2px'
+                  }}>
+                    <Check className="w-3.5 h-3.5 text-green-600" strokeWidth={3} />
+                  </div>
                   <div>
                     <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Fully Automated Processing</h4>
                     <p className="text-sm" style={{ color: '#6b7280' }}>
