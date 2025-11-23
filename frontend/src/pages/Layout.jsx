@@ -699,18 +699,18 @@ function LayoutContent({ children }) {
                   
                   <div className="modal-body">
                     <div className="guide-section">
-                      <h3>What is PocoClass?</h3>
+                      <h3>Introduction</h3>
                       <p>
-                        PocoClass is an intelligent document classification system that automatically sorts and organizes your documents in Paperless-ngx. 
-                        Think of it as teaching Paperless to recognize patterns in your documents and automatically assign the right categories 
-                        (correspondents, document types, tags, and custom fields) without you having to do it manually.
+                        PocoClass is an intelligent rule-based classification engine designed to enhance Paperless-ngx. While Paperless already provides 
+                        a powerful search interface and a built-in classifier, it might struggle to recognize complex document types, especially during initial 
+                        bulk imports or when documents follow complex formats. PocoClass fills this gap by letting you explicitly define how each type of 
+                        document should be identified through patterns and how it should be classified.
                       </p>
-                      <h4>When You'd Use PocoClass</h4>
-                      <ul>
-                        <li><strong>Bulk imports</strong>: You have 500 documents to process and they need to be sorted into departments</li>
-                        <li><strong>Daily processing</strong>: New documents arrive daily and need consistent, reliable categorization</li>
-                        <li><strong>Pattern recognition</strong>: Your documents follow recognizable patterns (letterheads, specific formats, keywords)</li>
-                      </ul>
+                      <p>
+                        Its primary objective is to deliver consistent, accurate classification—no matter how many documents you are importing or how varied 
+                        they may be. Once configured, PocoClass can run fully automatically, quietly keeping your Paperless library structured with minimal 
+                        effort from you.
+                      </p>
                     </div>
 
                     <div className="guide-section">
