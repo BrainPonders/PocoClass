@@ -10,7 +10,7 @@ export default function AuthGuard({ children }) {
 
   useEffect(() => {
     checkAuth();
-  }, [location.pathname]);
+  }, []);
 
   const checkAuth = async () => {
     try {
@@ -65,5 +65,6 @@ export default function AuthGuard({ children }) {
     );
   }
 
+  // Always render children - auth checks handle navigation
   return children;
 }
