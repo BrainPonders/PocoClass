@@ -198,7 +198,7 @@ export default function SetupWizard() {
                 backgroundColor: 'var(--app-bg-secondary)', 
                 border: '2px solid var(--app-border)',
                 borderRadius: '12px',
-                padding: '24px'
+                padding: '24px 0'
               }}>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--app-text)' }}>
                   PocoClass is triggered automatically after Paperless-ngx completes its post-consumption step. 
