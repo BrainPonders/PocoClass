@@ -432,8 +432,8 @@ export default function SetupWizard() {
                     }}
                     onMouseEnter={(e) => {
                       if (!loading) {
-                        e.currentTarget.style.borderColor = '#9ca3af';
-                        e.currentTarget.style.color = '#374151';
+                        e.currentTarget.style.borderColor = '#374151';
+                        e.currentTarget.style.color = '#111827';
                       }
                     }}
                     onMouseLeave={(e) => {
