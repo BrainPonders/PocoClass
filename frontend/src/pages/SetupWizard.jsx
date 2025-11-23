@@ -338,15 +338,17 @@ export default function SetupWizard() {
               paddingRight: '70px',
               position: 'relative'
             }}>
-              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', position: 'absolute', top: '-20px', left: '70px', opacity: 0.15 }} />
-
-              <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
-                Connect to Paperless-ngx
-              </h2>
+              <div style={{ position: 'relative', paddingRight: '140px' }}>
+                <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
+                  Connect to Paperless-ngx
+                </h2>
+                
+                <p className="text-left mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+                  Enter your Paperless instance details and your admin credentials
+                </p>
+              </div>
               
-              <p className="text-left mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
-                Enter your Paperless instance details and your admin credentials
-              </p>
+              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', position: 'absolute', top: '0px', right: '70px', opacity: 0.2 }} />
 
               <div className="space-y-6">
                 <div className="setup-form-group">
