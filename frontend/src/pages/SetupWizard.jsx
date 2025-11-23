@@ -408,7 +408,7 @@ export default function SetupWizard() {
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
-                    Your credentials are only used to authenticate with Paperless
+                    Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
                   </p>
                 </div>
 
