@@ -342,7 +342,7 @@ export default function SetupWizard() {
                 alignItems: 'flex-start',
                 gap: '24px'
               }}>
-                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0, marginLeft: '-20px' }} />
+                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0, marginLeft: '-20px', opacity: 0.92 }} />
                 
                 <div style={{ flex: 1, marginTop: '28px' }}>
                   <h2 className="text-4xl font-bold text-left mb-3" style={{ color: 'var(--app-text)' }}>
