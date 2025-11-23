@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Calendar, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import FormInput from '@/components/FormInput';
 
 export default function LogFilterBar({ filters, onFilterChange }) {
   const { t } = useLanguage();
@@ -80,15 +81,13 @@ export default function LogFilterBar({ filters, onFilterChange }) {
           <label className="text-sm font-medium whitespace-nowrap flex items-center gap-2 cursor-pointer">
             {t('common.search')}
           </label>
-          <input
+          <FormInput
             type="text"
             value={filters.search || ''}
             onChange={(e) => onFilterChange({ ...filters, search: e.target.value })}
             placeholder={t('filters.searchLogsPlaceholder')}
-            className="px-2 py-1 rounded text-sm focus:outline-none"
+            className="px-2 py-1 rounded text-sm"
             style={{ backgroundColor: 'transparent', border: 'none', color: 'inherit', width: '250px' }}
-            onFocus={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.1)'}
-            onBlur={(e) => e.target.style.backgroundColor = 'transparent'}
           />
           {filters.search && (
             <button

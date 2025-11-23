@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Tag, User, FileText, X, ChevronDown, Calendar } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import FormInput from '@/components/FormInput';
 
 export default function PaperlessFilterBar({
   filters,
@@ -137,15 +138,13 @@ export default function PaperlessFilterBar({
           <label className="text-sm font-medium whitespace-nowrap flex items-center gap-2 cursor-pointer">
             {t('filters.title')}
           </label>
-          <input
+          <FormInput
             type="text"
             value={filters.title || ''}
             onChange={(e) => onFilterChange({ ...filters, title: e.target.value })}
             placeholder={t('filters.searchPlaceholder')}
-            className="px-2 py-1 rounded text-sm focus:outline-none"
+            className="px-2 py-1 rounded text-sm"
             style={{ backgroundColor: 'transparent', border: 'none', color: 'inherit', width: '250px' }}
-            onFocus={(e) => e.target.style.backgroundColor = 'rgba(0,0,0,0.1)'}
-            onBlur={(e) => e.target.style.backgroundColor = 'transparent'}
           />
           {filters.title && (
             <button
@@ -188,13 +187,13 @@ export default function PaperlessFilterBar({
                     {t('filters.all')}
                   </button>
                 </div>
-                <input
+                <FormInput
                   type="text"
                   placeholder={t('filters.filterTags')}
                   value={filters.tagsSearch || ''}
                   onChange={(e) => onFilterChange({ ...filters, tagsSearch: e.target.value })}
-                  className="w-full px-3 py-2 rounded text-sm"
-                  style={{ backgroundColor: 'var(--app-surface)', border: '1px solid var(--app-border)', color: 'var(--app-text)' }}
+                  className="w-full rounded text-sm"
+                  style={{ backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
                 />
               </div>
               <div className="max-h-64 overflow-y-auto">

@@ -4,6 +4,7 @@ import { FileText, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
+import FormInput from '@/components/FormInput';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -119,13 +120,12 @@ export default function Login() {
               <label className="login-form-label">
                 Paperless Username
               </label>
-              <input
+              <FormInput
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Enter your username"
-                className="login-form-input"
                 required
                 autoFocus
               />
@@ -135,13 +135,12 @@ export default function Login() {
               <label className="login-form-label">
                 Paperless Password
               </label>
-              <input
+              <FormInput
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="Enter your password"
-                className="login-form-input"
                 required
               />
             </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from '@/api/entities';
 import { useToast } from '@/components/ToastContainer';
 import { Lock, Eye, EyeOff } from 'lucide-react';
+import FormInput from '@/components/FormInput';
 
 export default function ChangePassword() {
   const { showToast } = useToast();
@@ -87,12 +88,12 @@ export default function ChangePassword() {
           <div className="form-group">
             <label className="form-label">Current Password</label>
             <div className="relative">
-              <input
+              <FormInput
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter current password"
-                className="form-input pr-10"
+                className="pr-10"
                 required
               />
               <button
@@ -108,12 +109,12 @@ export default function ChangePassword() {
           <div className="form-group">
             <label className="form-label">New Password</label>
             <div className="relative">
-              <input
+              <FormInput
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password (min 6 characters)"
-                className="form-input pr-10"
+                className="pr-10"
                 required
               />
               <button
@@ -129,12 +130,12 @@ export default function ChangePassword() {
           <div className="form-group">
             <label className="form-label">Confirm New Password</label>
             <div className="relative">
-              <input
+              <FormInput
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="form-input pr-10"
+                className="pr-10"
                 required
               />
               <button
