@@ -613,12 +613,21 @@ export default function SetupWizard() {
                 </div>
               </div>
 
+              {validationData && validationData.valid && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 mt-8">
+                  <p className="text-sm text-blue-900">
+                    Everything is ready! Click the button below to start using PocoClass.
+                  </p>
+                </div>
+              )}
+
               <div className="flex gap-3 mt-8">
                 {validationData && !validationData.valid ? (
                   <Button
                     onClick={handleFixMandatoryData}
                     disabled={fixingMandatoryData}
                     className="btn btn-primary flex-1"
+                    style={{ backgroundColor: '#3b82f6', borderColor: '#3b82f6' }}
                   >
                     {fixingMandatoryData ? 'Creating Missing Items...' : 'Create Missing Items'}
                   </Button>
@@ -627,6 +636,11 @@ export default function SetupWizard() {
                     onClick={handleContinueToDashboard}
                     className="btn btn-primary flex-1"
                     disabled={!validationData?.valid}
+                    style={{ 
+                      backgroundColor: validationData?.valid ? '#3b82f6' : '#d1d5db',
+                      borderColor: validationData?.valid ? '#3b82f6' : '#d1d5db',
+                      cursor: validationData?.valid ? 'pointer' : 'not-allowed'
+                    }}
                   >
                     Continue to Dashboard
                   </Button>
