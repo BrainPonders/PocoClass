@@ -421,27 +421,23 @@ export default function SetupWizard() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => setStep(1)} 
-                    className="btn"
                     disabled={loading}
                     style={{
-                      border: '1.5px solid #d1d5db',
+                      border: '1px solid #d1d5db',
                       backgroundColor: 'transparent',
                       color: '#6b7280',
                       cursor: loading ? 'not-allowed' : 'pointer',
-                      opacity: loading ? 0.6 : 1
+                      opacity: loading ? 0.6 : 1,
+                      transition: 'all 0.2s ease'
                     }}
                     onMouseEnter={(e) => {
                       if (!loading) {
                         e.currentTarget.style.backgroundColor = '#f3f4f6';
-                        e.currentTarget.style.borderColor = '#d1d5db';
-                        e.currentTarget.style.color = '#6b7280';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!loading) {
                         e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.borderColor = '#d1d5db';
-                        e.currentTarget.style.color = '#6b7280';
                       }
                     }}
                   >
