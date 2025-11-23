@@ -381,8 +381,7 @@ export default function SetupWizard() {
                     <div>
                       <p className="font-semibold mb-1">Admin Account Required</p>
                       <p className="text-sm">
-                        Please login with a Paperless admin account for initial setup. 
-                        You'll be the first PocoClass administrator and can add other users later.
+                        Log in with your Paperless-ngx administrator account to complete the initial setup and synchronise data with PocoClass. This is required only once. After setup, PocoClass administrators can activate additional Paperless-ngx users without needing the Paperless admin credentials again.
                       </p>
                     </div>
                   </div>
@@ -406,13 +405,12 @@ export default function SetupWizard() {
                   <label className="setup-form-label">
                     Paperless Admin Password
                   </label>
-                  <input
+                  <FormInput
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="setup-form-input"
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
