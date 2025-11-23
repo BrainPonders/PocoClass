@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
 import FormInput from '@/components/FormInput';
+import logo from '@/assets/logo.png';
 
 export default function SetupWizard() {
   const navigate = useNavigate();
@@ -180,6 +181,9 @@ export default function SetupWizard() {
         }
       `}</style>
       <div className="w-full max-w-xl">
+        <div className="flex justify-center mb-8">
+          <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '280px', height: 'auto' }} />
+        </div>
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
