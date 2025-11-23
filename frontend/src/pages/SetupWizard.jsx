@@ -377,7 +377,7 @@ export default function SetupWizard() {
                     placeholder="https://paperless.example.com"
                     required
                   />
-                  <p className="text-xs mt-2" style={{ color: '#9ca3af' }}>
+                  <p className="text-xs mt-2" style={{ color: '#b0b8c1' }}>
                     Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
                   </p>
                 </div>
