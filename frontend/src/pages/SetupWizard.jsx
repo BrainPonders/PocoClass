@@ -176,7 +176,7 @@ export default function SetupWizard() {
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
-            <div className="text-center">
+            <div className="text-left">
               <div className="flex justify-center mb-6">
                 <div className="relative inline-block">
                   <img src="/logo.png" alt="PocoClass Logo" className="h-48 w-auto" />
