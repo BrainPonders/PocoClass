@@ -386,7 +386,7 @@ export default function SetupWizard() {
                   <div className="flex items-start gap-2">
                     <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-600" />
                     <div>
-                      <p className="font-semibold mb-1">Admin Account Required</p>
+                      <p className="font-semibold mb-1" style={{ marginBottom: '12px' }}>Admin Account Required</p>
                       <p className="text-sm">
                         Log in with your Paperless-ngx administrator account to complete the initial setup and synchronise required system data. This is required only once. After setup, PocoClass administrators can activate additional Paperless-ngx users without needing the Paperless admin credentials again.
                       </p>
@@ -420,7 +420,7 @@ export default function SetupWizard() {
                     placeholder="Enter your password"
                     required
                   />
-                  <p className="text-xs mt-2" style={{ color: '#9ca3af' }}>
+                  <p className="text-xs mt-2" style={{ color: '#9ca3af', marginTop: '18px' }}>
                     Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
                   </p>
                 </div>
