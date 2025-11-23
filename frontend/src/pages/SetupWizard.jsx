@@ -176,12 +176,13 @@ export default function SetupWizard() {
         <div className="wizard-container">
           {/* Step 1: Welcome */}
           {step === 1 && (
-            <div className="text-left">
+            <div className="text-left" style={{ 
+              background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
+              borderRadius: '12px',
+              padding: '20px'
+            }}>
               <div className="flex" style={{ 
-                marginBottom: '34px',
-                background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
-                borderRadius: '12px',
-                padding: '20px 0'
+                marginBottom: '34px'
               }}>
                 <div className="relative inline-block" style={{ marginLeft: '-50px' }}>
                   <img src="/logo.png" alt="PocoClass Logo" className="h-48 w-auto" />
