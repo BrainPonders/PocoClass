@@ -421,7 +421,7 @@ export default function SetupWizard() {
                     required
                   />
                   <div className="flex items-start gap-1.5 mt-2" style={{ marginTop: '18px' }}>
-                    <Shield className="w-3 h-3 flex-shrink-0" style={{ color: '#999', marginTop: '2px' }} />
+                    <Shield className="w-3 h-3 flex-shrink-0" style={{ color: '#999', marginTop: '2px', marginRight: '7px' }} />
                     <p style={{ fontSize: '10.5px', color: '#999', lineHeight: '1.4' }}>
                       Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
                     </p>
