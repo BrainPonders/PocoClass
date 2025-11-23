@@ -438,7 +438,7 @@ export default function SetupWizard() {
                     className="btn btn-primary flex-1 transition-all"
                     disabled={loading || !formData.paperlessUrl || !formData.username || !formData.password}
                     style={{
-                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : '#2563eb',
+                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : '#356dff',
                       color: 'white',
                       border: 'none',
                       cursor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? 'not-allowed' : 'pointer',
@@ -447,13 +447,13 @@ export default function SetupWizard() {
                     }}
                     onMouseEnter={(e) => {
                       if (!loading && formData.paperlessUrl && formData.username && formData.password) {
-                        e.currentTarget.style.backgroundColor = '#356dff';
+                        e.currentTarget.style.backgroundColor = '#2563eb';
                         e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!loading && formData.paperlessUrl && formData.username && formData.password) {
-                        e.currentTarget.style.backgroundColor = '#2563eb';
+                        e.currentTarget.style.backgroundColor = '#356dff';
                         e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
                       }
                     }}
