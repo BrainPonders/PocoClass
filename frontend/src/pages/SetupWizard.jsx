@@ -438,7 +438,8 @@ export default function SetupWizard() {
                     className="btn btn-primary flex-1"
                     disabled={loading || !formData.paperlessUrl || !formData.username || !formData.password}
                     style={{
-                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : 'var(--app-primary)',
+                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : '#3b82f6',
+                      borderColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : '#3b82f6',
                       color: 'white',
                       border: 'none',
                       cursor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? 'not-allowed' : 'pointer',
