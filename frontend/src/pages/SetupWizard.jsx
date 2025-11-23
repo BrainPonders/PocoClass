@@ -4,6 +4,7 @@ import { FileText, Server, Check, AlertCircle, XCircle, Database, Info } from 'l
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import API_BASE_URL from '@/config/api';
+import FormInput from '@/components/FormInput';
 
 export default function SetupWizard() {
   const navigate = useNavigate();
@@ -361,13 +362,12 @@ export default function SetupWizard() {
                       </div>
                     </div>
                   </div>
-                  <input
+                  <FormInput
                     type="url"
                     name="paperlessUrl"
                     value={formData.paperlessUrl}
                     onChange={handleInputChange}
                     placeholder="https://paperless.example.com"
-                    className="setup-form-input"
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
@@ -392,13 +392,12 @@ export default function SetupWizard() {
                   <label className="setup-form-label">
                     Paperless Admin Username
                   </label>
-                  <input
+                  <FormInput
                     type="text"
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
                     placeholder="admin"
-                    className="setup-form-input"
                     required
                   />
                 </div>
