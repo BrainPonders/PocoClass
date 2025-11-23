@@ -430,6 +430,18 @@ export default function SetupWizard() {
                       cursor: loading ? 'not-allowed' : 'pointer',
                       opacity: loading ? 0.6 : 1
                     }}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.currentTarget.style.borderColor = '#9ca3af';
+                        e.currentTarget.style.color = '#374151';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!loading) {
+                        e.currentTarget.style.borderColor = '#d1d5db';
+                        e.currentTarget.style.color = '#6b7280';
+                      }
+                    }}
                   >
                     Back
                   </Button>
