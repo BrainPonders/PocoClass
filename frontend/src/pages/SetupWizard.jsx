@@ -219,7 +219,7 @@ export default function SetupWizard() {
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid #d1d5db', marginBottom: '32px' }}></div>
+              <div style={{ borderTop: '1px solid #e5e7eb', marginBottom: '32px' }}></div>
 
               <div className="space-y-4 mb-8" style={{ maxWidth: '550px' }}>
                 <div className="flex items-start gap-3 text-left">
