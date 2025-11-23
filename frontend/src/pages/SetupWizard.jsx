@@ -335,22 +335,19 @@ export default function SetupWizard() {
               marginLeft: '-70px',
               marginRight: '-70px',
               paddingLeft: '70px',
-              paddingRight: '70px',
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '24px'
+              paddingRight: '70px'
             }}>
-              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', flexShrink: 0 }} />
-              
-              <div style={{ flex: 1 }}>
-                <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
-                  Connect to Paperless-ngx
-                </h2>
-                
-                <p className="text-left mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
-                  Enter your Paperless instance details and your admin credentials
-                </p>
+              <div className="flex justify-between items-start gap-6 mb-8">
+                <div style={{ flex: 1 }}>
+                  <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
+                    Connect to Paperless-ngx
+                  </h2>
+                  
+                  <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+                    Enter your Paperless instance details and your admin credentials
+                  </p>
+                </div>
+                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '100px', height: 'auto', flexShrink: 0 }} />
               </div>
 
               <div className="space-y-6">
