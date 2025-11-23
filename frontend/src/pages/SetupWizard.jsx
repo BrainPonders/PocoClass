@@ -376,7 +376,7 @@ export default function SetupWizard() {
                   </p>
                 </div>
 
-                <div className="info-box info-box-yellow" style={{ marginTop: '12px' }}>
+                <div className="info-box info-box-yellow" style={{ marginTop: '20px' }}>
                   <div className="flex items-start gap-2">
                     <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-amber-600" />
                     <div>
