@@ -349,7 +349,7 @@ export default function SetupWizard() {
                     Connect to Paperless-ngx
                   </h2>
                   
-                  <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+                  <p className="text-left" style={{ color: '#6b7280', fontSize: '0.95rem', marginLeft: '1px' }}>
                     Enter your Paperless instance details and your admin credentials
                   </p>
                 </div>
