@@ -202,7 +202,7 @@ export default function SetupWizard() {
               }}>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--app-text)' }}>
                   PocoClass is triggered automatically after Paperless-ngx completes its post-consumption step. 
-                  It analyzes new documents, identifies patterns based on your rules, and assigns the classification 
+                  It analyzes new documents, identifies patterns based on your rules, and applies the classification 
                   you define. This makes it ideal for processing unknown documents during bulk imports, and equally 
                   reliable for daily single-document uploads where classification accuracy matters.
                 </p>
