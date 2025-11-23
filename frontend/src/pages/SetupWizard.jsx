@@ -371,7 +371,8 @@ export default function SetupWizard() {
                     required
                   />
                   <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
-                    Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> or <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
+                    Examples:<br />
+                    <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
                   </p>
                 </div>
 
