@@ -186,51 +186,67 @@ export default function SetupWizard() {
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--app-text)' }}>
+              <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--app-text)' }}>
                 Welcome to PocoClass
               </h1>
               
-              <p className="text-lg mb-8" style={{ color: 'var(--app-text-secondary)' }}>
-                Your intelligent document classification system for Paperless-ngx
+              <p className="text-lg mb-6" style={{ color: 'var(--app-text-secondary)' }}>
+                Your rule-driven document classification system for Paperless-ngx
               </p>
 
-              <div className="info-box info-box-yellow mb-8">
-                <h3 className="font-semibold mb-2">What is PocoClass?</h3>
-                <p className="text-sm">
-                  PocoClass automatically classifies and enriches your Paperless-ngx documents using intelligent pattern rules.
-                  Ideal for bulk imports when Paperless isn't trained yet, and for daily imports to ensure consistent, reliable classification.
+              <div className="text-left mb-8 px-4" style={{ 
+                backgroundColor: 'var(--app-bg-secondary)', 
+                border: '2px solid var(--app-border)',
+                borderRadius: '12px',
+                padding: '24px'
+              }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--app-text)' }}>
+                  PocoClass is triggered automatically after Paperless-ngx completes its post-consumption step. 
+                  It analyzes new documents, identifies patterns based on your rules, and assigns the classification 
+                  you define. This makes it ideal for processing unknown documents during bulk imports, and equally 
+                  reliable for daily single-document uploads where classification accuracy matters.
                 </p>
               </div>
 
-              <div className="space-y-4 mb-8">
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
+              <div className="space-y-5 mb-8">
+                <div className="flex items-start gap-3 text-left">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Uses Your Paperless Account</h4>
+                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                      Log in with your existing Paperless-ngx credentials — no extra passwords or accounts required.
+                    </p>
                   </div>
-                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
-                    Login with your existing Paperless-ngx credentials - no new passwords to remember
-                  </p>
                 </div>
 
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
+                <div className="flex items-start gap-3 text-left">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Secure by Design</h4>
+                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                      Each user operates strictly within their own Paperless permissions. No shared admin tokens or elevated access.
+                    </p>
                   </div>
-                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
-                    Each user operates with their own Paperless permissions - no shared admin tokens
-                  </p>
                 </div>
 
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <h4 className="font-semibold" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
+                <div className="flex items-start gap-3 text-left">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Easy to Use</h4>
+                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                      A clean, wizard-based interface guides you through building accurate classification rules in minutes.
+                    </p>
                   </div>
-                  <p className="text-sm text-center" style={{ color: 'var(--app-text-secondary)' }}>
-                    Simple wizard-based interface for creating classification rules
-                  </p>
+                </div>
+
+                <div className="flex items-start gap-3 text-left">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ color: 'var(--app-text)' }}>Fully Automated Processing</h4>
+                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                      Once configured, PocoClass continuously processes new documents in the background — no manual triggers needed.
+                    </p>
+                  </div>
                 </div>
               </div>
 
