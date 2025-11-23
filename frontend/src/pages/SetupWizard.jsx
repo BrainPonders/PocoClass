@@ -179,7 +179,7 @@ export default function SetupWizard() {
             <div className="text-left" style={{ 
               background: 'linear-gradient(to bottom right, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0))',
               borderRadius: '12px',
-              padding: '20px'
+              padding: '20px 70px'
             }}>
               <div className="flex" style={{ 
                 marginBottom: '34px'
