@@ -377,7 +377,7 @@ export default function SetupWizard() {
                     placeholder="https://paperless.example.com"
                     required
                   />
-                  <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
+                  <p className="text-xs mt-2" style={{ color: '#9ca3af' }}>
                     Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
                   </p>
                 </div>
@@ -420,7 +420,7 @@ export default function SetupWizard() {
                     placeholder="Enter your password"
                     required
                   />
-                  <p className="text-xs mt-2" style={{ color: '#6b7280' }}>
+                  <p className="text-xs mt-2" style={{ color: '#9ca3af' }}>
                     Your credentials are never stored by PocoClass and are only used once to validate and fetch your Paperless metadata.
                   </p>
                 </div>
