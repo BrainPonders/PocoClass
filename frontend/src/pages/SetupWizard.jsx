@@ -435,27 +435,13 @@ export default function SetupWizard() {
                   </Button>
                   <Button 
                     onClick={handleSetup} 
-                    className="btn btn-primary flex-1 transition-all"
+                    className="btn btn-primary flex-1"
                     disabled={loading || !formData.paperlessUrl || !formData.username || !formData.password}
                     style={{
-                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : '#3b82f6',
+                      backgroundColor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? '#d1d5db' : 'var(--app-primary)',
                       color: 'white',
                       border: 'none',
                       cursor: loading || !formData.paperlessUrl || !formData.username || !formData.password ? 'not-allowed' : 'pointer',
-                      opacity: loading || !formData.paperlessUrl || !formData.username || !formData.password ? 0.7 : 1,
-                      boxShadow: loading || !formData.paperlessUrl || !formData.username || !formData.password ? 'none' : '0 2px 6px rgba(0, 0, 0, 0.15)',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!loading && formData.paperlessUrl && formData.username && formData.password) {
-                        e.currentTarget.style.backgroundColor = '#1e40af';
-                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!loading && formData.paperlessUrl && formData.username && formData.password) {
-                        e.currentTarget.style.backgroundColor = '#3b82f6';
-                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)';
-                      }
                     }}
                   >
                     {loading ? 'Connecting...' : 'Connect & Complete Setup'}
