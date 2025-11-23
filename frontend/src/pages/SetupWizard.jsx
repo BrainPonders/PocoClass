@@ -397,7 +397,7 @@ export default function SetupWizard() {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    placeholder="admin"
+                    placeholder="Your admin username"
                     required
                   />
                 </div>
