@@ -432,12 +432,14 @@ export default function SetupWizard() {
                     }}
                     onMouseEnter={(e) => {
                       if (!loading) {
-                        e.currentTarget.style.borderColor = '#374151';
-                        e.currentTarget.style.color = '#111827';
+                        e.currentTarget.style.backgroundColor = '#f3f4f6';
+                        e.currentTarget.style.borderColor = '#d1d5db';
+                        e.currentTarget.style.color = '#6b7280';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!loading) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
                         e.currentTarget.style.borderColor = '#d1d5db';
                         e.currentTarget.style.color = '#6b7280';
                       }
