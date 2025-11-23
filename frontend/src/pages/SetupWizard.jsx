@@ -187,7 +187,7 @@ export default function SetupWizard() {
               paddingRight: '70px'
             }}>
               <div className="flex" style={{ 
-                marginBottom: '34px'
+                marginBottom: '44px'
               }}>
                 <div className="relative inline-block" style={{ marginLeft: '-50px' }}>
                   <img src="/logo.png" alt="PocoClass Logo" className="h-48 w-auto" />
