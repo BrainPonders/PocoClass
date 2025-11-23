@@ -186,11 +186,11 @@ export default function SetupWizard() {
                 </div>
               </div>
               
-              <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--app-text)' }}>
+              <h1 className="text-4xl font-bold mb-3 text-left" style={{ color: 'var(--app-text)' }}>
                 Welcome to PocoClass
               </h1>
               
-              <p className="text-lg mb-6" style={{ color: 'var(--app-text-secondary)' }}>
+              <p className="text-lg mb-6 text-left" style={{ color: 'var(--app-text-secondary)' }}>
                 Your rule-driven document classification system for Paperless-ngx
               </p>
 
