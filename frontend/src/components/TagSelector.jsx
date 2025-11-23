@@ -152,7 +152,7 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
           onFocus={() => setShowDropdown(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="form-input"
+          className="pc-input"
         />
 
         {showDropdown && (

@@ -66,39 +66,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: 'var(--app-bg)' }}>
-      <style>{`
-        .login-form-group {
-          margin-bottom: 28px;
-        }
-        
-        .login-form-label {
-          display: block;
-          font-size: 1rem;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 14px;
-          letter-spacing: -0.01em;
-        }
-        
-        .login-form-input {
-          width: 100%;
-          padding: 10px 12px;
-          border: 2px solid #d1d5db;
-          border-radius: 8px;
-          font-size: 1rem;
-          background: #f9fafb;
-          color: #1f2937;
-          transition: all 0.2s ease;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .login-form-input:focus {
-          outline: none;
-          border-color: #3b82f6;
-          background: white;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-      `}</style>
       <div className="w-full max-w-md">
         <div className="wizard-container">
           <div className="text-center mb-8">

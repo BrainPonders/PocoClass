@@ -121,7 +121,7 @@ export default function StaticDataStep({
         <div className="form-group">
           <label className="form-label">{t('fields.correspondent')}</label>
           {isLoading ? (
-            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
+            <div className="pc-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
           ) : (
             <select
               value={ruleData.predefinedData?.correspondent || ''}
@@ -152,7 +152,7 @@ export default function StaticDataStep({
         <div className="form-group">
           <label className="form-label">{t('fields.documentType')}</label>
           {isLoading ? (
-            <div className="form-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
+            <div className="pc-input" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>{t('fields.loading')}</div>
           ) : (
             <select
               value={ruleData.predefinedData?.documentType || ''}
@@ -261,7 +261,7 @@ export default function StaticDataStep({
           <input
             type="text"
             placeholder={t('placeholders.definedPaperless')}
-            className="form-input"
+            className="pc-input"
           />
           <p className="text-xs text-gray-500 mt-1">{t('fields.customFieldsPredefinedNote')}</p>
         </div>
@@ -273,7 +273,7 @@ export default function StaticDataStep({
             value={ruleData.predefinedData?.documentCategory || ''}
             onChange={(e) => updateRuleData('predefinedData', { documentCategory: e.target.value })}
             placeholder={t('placeholders.exampleFinancial')}
-            className="form-input"
+            className="pc-input"
           />
         </div>
 
@@ -283,7 +283,7 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder={t('placeholders.autoCalculated')}
-            className="form-input cursor-not-allowed"
+            className="pc-input cursor-not-allowed"
             style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>
@@ -294,7 +294,7 @@ export default function StaticDataStep({
             type="text"
             disabled
             placeholder={t('placeholders.autoPopulated')}
-            className="form-input cursor-not-allowed"
+            className="pc-input cursor-not-allowed"
             style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
           />
         </div>

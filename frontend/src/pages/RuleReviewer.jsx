@@ -426,7 +426,7 @@ export default function RuleReviewer() {
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="form-select w-64 h-10"
+              className="pc-select w-64 h-10"
             >
               <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (

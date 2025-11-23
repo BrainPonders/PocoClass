@@ -329,25 +329,6 @@ function LayoutContent({ children }) {
                 margin-bottom: 28px;
               }
 
-              .form-input, .form-textarea, .form-select {
-                width: 100%;
-                padding: 10px 12px;
-                border: 1px solid var(--input-border);
-                border-radius: 8px;
-                font-size: 1rem;
-                background: var(--input-bg);
-                color: var(--input-text);
-                transition: all 0.2s ease;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-              }
-              
-              .form-input:focus, .form-textarea:focus, .form-select:focus {
-                outline: none;
-                border-color: var(--input-focus-border);
-                background: var(--input-focus-bg);
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-              }
-              
               .form-label {
                 display: block;
                 font-size: 1rem;

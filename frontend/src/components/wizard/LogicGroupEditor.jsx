@@ -138,7 +138,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               value={fromValue}
               onChange={(e) => handleValueChange('from', e.target.value)}
               disabled={searchMode !== 'between'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="from"
             />
@@ -148,7 +148,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               value={toValue}
               onChange={(e) => handleValueChange('to', e.target.value)}
               disabled={searchMode !== 'between'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="to"
             />
@@ -170,7 +170,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               value={firstValue}
               onChange={(e) => handleValueChange('first', e.target.value)}
               disabled={searchMode !== 'first'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
@@ -192,7 +192,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
               value={lastValue}
               onChange={(e) => handleValueChange('last', e.target.value)}
               disabled={searchMode !== 'last'}
-              className="form-input"
+              className="pc-input"
               style={{ width: '60px', padding: '4px 8px' }}
               placeholder="100"
             />
@@ -257,7 +257,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
                 value={condition.pattern || ''}
                 onChange={(e) => updateCondition(condIndex, 'pattern', e.target.value)}
                 placeholder={t('wizard.step2.enterPattern')}
-                className="form-input flex-1"
+                className="pc-input flex-1"
               />
               <button
                 onClick={() => openPatternHelper(condIndex)}

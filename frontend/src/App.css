@@ -1,0 +1,111 @@
+:root {
+  --pc-input-bg: #f9fafb;
+  --pc-input-text: #111827;
+  --pc-input-placeholder: #6b7280;
+  --pc-input-border: #d1d5db;
+  --pc-input-focus-border: #3b82f6;
+  --pc-input-focus-ring: rgba(59, 130, 246, 0.1);
+  --pc-input-disabled-bg: #f3f4f6;
+  --pc-input-disabled-text: #9ca3af;
+}
+
+.dark {
+  --pc-input-bg: #1f2937;
+  --pc-input-text: #e5e7eb;
+  --pc-input-placeholder: #9ca3af;
+  --pc-input-border: #334155;
+  --pc-input-focus-border: #60a5fa;
+  --pc-input-focus-ring: rgba(96, 165, 250, 0.2);
+  --pc-input-disabled-bg: #0f172a;
+  --pc-input-disabled-text: #6b7280;
+}
+
+.pc-input,
+.pc-textarea,
+.pc-select,
+.form-input,
+.form-textarea,
+.form-select,
+.login-form-input,
+.setup-form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--pc-input-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--pc-input-bg);
+  color: var(--pc-input-text);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.pc-input::placeholder,
+.pc-textarea::placeholder,
+.pc-select::placeholder,
+.form-input::placeholder,
+.form-textarea::placeholder,
+.form-select::placeholder,
+.login-form-input::placeholder,
+.setup-form-input::placeholder {
+  color: var(--pc-input-placeholder);
+}
+
+.pc-input:focus,
+.pc-textarea:focus,
+.pc-select:focus,
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus,
+.login-form-input:focus,
+.setup-form-input:focus {
+  outline: none;
+  border-color: var(--pc-input-focus-border);
+  background: var(--pc-input-bg);
+  box-shadow: 0 0 0 3px var(--pc-input-focus-ring), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pc-input:disabled,
+.pc-textarea:disabled,
+.pc-select:disabled,
+.form-input:disabled,
+.form-textarea:disabled,
+.form-select:disabled,
+.login-form-input:disabled,
+.setup-form-input:disabled {
+  background: var(--pc-input-disabled-bg);
+  color: var(--pc-input-disabled-text);
+  cursor: not-allowed;
+}
+
+.pc-textarea,
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.pc-select,
+.form-select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(50% - 3px), calc(100% - 14px) calc(50% - 3px);
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.form-group,
+.login-form-group,
+.setup-form-group {
+  margin-bottom: 28px;
+}
+
+.form-label,
+.login-form-label,
+.setup-form-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pc-input-text);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}

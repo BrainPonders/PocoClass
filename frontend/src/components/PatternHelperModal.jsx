@@ -429,7 +429,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
                     value={stringPattern}
                     onChange={(e) => setStringPattern(e.target.value)}
                     placeholder="Enter text to match (e.g., 'Invoice', 'Bank Statement', 'INV-2024-001')"
-                    className="form-input"
+                    className="pc-input"
                   />
                 </div>
 
@@ -537,7 +537,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
                     value={datePattern}
                     onChange={(e) => setDatePattern(e.target.value)}
                     placeholder="e.g., DD-MM-YYYY"
-                    className="form-input"
+                    className="pc-input"
                   />
                 </div>
 
@@ -758,7 +758,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
                   value={testString}
                   onChange={(e) => setTestString(e.target.value)}
                   placeholder="Enter text to test..."
-                  className="form-input flex-1"
+                  className="pc-input flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && testPattern()}
                 />
                 <button onClick={testPattern} className="btn btn-primary whitespace-nowrap">

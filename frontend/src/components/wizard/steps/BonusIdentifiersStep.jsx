@@ -69,7 +69,7 @@ export default function BonusIdentifiersStep({
                     value={identifier.field}
                     onChange={(e) => updateBonusIdentifier(index, 'field', e.target.value)}
                     placeholder={t('bonusIdentifiers.fieldNamePlaceholder')}
-                    className="mt-1 block w-full rounded-md shadow-sm sm:text-sm form-input"
+                    className="mt-1 block w-full rounded-md shadow-sm sm:text-sm pc-input"
                   />
                 </div>
                 <div>
@@ -79,7 +79,7 @@ export default function BonusIdentifiersStep({
                     value={identifier.value}
                     onChange={(e) => updateBonusIdentifier(index, 'value', e.target.value)}
                     placeholder={t('bonusIdentifiers.expectedValuePlaceholder')}
-                    className="mt-1 block w-full rounded-md shadow-sm sm:text-sm form-input"
+                    className="mt-1 block w-full rounded-md shadow-sm sm:text-sm pc-input"
                   />
                 </div>
               </div>
