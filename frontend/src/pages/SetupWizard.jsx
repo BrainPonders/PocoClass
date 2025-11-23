@@ -177,7 +177,7 @@ export default function SetupWizard() {
           {/* Step 1: Welcome */}
           {step === 1 && (
             <div className="text-left">
-              <div className="flex mb-6">
+              <div className="flex" style={{ marginBottom: '34px' }}>
                 <div className="relative inline-block" style={{ marginLeft: '-50px' }}>
                   <img src="/logo.png" alt="PocoClass Logo" className="h-48 w-auto" />
                   <div className="absolute bottom-0 right-0 transform translate-x-[33px] -translate-y-[11px]">
