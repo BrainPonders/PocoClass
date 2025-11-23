@@ -335,17 +335,16 @@ export default function SetupWizard() {
               marginLeft: '-70px',
               marginRight: '-70px',
               paddingLeft: '70px',
-              paddingRight: '70px'
+              paddingRight: '70px',
+              position: 'relative'
             }}>
-              <div className="flex justify-center mb-8">
-                <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto' }} />
-              </div>
+              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', position: 'absolute', top: '-20px', left: '70px', opacity: 0.15 }} />
 
-              <h2 className="text-3xl font-semibold text-center mb-3" style={{ color: 'var(--app-text)' }}>
+              <h2 className="text-3xl font-semibold text-left mb-3" style={{ color: 'var(--app-text)' }}>
                 Connect to Paperless-ngx
               </h2>
               
-              <p className="text-center mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
+              <p className="text-left mb-8" style={{ color: '#6b7280', fontSize: '0.95rem' }}>
                 Enter your Paperless instance details and your admin credentials
               </p>
 
