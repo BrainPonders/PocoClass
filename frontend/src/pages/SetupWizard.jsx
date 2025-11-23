@@ -381,7 +381,7 @@ export default function SetupWizard() {
 
                 <div className="setup-form-group">
                   <label className="setup-form-label">
-                    Your Paperless Username
+                    Paperless Admin Username
                   </label>
                   <input
                     type="text"
@@ -396,7 +396,7 @@ export default function SetupWizard() {
 
                 <div className="setup-form-group">
                   <label className="setup-form-label">
-                    Your Paperless Password
+                    Paperless Admin Password
                   </label>
                   <input
                     type="password"
