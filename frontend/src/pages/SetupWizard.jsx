@@ -348,7 +348,7 @@ export default function SetupWizard() {
                 </p>
               </div>
               
-              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', position: 'absolute', top: '0px', right: '70px', opacity: 0.2 }} />
+              <img src={logo} alt="PocoClass Logo" style={{ maxWidth: '120px', height: 'auto', position: 'absolute', top: '0px', right: '70px', opacity: 1, zIndex: 10 }} />
 
               <div className="space-y-6">
                 <div className="setup-form-group">
