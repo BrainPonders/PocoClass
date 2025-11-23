@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';
 import TagSelector from '@/components/TagSelector';
 import PatternHelperModal from '@/components/PatternHelperModal';
+import FormInput from '@/components/FormInput';
 
 export default function DynamicDataStep({ 
   ruleData, 
@@ -100,12 +101,12 @@ export default function DynamicDataStep({
                   <Tooltip content={t('tooltips.beforeAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
-                  <input
+                  <FormInput
                     type="text"
                     value={rule.before_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'before_anchor', e.target.value)}
                     placeholder={t('placeholders.enterPattern')}
-                    className="form-input flex-1"
+                    className="flex-1"
                   />
                   <button
                     onClick={() => openPatternHelper(index, 'before_anchor')}
@@ -127,7 +128,17 @@ export default function DynamicDataStep({
                 <select
                   value={rule.extraction_type || 'text'}
                   onChange={(e) => updateExtractionRule(index, 'extraction_type', e.target.value)}
-                  className="form-input w-full"
+                  style={{
+                    borderColor: 'var(--input-border, #d1d5db)',
+                    borderWidth: '1px',
+                    backgroundColor: 'var(--input-bg, #ffffff)',
+                    color: 'var(--input-text, #111827)',
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    fontSize: '1rem',
+                  }}
+                  className="transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {extractionTypes.map(type => (
                     <option key={type.value} value={type.value}>{type.label}</option>
@@ -142,12 +153,12 @@ export default function DynamicDataStep({
                   <Tooltip content={t('tooltips.afterAnchorHelp')} />
                 </div>
                 <div className="flex items-center gap-2">
-                  <input
+                  <FormInput
                     type="text"
                     value={rule.after_anchor || ''}
                     onChange={(e) => updateExtractionRule(index, 'after_anchor', e.target.value)}
                     placeholder={t('placeholders.enterPattern')}
-                    className="form-input flex-1"
+                    className="flex-1"
                   />
                   <button
                     onClick={() => openPatternHelper(index, 'after_anchor')}
