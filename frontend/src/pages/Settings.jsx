@@ -62,6 +62,7 @@ export default function Settings() {
   
   const [resetStage, setResetStage] = useState(0); // 0: none, 1: first confirmation, 2: second confirmation, 3: final confirmation
   const [isResetting, setIsResetting] = useState(false);
+  const [showResetSuccess, setShowResetSuccess] = useState(false);
 
   useEffect(() => {
     loadAllSettings();
@@ -267,21 +268,9 @@ export default function Settings() {
       });
 
       if (response.ok) {
-        toast({
-          title: 'Application Reset Complete',
-          description: 'The app has been reset to its initial state. Redirecting you to the setup wizard...',
-          duration: 3000,
-        });
-        
-        // Clear local storage
-        localStorage.removeItem('pococlass_session');
-        localStorage.removeItem('theme');
-        localStorage.removeItem('language');
-        
-        // Redirect to setup wizard
-        setTimeout(() => {
-          window.location.href = '/setup';
-        }, 1500);
+        // Show success modal instead of toast
+        setShowResetSuccess(true);
+        setResetStage(0);
       } else {
         throw new Error('Failed to reset application');
       }
@@ -292,10 +281,19 @@ export default function Settings() {
         variant: 'destructive',
         duration: 5000,
       });
-    } finally {
       setIsResetting(false);
       setResetStage(0);
     }
+  };
+
+  const handleResetSuccessClose = () => {
+    setShowResetSuccess(false);
+    // Clear local storage
+    localStorage.removeItem('pococlass_session');
+    localStorage.removeItem('theme');
+    localStorage.removeItem('language');
+    // Redirect to setup wizard
+    window.location.href = '/setup';
   };
 
   const handleRoleChange = async (userId, newRole) => {
@@ -2537,6 +2535,56 @@ export default function Settings() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Reset Success Modal */}
+      {showResetSuccess && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1001
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '48px',
+            maxWidth: '500px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            textAlign: 'center'
+          }}>
+            <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Application Reset Complete</h3>
+            <p className="text-base text-gray-700 mb-6">
+              The app has been successfully reset to its initial state. All rules, settings, and configurations have been cleared.
+            </p>
+            <p className="text-base text-gray-700 mb-8">
+              You will be redirected to the setup wizard to reconfigure PocoClass.
+            </p>
+            <Button
+              onClick={handleResetSuccessClose}
+              style={{
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '12px 32px',
+                fontSize: '16px',
+                fontWeight: '500',
+                borderRadius: '6px',
+                width: '100%'
+              }}
+            >
+              OK
+            </Button>
+          </div>
         </div>
       )}
     </div>

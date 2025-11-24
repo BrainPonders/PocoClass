@@ -753,54 +753,58 @@ export default function SetupWizard() {
                   <div style={{
                     backgroundColor: 'white',
                     borderRadius: '12px',
-                    padding: '48px',
+                    padding: '32px',
                     maxWidth: '600px',
-                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                    textAlign: 'center'
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
                   }}>
-                    <div className="mb-6">
-                      <Info className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                      {validationData?.valid ? (
+                    <div className="flex items-start gap-3 mb-4">
+                      {!validationData?.tags?.new ? (
                         <>
-                          <h3 className="text-2xl font-bold text-gray-900 mb-4">Important Reminder</h3>
-                          <p className="text-base text-gray-700 mb-4">
-                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
-                          </p>
-                          <p className="text-base text-gray-700 mb-4">
-                            PocoClass depends on this tag to identify and process new documents automatically.
-                          </p>
-                        </>
-                      ) : !validationData?.tags?.new ? (
-                        <>
-                          <h3 className="text-2xl font-bold text-red-600 mb-4">Warning: NEW Tag Missing</h3>
-                          <p className="text-base text-gray-700 mb-4">
-                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
-                          </p>
-                          <p className="text-base text-gray-700 mb-4">
-                            PocoClass depends on this tag to identify and process new documents automatically.
-                          </p>
+                          <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-3">Important Reminder: NEW Tag Missing</h3>
+                            <p className="text-sm text-gray-700 mb-2">
+                              The <strong>NEW</strong> tag is currently missing from your Paperless-ngx instance.
+                            </p>
+                            <p className="text-sm text-gray-700 mb-2">
+                              Please make sure Paperless-ngx adds the <strong>NEW</strong> tag to all newly consumed documents.
+                            </p>
+                            <p className="text-sm text-gray-700 mb-3">
+                              This tag tells PocoClass which documents still need to be processed.
+                            </p>
+                            <p className="text-xs text-gray-600 italic">
+                              This is a manual requirement in your Paperless workflow. Use Paperless-ngx workflows to automatically apply the NEW tag to all newly consumed documents.
+                            </p>
+                          </div>
                         </>
                       ) : (
                         <>
-                          <h3 className="text-2xl font-bold text-gray-900 mb-4">Important Reminder</h3>
-                          <p className="text-base text-gray-700 mb-4">
-                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
-                          </p>
-                          <p className="text-base text-gray-700 mb-4">
-                            PocoClass depends on this tag to identify and process new documents automatically.
-                          </p>
+                          <Info className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-3">Important Reminder</h3>
+                            <p className="text-sm text-gray-700 mb-2">
+                              Please make sure Paperless-ngx adds the <strong>NEW</strong> tag to all newly consumed documents.
+                            </p>
+                            <p className="text-sm text-gray-700 mb-3">
+                              This tag tells PocoClass which documents still need to be processed.
+                            </p>
+                            <p className="text-xs text-gray-600 italic">
+                              This is a manual requirement in your Paperless workflow. Use Paperless-ngx workflows to automatically apply the NEW tag to all newly consumed documents.
+                            </p>
+                          </div>
                         </>
                       )}
                     </div>
                     <Button
                       onClick={handleConfirmNewTagMessage}
                       style={{
+                        width: '100%',
                         backgroundColor: '#3b82f6',
                         color: 'white',
                         border: 'none',
                         cursor: 'pointer',
-                        padding: '12px 32px',
-                        fontSize: '16px',
+                        padding: '10px 16px',
+                        fontSize: '15px',
                         fontWeight: '500',
                         borderRadius: '6px'
                       }}
@@ -824,128 +828,66 @@ export default function SetupWizard() {
                   justifyContent: 'center',
                   zIndex: 1000
                 }}>
-                  {!skipWarningConfirmed ? (
-                    <div style={{
-                      backgroundColor: 'white',
-                      borderRadius: '12px',
-                      padding: '32px',
-                      maxWidth: '500px',
-                      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-                    }}>
-                      <div className="flex items-start gap-3 mb-4">
-                        <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">Continue Without Required Items?</h3>
-                          <p className="text-sm text-gray-700 mb-2">
-                            Some required fields and tags are missing. If you continue without creating them:
-                          </p>
-                          <p className="text-sm text-gray-700 mb-2">
-                            PocoClass rules will not work without the POCO Score custom field.
-                          </p>
-                          <p className="text-sm text-gray-700 mb-2">
-                            Document classification will fail without the POCO+, POCO-, and NEW tags.
-                          </p>
-                          <p className="text-sm text-gray-700 mb-4">
-                            You will need to create these items yourself in Paperless-ngx before PocoClass can operate correctly.
-                          </p>
-                          <p className="text-sm text-gray-700">
-                            It is strongly recommended to choose Create Missing Items instead.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() => setShowSkipWarning(false)}
-                          style={{
-                            flex: 1,
-                            backgroundColor: '#f3f4f6',
-                            color: '#374151',
-                            border: '1px solid #d1d5db',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={() => setSkipWarningConfirmed(true)}
-                          style={{
-                            flex: 1,
-                            backgroundColor: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          I Understand, Continue
-                        </Button>
+                  <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '32px',
+                    maxWidth: '500px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    <div className="flex items-start gap-3 mb-4">
+                      <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-3">Continue Without Required Items?</h3>
+                        <p className="text-sm text-gray-700 mb-3">
+                          Some required fields and tags are missing. If you continue, PocoClass will not function.
+                        </p>
+                        <ul style={{ color: '#374151', marginLeft: '12px', lineHeight: '1.6', fontSize: '14px', marginBottom: '12px' }}>
+                          {!validationData?.fields?.poco_score && (
+                            <li className="mb-2"><strong>POCO Score</strong> — required to store the identification score</li>
+                          )}
+                          {!validationData?.tags?.new && (
+                            <li className="mb-2"><strong>NEW</strong> — required to detect documents that need processing</li>
+                          )}
+                          {(!validationData?.tags?.poco_success || !validationData?.tags?.poco_failed) && (
+                            <li className="mb-2"><strong>POCO+ / POCO-</strong> — required to mark successful or failed classification</li>
+                          )}
+                        </ul>
+                        <p className="text-sm text-gray-700">
+                          You will need to create these items manually in Paperless-ngx before PocoClass can operate correctly.
+                        </p>
                       </div>
                     </div>
-                  ) : (
-                    <div style={{
-                      backgroundColor: 'white',
-                      borderRadius: '12px',
-                      padding: '32px',
-                      maxWidth: '500px',
-                      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-                    }}>
-                      <div className="flex items-start gap-3 mb-4">
-                        <AlertCircle className="w-8 h-8 text-red-600 flex-shrink-0 mt-0.5" style={{ animation: 'pulse 2s infinite' }} />
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">Critical: NEW Tag Requirement</h3>
-                          <p className="text-sm text-gray-700 mb-4">
-                            Every document you consume in Paperless <strong>MUST</strong> be manually tagged with the <strong>NEW</strong> tag in Paperless-ngx for PocoClass to process it.
-                          </p>
-                          <div style={{
-                            backgroundColor: '#fef2f2',
-                            border: '1px solid #fecaca',
-                            borderRadius: '8px',
-                            padding: '12px',
-                            marginBottom: '16px'
-                          }}>
-                            <p className="text-sm text-red-900 font-semibold mb-2">Without the NEW tag:</p>
-                            <ul className="text-sm text-red-800 space-y-1 ml-4">
-                              <li>• Documents won't be classified</li>
-                              <li>• Rules won't execute</li>
-                              <li>• The system won't process your documents</li>
-                            </ul>
-                          </div>
-                          <p className="text-xs text-gray-600 italic">
-                            This is a manual requirement in your Paperless workflow. Plan to apply the NEW tag consistently.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() => {
-                            setShowSkipWarning(false);
-                            setSkipWarningConfirmed(false);
-                          }}
-                          style={{
-                            flex: 1,
-                            backgroundColor: '#f3f4f6',
-                            color: '#374151',
-                            border: '1px solid #d1d5db',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          Go Back
-                        </Button>
-                        <Button
-                          onClick={handleContinueToDashboard}
-                          style={{
-                            flex: 1,
-                            backgroundColor: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontWeight: '600'
-                          }}
-                        >
-                          I Confirm, Continue
-                        </Button>
-                      </div>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => setShowSkipWarning(false)}
+                        style={{
+                          flex: 1,
+                          backgroundColor: '#f3f4f6',
+                          color: '#374151',
+                          border: '1px solid #d1d5db',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setShowSkipWarning(false);
+                          handleContinueToDashboard();
+                        }}
+                        style={{
+                          flex: 1,
+                          backgroundColor: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        I Understand, Continue
+                      </Button>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
 
@@ -974,13 +916,20 @@ export default function SetupWizard() {
                       <div>
                         <h3 className="text-lg font-bold text-gray-900 mb-3">Create Missing Items?</h3>
                         <p className="text-sm text-gray-700 mb-3">
-                          PocoClass will create the required fields and tags in your Paperless-ngx instance:
+                          PocoClass will create the following missing items in your Paperless-ngx instance:
                         </p>
-                        <div className="mb-4 ml-4">
-                          <p className="text-sm text-gray-700 mb-2">• Custom fields:</p>
-                          <p className="text-sm text-gray-700 ml-4">– POCO Score</p>
-                          <p className="text-sm text-gray-700 mb-2 mt-2">• Tags:</p>
-                          <p className="text-sm text-gray-700 ml-4">– POCO+, POCO-, NEW</p>
+                        <div className="mb-4">
+                          {!validationData?.fields?.poco_score && (
+                            <p className="text-sm text-gray-700 mb-2">Custom fields: <strong>POCO Score</strong></p>
+                          )}
+                          {((!validationData?.tags?.poco_plus || !validationData?.tags?.poco_minus || !validationData?.tags?.new) || 
+                            (!validationData?.fields?.poco_score)) && (
+                            <p className="text-sm text-gray-700">Tags: {' '}
+                              {validationData?.tags?.poco_plus ? null : <><strong>POCO+</strong>{((!validationData?.tags?.poco_minus || !validationData?.tags?.new)) ? ', ' : ' and '}</>}
+                              {validationData?.tags?.poco_minus ? null : <><strong>POCO-</strong>{(!validationData?.tags?.new) ? ' and ' : ''}</>}
+                              {validationData?.tags?.new ? null : <strong>NEW</strong>}
+                            </p>
+                          )}
                         </div>
                         <p className="text-sm text-gray-700 mb-2">
                           These items are needed for PocoClass to classify documents correctly.
