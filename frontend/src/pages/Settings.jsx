@@ -59,6 +59,9 @@ export default function Settings() {
   const [pocoOcrEnabled, setPocoOcrEnabled] = useState(false);
   const [loadingPocoOcr, setLoadingPocoOcr] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  
+  const [resetStage, setResetStage] = useState(0); // 0: none, 1: first confirmation, 2: second confirmation, 3: final confirmation
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     loadAllSettings();
@@ -251,6 +254,47 @@ export default function Settings() {
       });
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleApplicationReset = async () => {
+    try {
+      setIsResetting(true);
+      const sessionToken = localStorage.getItem('pococlass_session');
+      const response = await fetch(`${API_BASE_URL}/api/system/reset-app`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${sessionToken}` }
+      });
+
+      if (response.ok) {
+        toast({
+          title: 'Application Reset Complete',
+          description: 'The app has been reset to its initial state. Redirecting you to the setup wizard...',
+          duration: 3000,
+        });
+        
+        // Clear local storage
+        localStorage.removeItem('pococlass_session');
+        localStorage.removeItem('theme');
+        localStorage.removeItem('language');
+        
+        // Redirect to setup wizard
+        setTimeout(() => {
+          window.location.href = '/setup';
+        }, 1500);
+      } else {
+        throw new Error('Failed to reset application');
+      }
+    } catch (error) {
+      toast({
+        title: 'Reset Failed',
+        description: error.message || 'Failed to reset the application',
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setIsResetting(false);
+      setResetStage(0);
     }
   };
 
@@ -992,6 +1036,7 @@ export default function Settings() {
     { id: 'appearance', label: t('settings.tabs.appearance'), icon: Palette, adminOnly: false },
     { id: 'dateFormats', label: t('settings.tabs.dateFormats'), icon: Calendar, adminOnly: false },
     { id: 'fieldVisibility', label: t('settings.tabs.fieldVisibility'), icon: FileText, adminOnly: false },
+    { id: 'maintenance', label: 'Maintenance', icon: AlertTriangle, adminOnly: true },
   ];
 
   const isAdmin = currentUser?.role === 'admin';
@@ -1771,6 +1816,56 @@ export default function Settings() {
                 </div>
               )}
 
+              {activeTab === 'maintenance' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Maintenance</h2>
+                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+                      Administrative tools for maintaining your PocoClass installation.
+                    </p>
+                  </div>
+
+                  {/* Application Reset */}
+                  <div className="border rounded-lg p-6" style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-bg-secondary)' }}>
+                    <div className="flex items-start gap-3 mb-4">
+                      <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Application Reset</h3>
+                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+                          Reset the application to its initial installation state. This will permanently delete all rules, settings, and configurations, and return you to the setup wizard. Your Paperless-ngx URL will be preserved.
+                        </p>
+                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+                          After reset, you will need to:
+                        </p>
+                        <ul className="text-sm mb-4 ml-4" style={{ color: 'var(--app-text-secondary)' }}>
+                          <li>• Reconfigure your Paperless-ngx connection</li>
+                          <li>• Recreate all rules and settings</li>
+                          <li>• This action cannot be undone</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => setResetStage(1)}
+                      disabled={!isAdmin || isResetting}
+                      style={{
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        cursor: isAdmin ? 'pointer' : 'not-allowed',
+                        padding: '8px 16px'
+                      }}
+                    >
+                      {isResetting ? 'Resetting...' : 'Reset Application'}
+                    </Button>
+                    {!isAdmin && (
+                      <p className="mt-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                        Only administrators can reset the application
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'validation' && (
                 <div className="space-y-6">
                   <div>
@@ -2293,6 +2388,157 @@ export default function Settings() {
         onConfirm={handleCreateFieldConfirm}
         isCreating={isCreatingField}
       />
+
+      {/* Triple Confirmation for Reset */}
+      {resetStage > 0 && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          {resetStage === 1 && (
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '32px',
+              maxWidth: '500px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div className="flex items-start gap-3 mb-4">
+                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">⚠️ Reset Application?</h3>
+                  <p className="text-sm text-gray-700 mb-3">
+                    This will permanently delete all rules, settings, and configurations. The application will restart and return you to the initial setup wizard.
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    Are you sure you want to continue?
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setResetStage(0)}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#f3f4f6',
+                    color: '#374151',
+                    border: '1px solid #d1d5db',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => setResetStage(2)}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  I Understand
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {resetStage === 2 && (
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '32px',
+              maxWidth: '500px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div className="flex items-start gap-3 mb-4">
+                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" style={{ animation: 'pulse 2s infinite' }} />
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">Final Warning</h3>
+                  <p className="text-sm text-gray-700 mb-4">
+                    Once reset, you will need to:
+                  </p>
+                  <ul className="text-sm text-gray-700 space-y-2 mb-4 ml-4">
+                    <li>• Reconfigure your Paperless-ngx connection</li>
+                    <li>• Recreate all rules and settings</li>
+                    <li>• This action cannot be undone</li>
+                  </ul>
+                  <p className="text-sm font-semibold text-red-700 mb-4">
+                    Continue only if you absolutely want to reset the application.
+                  </p>
+                  <p className="text-sm text-gray-700 mb-3">
+                    Type <strong>RESET</strong> below to confirm you want to permanently reset the application:
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Type RESET to confirm"
+                    id="reset-confirmation"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      marginBottom: '16px',
+                      fontFamily: 'monospace',
+                      fontSize: '14px'
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setResetStage(0)}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#f3f4f6',
+                    color: '#374151',
+                    border: '1px solid #d1d5db',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    const confirmText = document.getElementById('reset-confirmation')?.value || '';
+                    if (confirmText === 'RESET') {
+                      handleApplicationReset();
+                    } else {
+                      toast({
+                        title: 'Invalid Confirmation',
+                        description: 'Please type RESET exactly to confirm',
+                        variant: 'destructive',
+                        duration: 3000
+                      });
+                    }
+                  }}
+                  disabled={isResetting}
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    cursor: isResetting ? 'not-allowed' : 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  {isResetting ? 'Resetting...' : 'Confirm Reset'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
