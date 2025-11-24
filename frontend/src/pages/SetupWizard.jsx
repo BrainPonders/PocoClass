@@ -24,6 +24,7 @@ export default function SetupWizard() {
   const [showSkipWarning, setShowSkipWarning] = useState(false);
   const [skipWarningConfirmed, setSkipWarningConfirmed] = useState(false);
   const [showCreateConfirmation, setShowCreateConfirmation] = useState(false);
+  const [showNewTagConfirmation, setShowNewTagConfirmation] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -162,9 +163,8 @@ export default function SetupWizard() {
         throw new Error('Failed to complete setup');
       }
 
-      // Navigate to dashboard
-      navigate('/');
-      window.location.reload();
+      // Show NEW tag confirmation dialog
+      setShowNewTagConfirmation(true);
     } catch (error) {
       console.error('Error completing setup:', error);
       toast({
@@ -174,6 +174,12 @@ export default function SetupWizard() {
         duration: 5000,
       });
     }
+  };
+
+  const handleConfirmNewTagMessage = () => {
+    setShowNewTagConfirmation(false);
+    navigate('/');
+    window.location.reload();
   };
 
   return (
@@ -731,6 +737,80 @@ export default function SetupWizard() {
                 )}
               </div>
 
+              {showNewTagConfirmation && (
+                <div style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1000
+                }}>
+                  <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    padding: '48px',
+                    maxWidth: '600px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                    textAlign: 'center'
+                  }}>
+                    <div className="mb-6">
+                      <Info className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                      {validationData?.valid ? (
+                        <>
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">Important Reminder</h3>
+                          <p className="text-base text-gray-700 mb-4">
+                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
+                          </p>
+                          <p className="text-base text-gray-700 mb-4">
+                            PocoClass depends on this tag to identify and process new documents automatically.
+                          </p>
+                        </>
+                      ) : !validationData?.tags?.new ? (
+                        <>
+                          <h3 className="text-2xl font-bold text-red-600 mb-4">Warning: NEW Tag Missing</h3>
+                          <p className="text-base text-gray-700 mb-4">
+                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
+                          </p>
+                          <p className="text-base text-gray-700 mb-4">
+                            PocoClass depends on this tag to identify and process new documents automatically.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">Important Reminder</h3>
+                          <p className="text-base text-gray-700 mb-4">
+                            Make sure Paperless-ngx applies the <strong>NEW</strong> tag to all newly consumed documents.
+                          </p>
+                          <p className="text-base text-gray-700 mb-4">
+                            PocoClass depends on this tag to identify and process new documents automatically.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      onClick={handleConfirmNewTagMessage}
+                      style={{
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: '12px 32px',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        borderRadius: '6px'
+                      }}
+                    >
+                      I Understand, Continue
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {showSkipWarning && (
                 <div style={{
                   position: 'fixed',
@@ -755,17 +835,21 @@ export default function SetupWizard() {
                       <div className="flex items-start gap-3 mb-4">
                         <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
                         <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">⚠️ You are about to continue without required items</h3>
-                          <p className="text-sm text-gray-700 mb-3">
-                            If you proceed without creating the missing custom fields and tags:
+                          <h3 className="text-lg font-bold text-gray-900 mb-3">Continue Without Required Items?</h3>
+                          <p className="text-sm text-gray-700 mb-2">
+                            Some required fields and tags are missing. If you continue without creating them:
                           </p>
-                          <ul className="text-sm text-gray-700 space-y-2 mb-4 ml-4">
-                            <li>• PocoClass rules will not function correctly without the POCO Score custom field.</li>
-                            <li>• Document classification will fail without the POCO+, POCO-, and NEW tags.</li>
-                            <li>• You will need to create these items manually in Paperless-ngx before using PocoClass.</li>
-                          </ul>
+                          <p className="text-sm text-gray-700 mb-2">
+                            PocoClass rules will not work without the POCO Score custom field.
+                          </p>
+                          <p className="text-sm text-gray-700 mb-2">
+                            Document classification will fail without the POCO+, POCO-, and NEW tags.
+                          </p>
+                          <p className="text-sm text-gray-700 mb-4">
+                            You will need to create these items yourself in Paperless-ngx before PocoClass can operate correctly.
+                          </p>
                           <p className="text-sm text-gray-700">
-                            It is strongly recommended to click Create Missing Items instead.
+                            It is strongly recommended to choose Create Missing Items instead.
                           </p>
                         </div>
                       </div>

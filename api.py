@@ -2816,6 +2816,62 @@ try:
 except Exception as e:
     logger.warning(f"Startup cleanup failed (non-critical): {e}")
 
+def table_exists(cursor, table_name):
+    """Check if a table exists in the database"""
+    try:
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        return cursor.fetchone() is not None
+    except:
+        return False
+
+@app.route('/api/system/reset-app', methods=['POST'])
+@require_admin
+def reset_application():
+    """Reset application to initial installation state (admin only)"""
+    try:
+        # Clear all sessions first
+        db.clear_all_sessions()
+        
+        # Reset setup_completed flag
+        db.set_config('setup_completed', '0')
+        
+        # Delete all rules (cascade deletes related records)
+        conn = db.get_connection()
+        cursor = conn.cursor()
+        
+        # Delete all data while preserving database structure
+        # Check each table exists before deleting (gracefully handle missing tables)
+        tables_to_clear = [
+            'classification_runs',
+            'rule_patterns',
+            'rules',
+            'rule_sets',
+            'sessions',
+            'app_logs'
+        ]
+        
+        for table in tables_to_clear:
+            if table_exists(cursor, table):
+                cursor.execute(f"DELETE FROM {table}")
+        
+        # Clear app_settings but preserve paperless_url
+        if table_exists(cursor, 'app_settings'):
+            cursor.execute("DELETE FROM app_settings WHERE key NOT IN ('paperless_url')")
+        
+        conn.commit()
+        conn.close()
+        
+        logger.info('Application reset by admin', extra={
+            'level': 'warning',
+            'detail': f'Application reset to initial state by user {request.current_user["user_id"]}',
+            'source': 'system'
+        })
+        
+        return jsonify({'success': True, 'message': 'Application reset complete'})
+    except Exception as e:
+        logger.error(f"Error resetting application: {e}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # In development, run with debug mode on port 8000
     # Frontend Vite runs on port 5000 and proxies API requests to 8000
