@@ -783,15 +783,6 @@ function LayoutContent({ children }) {
                         <li><strong>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
                       </ul>
                       <p style={{ marginTop: '12px' }}>
-                        <button 
-                          onClick={() => window.location.href = createPageUrl('Settings')}
-                          className="btn btn-primary btn-sm"
-                          style={{ marginRight: '8px' }}
-                        >
-                          Configure Required Fields →
-                        </button>
-                      </p>
-                      <p>
                         Custom fields and tag requirements are managed in{' '}
                         <button 
                           onClick={() => window.location.href = createPageUrl('Settings')}
@@ -811,26 +802,15 @@ function LayoutContent({ children }) {
                         Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.
                       </p>
                       <p>
-                        In most cases, automatic synchronization handles all data consistency needs. Manual synchronization is available in Settings → System → Paperless Datafield Synchronisation if you need to force an immediate update, but this is rarely required.
-                      </p>
-                      <p>
+                        In most cases, automatic synchronization handles all data consistency needs. Manual synchronization is available through{' '}
                         <button 
                           onClick={() => window.location.href = createPageUrl('Settings')}
                           className="btn btn-primary btn-sm"
                         >
-                          Manage Synchronization →
+                          Manage Synchronization
                         </button>
+                        {' '}if you need to force an immediate update, but this is rarely required.
                       </p>
-
-                      <h4>The Sync Process</h4>
-                      <p><strong>Access at</strong>: Settings → System → Paperless Datafield Synchronisation</p>
-                      <ul>
-                        <li><strong>Step 1: Authenticate</strong> - Establish connection to Paperless using configured credentials</li>
-                        <li><strong>Step 2: Retrieve Metadata</strong> - Fetch all tags, correspondents, document types, and custom fields from Paperless</li>
-                        <li><strong>Step 3: Update Local Cache</strong> - Replace PocoClass's internal cache with current Paperless state</li>
-                        <li><strong>Step 4: Detect Schema Changes</strong> - Identify new, deleted, or renamed items since last sync</li>
-                        <li><strong>Step 5: Reconcile Rules</strong> - Validate existing rules against updated schema and flag any orphaned field references</li>
-                      </ul>
                     </div>
 
                     <div className="guide-section">
