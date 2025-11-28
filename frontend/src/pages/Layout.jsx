@@ -695,23 +695,63 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>Understanding Paperless-ngx</h3>
+                      <h3>How PocoClass Works with Paperless</h3>
                       <p>
-                        Paperless-ngx is a document management system that stores and organizes your physical or digital documents. 
-                        It's like a digital filing cabinet with powerful search capabilities.
+                        PocoClass works alongside Paperless to automatically organize your documents. Here's how it all fits together:
                       </p>
-                      <h4>Key Paperless Concepts</h4>
+                      
+                      <h4>The Simple Flow</h4>
+                      <div className="guide-workflow">
+                        <div className="guide-step">
+                          <div className="guide-step-number">1</div>
+                          <div className="guide-step-content">
+                            <strong>Document Arrives in Paperless</strong>
+                            <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                              You scan or upload a document. Paperless extracts the text (OCR) so it can be searched.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="guide-step">
+                          <div className="guide-step-number">2</div>
+                          <div className="guide-step-content">
+                            <strong>PocoClass Analyzes It</strong>
+                            <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                              PocoClass checks the document against your rules. It looks at the text, filename, and other information to figure out what type of document it is.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="guide-step">
+                          <div className="guide-step-number">3</div>
+                          <div className="guide-step-content">
+                            <strong>PocoClass Assigns Metadata</strong>
+                            <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                              If a match is found, PocoClass automatically adds tags, correspondents, document type, and other details to the document in Paperless.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="guide-step">
+                          <div className="guide-step-number">4</div>
+                          <div className="guide-step-content">
+                            <strong>Document is Organized</strong>
+                            <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                              Your document now has the right classification. It appears in the right folder and is easy to find.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <h4>What PocoClass Can Do</h4>
                       <ul>
-                        <li><strong>Documents</strong>: Each document you scan or upload becomes a searchable entry in Paperless. When you extract text from a PDF (OCR), Paperless makes that text searchable.</li>
-                        <li><strong>Correspondent</strong>: Who the document is from (e.g., "Financial Institution", "Government Agency")</li>
-                        <li><strong>Document Type</strong>: What kind of document it is (e.g., "Invoice", "Receipt", "Letter")</li>
-                        <li><strong>Tags</strong>: Labels you can apply (e.g., "Important", "Finance", "2024")</li>
-                        <li><strong>Custom Fields</strong>: Extra data specific to your needs (e.g., "Invoice Amount", "Account Number")</li>
-                        <li><strong>OCR (Optical Character Recognition)</strong>: When you scan a document, Paperless uses OCR to extract the text from images so you can search for it. The extracted text is what PocoClass analyzes to make classification decisions.</li>
+                        <li><strong>Assign Tags</strong> - Automatically add labels like "Finance", "Important", or "2024"</li>
+                        <li><strong>Set Correspondent</strong> - Mark who the document is from (e.g., "Bank", "Insurance Company")</li>
+                        <li><strong>Set Document Type</strong> - Classify what kind of document it is (e.g., "Invoice", "Receipt")</li>
+                        <li><strong>Fill Custom Fields</strong> - Add specific details like account numbers or dates</li>
+                        <li><strong>Run Automatically</strong> - Process new documents without any action from you</li>
                       </ul>
-                      <p>
-                        For PocoClass to work, you need at least one custom field called <strong>"POCO Score"</strong> which stores classification confidence scores.
-                      </p>
+
+                      <div className="guide-highlight">
+                        <strong>Note:</strong> PocoClass stores a confidence score (called "POCO Score") in a custom field. This score shows how confident PocoClass is about its classification. A score of 100 means very confident, 0 means not confident at all.
+                      </div>
                     </div>
 
                     <div className="guide-section">
