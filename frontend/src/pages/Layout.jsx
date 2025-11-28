@@ -765,28 +765,38 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>How PocoClass Syncs with Paperless</h3>
+                      <h3>Setup Requirements & Data Synchronization</h3>
                       <p>
-                        Syncing is the process of keeping PocoClass updated with the latest information from Paperless. 
-                        Since things change in Paperless (you create new tags, delete custom fields, etc.), PocoClass needs to stay in sync 
-                        so it knows what's currently available.
+                        Before PocoClass can work, you need to set up a few things in your Paperless system. These required fields allow PocoClass to track its work and store important information.
                       </p>
-                      <h4>The Sync Process</h4>
-                      <p><strong>Where to find it</strong>: Settings → System → Paperless Datafield Synchronisation</p>
+
+                      <h4>Required Setup</h4>
                       <ul>
-                        <li><strong>Step 1: Connect to Paperless</strong> - Provide your Paperless URL and admin credentials</li>
-                        <li><strong>Step 2: Fetch Current Data</strong> - PocoClass retrieves all tags, correspondents, document types, and custom fields</li>
-                        <li><strong>Step 3: Cache the Data</strong> - PocoClass stores this information locally for fast access</li>
-                        <li><strong>Step 4: Detect Changes</strong> - PocoClass identifies new or deleted items</li>
-                        <li><strong>Step 5: Update Settings</strong> - Field visibility settings are updated to reflect current availability</li>
+                        <li><strong>POCO Score (Custom Field)</strong> - A numeric field where PocoClass stores its confidence scores for each classification decision</li>
+                        <li><strong>NEW Tag</strong> - A tag PocoClass uses to mark unclassified documents. You can filter for documents with this tag to review PocoClass decisions before they're finalized</li>
+                        <li><strong>POCO+ Tag (Optional)</strong> - Mark documents where PocoClass got the classification right. This helps track accuracy</li>
+                        <li><strong>POCO- Tag (Optional)</strong> - Mark documents where PocoClass got the classification wrong. This helps improve your rules</li>
                       </ul>
-                      <h4>When Should You Sync?</h4>
+
+                      <h4>Why Synchronization Matters</h4>
+                      <p>
+                        PocoClass doesn't constantly query Paperless for updated information. Instead, it <strong>caches</strong> your Paperless data locally. This approach keeps things fast and reduces unnecessary API calls, which means less load on your Paperless system. Think of it like PocoClass taking a "snapshot" of your tags, correspondents, and custom fields, then using that snapshot until you tell it the data has changed.
+                      </p>
+
+                      <h4>When to Sync</h4>
+                      <p>Sync whenever you make changes to your Paperless structure:</p>
                       <ul>
-                        <li>After you create new tags or custom fields in Paperless</li>
-                        <li>After you delete tags or custom fields from Paperless</li>
+                        <li>After you create new tags or custom fields</li>
+                        <li>After you delete tags or custom fields</li>
+                        <li>After you rename any tags or fields</li>
                         <li>When PocoClass isn't recognizing your Paperless data</li>
-                        <li>Roughly once per day if you actively manage your Paperless configuration</li>
                       </ul>
+
+                      <h4>How to Sync</h4>
+                      <p><strong>Where to find it</strong>: Settings → System → Paperless Datafield Synchronisation</p>
+                      <p>
+                        Click the sync button to refresh PocoClass's cached information. This takes a quick snapshot of your current Paperless setup, detects any changes, and updates PocoClass's settings. The process typically completes in seconds, keeping your system responsive while maintaining up-to-date data.
+                      </p>
                     </div>
 
                     <div className="guide-section">
