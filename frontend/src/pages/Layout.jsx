@@ -765,47 +765,37 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>Setup Requirements & Data Synchronization</h3>
-                      <p>
-                        Before PocoClass can work, you need to set up a few things in your Paperless system. These required fields allow PocoClass to track its work and store important information.
-                      </p>
-
-                      <h4>Required Setup</h4>
-                      <p>Configure these fields in <strong>Settings → Setup → Required Fields</strong></p>
-                      <p><strong>Custom Fields:</strong></p>
-                      <ul>
-                        <li><strong>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
-                        <li><strong>POCO OCR (Optional)</strong> - Stores the OCR-specific confidence score component for analysis and troubleshooting</li>
+                      <h3>Setup & Configuration</h3>
+                      
+                      <h4>Required Fields</h4>
+                      <p>Configure the required custom fields and tags that PocoClass needs to function:</p>
+                      <div style={{ margin: '12px 0' }}>
+                        <button 
+                          onClick={() => window.location.href = createPageUrl('Settings')}
+                          className="btn btn-primary btn-sm"
+                          style={{ marginBottom: '16px' }}
+                        >
+                          Configure Required Fields →
+                        </button>
+                      </div>
+                      <ul style={{ fontSize: '0.9rem' }}>
+                        <li><strong>POCO Score (Custom Field)</strong> - Confidence score for each classification</li>
+                        <li><strong>NEW Tag</strong> - Marks documents for processing</li>
+                        <li><strong>POCO+ Tag</strong> - Successful classifications</li>
+                        <li><strong>POCO- Tag</strong> - Below-threshold classifications</li>
+                        <li><strong>POCO OCR (Optional)</strong> - OCR-specific scoring</li>
                       </ul>
-                      <p style={{ marginTop: '12px' }}><strong>Tags:</strong></p>
-                      <ul>
-                        <li><strong>NEW Tag (Required)</strong> - Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation</li>
-                        <li><strong>POCO+ Tag (Required)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
-                        <li><strong>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
-                      </ul>
 
-                      <h4>Data Synchronization Architecture</h4>
-                      <p>
-                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these metadata references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
-                      </p>
-
-                      <h4>Automatic Synchronization</h4>
-                      <p>
-                        Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.
-                      </p>
-                      <p>
-                        In most cases, automatic synchronization handles all data consistency needs. Manual synchronization is available in Settings → System → Paperless Datafield Synchronisation if you need to force an immediate update, but this is rarely required.
-                      </p>
-
-                      <h4>The Sync Process</h4>
-                      <p><strong>Access at</strong>: Settings → System → Paperless Datafield Synchronisation</p>
-                      <ul>
-                        <li><strong>Step 1: Authenticate</strong> - Establish connection to Paperless using configured credentials</li>
-                        <li><strong>Step 2: Retrieve Metadata</strong> - Fetch all tags, correspondents, document types, and custom fields from Paperless</li>
-                        <li><strong>Step 3: Update Local Cache</strong> - Replace PocoClass's internal cache with current Paperless state</li>
-                        <li><strong>Step 4: Detect Schema Changes</strong> - Identify new, deleted, or renamed items since last sync</li>
-                        <li><strong>Step 5: Reconcile Rules</strong> - Validate existing rules against updated schema and flag any orphaned field references</li>
-                      </ul>
+                      <h4>Data Synchronization</h4>
+                      <p>PocoClass caches Paperless metadata locally to minimize API overhead. Without caching, each document could require hundreds of API calls. Synchronization happens automatically when you return to the application, detecting schema changes transparently.</p>
+                      <div style={{ margin: '12px 0' }}>
+                        <button 
+                          onClick={() => window.location.href = createPageUrl('Settings')}
+                          className="btn btn-primary btn-sm"
+                        >
+                          Manage Synchronization →
+                        </button>
+                      </div>
                     </div>
 
                     <div className="guide-section">
