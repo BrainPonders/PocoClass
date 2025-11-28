@@ -734,7 +734,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-content">
                             <strong>Document is Organized</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              Your document now has the right classification. It appears in the right folder and is easy to find.
+                              Your document now has the right classification and is easy to find. You can also use Paperless workflows to do additional processing based on these classifications, like automatically moving documents to specific folders.
                             </p>
                           </div>
                         </div>
