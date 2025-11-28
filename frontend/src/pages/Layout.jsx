@@ -740,14 +740,23 @@ function LayoutContent({ children }) {
                         </div>
                       </div>
 
-                      <h4>What PocoClass Can Do</h4>
+                      <p>
+                        After Paperless finishes consuming a document, PocoClass is triggered in the background. It checks for new documents every time Paperless imports something and applies your rules without any manual action required. This ensures that both bulk imports and daily new documents are classified correctly and consistently—always using your latest rules.
+                      </p>
+
+                      <h4>What PocoClass Can Edit in Paperless</h4>
+                      <p>
+                        PocoClass updates your documents directly in Paperless once a rule matches. Depending on your rule configuration, PocoClass can set or update the following fields:
+                      </p>
                       <ul>
-                        <li><strong>Assign Tags</strong> - Automatically add labels like "Finance", "Important", or "2024"</li>
-                        <li><strong>Set Correspondent</strong> - Mark who the document is from (e.g., "Bank", "Insurance Company")</li>
-                        <li><strong>Set Document Type</strong> - Classify what kind of document it is (e.g., "Invoice", "Receipt")</li>
-                        <li><strong>Fill Custom Fields</strong> - Add specific details like account numbers or dates</li>
-                        <li><strong>Run Automatically</strong> - Process new documents without any action from you</li>
+                        <li><strong>Correspondent</strong> - Who the document is from (e.g., a bank, insurer, or government agency)</li>
+                        <li><strong>Document Type</strong> - The category of the document (e.g., invoice, statement, receipt, contract)</li>
+                        <li><strong>Tags</strong> - Labels that help group or filter documents (e.g., "Finance", "Tax", "2024")</li>
+                        <li><strong>Custom Fields</strong> - Additional information extracted from the document, such as invoice numbers, reference codes, dates, or account numbers</li>
                       </ul>
+                      <p>
+                        All these updates happen within Paperless itself, meaning your library stays organized, searchable, and consistent.
+                      </p>
 
                       <div className="guide-highlight">
                         <strong>Note:</strong> PocoClass stores a confidence score (called "POCO Score") in a custom field. This score shows how confident PocoClass is about its classification. A score of 100 means very confident, 0 means not confident at all.
