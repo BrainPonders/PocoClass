@@ -725,7 +725,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-content">
                             <strong>PocoClass Assigns Metadata</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              If a match is found, PocoClass automatically adds tags, correspondents, document type, and other details to the document in Paperless.
+                              If a match is found, PocoClass automatically applies the metadata you specified in your rule—like tags, correspondents, document type, and other details—directly to the document in Paperless.
                             </p>
                           </div>
                         </div>
