@@ -716,7 +716,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-content">
                             <strong>PocoClass Analyzes It</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              PocoClass checks the document against your personal defined rules. It looks at the text, filename, and other information, then calculates a confidence score for each possible match. The scoring system evaluates how well the document fits each rule.
+                              PocoClass checks the document against your personal defined rules. It looks at the text, filename, and other information, then calculates a confidence score (POCO Score) for each possible match. The scoring system evaluates how well the document fits each rule.
                             </p>
                           </div>
                         </div>
@@ -809,7 +809,6 @@ function LayoutContent({ children }) {
                         >
                           System
                         </button>
-                        {'.'}
                       </p>
                     </div>
 
