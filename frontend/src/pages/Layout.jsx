@@ -771,6 +771,7 @@ function LayoutContent({ children }) {
                       </p>
 
                       <h4>Required Setup</h4>
+                      <p>Configure these fields in <strong>Settings → Setup → Required Fields</strong></p>
                       <p><strong>Custom Fields:</strong></p>
                       <ul>
                         <li><strong>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
