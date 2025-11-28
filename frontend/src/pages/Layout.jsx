@@ -716,7 +716,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-content">
                             <strong>PocoClass Analyzes It</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              PocoClass checks the document against your rules. It looks at the text, filename, and other information to figure out what type of document it is.
+                              PocoClass checks the document against your personal defined rules. It looks at the text, filename, and other information to figure out what type of document it is.
                             </p>
                           </div>
                         </div>
