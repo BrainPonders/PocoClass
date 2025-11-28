@@ -772,31 +772,36 @@ function LayoutContent({ children }) {
 
                       <h4>Required Setup</h4>
                       <ul>
-                        <li><strong>POCO Score (Custom Field)</strong> - A numeric field where PocoClass stores its confidence scores for each classification decision</li>
-                        <li><strong>NEW Tag</strong> - A tag PocoClass uses to mark unclassified documents. You can filter for documents with this tag to review PocoClass decisions before they're finalized</li>
-                        <li><strong>POCO+ Tag (Optional)</strong> - Mark documents where PocoClass got the classification right. This helps track accuracy</li>
-                        <li><strong>POCO- Tag (Optional)</strong> - Mark documents where PocoClass got the classification wrong. This helps improve your rules</li>
+                        <li><strong>POCO Score (Custom Field, Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
+                        <li><strong>NEW Tag (Required)</strong> - Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation</li>
+                        <li><strong>POCO+ Tag (Optional)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
+                        <li><strong>POCO- Tag (Optional)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
+                        <li><strong>POCO OCR (Custom Field, Optional)</strong> - Stores the OCR-specific confidence score component for analysis and troubleshooting</li>
                       </ul>
 
-                      <h4>Why Synchronization Matters</h4>
+                      <h4>Data Synchronization Architecture</h4>
                       <p>
-                        PocoClass doesn't constantly query Paperless for updated information. Instead, it <strong>caches</strong> your Paperless data locally. This approach keeps things fast and reduces unnecessary API calls, which means less load on your Paperless system. Think of it like PocoClass taking a "snapshot" of your tags, correspondents, and custom fields, then using that snapshot until you tell it the data has changed.
+                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
                       </p>
 
                       <h4>When to Sync</h4>
-                      <p>Sync whenever you make changes to your Paperless structure:</p>
+                      <p>Initiate synchronization when your Paperless schema changes:</p>
                       <ul>
-                        <li>After you create new tags or custom fields</li>
-                        <li>After you delete tags or custom fields</li>
-                        <li>After you rename any tags or fields</li>
-                        <li>When PocoClass isn't recognizing your Paperless data</li>
+                        <li>After creating or deleting tags and custom fields</li>
+                        <li>After renaming existing fields</li>
+                        <li>When rule assignments reference unavailable fields in Paperless</li>
+                        <li>Periodically during active schema management to ensure cached state alignment</li>
                       </ul>
 
-                      <h4>How to Sync</h4>
-                      <p><strong>Where to find it</strong>: Settings → System → Paperless Datafield Synchronisation</p>
-                      <p>
-                        Click the sync button to refresh PocoClass's cached information. This takes a quick snapshot of your current Paperless setup, detects any changes, and updates PocoClass's settings. The process typically completes in seconds, keeping your system responsive while maintaining up-to-date data.
-                      </p>
+                      <h4>The Sync Process</h4>
+                      <p><strong>Access at</strong>: Settings → System → Paperless Datafield Synchronisation</p>
+                      <ul>
+                        <li><strong>Step 1: Authenticate</strong> - Establish connection to Paperless using configured credentials</li>
+                        <li><strong>Step 2: Retrieve Metadata</strong> - Fetch all tags, correspondents, document types, and custom fields from Paperless</li>
+                        <li><strong>Step 3: Update Local Cache</strong> - Replace PocoClass's internal cache with current Paperless state</li>
+                        <li><strong>Step 4: Detect Schema Changes</strong> - Identify new, deleted, or renamed items since last sync</li>
+                        <li><strong>Step 5: Reconcile Rules</strong> - Validate existing rules against updated schema and flag any orphaned field references</li>
+                      </ul>
                     </div>
 
                     <div className="guide-section">
