@@ -802,14 +802,14 @@ function LayoutContent({ children }) {
                         Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.
                       </p>
                       <p>
-                        In most cases, automatic synchronization handles all data consistency needs. Manual synchronization is available through{' '}
+                        In most cases, automatic synchronization handles all data consistency needs. If you need to force an immediate update, manual synchronization is available through the{' '}
                         <button 
                           onClick={() => window.location.href = createPageUrl('Settings')}
                           className="btn btn-primary btn-sm"
                         >
-                          Manage Synchronization
+                          System
                         </button>
-                        {' '}if you need to force an immediate update, but this is rarely required.
+                        {' '}page, but this is rarely required.
                       </p>
                     </div>
 
