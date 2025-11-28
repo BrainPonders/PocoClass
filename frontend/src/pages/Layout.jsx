@@ -771,15 +771,6 @@ function LayoutContent({ children }) {
                       </p>
 
                       <h4>Required Setup</h4>
-                      <p>
-                        <button 
-                          onClick={() => window.location.href = createPageUrl('Settings')}
-                          className="btn btn-primary btn-sm"
-                          style={{ marginRight: '8px' }}
-                        >
-                          Configure Required Fields →
-                        </button>
-                      </p>
                       <p><strong>Custom Fields:</strong></p>
                       <ul>
                         <li><strong>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
@@ -791,6 +782,24 @@ function LayoutContent({ children }) {
                         <li><strong>POCO+ Tag (Required)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
                         <li><strong>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
                       </ul>
+                      <p style={{ marginTop: '12px' }}>
+                        <button 
+                          onClick={() => window.location.href = createPageUrl('Settings')}
+                          className="btn btn-primary btn-sm"
+                          style={{ marginRight: '8px' }}
+                        >
+                          Configure Required Fields →
+                        </button>
+                      </p>
+                      <p>
+                        Custom fields and tag requirements are managed in{' '}
+                        <button 
+                          onClick={() => window.location.href = createPageUrl('Settings')}
+                          className="btn btn-primary btn-sm"
+                        >
+                          Data Validation
+                        </button>
+                      </p>
 
                       <h4>Data Synchronization Architecture</h4>
                       <p>
