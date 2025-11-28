@@ -786,7 +786,7 @@ function LayoutContent({ children }) {
 
                       <h4>Data Synchronization Architecture</h4>
                       <p>
-                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
+                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these metadata references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
                       </p>
 
                       <h4>Automatic Synchronization</h4>
