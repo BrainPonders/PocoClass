@@ -707,7 +707,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-content">
                             <strong>Document Arrives in Paperless</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              You scan or upload a document. Paperless extracts the text (OCR) so it can be searched. Once ready, Paperless automatically notifies PocoClass that the document is available for analysis.
+                              You scan or upload a document. Paperless extracts the text (OCR) so it can be searched. Paperless automatically notifies PocoClass that one or more new documents are available for analysis.
                             </p>
                           </div>
                         </div>
