@@ -740,9 +740,10 @@ function LayoutContent({ children }) {
                         </div>
                       </div>
 
-                      <p>
-                        After Paperless finishes consuming a document, PocoClass is triggered in the background. It checks for new documents every time Paperless imports something and applies your rules without any manual action required. This ensures that both bulk imports and daily new documents are classified correctly and consistently—always using your latest rules.
-                      </p>
+                      <div className="guide-highlight">
+                        <strong>Automatic Background Processing</strong>
+                        <p>PocoClass is triggered automatically whenever Paperless finishes consuming documents. It applies your rules without any manual action required, ensuring consistent classification for bulk imports and daily new documents.</p>
+                      </div>
 
                       <h4>What PocoClass Can Edit in Paperless</h4>
                       <p>
