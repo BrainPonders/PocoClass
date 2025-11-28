@@ -784,14 +784,13 @@ function LayoutContent({ children }) {
                         PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
                       </p>
 
-                      <h4>When to Sync</h4>
-                      <p>Initiate synchronization when your Paperless schema changes:</p>
-                      <ul>
-                        <li>After creating or deleting tags and custom fields</li>
-                        <li>After renaming existing fields</li>
-                        <li>When rule assignments reference unavailable fields in Paperless</li>
-                        <li>Periodically during active schema management to ensure cached state alignment</li>
-                      </ul>
+                      <h4>Automatic Synchronization</h4>
+                      <p>
+                        Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.
+                      </p>
+                      <p>
+                        In most cases, automatic synchronization handles all data consistency needs. Manual synchronization is available in Settings → System → Paperless Datafield Synchronisation if you need to force an immediate update, but this is rarely required.
+                      </p>
 
                       <h4>The Sync Process</h4>
                       <p><strong>Access at</strong>: Settings → System → Paperless Datafield Synchronisation</p>
