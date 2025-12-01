@@ -918,109 +918,135 @@ function LayoutContent({ children }) {
                     <div className="guide-section">
                       <h3>Building Rules: The 6-Step Wizard</h3>
                       <p>
-                        A "rule" is a set of instructions that tells PocoClass: "If a document looks like THIS, classify it as THAT."
+                        A rule tells PocoClass: "If a document contains these patterns, classify it like this."
+                      </p>
+                      <p>
+                        The rule builder wizard guides you step by step through defining how a document should be identified and what metadata should be assigned when it matches.
                       </p>
                       
-                      <h4>Step 1: Basic Information</h4>
-                      <ul>
-                        <li><strong>Rule Name</strong>: Give your rule a meaningful name (e.g., "Bank Statements")</li>
-                        <li><strong>Rule ID</strong>: A unique identifier for the rule (auto-generated, but you can customize it)</li>
-                        <li><strong>Description</strong>: Optional notes about what this rule does</li>
-                      </ul>
-
-                      <h4>Step 2: OCR Pattern Matching</h4>
+                      <h4>Step 1 — Basic Information</h4>
                       <p>
-                        OCR patterns are text strings you're looking for in the document's extracted text. 
-                        Think of it as: "Does this document mention specific keywords or patterns?"
+                        Give your rule a clear identity:
                       </p>
+                      <ul>
+                        <li><strong>Rule Name</strong> – A descriptive, human-friendly name (e.g., Bank Statements, Tax Letters)</li>
+                        <li><strong>Rule ID</strong> – A unique identifier automatically generated. You may customize it for readability</li>
+                        <li><strong>Description</strong> – Optional notes to remind yourself what the rule does</li>
+                      </ul>
+                      <p>
+                        This helps keep your rules organized, especially once you build many of them.
+                      </p>
+
+                      <h4>Step 2 — OCR Pattern Matching</h4>
+                      <p>
+                        In this step you define the text patterns PocoClass should look for in the OCR text extracted from the document.
+                      </p>
+                      <p><strong>What you can match</strong>:</p>
+                      <ul>
+                        <li>Organization names</li>
+                        <li>Keywords like Invoice, Statement, Receipt</li>
+                        <li>Reference numbers</li>
+                        <li>Dates or short phrases unique to a document format</li>
+                      </ul>
                       <p><strong>How it works</strong>:</p>
                       <ul>
-                        <li>Enter a search pattern (can be a simple word or a complex regular expression)</li>
-                        <li>Set how many OCR patterns must match (all, any, etc.)</li>
-                        <li>Adjust the <strong>OCR threshold</strong> (default 75%) - at least 75% of your OCR patterns must match</li>
+                        <li>Add 3 to 10 OCR patterns</li>
+                        <li>Choose how they must match (ALL / ANY / logic groups)</li>
+                        <li>Set the OCR Threshold (default: 75%) – this determines how many patterns must match before PocoClass considers the rule valid</li>
                       </ul>
-                      <p><strong>Example</strong>:</p>
-                      <ul>
-                        <li>Pattern 1: <code>/Bank Statement/i</code> (case-insensitive match)</li>
-                        <li>Pattern 2: <code>/IBAN/i</code></li>
-                        <li>If both patterns match, this could be a bank document</li>
-                      </ul>
+                      <p>
+                        PocoClass only continues to filename and metadata evaluation if the OCR threshold is met. (See the scoring section for details.)
+                      </p>
+                      <p><strong>Regex Support</strong></p>
+                      <p>
+                        You may use simple text patterns or more advanced regular expressions (regex).
+                      </p>
                       <div className="guide-highlight">
-                        <strong>What are Regular Expressions?</strong>
-                        <p>Regular expressions (regex) are a way to describe text patterns. The <code>/pattern/flags</code> format means:</p>
-                        <ul>
-                          <li><code>/</code> marks the start and end</li>
-                          <li><code>pattern</code> is what you're searching for</li>
-                          <li><code>flags</code> are options like <code>i</code> (case-insensitive)</li>
+                        <p><strong>Examples</strong>:</p>
+                        <ul style={{ fontSize: '0.9rem' }}>
+                          <li><code>/invoice/i</code> – matches "invoice", "Invoice", "INVOICE"</li>
+                          <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> – matches dates like "2024-01-15"</li>
+                          <li><code>/Visa|Mastercard/i</code> – matches either "Visa" OR "Mastercard"</li>
                         </ul>
-                        <p>Examples:</p>
-                        <ul>
-                          <li><code>/invoice/i</code> - matches "invoice", "Invoice", "INVOICE"</li>
-                          <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> - matches dates like "2024-01-15"</li>
-                          <li><code>/Organization1|Organization2/i</code> - matches either "Organization1" OR "Organization2"</li>
+                        <p style={{ fontSize: '0.9rem', marginTop: '8px', marginBottom: '0' }}>Regex is optional — most rules work fine with simple patterns.</p>
+                      </div>
+
+                      <h4>Step 3 — Filename Patterns</h4>
+                      <p>
+                        Filename patterns allow PocoClass to use the document's filename as a secondary signal.
+                      </p>
+                      <p><strong>Example filename</strong>: <code>2024-01-Bank-Statement.pdf</code></p>
+                      <p><strong>Possible patterns</strong>:</p>
+                      <ul style={{ fontSize: '0.9rem' }}>
+                        <li><code>/Bank/i</code></li>
+                        <li><code>/Statement/i</code></li>
+                        <li><code>/2024/i</code></li>
+                      </ul>
+                      <p><strong>Key points</strong>:</p>
+                      <ul>
+                        <li>Filename patterns are optional</li>
+                        <li>They are evaluated only after OCR passes</li>
+                        <li>Their influence is controlled by the Filename Multiplier (default: 1×)</li>
+                      </ul>
+
+                      <h4>Step 4 — Rule Configuration</h4>
+                      <p>
+                        This is where you define how confident PocoClass must be before applying the rule.
+                      </p>
+                      <p>You can adjust:</p>
+                      <ul>
+                        <li><strong>OCR Threshold</strong> – Minimum percentage of OCR patterns that must match</li>
+                        <li><strong>POCO Threshold</strong> – Minimum final score required for the rule to apply</li>
+                        <li><strong>OCR Multiplier</strong> – Trust level for OCR (default: 3×)</li>
+                        <li><strong>Filename Multiplier</strong> – Trust level for filename matching (default: 1×)</li>
+                        <li><strong>Metadata Multiplier</strong> – Trust level for Paperless metadata</li>
+                      </ul>
+                      <p>
+                        These settings determine how heavily each data source influences the final score. For full details, see How PocoClass Scores Your Documents.
+                      </p>
+
+                      <h4>Step 5 — Metadata Assignment</h4>
+                      <p>
+                        Here you define what PocoClass should write into Paperless if the rule matches.
+                      </p>
+                      <p><strong>Static Metadata</strong></p>
+                      <p>
+                        Values that always apply when the rule matches:
+                      </p>
+                      <ul>
+                        <li>Correspondent</li>
+                        <li>Document Type</li>
+                        <li>Tags</li>
+                        <li>Custom fields</li>
+                      </ul>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                        <strong>Example</strong>: Assign Correspondent → "Bank XYZ", Assign Document Type → "Monthly Statement", Tags → Finance, 2024
+                      </p>
+                      <p><strong>Dynamic Metadata</strong></p>
+                      <p>
+                        Extracted directly from the document using anchors.
+                      </p>
+                      <div className="guide-highlight">
+                        <p style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
+                          <strong>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
+                        </p>
+                        <ul style={{ fontSize: '0.9rem' }}>
+                          <li>Before Anchor: <code>Inv: </code></li>
+                          <li>After Anchor: (space or newline)</li>
+                          <li>PocoClass extracts the text between these markers and assigns it to a custom field</li>
                         </ul>
                       </div>
 
-                      <h4>Step 3: Filename Patterns</h4>
+                      <h4>Step 6 — Verification</h4>
                       <p>
-                        These patterns search for text in the <strong>document filename</strong> (not the content).
+                        Verification allows PocoClass to confirm that the extracted or assigned metadata aligns with what is already stored in Paperless.
                       </p>
-                      <p><strong>Example</strong>:</p>
-                      <ul>
-                        <li>If your files are named "2024-01-Bank-Statement.pdf"</li>
-                        <li>You could search for <code>/Bank-Statement/i</code> to match bank documents</li>
-                      </ul>
-                      <p>Filename patterns are optional. The system applies a multiplier (default 1×) to their scoring.</p>
-
-                      <h4>Step 4: Configuration Tuning</h4>
-                      <p>This is where you adjust the "sensitivity" of your rule:</p>
-                      <ul>
-                        <li><strong>POCO Threshold</strong> (default 75%): Minimum score needed for the rule to trigger</li>
-                        <li><strong>OCR Threshold</strong> (default 75%): Minimum percentage of OCR patterns that must match</li>
-                        <li><strong>OCR Multiplier</strong> (default 3×): How much weight OCR gets in the final score</li>
-                        <li><strong>Filename Multiplier</strong> (default 1×): How much weight filename matches get</li>
-                        <li><strong>Metadata Multiplier</strong> (default auto): Weight for Paperless metadata matches</li>
-                      </ul>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
+                        <strong>Example</strong>: Extracted Correspondent → "John Smith", Paperless Correspondent → "John Smith" → Verification passes
+                      </p>
                       <p>
-                        These multipliers determine which data source you trust most. 
-                        If OCR is 3×, you're saying "trust the OCR text 3 times more than other sources."
+                        If verification fails, you can choose to allow the rule anyway or block it from applying. Verification adds an extra safety layer, especially when similar document formats may overlap.
                       </p>
-
-                      <h4>Step 5: Metadata Assignment</h4>
-                      <p>This is what happens when the rule matches a document:</p>
-                      <p><strong>Static Metadata</strong> (Always assign the same value):</p>
-                      <ul>
-                        <li>"Assign Correspondent → Financial Institution"</li>
-                        <li>"Assign Document Type → Bank Statement"</li>
-                        <li>"Assign Tags → Finance, 2024"</li>
-                      </ul>
-                      <p><strong>Dynamic Metadata</strong> (Extract from the document):</p>
-                      <ul>
-                        <li>"Extract Correspondent from the document text using a pattern"</li>
-                        <li>"Extract Invoice Number from text between 'Invoice #' and the next space"</li>
-                        <li>Uses "anchors" - text markers that tell PocoClass where to look</li>
-                      </ul>
-                      <div className="guide-highlight">
-                        <strong>Example Dynamic Extraction</strong>
-                        <p>You want to extract an invoice number that appears after "Inv: "</p>
-                        <ul>
-                          <li>Set <code>beforeAnchor</code> = <code>Inv: </code></li>
-                          <li>Set <code>afterAnchor</code> = (space or newline)</li>
-                          <li>PocoClass will find the text between these markers</li>
-                        </ul>
-                      </div>
-
-                      <h4>Step 6: Verification</h4>
-                      <p>
-                        This is a safety check. You can verify that extracted or assigned metadata matches what's already in Paperless.
-                      </p>
-                      <p><strong>Example</strong>:</p>
-                      <ul>
-                        <li>Rule extracted "John Smith" as the correspondent</li>
-                        <li>Paperless has a correspondent called "John Smith"</li>
-                        <li>Verification confirms: ✓ Match found</li>
-                      </ul>
-                      <p>If verification fails, the document might not be classified using this rule (depending on your settings).</p>
                     </div>
 
                     <div className="guide-section">
