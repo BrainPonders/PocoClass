@@ -759,81 +759,68 @@ function LayoutContent({ children }) {
                         All these updates happen within Paperless itself, meaning your library stays organized, searchable, and consistent.
                       </p>
 
-                      <div className="guide-highlight">
-                        <strong>Note:</strong> PocoClass stores a confidence score (called "POCO Score") in a custom field. This score shows how confident PocoClass is about its classification. A score of 100 means very confident, 0 means not confident at all.
-                      </div>
                     </div>
 
                     <div className="guide-section">
                       <h3>How PocoClass Scores Your Documents</h3>
                       <p>
-                        PocoClass uses a scoring system to decide how confidently a document matches one of your rules. This score determines whether the rule should be applied, skipped, or flagged for review.
+                        PocoClass uses a confidence-based scoring system to decide whether a document matches a rule. This score determines whether the rule is applied, skipped, or flagged for review.
+                      </p>
+                      <p>
+                        To keep the process transparent, PocoClass generates two scores for every document:
                       </p>
 
-                      <h4>The Two Scores</h4>
+                      <h4>1. POCO OCR Score (Transparency Score)</h4>
                       <p>
-                        PocoClass produces two scores that help you understand classification accuracy:
+                        This score reflects how many OCR identifiers were found in the document text. It shows how well the document content matches your rule.
                       </p>
                       <ul>
-                        <li><strong>POCO OCR Score</strong> – Shows how well the text inside the document matches your OCR patterns. This is the strongest and most reliable identification source because it reads the actual content of the document.</li>
-                        <li><strong>POCO Score</strong> – The final confidence score after evaluating OCR text, filename patterns, and metadata from Paperless. This determines whether the classification is applied.</li>
+                        <li>It is recorded even if the rule doesn't trigger</li>
+                        <li>It's used to stop rule evaluation early when the match is too weak</li>
                       </ul>
-
-                      <h4>How It Works (Simple Version)</h4>
                       <p>
-                        PocoClass follows three simple principles:
+                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or metadata checks.
+                      </p>
+
+                      <h4>2. POCO Score (Final Classification Score)</h4>
+                      <p>
+                        Once OCR passes the minimum threshold, PocoClass evaluates the full document using:
                       </p>
                       <ul>
-                        <li><strong>More matches = higher confidence</strong> – If a document matches many of your identifiers, confidence increases.</li>
-                        <li><strong>More identifiers = stronger evidence</strong> – Matching 7 of 8 identifiers is stronger than matching 3 of 3.</li>
-                        <li><strong>Each data source has different weight</strong> – OCR is the strongest signal, filename is supporting, metadata is verification. You can adjust these weights based on your needs.</li>
+                        <li><strong>OCR results</strong> (primary evidence)</li>
+                        <li><strong>Filename patterns</strong> (secondary evidence)</li>
+                        <li><strong>Paperless metadata</strong> (verification evidence)</li>
                       </ul>
-
-                      <div className="guide-highlight">
-                        <strong>Safety First:</strong> If a rule requires an OCR threshold of 75% and the document only scores 50%, PocoClass stops immediately without checking filename or metadata. This keeps the system safe and prevents misclassification.
-                      </div>
-
-                      <h4>Thresholds That Control Classification</h4>
                       <p>
-                        Two thresholds determine the outcome:
+                        Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score determines whether the rule should be applied.
+                      </p>
+
+                      <h4>How Scoring Works (High-Level Explanation)</h4>
+                      <p>
+                        PocoClass evaluates each data source using this formula:
+                      </p>
+                      <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.9rem' }}>
+                        Weighted Score = (matches / total) × total × multiplier
+                      </p>
+                      <p>
+                        This method ensures:
                       </p>
                       <ul>
-                        <li><strong>OCR Threshold (default 75%)</strong> – Minimum OCR match required before evaluating filename and metadata. If not met, the rule stops immediately.</li>
-                        <li><strong>POCO Threshold (default 75%)</strong> – Minimum final score required before applying classification. If met, PocoClass applies all your settings (tags, correspondent, type, etc.) and adds the POCO+ tag. Otherwise, it adds the POCO- tag.</li>
+                        <li>More matches → higher score</li>
+                        <li>More identifiers → stronger evidence</li>
+                        <li>More trusted domains → greater impact</li>
                       </ul>
+                      <p>
+                        OCR typically carries the most weight, filenames moderate, and metadata the least—unless you adjust the multipliers.
+                      </p>
 
                       <details style={{ marginTop: '16px', padding: '12px', backgroundColor: 'var(--app-bg-secondary)', borderRadius: '6px', border: '1px solid var(--app-border)' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: '500', color: 'var(--app-text-primary)' }}>
-                          ➤ Technical Details: Weighted Scoring Formula
-                        </summary>
-                        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--app-border)' }}>
-                          <p style={{ fontSize: '0.9rem' }}>
-                            PocoClass uses a weighted system so each source contributes proportionally to the final score:
-                          </p>
-                          <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.85rem' }}>
-                            Weighted Score = (matches / total) × total × multiplier
-                          </p>
-                          <p style={{ fontSize: '0.9rem' }}>
-                            This formula rewards both a high success rate and a high amount of evidence. A domain with many identifiers naturally carries more weight.
-                          </p>
-                          <p style={{ fontSize: '0.9rem' }}>
-                            <strong>Why this method?</strong> It ensures that:
-                          </p>
-                          <ul style={{ fontSize: '0.9rem' }}>
-                            <li>Strong patterns (high match rate) increase confidence</li>
-                            <li>More patterns (more evidence) increase confidence</li>
-                            <li>Your trust settings (multipliers) control the relative weight</li>
-                          </ul>
-                        </div>
-                      </details>
-
-                      <details style={{ marginTop: '12px', padding: '12px', backgroundColor: 'var(--app-bg-secondary)', borderRadius: '6px', border: '1px solid var(--app-border)' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: '500', color: 'var(--app-text-primary)' }}>
-                          ➤ Example Calculations
+                          ➤ Examples
                         </summary>
                         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--app-border)' }}>
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 1 — Strong Match:</strong>
+                            <strong>Example 1 – Strong Match</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '16px', fontFamily: 'monospace' }}>
                             <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
@@ -846,7 +833,7 @@ function LayoutContent({ children }) {
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 2 — Weak OCR, Filename Disagrees:</strong>
+                            <strong>Example 2 – Weak OCR, Filename Disagrees</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '16px', fontFamily: 'monospace' }}>
                             <li>OCR: 3/5, multiplier = 3 → (3/5 × 5 × 3) = 9</li>
@@ -855,20 +842,20 @@ function LayoutContent({ children }) {
                             <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                            If threshold is 10 → ✗ Rule skipped (score below threshold)
+                            If threshold is 10 → ✗ Rule skipped
                           </p>
                         </div>
                       </details>
 
-                      <h4 style={{ marginTop: '24px' }}>Scores Stored in Paperless</h4>
-                      <p style={{ fontSize: '0.9rem' }}>
-                        PocoClass records all scores so you can review results in Paperless:
+                      <h4 style={{ marginTop: '24px' }}>Where Scores Are Stored in Paperless</h4>
+                      <p>
+                        PocoClass writes its evaluation results back into Paperless so you always know what happened:
                       </p>
-                      <ul style={{ fontSize: '0.9rem' }}>
-                        <li><strong>POCO Score</strong> – Final classification confidence (stored in custom field)</li>
-                        <li><strong>POCO OCR Score</strong> – OCR-only confidence (stored in optional custom field)</li>
-                        <li><strong>POCO+ tag</strong> – Applied when rule matched successfully</li>
-                        <li><strong>POCO- tag</strong> – Applied when rule tested but insufficient confidence</li>
+                      <ul>
+                        <li><strong>POCO Score</strong> – final classification confidence (custom field)</li>
+                        <li><strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field)</li>
+                        <li><strong>POCO+ tag</strong> – rule matched and classification applied</li>
+                        <li><strong>POCO– tag</strong> – rule evaluated but did not meet the threshold</li>
                       </ul>
                     </div>
 
