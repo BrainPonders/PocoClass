@@ -816,33 +816,41 @@ function LayoutContent({ children }) {
 
                       <details style={{ marginTop: '16px', padding: '12px', backgroundColor: 'var(--app-bg-secondary)', borderRadius: '6px', border: '1px solid var(--app-border)' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: '500', color: 'var(--app-text-primary)' }}>
-                          ➤ Examples
+                          ➤ Examples (and Converting to Percentages)
                         </summary>
                         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--app-border)' }}>
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
+                            <strong>Understanding the Threshold Percentage:</strong> The scores shown here are absolute values. To convert them to the percentages you define in the rule builder (like 75%), divide the score by the maximum possible score for that rule. The maximum possible score is what you'd get if all identifiers matched perfectly.
+                          </p>
+
+                          <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
                             <strong>Example 1 – Strong Match</strong>
                           </p>
-                          <ul style={{ fontSize: '0.9rem', marginBottom: '16px', fontFamily: 'monospace' }}>
+                          <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
                             <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
                             <li>Metadata: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
                             <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 12 + 2 + 0.75 = <strong>14.75</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
-                            If threshold is 10 → ✓ Match applied
+                            Maximum possible: (5 × 3) + (2 × 1) + (4 × 0.25) = 18<br/>
+                            Percentage: 14.75 ÷ 18 = <strong>82%</strong><br/>
+                            If your threshold is 75% → ✓ Match applied (82% exceeds 75%)
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
                             <strong>Example 2 – Weak OCR, Filename Disagrees</strong>
                           </p>
-                          <ul style={{ fontSize: '0.9rem', marginBottom: '16px', fontFamily: 'monospace' }}>
+                          <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 3/5, multiplier = 3 → (3/5 × 5 × 3) = 9</li>
                             <li>Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0</li>
                             <li>Metadata: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
                             <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                            If threshold is 10 → ✗ Rule skipped
+                            Maximum possible: 18 (same as Example 1)<br/>
+                            Percentage: 9.5 ÷ 18 = <strong>53%</strong><br/>
+                            If your threshold is 75% → ✗ Rule skipped (53% is below 75%)
                           </p>
                         </div>
                       </details>
