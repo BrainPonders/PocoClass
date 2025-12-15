@@ -642,20 +642,6 @@ export default function DocumentClassificationsStep({
           {t('documentClassifications.dynamicDataDescription')}
         </p>
 
-
-        {/* Graphic Representation */}
-        <div className="flex items-center justify-center gap-3 mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)' }}>
-          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
-            {t('documentClassifications.visualization.beforeAnchor')}
-          </div>
-          <div className="px-4 py-2 bg-green-100 border-2 border-green-500 rounded-lg font-mono text-sm text-green-800">
-            {t('documentClassifications.visualization.extractedData')}
-          </div>
-          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
-            {t('documentClassifications.visualization.afterAnchor')}
-          </div>
-        </div>
-
         {(ruleData.dynamicData?.extractionRules?.length || 0) === 0 ? (
           <div className="text-center py-12 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
             <div className="text-6xl mb-4">📊</div>
@@ -692,6 +678,33 @@ export default function DocumentClassificationsStep({
                   </div>
 
                   <div className="space-y-4">
+                    {/* Graphic Representation - matches the color scheme of extraction type section */}
+                    <div className="flex items-center justify-center gap-3 p-4 rounded-lg" style={{ 
+                      backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#f3e8ff' : '#d1fae5'
+                    }}>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ 
+                        backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#c4b5fd' : '#a7f3d0',
+                        borderColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#a855f7' : '#10b981',
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857'
+                      }}>
+                        {t('documentClassifications.visualization.beforeAnchor')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ 
+                        backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#c4b5fd' : '#a7f3d0',
+                        borderColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#a855f7' : '#10b981',
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857'
+                      }}>
+                        {t('documentClassifications.visualization.extractedData')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ 
+                        backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#c4b5fd' : '#a7f3d0',
+                        borderColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#a855f7' : '#10b981',
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857'
+                      }}>
+                        {t('documentClassifications.visualization.afterAnchor')}
+                      </div>
+                    </div>
+
                     {/* Target Field */}
                     <div className="form-group">
                       <label className="form-label">{t('documentClassifications.labels.targetField')}</label>
