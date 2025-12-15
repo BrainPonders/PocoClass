@@ -1030,10 +1030,26 @@ function LayoutContent({ children }) {
                         <p style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
                           <strong>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
                         </p>
+                        
+                        <p style={{ fontSize: '0.85rem', marginBottom: '8px', fontWeight: '500' }}>Simulated OCR text from document:</p>
+                        <div style={{ 
+                          backgroundColor: '#ffffff', 
+                          border: '1px solid #ddd',
+                          padding: '12px',
+                          borderRadius: '4px',
+                          fontFamily: 'Georgia, serif',
+                          fontSize: '0.95rem',
+                          color: '#000',
+                          marginBottom: '12px',
+                          lineHeight: '1.6'
+                        }}>
+                          Thank you for your business. <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span><span style={{ backgroundColor: '#81c784', padding: '2px 4px', fontWeight: 'bold' }}>INV-2024-0547</span> has been processed.
+                        </div>
+                        
                         <ul style={{ fontSize: '0.9rem' }}>
-                          <li>Before Anchor: <code>Inv: </code></li>
-                          <li>After Anchor: (space or newline)</li>
-                          <li>PocoClass extracts the text between these markers and assigns it to a custom field</li>
+                          <li>Before Anchor: <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span></li>
+                          <li>After Anchor: space (newline)</li>
+                          <li>Extracted value: <span style={{ backgroundColor: '#81c784', padding: '2px 4px', color: '#fff', fontWeight: 'bold' }}>INV-2024-0547</span></li>
                         </ul>
                       </div>
 
