@@ -1041,17 +1041,15 @@ function LayoutContent({ children }) {
                           fontSize: '0.95rem',
                           color: '#000',
                           marginBottom: '12px',
-                          lineHeight: '1.8'
+                          lineHeight: '1.6'
                         }}>
-                          Thank you for your business.<br/>
-                          <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span><span style={{ backgroundColor: '#81c784', padding: '2px 4px', fontWeight: 'bold' }}>INV-2024-0547</span><span style={{ backgroundColor: '#e0e0e0', padding: '2px 4px', fontSize: '0.85rem' }}>⏎</span><br/>
-                          Please keep this for your records.
+                          Thank you for your business. <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span><span style={{ backgroundColor: '#81c784', padding: '2px 4px', fontWeight: 'bold' }}>INV-2024-0547</span> <span style={{ backgroundColor: '#ff9800', padding: '2px 4px' }}>has been generated</span> for your case. Please keep this for your records.
                         </div>
                         
                         <ul style={{ fontSize: '0.9rem' }}>
                           <li>Before Anchor: <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span></li>
                           <li>Text to extract: <span style={{ backgroundColor: '#81c784', padding: '2px 4px', color: '#fff', fontWeight: 'bold' }}>INV-2024-0547</span></li>
-                          <li>After Anchor: <span style={{ backgroundColor: '#e0e0e0', padding: '2px 4px', fontSize: '0.85rem' }}>⏎</span> (newline/line break)</li>
+                          <li>After Anchor: <span style={{ backgroundColor: '#ff9800', padding: '2px 4px', color: '#fff' }}>has been generated</span></li>
                         </ul>
                       </div>
 
