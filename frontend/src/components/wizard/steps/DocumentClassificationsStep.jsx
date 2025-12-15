@@ -671,8 +671,10 @@ export default function DocumentClassificationsStep({
             {ruleData.dynamicData?.extractionRules?.map((rule, index) => {
               // Determine if current field is custom field or document category for purple styling
               // Tags should not receive custom field styling, but default green.
-              const isCustomFieldOrDocumentCategory = rule.targetField === 'documentCategory' || 
-                                                      rule.targetField.startsWith('customField');
+              const isCustomField = allPlaceholders.some(p => 
+                p.is_custom_field && p.placeholder_name === rule.targetField
+              );
+              const isCustomFieldOrDocumentCategory = rule.targetField === 'documentCategory' || isCustomField;
               const isTag = rule.targetField === 'tags';
               
               const customFieldStyle = { backgroundColor: '#f3e8ff', borderColor: '#a855f7' };
@@ -811,7 +813,7 @@ export default function DocumentClassificationsStep({
                         </div>
                       )}
 
-                      {rule.targetField && (rule.targetField.startsWith('customField') || rule.targetField === 'documentCategory') && (
+                      {rule.targetField && (isCustomField || rule.targetField === 'documentCategory') && (
                         <div className="form-group">
                           <label className="form-label">{t('documentClassifications.labels.patternToMatch')}</label>
                           <div className="flex items-center gap-2">
