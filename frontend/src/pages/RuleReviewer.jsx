@@ -630,7 +630,7 @@ export default function RuleReviewer() {
                     {/* 3. Paperless Verification */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">Verification</span>
+                        <span className="text-xs font-semibold text-gray-700">Paperless Comparison</span>
                         <span className="text-xs text-gray-600">
                           {data.verificationMatched}/{data.verificationTotal} ({data.verificationPercentage}%)
                         </span>
@@ -667,7 +667,7 @@ export default function RuleReviewer() {
                     {/* 4. Metadata Extraction */}
                     <div className="bg-gray-50 p-3 rounded">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs font-semibold text-gray-700">Metadata</span>
+                        <span className="text-xs font-semibold text-gray-700">Extracted Data</span>
                         <span className="text-xs text-gray-600">
                           {data.dynamicDataExtracted}/{data.dynamicDataTotal} ({data.dynamicDataPercentage}%)
                         </span>
