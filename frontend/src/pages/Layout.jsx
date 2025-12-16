@@ -1098,8 +1098,8 @@ function LayoutContent({ children }) {
                         <li><strong>Rule Matched</strong>: Did the rule match? (Yes/No)</li>
                         <li><strong>OCR Score</strong>: What % of OCR patterns matched?</li>
                         <li><strong>POCO Score</strong>: What was the final classification score?</li>
-                        <li><strong>Classification</strong>: Was it tagged POCO+ (matched) or POCO- (no match)?</li>
-                        <li><strong>Metadata Applied</strong>: What got assigned (correspondent, tags, etc.)</li>
+                        <li><strong>Classification</strong>: POCO+ (matched) or POCO- (no match) - shows whether the rule matched the document</li>
+                        <li><strong>Metadata Applied</strong>: What got assigned (correspondent, tags, etc.) - which identifiers like OCR or filename were successful</li>
                       </ul>
                       <div className="guide-highlight">
                         <strong>Scores Explained</strong>
