@@ -971,6 +971,12 @@ function LayoutContent({ children }) {
                         <p style={{ fontSize: '0.9rem', marginTop: '8px', marginBottom: '0' }}>Regex is optional — most rules work fine with simple patterns.</p>
                       </div>
 
+                      <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
+                        <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                          <strong>Tip:</strong> There is a built-in <strong>Regex Builder</strong> (available in the pattern editor) to assist in creating complex patterns without writing code manually.
+                        </p>
+                      </div>
+
                       <h4>Step 3 — Filename Patterns</h4>
                       <p>
                         Filename patterns allow PocoClass to use the document's filename as a secondary signal.
