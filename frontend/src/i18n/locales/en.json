@@ -146,7 +146,7 @@
     "checkConsole": "Check the browser console for API response details."
   },
   "wizard": {
-    "step1": "Basic Information",
+    "step1Title": "Basic Information",
     "step1Description": "Define basic rule information and confidence requirements",
     "step2Title": "OCR Identification",
     "step2": {
@@ -169,11 +169,16 @@
     },
     "step2Description": "Define patterns that identify this document type in OCR text",
     "step3": "Filename Patterns",
+    "step3Title": "Filename Patterns",
     "step3Description": "Define patterns that identify this document type by filename",
     "step4": "Configuration",
+    "step4Title": "Configuration",
     "step5": "Metadata Assignment",
+    "step5Title": "Document Classifications",
     "step6": "Verification",
+    "step6Title": "Paperless Comparison",
     "step7": "Review",
+    "step7Title": "Review",
     "stepOf": "Step {current} of {total}",
     "configSummary": "Configuration Summary",
     "ruleNameLabel": "Rule Name",
