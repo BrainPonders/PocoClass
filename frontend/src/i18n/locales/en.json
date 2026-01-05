@@ -147,6 +147,7 @@
   },
   "wizard": {
     "step1Title": "Basic Information",
+    "step1": "Basic Information",
     "step1Description": "Define basic rule information and confidence requirements",
     "step2Title": "OCR Identification",
     "step2": {
