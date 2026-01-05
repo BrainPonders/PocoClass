@@ -151,6 +151,9 @@ Regular expressions (regex) are a way to describe text patterns. The `/pattern/f
 - `pattern` is what you're searching for
 - `flags` are options like `i` (case-insensitive)
 
+> [!TIP]
+> **Regex Builder Available**: Use the built-in Regex Generator (available in the pattern editor) to assist in creating complex patterns without writing code manually.
+
 Example patterns:
 - `/invoice/i` - matches "invoice", "Invoice", "INVOICE" (case-insensitive)
 - `/\d{4}-\d{2}-\d{2}/` - matches dates like "2024-01-15"
