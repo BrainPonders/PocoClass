@@ -132,7 +132,7 @@ A "rule" is a set of instructions that tells PocoClass: "If a document looks lik
 - **Rule ID**: A unique identifier for the rule (auto-generated, but you can customize it)
 - **Description**: Optional notes about what this rule does
 
-#### **Step 2: OCR Pattern Matching**
+#### **Step 2: OCR Identification**
 OCR patterns are text strings you're looking for in the document's extracted text. Think of it as: "Does this document mention specific keywords or patterns?"
 
 **How it works**:
@@ -165,18 +165,17 @@ These patterns search for text in the **document filename** (not the content).
 
 Filename patterns are optional. The system applies a multiplier (default 1×) to their scoring.
 
-#### **Step 4: Configuration Tuning**
-This is where you adjust the "sensitivity" of your rule:
+#### **Step 4: Paperless Comparison**
+This is a safety check. You can verify that extracted or assigned metadata matches what's already in Paperless.
 
-- **POCO Threshold** (default 75%): Minimum score needed for the rule to trigger
-- **OCR Threshold** (default 75%): Minimum percentage of OCR patterns that must match
-- **OCR Multiplier** (default 3×): How much weight OCR gets in the final score
-- **Filename Multiplier** (default 1×): How much weight filename matches get
-- **Metadata Multiplier** (default auto): Weight for Paperless metadata matches
+**Example**:
+- Rule extracted "John Smith" as the correspondent
+- Paperless has a correspondent called "John Smith"
+- Verification confirms: ✓ Match found
 
-These multipliers determine which data source you trust most. If OCR is 3×, you're saying "trust the OCR text 3 times more than other sources."
+If verification fails, the document might not be classified using this rule (depending on your settings).
 
-#### **Step 5: Metadata Assignment**
+#### **Step 5: Document Classifications**
 This is what happens when the rule matches a document:
 
 **Static Metadata** (Always assign the same value):
@@ -195,15 +194,8 @@ This is what happens when the rule matches a document:
 - Set `afterAnchor` = (space or newline)
 - PocoClass will find the text between these markers
 
-#### **Step 6: Verification**
-This is a safety check. You can verify that extracted or assigned metadata matches what's already in Paperless.
-
-**Example**:
-- Rule extracted "John Smith" as the correspondent
-- Paperless has a correspondent called "John Smith"
-- Verification confirms: ✓ Match found
-
-If verification fails, the document might not be classified using this rule (depending on your settings).
+#### **Step 6: Review**
+Review your rule configuration before saving. You can see the calculated max weights and thresholds that will be applied to documents.
 
 ---
 
