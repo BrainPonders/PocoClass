@@ -520,7 +520,25 @@ export default function RuleReviewer() {
                     strokeWidth={2}
                     label={{ value: 'POCO Threshold', position: 'right', fill: '#f59e0b', fontSize: 12 }}
                   />
-                  <Legend />
+                  <Legend 
+                    content={({ payload }) => (
+                      <div className="flex justify-center gap-6 text-sm mt-2">
+                        {payload.map((entry, index) => (
+                          <div key={`legend-${index}`} className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 border border-gray-300" 
+                              style={{ 
+                                background: entry.value === 'POCO Score' 
+                                  ? 'linear-gradient(135deg, #16a34a 50%, #991b1b 50%)' 
+                                  : entry.color 
+                              }}
+                            />
+                            <span style={{ color: 'var(--app-text)' }}>{entry.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  />
                   <Bar dataKey="ocrScore" name="OCR Score" fill="#1e40af">
                     {chartData.map((entry, index) => (
                       <Cell key={`cell-ocr-${index}`} fill="#1e40af" />
