@@ -148,6 +148,7 @@
   "wizard": {
     "step1": "Basic Information",
     "step1Description": "Define basic rule information and confidence requirements",
+    "step2Title": "OCR Identification",
     "step2": {
       "logicGroup": "Logic Group",
       "searchLines": "Search lines",
