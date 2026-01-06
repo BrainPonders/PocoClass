@@ -1254,8 +1254,8 @@ function LayoutContent({ children }) {
                       <h4>Classification Tags</h4>
                       <p>Every processed document gets one of two tags:</p>
                       <ul>
-                        <li><strong style={{ color: 'var(--app-success)' }}>POCO+</strong>: Rule matched and classification was applied</li>
-                        <li><strong style={{ color: 'var(--app-danger)' }}>POCO-</strong>: Rule tested but didn't match (score was too low)</li>
+                        <li><strong style={{ color: 'var(--app-text)' }}>POCO+</strong>: Rule matched and classification was applied</li>
+                        <li><strong style={{ color: 'var(--app-text)' }}>POCO-</strong>: Rule tested but didn't match (score was too low)</li>
                       </ul>
                     </div>
 
@@ -1269,7 +1269,7 @@ function LayoutContent({ children }) {
                         <li><strong>Metadata</strong>: Information about a document (static = always same; dynamic = extracted)</li>
                         <li><strong>Correspondent</strong>: Who the document is from (sender)</li>
                         <li><strong>Document Type</strong>: What kind of document</li>
-                        <li><strong>Custom Field</strong>: Extra information fields you create (e.g., <span style={{ color: '#2563eb' }}>"POCO Score"</span>, <span style={{ color: '#2563eb' }}>"POCO OCR"</span>)</li>
+                        <li><strong>Custom Field</strong>: Extra information fields you create (e.g., "POCO Score", "POCO OCR")</li>
                         <li><strong>Cache</strong>: Temporary storage of Paperless data for fast access</li>
                         <li><strong>Threshold</strong>: A minimum score that triggers an action</li>
                       </ul>
