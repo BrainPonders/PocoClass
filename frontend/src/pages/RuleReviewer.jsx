@@ -530,7 +530,9 @@ export default function RuleReviewer() {
                               style={{ 
                                 background: entry.value === 'POCO Score' 
                                   ? 'linear-gradient(135deg, #16a34a 50%, #991b1b 50%)' 
-                                  : entry.color 
+                                  : entry.value === 'OCR Score'
+                                    ? 'linear-gradient(135deg, #1e40af 50%, #991b1b 50%)'
+                                    : entry.color 
                               }}
                             />
                             <span style={{ color: 'var(--app-text)' }}>{entry.value}</span>
@@ -539,9 +541,12 @@ export default function RuleReviewer() {
                       </div>
                     )}
                   />
-                  <Bar dataKey="ocrScore" name="OCR Score" fill="#1e40af">
+                  <Bar dataKey="ocrScore" name="OCR Score">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-ocr-${index}`} fill="#1e40af" />
+                      <Cell 
+                        key={`cell-ocr-${index}`} 
+                        fill={performanceData[index].ocrPercentage >= performanceData[index].ocrThreshold ? '#1e40af' : '#991b1b'} 
+                      />
                     ))}
                   </Bar>
                   <Bar dataKey="pocoScore" name="POCO Score">
