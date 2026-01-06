@@ -776,7 +776,7 @@ function LayoutContent({ children }) {
                       </p>
                       <ul>
                         <li>It is recorded even if the rule doesn't trigger</li>
-                        <li>It's used to stop rule evaluation early when the match is too weak</li>
+                        <li>It acts as a gatekeeper: if the OCR score is below the required threshold, the rule evaluation stops immediately</li>
                       </ul>
                       <p>
                         If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or classification checks.
