@@ -35,7 +35,7 @@ Paperless-ngx is a document management system that stores and organizes your phy
 #### 1. **Documents**
 Each document you scan or upload becomes a searchable entry in Paperless. When you extract text from a PDF (OCR), Paperless makes that text searchable.
 
-#### 2. **Document Properties** (Metadata)
+#### 2. **Document Properties** (Classifications)
 Each document has properties that help organize it:
 - **Correspondent**: Who the document is from (e.g., "Financial Institution", "Government Agency")
 - **Document Type**: What kind of document it is (e.g., "Invoice", "Receipt", "Letter")
@@ -245,7 +245,7 @@ When you test, PocoClass shows you a report with:
 | OCR Score | What % of OCR patterns matched? |
 | POCO Score | What was the final classification score? |
 | Classification | Was it tagged POCO+ (matched) or POCO- (no match)? |
-| Metadata Applied | What got assigned (correspondent, tags, etc.) |
+| Classifications Applied | What got assigned (correspondent, tags, etc.) |
 
 **Scores Explained**:
 - **OCR Score 85%**: 85% of your OCR patterns matched the document
@@ -369,18 +369,18 @@ OCR Score = (Patterns that matched / Total patterns) × 100%
 
 **Calculation**:
 ```
-POCO Score = (OCR_weighted + Filename_weighted + Metadata_weighted) / Total_weights × 100%
+POCO Score = (OCR_weighted + Filename_weighted + Classification_weighted) / Total_weights × 100%
 ```
 
 Where:
 - `OCR_weighted` = OCR patterns matched × OCR multiplier
 - `Filename_weighted` = Filename patterns matched × Filename multiplier
-- `Metadata_weighted` = Metadata verification results × Metadata multiplier
+- `Classification_weighted` = Classification verification results × Classification multiplier
 
-**Example with defaults** (OCR 3×, Filename 1×, Metadata auto):
+**Example with defaults** (OCR 3×, Filename 1×, Classifications auto):
 - OCR patterns: 3 matched out of 4 (75%)
 - Filename patterns: 1 matched out of 2 (50%)
-- Metadata verification: Passed
+- Classification verification: Passed
 
 POCO Score = ((0.75 × 3) + (0.50 × 1)) / 4 ≈ 69%
 
@@ -393,12 +393,12 @@ Multipliers let you say: "Trust the OCR text 3 times more than the filename."
 **Default multipliers**:
 - **OCR: 3×** - OCR text is usually very reliable
 - **Filename: 1×** - Filenames are less reliable
-- **Metadata: Auto** - Calculated based on other factors
+- **Classifications: Auto** - Calculated based on other factors
 
 **When to adjust**:
 - Using unreliable OCR? Lower the OCR multiplier
 - Filenames are super reliable in your organization? Raise the Filename multiplier
-- Trust Paperless metadata more? Adjust accordingly
+- Trust Paperless classifications more? Adjust accordingly
 
 ### Thresholds
 
@@ -450,10 +450,10 @@ A way to combine multiple OCR patterns with logic (ALL must match, ANY can match
 - **Dry Run**: Test without making changes (simulation mode)
 - **Run**: Apply the rule for real (makes changes in Paperless)
 
-### Metadata
+### Classifications
 Information about a document:
-- Static metadata: Always the same value
-- Dynamic metadata: Extracted from the document
+- Static classifications: Always the same value
+- Dynamic classifications: Extracted from the document
 
 ### Correspondent
 Who the document is from (sender). Examples: "Bank", "Insurance Company", "Government"
