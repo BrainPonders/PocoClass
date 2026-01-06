@@ -1012,7 +1012,7 @@ function LayoutContent({ children }) {
                       <p>
                         You may use simple text patterns or more advanced regular expressions (regex).
                       </p>
-                      <div className="guide-highlight">
+                      <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
                         <p><strong>Examples</strong>:</p>
                         <ul style={{ fontSize: '0.9rem' }}>
                           <li><code>/invoice/i</code> – matches "invoice", "Invoice", "INVOICE"</li>
@@ -1083,7 +1083,7 @@ function LayoutContent({ children }) {
                       <p>
                         Extracted directly from the document using anchors.
                       </p>
-                      <div className="guide-highlight">
+                      <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
                         <p style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
                           <strong>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
                         </p>
