@@ -1161,9 +1161,9 @@ function LayoutContent({ children }) {
                       <div className="guide-highlight">
                         <strong>Scores Explained</strong>
                         <ul>
-                          <li><strong>OCR Score 85%</strong>: 85% of your OCR patterns matched the document</li>
-                          <li><strong>POCO Score 92%</strong>: When you combine OCR (85%) with other factors, you get 92%</li>
-                          <li>If POCO Score ≥ 75% (your threshold), the rule triggers</li>
+                          <li><strong>OCR Score</strong> – Percentage of OCR patterns that matched</li>
+                          <li><strong>POCO Score</strong> – Combined confidence from OCR, filename, and Paperless</li>
+                          <li>Rule triggers when POCO Score meets your threshold (default 75%)</li>
                         </ul>
                       </div>
                       <p>
