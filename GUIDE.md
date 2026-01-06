@@ -181,12 +181,12 @@ If verification fails, the document might not be classified using this rule (dep
 #### **Step 5: Document Classifications**
 This is what happens when the rule matches a document:
 
-**Static Metadata** (Always assign the same value):
+**Static Classifications** (Always assign the same value):
 - "Assign Correspondent → Financial Institution"
 - "Assign Document Type → Statement"
 - "Assign Tags → Finance, 2024"
 
-**Dynamic Metadata** (Extract from the document):
+**Dynamic Classifications** (Extract from the document):
 - "Extract Correspondent from the document text using a pattern"
 - "Extract Invoice Number from text between 'Invoice #' and the next space"
 - Uses "anchors" - text markers that tell PocoClass where to look
