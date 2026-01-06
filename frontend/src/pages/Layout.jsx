@@ -888,9 +888,13 @@ function LayoutContent({ children }) {
                       <p style={{ marginTop: '12px' }}>
                         Custom fields and tag requirements are managed in{' '}
                         <button 
-                          onClick={() => window.location.href = createPageUrl('Settings')}
-                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            sessionStorage.setItem('settings_active_tab', 'validation');
+                            window.location.href = createPageUrl('Settings');
+                          }}
+                          className="btn btn-outline btn-sm"
                         >
+                          <FileText className="w-4 h-4" />
                           Data Validation
                         </button>
                       </p>
@@ -907,9 +911,13 @@ function LayoutContent({ children }) {
                       <p>
                         In most cases, automatic synchronization handles all data consistency needs. If you need to force an immediate update, it can be managed through{' '}
                         <button 
-                          onClick={() => window.location.href = createPageUrl('Settings')}
-                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            sessionStorage.setItem('settings_active_tab', 'system');
+                            window.location.href = createPageUrl('Settings');
+                          }}
+                          className="btn btn-outline btn-sm"
                         >
+                          <Settings className="w-4 h-4" />
                           System
                         </button>
                       </p>
