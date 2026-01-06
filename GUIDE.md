@@ -46,7 +46,7 @@ Each document has properties that help organize it:
 When you scan a document, Paperless uses OCR to extract the text from images so you can search for it. The extracted text is what PocoClass analyzes to make classification decisions.
 
 #### 4. **Custom Fields**
-These are extra information fields you create in Paperless beyond the standard properties. For PocoClass to work, you need at least one custom field called **"POCO Score"** which stores classification confidence scores.
+These are extra information fields you create in Paperless beyond the standard properties. For PocoClass to work, you need at least one custom field called <span style="color: #2563eb;">**"POCO Score"**</span> which stores classification confidence scores and <span style="color: #2563eb;">**"POCO OCR"**</span> for transparency scores.
 
 ### How Paperless API Works
 
@@ -272,12 +272,12 @@ Background processing is how PocoClass automatically classifies new documents wi
 Think of background processing as a worker that wakes up periodically and asks: "Are there any new documents I should classify?"
 
 #### Step 1: The Trigger
-PocoClass looks for documents with the **"NEW"** tag. This tag should be applied automatically by Paperless when a new document arrives.
+PocoClass looks for documents with the <span style="color: #2563eb;">**"NEW"**</span> tag. This tag should be applied automatically by Paperless when a new document arrives.
 
 #### Step 2: Filter Documents
 PocoClass finds documents that are:
-- Tagged with "NEW"
-- NOT already tagged with "POCO+" or "POCO-" (not already classified)
+- Tagged with <span style="color: #2563eb;">**"NEW"**</span>
+- NOT already tagged with <span style="color: #16a34a;">**"POCO+"**</span> or <span style="color: #dc2626;">**"POCO-"**</span> (not already classified)
 
 #### Step 3: Apply Rules
 PocoClass runs all enabled rules against these documents in order, testing each document until one rule matches.
@@ -286,8 +286,8 @@ PocoClass runs all enabled rules against these documents in order, testing each 
 When a rule matches, PocoClass:
 - Applies the rule's metadata (correspondent, document type, tags)
 - Writes the POCO Score to the custom field
-- Applies either "POCO+" tag (matched) or "POCO-" tag (no match)
-- Removes the "NEW" tag
+- Applies either <span style="color: #16a34a;">**"POCO+"**</span> tag (matched) or <span style="color: #dc2626;">**"POCO-"**</span> tag (no match)
+- Removes the <span style="color: #2563eb;">**"NEW"**</span> tag
 
 #### Step 5: Repeat
 Background processing continues looking for more documents with the "NEW" tag.
