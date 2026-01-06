@@ -1138,7 +1138,7 @@ function LayoutContent({ children }) {
                         <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>"NEW"</strong> tag</li>
                         <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>"NEW"</strong> and NOT already tagged with <strong>"POCO+"</strong> or <strong>"POCO-"</strong></li>
                         <li><strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order</li>
-                        <li><strong>Step 4: Tag & Score</strong> - Apply classifications, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, remove <strong>NEW</strong> tag</li>
+                        <li><strong>Step 4: Tag & Score</strong> - Apply classifications, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, optionally remove <strong>NEW</strong> tag (if enabled in Settings)</li>
                         <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the <strong>"NEW"</strong> tag</li>
                       </ul>
 
