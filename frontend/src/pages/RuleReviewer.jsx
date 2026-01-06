@@ -528,7 +528,7 @@ export default function RuleReviewer() {
                           <span style={{ color: 'var(--app-text)' }}>OCR Score</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#991b1b' }} />
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#991b1b', opacity: 0.6 }} />
                           <span style={{ color: 'var(--app-text)' }}>OCR Score Failed</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -536,7 +536,7 @@ export default function RuleReviewer() {
                           <span style={{ color: 'var(--app-text)' }}>POCO Score</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#991b1b', borderStyle: 'dashed', borderWidth: '2px' }} />
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#dc2626' }} />
                           <span style={{ color: 'var(--app-text)' }}>POCO Score Failed</span>
                         </div>
                       </div>
@@ -547,12 +547,13 @@ export default function RuleReviewer() {
                       <Cell 
                         key={`cell-ocr-${index}`} 
                         fill={performanceData[index].ocrPercentage >= performanceData[index].ocrThreshold ? '#1e40af' : '#991b1b'} 
+                        fillOpacity={performanceData[index].ocrPercentage >= performanceData[index].ocrThreshold ? 1 : 0.6}
                       />
                     ))}
                   </Bar>
                   <Bar dataKey="pocoScore" name="POCO Score">
                     {chartData.map((entry, index) => (
-                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#991b1b'} />
+                      <Cell key={`cell-poco-${index}`} fill={entry.passed ? '#16a34a' : '#dc2626'} />
                     ))}
                   </Bar>
                 </BarChart>
