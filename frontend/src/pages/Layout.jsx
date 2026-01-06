@@ -800,15 +800,15 @@ function LayoutContent({ children }) {
                         PocoClass evaluates each data source using this formula:
                       </p>
                       <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.9rem' }}>
-                        Weighted Score = (matches / total) × total × multiplier
+                        Weighted Score = (<span style={{ color: '#3b82f6', fontWeight: '600' }}>matches</span> / <span style={{ color: '#10b981', fontWeight: '600' }}>total</span>) × <span style={{ color: '#10b981', fontWeight: '600' }}>total</span> × <span style={{ color: '#f59e0b', fontWeight: '600' }}>multiplier</span>
                       </p>
                       <p>
                         This method ensures:
                       </p>
                       <ul>
-                        <li>More matches → higher score</li>
-                        <li>More identifiers → stronger evidence</li>
-                        <li>More trusted domains → greater impact</li>
+                        <li>More <span style={{ color: '#3b82f6', fontWeight: '600' }}>matches</span> → higher score</li>
+                        <li>More <span style={{ color: '#10b981', fontWeight: '600' }}>identifiers</span> → stronger evidence</li>
+                        <li>More <span style={{ color: '#f59e0b', fontWeight: '600' }}>trusted domains</span> → greater impact</li>
                       </ul>
                       <p>
                         OCR typically carries the most weight, filenames moderate, and classifications the least—unless you adjust the multipliers.
