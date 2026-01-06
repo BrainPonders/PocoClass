@@ -904,10 +904,9 @@ function LayoutContent({ children }) {
                         <li><strong>POCO+ tag</strong> – rule matched and classification applied</li>
                         <li><strong>POCO- tag</strong> – rule evaluated but did not meet the threshold</li>
                       </ul>
-                      <div className="info-box info-box-blue" style={{ marginTop: '16px' }}>
-                        <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                          <strong>Document Notes:</strong> A detailed scoring breakdown is also appended to the document's notes in Paperless, providing full transparency for every evaluation.
-                        </p>
+                      <div className="guide-highlight" style={{ marginTop: '16px' }}>
+                        <strong>Document Notes</strong>
+                        <p>A detailed scoring breakdown is also appended to the document's notes in Paperless, providing full transparency for every evaluation.</p>
                       </div>
                     </div>
 
