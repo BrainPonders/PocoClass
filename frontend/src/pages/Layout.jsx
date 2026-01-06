@@ -723,7 +723,7 @@ function LayoutContent({ children }) {
                         <div className="guide-step">
                           <div className="guide-step-number">3</div>
                           <div className="guide-step-content">
-                            <strong>PocoClass Assigns Metadata</strong>
+                            <strong>PocoClass Assigns Classifications</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
                               If a match is found, PocoClass automatically applies the classifications you specified in your rule—like tags, correspondents, document type, and other details—directly to the document in Paperless.
                             </p>
@@ -779,7 +779,7 @@ function LayoutContent({ children }) {
                         <li>It's used to stop rule evaluation early when the match is too weak</li>
                       </ul>
                       <p>
-                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or metadata checks.
+                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or classification checks.
                       </p>
 
                       <h4>2. POCO Score (Final Classification Score)</h4>
@@ -811,7 +811,7 @@ function LayoutContent({ children }) {
                         <li>More trusted domains → greater impact</li>
                       </ul>
                       <p>
-                        OCR typically carries the most weight, filenames moderate, and metadata the least—unless you adjust the multipliers.
+                        OCR typically carries the most weight, filenames moderate, and classifications the least—unless you adjust the multipliers.
                       </p>
 
                       <details style={{ marginTop: '16px', padding: '12px', backgroundColor: 'var(--app-bg-secondary)', borderRadius: '6px', border: '1px solid var(--app-border)' }}>
@@ -829,7 +829,7 @@ function LayoutContent({ children }) {
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
                             <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
-                            <li>Metadata: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
+                            <li>Classifications: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
                             <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 12 + 2 + 0.75 = <strong>14.75</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
@@ -897,7 +897,7 @@ function LayoutContent({ children }) {
 
                       <h4>Data Synchronization Architecture</h4>
                       <p>
-                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these metadata references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
+                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these classification references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
                       </p>
 
                       <h4>Automatic Synchronization</h4>
@@ -921,7 +921,7 @@ function LayoutContent({ children }) {
                         A rule tells PocoClass: "If a document contains these patterns, classify it like this."
                       </p>
                       <p>
-                        The rule builder wizard guides you step by step through defining how a document should be identified and what metadata should be assigned when it matches.
+                        The rule builder wizard guides you step by step through defining how a document should be identified and what classifications should be assigned when it matches.
                       </p>
                       
                       <h4>Step 1 — Basic Information</h4>
@@ -955,7 +955,7 @@ function LayoutContent({ children }) {
                         <li>Set the OCR Threshold (default: 75%) – this determines how many patterns must match before PocoClass considers the rule valid</li>
                       </ul>
                       <p>
-                        PocoClass only continues to filename and metadata evaluation if the OCR threshold is met. (See the scoring section for details.)
+                        PocoClass only continues to filename and classifications evaluation if the OCR threshold is met. (See the scoring section for details.)
                       </p>
                       <p><strong>Regex Support</strong></p>
                       <p>
@@ -1005,7 +1005,7 @@ function LayoutContent({ children }) {
                         <li><strong>POCO Threshold</strong> – Minimum final score required for the rule to apply</li>
                         <li><strong>OCR Multiplier</strong> – Trust level for OCR (default: 3×)</li>
                         <li><strong>Filename Multiplier</strong> – Trust level for filename matching (default: 1×)</li>
-                        <li><strong>Metadata Multiplier</strong> – Trust level for Paperless metadata</li>
+                        <li><strong>Classification Multiplier</strong> – Trust level for Paperless classifications</li>
                       </ul>
                       <p>
                         These settings determine how heavily each data source influences the final score. For full details, see How PocoClass Scores Your Documents.
@@ -1061,7 +1061,7 @@ function LayoutContent({ children }) {
 
                       <h4>Step 6 — Verification</h4>
                       <p>
-                        Verification allows PocoClass to confirm that the extracted or assigned metadata aligns with what is already stored in Paperless.
+                        Verification allows PocoClass to confirm that the extracted or assigned classifications aligns with what is already stored in Paperless.
                       </p>
                       <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
                         <strong>Example</strong>: Extracted Correspondent → "John Smith", Paperless Correspondent → "John Smith" → Verification passes
@@ -1093,7 +1093,7 @@ function LayoutContent({ children }) {
                       <ul>
                         <li>PocoClass tests your rule and actually classifies the documents</li>
                         <li>Makes changes in Paperless</li>
-                        <li>Applied tags, correspondents, and metadata to documents</li>
+                        <li>Applied tags, correspondents, and classifications to documents</li>
                         <li>Scores are recorded in the POCO Score custom field</li>
                       </ul>
 
@@ -1105,7 +1105,7 @@ function LayoutContent({ children }) {
                         <li><strong>OCR Score</strong>: What % of OCR patterns matched?</li>
                         <li><strong>POCO Score</strong>: What was the final classification score?</li>
                         <li><strong>Classification</strong>: POCO+ (matched) or POCO- (no match) - shows whether the rule matched the document</li>
-                        <li><strong>Metadata Applied</strong>: What got assigned (correspondent, tags, etc.) - which identifiers like OCR or filename were successful</li>
+                        <li><strong>Classifications Applied</strong>: What got assigned (correspondent, tags, etc.) - which identifiers like OCR or filename were successful</li>
                       </ul>
                       <div className="guide-highlight">
                         <strong>Scores Explained</strong>
@@ -1138,7 +1138,7 @@ function LayoutContent({ children }) {
                         <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>"NEW"</strong> tag</li>
                         <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>"NEW"</strong> and NOT already tagged with <strong>"POCO+"</strong> or <strong>"POCO-"</strong></li>
                         <li><strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order</li>
-                        <li><strong>Step 4: Tag & Score</strong> - Apply metadata, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, remove <strong>NEW</strong> tag</li>
+                        <li><strong>Step 4: Tag & Score</strong> - Apply classifications, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, remove <strong>NEW</strong> tag</li>
                         <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the <strong>"NEW"</strong> tag</li>
                       </ul>
 
@@ -1179,7 +1179,7 @@ function LayoutContent({ children }) {
                         <li>Which rule matched (if any)</li>
                         <li>OCR and POCO scores</li>
                         <li>What classification it got (POCO+ or POCO-)</li>
-                        <li>What metadata was applied</li>
+                        <li>What classifications were applied</li>
                       </ul>
                     </div>
 
@@ -1213,18 +1213,18 @@ function LayoutContent({ children }) {
                       <p>"How confident am I combining everything?"</p>
                       <div className="guide-highlight">
                         <p><strong>Calculation</strong>:</p>
-                        <p><code>POCO Score = (OCR_weighted + Filename_weighted + Metadata_weighted) / Total_weights × 100%</code></p>
+                        <p><code>POCO Score = (OCR_weighted + Filename_weighted + Classification_weighted) / Total_weights × 100%</code></p>
                         <p>Where:</p>
                         <ul>
                           <li><code>OCR_weighted</code> = OCR patterns matched × OCR multiplier</li>
                           <li><code>Filename_weighted</code> = Filename patterns matched × Filename multiplier</li>
-                          <li><code>Metadata_weighted</code> = Metadata verification results × Metadata multiplier</li>
+                          <li><code>Classification_weighted</code> = Classification verification results × Classification multiplier</li>
                         </ul>
-                        <p><strong>Example with defaults</strong> (OCR 3×, Filename 1×, Metadata auto):</p>
+                        <p><strong>Example with defaults</strong> (OCR 3×, Filename 1×, Classifications auto):</p>
                         <ul>
                           <li>OCR patterns: 3 matched out of 4 (75%)</li>
                           <li>Filename patterns: 1 matched out of 2 (50%)</li>
-                          <li>Metadata verification: Passed</li>
+                          <li>Classification verification: Passed</li>
                         </ul>
                         <p>POCO Score = ((0.75 × 3) + (0.50 × 1)) / 4 ≈ 69%</p>
                         <p>If your POCO threshold is 75%, this rule wouldn't trigger (69% {'<'} 75%).</p>
@@ -1236,13 +1236,13 @@ function LayoutContent({ children }) {
                       <ul>
                         <li><strong>OCR: 3×</strong> - OCR text is usually very reliable</li>
                         <li><strong>Filename: 1×</strong> - Filenames are less reliable</li>
-                        <li><strong>Metadata: Auto</strong> - Calculated based on other factors</li>
+                        <li><strong>Classifications: Auto</strong> - Calculated based on other factors</li>
                       </ul>
                       <p><strong>When to adjust</strong>:</p>
                       <ul>
                         <li>Using unreliable OCR? Lower the OCR multiplier</li>
                         <li>Filenames are super reliable in your organization? Raise the Filename multiplier</li>
-                        <li>Trust Paperless metadata more? Adjust accordingly</li>
+                        <li>Trust Paperless classifications more? Adjust accordingly</li>
                       </ul>
 
                       <h4>Thresholds</h4>
@@ -1266,7 +1266,7 @@ function LayoutContent({ children }) {
                         <li><strong>Anchors (beforeAnchor / afterAnchor)</strong>: Text markers that tell PocoClass where to extract data from</li>
                         <li><strong>Logic Groups</strong>: A way to combine multiple OCR patterns with logic (ALL must match, ANY can match, etc.)</li>
                         <li><strong>Dry Run vs Run</strong>: Dry Run = test without changes; Run = apply for real</li>
-                        <li><strong>Metadata</strong>: Information about a document (static = always same; dynamic = extracted)</li>
+                        <li><strong>Classifications</strong>: Information about a document (static = always same; dynamic = extracted)</li>
                         <li><strong>Correspondent</strong>: Who the document is from (sender)</li>
                         <li><strong>Document Type</strong>: What kind of document</li>
                         <li><strong>Custom Field</strong>: Extra information fields you create (e.g., "POCO Score", "POCO OCR")</li>
@@ -1372,7 +1372,7 @@ function LayoutContent({ children }) {
                   <div className="modal-body">
                     <div className="guide-section">
                       <h3>Core Concept</h3>
-                      <p>POCO = Weighted scoring system combining OCR content, filename patterns, and metadata verification.</p>
+                      <p>POCO = Weighted scoring system combining OCR content, filename patterns, and classifications verification.</p>
                     </div>
 
                     <div className="guide-section">
@@ -1409,7 +1409,7 @@ function LayoutContent({ children }) {
                         <div className="guide-step">
                           <div className="guide-step-number">5</div>
                           <div className="guide-step-content">
-                            <strong>Metadata Assignment</strong>
+                            <strong>classifications Assignment</strong>
                             <p>Define what to assign (static) or extract (dynamic) when rule matches</p>
                           </div>
                         </div>
@@ -1417,7 +1417,7 @@ function LayoutContent({ children }) {
                           <div className="guide-step-number">6</div>
                           <div className="guide-step-content">
                             <strong>Verification</strong>
-                            <p>Cross-check extracted/assigned metadata against existing Paperless data</p>
+                            <p>Cross-check extracted/assigned classifications against existing Paperless data</p>
                           </div>
                         </div>
                       </div>
@@ -1430,7 +1430,7 @@ function LayoutContent({ children }) {
                       <p>Shows what percentage of your expected text patterns were found. Recorded in document notes.</p>
                       
                       <h4>POCO Score (Actionable)</h4>
-                      <p><code>POCO Score = (OCR × 3 + Filename × 1 + Metadata) / Total × 100%</code></p>
+                      <p><code>POCO Score = (OCR × 3 + Filename × 1 + classifications) / Total × 100%</code></p>
                       <p>Combines all factors with weighted multipliers. Must meet threshold (default 75%) to trigger classification.</p>
                     </div>
 
@@ -1439,7 +1439,7 @@ function LayoutContent({ children }) {
                       <ul>
                         <li><strong>Dry Run</strong>: Test without making changes - shows what would happen</li>
                         <li><strong>Run</strong>: Apply classifications for real - updates Paperless documents</li>
-                        <li><strong>Results</strong>: View OCR score, POCO score, and metadata applied for each document</li>
+                        <li><strong>Results</strong>: View OCR score, POCO score, and classifications applied for each document</li>
                       </ul>
                     </div>
 
@@ -1482,8 +1482,8 @@ function LayoutContent({ children }) {
                         <li><strong>Anchors</strong>: Text markers for dynamic extraction (<code>beforeAnchor</code>, <code>afterAnchor</code>)</li>
                         <li><strong>Threshold</strong>: Minimum score required to trigger action (default 75%)</li>
                         <li><strong>Multiplier</strong>: Weight given to data source (OCR 3×, Filename 1×)</li>
-                        <li><strong>Static Metadata</strong>: Always assign the same value</li>
-                        <li><strong>Dynamic Metadata</strong>: Extract value from document using patterns</li>
+                        <li><strong>Static classifications</strong>: Always assign the same value</li>
+                        <li><strong>Dynamic classifications</strong>: Extract value from document using patterns</li>
                       </ul>
                     </div>
 
