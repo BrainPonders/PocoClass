@@ -367,10 +367,23 @@ export default function RuleReviewer() {
   const successCount = performanceData.filter(d => d.result === 'Pass').length;
   const failedCount = performanceData.filter(d => d.result === 'Fail').length;
 
+  const scrollToDocument = (docId) => {
+    const element = document.getElementById(`doc-result-${docId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Add a brief highlight effect
+      element.classList.add('ring-2', 'ring-blue-500', 'ring-offset-2');
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-blue-500', 'ring-offset-2');
+      }, 2000);
+    }
+  };
+
   // Prepare chart data
   const chartData = performanceData.map((data, index) => ({
     name: `${index + 1}`,
     fullName: data.documentTitle,
+    documentId: data.documentId,
     ocrScore: data.pocoOcrScore,
     pocoScore: data.pocoScore,
     passed: data.result === 'Pass'
@@ -485,7 +498,17 @@ export default function RuleReviewer() {
             {/* Performance Bar Chart */}
             <div className="mb-6" style={{ height: '250px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                <BarChart 
+                  data={chartData} 
+                  margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
+                  onClick={(data) => {
+                    if (data && data.activePayload && data.activePayload.length > 0) {
+                      const docId = data.activePayload[0].payload.documentId;
+                      scrollToDocument(docId);
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="name"
@@ -563,7 +586,7 @@ export default function RuleReviewer() {
             {/* Detailed Results */}
             <div className="space-y-4">
               {performanceData.map((data, index) => (
-                <div key={index} className="border rounded-lg p-4">
+                <div key={index} id={`doc-result-${data.documentId}`} className="border rounded-lg p-4 transition-all duration-300">
                   <div className="flex justify-between items-center mb-3">
                     <h4 className="font-semibold">{data.documentTitle}</h4>
                     <div className="flex gap-4 items-center">
