@@ -842,7 +842,7 @@ function LayoutContent({ children }) {
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
                             <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
-                            <li>Classifications: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
+                            <li>Paperless: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
                             <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 12 + 2 + 0.75 = <strong>14.75</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
@@ -857,7 +857,7 @@ function LayoutContent({ children }) {
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                           <li>OCR: 3/4, multiplier = 3 → (3/4 × 4 × 3) = 9</li>
                           <li>Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0</li>
-                          <li>Classifications: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
+                          <li>Paperless: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
                           <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
