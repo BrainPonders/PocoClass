@@ -761,7 +761,7 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>How PocoClass Scores Your Documents</h3>
+                      <h3>The Scoring System</h3>
                       <p>
                         PocoClass uses a confidence-based scoring system to decide whether a document matches a rule. This score determines whether the rule is applied, skipped, or flagged for review.
                       </p>
@@ -774,11 +774,11 @@ function LayoutContent({ children }) {
                         This score reflects how many OCR identifiers were found in the document text. It shows how well the document content matches your rule.
                       </p>
                       <ul>
-                        <li>It is recorded even if the rule doesn't trigger</li>
-                        <li>It acts as a gatekeeper: if the OCR score is below the required threshold, the rule evaluation stops immediately</li>
+                        <li>It acts as a gatekeeper: if the OCR score is below the <strong>OCR Threshold (default 75%)</strong>, rule evaluation stops immediately</li>
+                        <li>This threshold is configurable per rule in the rule builder</li>
                       </ul>
                       <p>
-                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or classification checks.
+                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or Paperless checks.
                       </p>
 
                       <h4>2. POCO Score (Final Classification Score)</h4>
@@ -790,11 +790,14 @@ function LayoutContent({ children }) {
                         <li><strong>Filename patterns</strong> (secondary evidence)</li>
                         <li><strong>Paperless classifications</strong> (verification evidence)</li>
                       </ul>
+                      <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.9rem', marginTop: '12px' }}>
+                        POCO Score = (OCR_weighted + Filename_weighted + Paperless_weighted) / Total_max_weight × 100%
+                      </p>
                       <p>
-                        Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score determines whether the rule should be applied.
+                        Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score must meet the <strong>POCO Threshold (default 75%)</strong> for the rule to be applied.
                       </p>
 
-                      <h4>How Scoring Works (High-Level Explanation)</h4>
+                      <h4>Score Calculation</h4>
                       <p>
                         PocoClass evaluates each data source using this formula:
                       </p>
@@ -836,7 +839,7 @@ function LayoutContent({ children }) {
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 1 – Strong Match</strong>
+                            <strong style={{ color: '#22c55e' }}>Example 1 – Strong Match</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
@@ -851,7 +854,7 @@ function LayoutContent({ children }) {
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 2 – Weak OCR, Filename Disagrees</strong>
+                            <strong style={{ color: '#22c55e' }}>Example 2 – Weak OCR, Filename Disagrees</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                           <li>OCR: 3/4, multiplier = 3 → (3/4 × 4 × 3) = 9</li>
@@ -866,7 +869,7 @@ function LayoutContent({ children }) {
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '16px' }}>
-                            <strong>Example 3 – OCR Failure (Filename & Paperless Can't Save It)</strong>
+                            <strong style={{ color: '#22c55e' }}>Example 3 – OCR Failure (Filename & Paperless Can't Save It)</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
                             <li>OCR: 1/5, multiplier = 3 → (1/5 × 5 × 3) = 3</li>
@@ -897,7 +900,8 @@ function LayoutContent({ children }) {
                       </p>
                       <ul>
                         <li><strong>POCO Score</strong> – final classification confidence (custom field)</li>
-                        <li><strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field)</li>
+                        <li><strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field). Every document gets an OCR score recorded, even if it's 0%</li>
+                        <li><strong>Document Notes</strong> – detailed scoring breakdown is appended to the document's notes</li>
                         <li><strong>POCO+ tag</strong> – rule matched and classification applied</li>
                         <li><strong>POCO- tag</strong> – rule evaluated but did not meet the threshold</li>
                       </ul>
@@ -1006,7 +1010,7 @@ function LayoutContent({ children }) {
                         You may use simple text patterns or more advanced regular expressions (regex).
                       </p>
                       <div className="guide-highlight">
-                        <p><strong>Examples</strong>:</p>
+                        <p><strong style={{ color: '#22c55e' }}>Examples</strong>:</p>
                         <ul style={{ fontSize: '0.9rem' }}>
                           <li><code>/invoice/i</code> – matches "invoice", "Invoice", "INVOICE"</li>
                           <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> – matches dates like "2024-01-15"</li>
@@ -1025,7 +1029,7 @@ function LayoutContent({ children }) {
                       <p>
                         Filename patterns allow PocoClass to use the document's filename as a secondary signal.
                       </p>
-                      <p><strong>Example filename</strong>: <code>2024-01-Bank-Statement.pdf</code></p>
+                      <p><strong style={{ color: '#22c55e' }}>Example filename</strong>: <code>2024-01-Bank-Statement.pdf</code></p>
                       <p><strong>Possible patterns</strong>:</p>
                       <ul style={{ fontSize: '0.9rem' }}>
                         <li><code>/Bank/i</code></li>
@@ -1052,7 +1056,7 @@ function LayoutContent({ children }) {
                         <li><strong>Classification Multiplier</strong> – Trust level for Paperless classifications</li>
                       </ul>
                       <p>
-                        These settings determine how heavily each data source influences the final score. For full details, see How PocoClass Scores Your Documents.
+                        These settings determine how heavily each data source influences the final score. For full details, see The Scoring System.
                       </p>
 
                       <h4>Step 5 — Document Classifications</h4>
@@ -1070,7 +1074,7 @@ function LayoutContent({ children }) {
                         <li>Custom fields</li>
                       </ul>
                       <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                        <strong>Example</strong>: Assign Correspondent → "Bank XYZ", Assign Document Type → "Monthly Statement", Tags → Finance, 2024
+                        <strong style={{ color: '#22c55e' }}>Example</strong>: Assign Correspondent → "Bank XYZ", Assign Document Type → "Monthly Statement", Tags → Finance, 2024
                       </p>
                       <p><strong>Dynamic Classifications</strong></p>
                       <p>
@@ -1078,7 +1082,7 @@ function LayoutContent({ children }) {
                       </p>
                       <div className="guide-highlight">
                         <p style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
-                          <strong>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
+                          <strong style={{ color: '#22c55e' }}>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
                         </p>
                         
                         <p style={{ fontSize: '0.85rem', marginBottom: '8px', fontWeight: '500' }}>Simulated OCR text from document:</p>
@@ -1108,7 +1112,7 @@ function LayoutContent({ children }) {
                         Verification allows PocoClass to confirm that the extracted or assigned classifications aligns with what is already stored in Paperless.
                       </p>
                       <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                        <strong>Example</strong>: Extracted Correspondent → "John Smith", Paperless Correspondent → "John Smith" → Verification passes
+                        <strong style={{ color: '#22c55e' }}>Example</strong>: Extracted Correspondent → "John Smith", Paperless Correspondent → "John Smith" → Verification passes
                       </p>
                       <p>
                         If verification fails, you can choose to allow the rule anyway or block it from applying. Verification adds an extra safety layer, especially when similar document formats may overlap.
@@ -1262,7 +1266,7 @@ function LayoutContent({ children }) {
                       <div className="guide-highlight">
                         <p><strong>Calculation</strong>:</p>
                         <p><code>OCR Score = (Patterns that matched / Total patterns) × 100%</code></p>
-                        <p><strong>Example</strong>:</p>
+                        <p><strong style={{ color: '#22c55e' }}>Example</strong>:</p>
                         <ul>
                           <li>You have 4 OCR patterns</li>
                           <li>3 of them match the document</li>
@@ -1285,7 +1289,7 @@ function LayoutContent({ children }) {
                           <li><code>Filename_weighted</code> = Filename patterns matched × Filename multiplier</li>
                           <li><code>Classification_weighted</code> = Classification verification results × Classification multiplier</li>
                         </ul>
-                        <p><strong>Example with defaults</strong> (OCR 3×, Filename 1×, Classifications auto):</p>
+                        <p><strong style={{ color: '#22c55e' }}>Example with defaults</strong> (OCR 3×, Filename 1×, Classifications auto):</p>
                         <ul>
                           <li>OCR patterns: 3 matched out of 4 (75%)</li>
                           <li>Filename patterns: 1 matched out of 2 (50%)</li>
