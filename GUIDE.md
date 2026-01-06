@@ -287,7 +287,7 @@ When a rule matches, PocoClass:
 - Applies the rule's classifications (correspondent, document type, tags)
 - Writes the POCO Score to the custom field
 - Applies either **"POCO+"** tag (matched) or **"POCO-"** tag (no match)
-- Removes the **"NEW"** tag
+- Optionally removes the **"NEW"** tag (if enabled in Settings → Background Processing → Tag Configuration)
 
 #### Step 5: Repeat
 Background processing continues looking for more documents with the "NEW" tag.
