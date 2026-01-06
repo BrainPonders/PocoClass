@@ -292,6 +292,10 @@ When a rule matches, PocoClass:
 #### Step 5: Repeat
 Background processing continues looking for more documents with the "NEW" tag.
 
+> **Tip:** You can choose whether PocoClass automatically removes the **NEW** tag after processing. Enable this option to keep your Paperless inbox clean, or leave it disabled if you prefer to manually verify documents before removing the tag yourself.
+>
+> **Location:** Settings → Background Processing → Tag Configuration
+
 ### Three Processing Modes
 
 **1. Automatic Mode**
