@@ -363,6 +363,8 @@
       "tagPocoPlusDesc": "Étiquette de succès - Ajoutée lorsqu'un document correspond à une règle et dépasse les seuils POCO et OCR",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Étiquette d'échec - Ajoutée lorsqu'un document est traité mais ne correspond à aucune règle ou n'atteint pas les seuils",
+      "removeNewTag": "Supprimer l'étiquette NEW après le traitement",
+      "removeNewTagDesc": "Lorsqu'elle est activée, PocoClass supprimera automatiquement l'étiquette NEW des documents après leur traitement. Cela garde votre boîte de réception propre en supprimant l'étiquette de déclenchement une fois qu'un document a été classé.",
       "retentionPolicy": "Politique de rétention de l'historique de traitement",
       "retentionPolicyDesc": "Contrôler la durée de conservation de l'historique de traitement dans la base de données",
       "retentionType": "Type de rétention",
