@@ -876,14 +876,14 @@ function LayoutContent({ children }) {
                       <h4>Required Setup</h4>
                       <p><strong>Custom Fields:</strong></p>
                       <ul>
-                        <li><strong>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
-                        <li><strong>POCO OCR (Optional)</strong> - Stores the OCR-specific confidence score component for analysis and troubleshooting</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO OCR (Optional)</strong> - Stores the OCR-specific confidence score component for analysis and troubleshooting</li>
                       </ul>
                       <p style={{ marginTop: '12px' }}><strong>Tags:</strong></p>
                       <ul>
-                        <li><strong>NEW Tag (Required)</strong> - Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation</li>
-                        <li><strong>POCO+ Tag (Required)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
-                        <li><strong>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>NEW Tag (Required)</strong> - Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO+ Tag (Required)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
                       </ul>
                       <p style={{ marginTop: '12px' }}>
                         Custom fields and tag requirements are managed in{' '}
