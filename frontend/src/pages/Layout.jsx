@@ -818,7 +818,7 @@ function LayoutContent({ children }) {
                       <ul>
                         <li><strong>OCR: 3×</strong> - OCR text is usually very reliable</li>
                         <li><strong>Filename: 1×</strong> - Filenames are less reliable</li>
-                        <li><strong>Classifications: Auto</strong> - By default, the classification multiplier neutralizes the number of metadata fields, ensuring metadata can influence confidence without overpowering OCR</li>
+                        <li><strong>Classifications: Auto</strong> - By default, the classification multiplier neutralizes the number of Paperless classifications, ensuring they can influence confidence without overpowering OCR</li>
                       </ul>
                       <p><strong>When to adjust:</strong></p>
                       <ul>
