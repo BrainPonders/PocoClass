@@ -1133,7 +1133,7 @@ function LayoutContent({ children }) {
                       </p>
                       
                       <h4>How It Works</h4>
-                      <p>Think of background processing as a worker that wakes up periodically and asks: "Are there any new documents I should classify?"</p>
+                      <p>Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.</p>
                       <ul>
                         <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>"NEW"</strong> tag</li>
                         <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>"NEW"</strong> and NOT already tagged with <strong>"POCO+"</strong> or <strong>"POCO-"</strong></li>
