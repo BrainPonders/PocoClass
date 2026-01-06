@@ -47,6 +47,7 @@ export default function Settings() {
   const [backgroundSettings, setBackgroundSettings] = useState({
     bg_enabled: false,
     bg_debounce_seconds: 30,
+    bg_remove_new_tag: false,
     history_retention_type: 'days',
     history_retention_days: 365,
     history_retention_count: 100
@@ -595,6 +596,7 @@ export default function Settings() {
         setBackgroundSettings({
           bg_enabled: data.bg_enabled || false,
           bg_debounce_seconds: data.bg_debounce_seconds || 30,
+          bg_remove_new_tag: data.bg_remove_new_tag || false,
           history_retention_type: data.history_retention_type || 'days',
           history_retention_days: data.history_retention_days || 365,
           history_retention_count: data.history_retention_count || 100
@@ -2257,6 +2259,22 @@ export default function Settings() {
                               </div>
                             </div>
                           </div>
+                        </div>
+
+                        <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--app-border)' }}>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>
+                              {t('settings.backgroundProcessing.removeNewTag')}
+                            </label>
+                            <Switch
+                              checked={backgroundSettings.bg_remove_new_tag}
+                              onCheckedChange={(checked) => setBackgroundSettings({ ...backgroundSettings, bg_remove_new_tag: checked })}
+                              disabled={!isAdmin}
+                            />
+                          </div>
+                          <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                            {t('settings.backgroundProcessing.removeNewTagDesc')}
+                          </p>
                         </div>
                       </div>
 
