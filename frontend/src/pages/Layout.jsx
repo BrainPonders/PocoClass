@@ -865,6 +865,15 @@ function LayoutContent({ children }) {
                             Percentage: 9.5 ÷ 18 = <strong>53%</strong><br/>
                             If your threshold is 75% → ✗ Rule skipped (53% is below 75%)
                           </p>
+
+                          <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '8px' }}>
+                            <strong>Rule of thumb:</strong>
+                          </p>
+                          <ul style={{ fontSize: '0.9rem', marginBottom: '0' }}>
+                            <li>If OCR is strong, filename and Paperless usually confirm it.</li>
+                            <li>If OCR is borderline, filename and Paperless decide whether the rule passes or fails.</li>
+                            <li>If OCR is weak, the rule never proceeds.</li>
+                          </ul>
                         </div>
                       </details>
 
