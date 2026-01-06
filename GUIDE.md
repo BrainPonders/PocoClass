@@ -269,7 +269,7 @@ Background processing is how PocoClass automatically classifies new documents wi
 
 ### How It Works
 
-Think of background processing as a worker that wakes up periodically and asks: "Are there any new documents I should classify?"
+Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.
 
 #### Step 1: The Trigger
 PocoClass looks for documents with the **"NEW"** tag. This tag should be applied automatically by Paperless when a new document arrives.
