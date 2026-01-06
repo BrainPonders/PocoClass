@@ -521,23 +521,24 @@ export default function RuleReviewer() {
                     label={{ value: 'POCO Threshold', position: 'right', fill: '#f59e0b', fontSize: 12 }}
                   />
                   <Legend 
-                    content={({ payload }) => (
-                      <div className="flex justify-center gap-6 text-sm mt-2">
-                        {payload.map((entry, index) => (
-                          <div key={`legend-${index}`} className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 border border-gray-300" 
-                              style={{ 
-                                background: entry.value === 'POCO Score' 
-                                  ? 'linear-gradient(135deg, #16a34a 50%, #991b1b 50%)' 
-                                  : entry.value === 'OCR Score'
-                                    ? 'linear-gradient(135deg, #1e40af 50%, #991b1b 50%)'
-                                    : entry.color 
-                              }}
-                            />
-                            <span style={{ color: 'var(--app-text)' }}>{entry.value}</span>
-                          </div>
-                        ))}
+                    content={() => (
+                      <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm mt-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#1e40af' }} />
+                          <span style={{ color: 'var(--app-text)' }}>OCR Score</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#991b1b' }} />
+                          <span style={{ color: 'var(--app-text)' }}>OCR Score Failed</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#16a34a' }} />
+                          <span style={{ color: 'var(--app-text)' }}>POCO Score</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 border border-gray-300" style={{ background: '#991b1b', borderStyle: 'dashed', borderWidth: '2px' }} />
+                          <span style={{ color: 'var(--app-text)' }}>POCO Score Failed</span>
+                        </div>
                       </div>
                     )}
                   />
