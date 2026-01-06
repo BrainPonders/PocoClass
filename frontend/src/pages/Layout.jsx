@@ -810,9 +810,22 @@ function LayoutContent({ children }) {
                         <li>More <span style={{ color: '#10b981', fontWeight: '600' }}>identifiers</span> → stronger evidence</li>
                         <li>More <span style={{ color: '#f59e0b', fontWeight: '600' }}>trusted domains</span> → greater impact</li>
                       </ul>
+                      <h4>Why Multipliers?</h4>
                       <p>
-                        OCR typically carries the most weight, filenames moderate, and classifications the least—unless you adjust the multipliers.
+                        Multipliers let you say: "Trust the OCR text 3 times more than the filename."
                       </p>
+                      <p><strong>Default multipliers:</strong></p>
+                      <ul>
+                        <li><strong>OCR: 3×</strong> - OCR text is usually very reliable</li>
+                        <li><strong>Filename: 1×</strong> - Filenames are less reliable</li>
+                        <li><strong>Classifications: Auto</strong> - Calculated based on other factors</li>
+                      </ul>
+                      <p><strong>When to adjust:</strong></p>
+                      <ul>
+                        <li>Using unreliable OCR? Lower the OCR multiplier</li>
+                        <li>Filenames are super reliable in your organization? Raise the Filename multiplier</li>
+                        <li>Trust Paperless classifications more? Adjust accordingly</li>
+                      </ul>
 
                       <details style={{ marginTop: '16px', padding: '12px', backgroundColor: 'var(--app-bg-secondary)', borderRadius: '6px', border: '1px solid var(--app-border)' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: '500', color: 'var(--app-text-primary)' }}>
