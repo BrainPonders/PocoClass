@@ -1142,6 +1142,27 @@ function LayoutContent({ children }) {
                         <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the <strong>"NEW"</strong> tag</li>
                       </ul>
 
+                      <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
+                        <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                          <strong>Tip:</strong> You can choose whether PocoClass automatically removes the <strong>NEW</strong> tag after processing. Enable this option to keep your Paperless inbox clean, or leave it disabled if you prefer to manually verify documents before removing the tag yourself.
+                        </p>
+                        <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
+                          <strong>Location:</strong> Settings → Background Processing → Tag Configuration
+                        </p>
+                        <button
+                          onClick={() => {
+                            sessionStorage.setItem('settings_active_tab', 'backgroundProcessing');
+                            setShowGuide(false);
+                            window.location.href = createPageUrl("Settings");
+                          }}
+                          className="btn btn-outline btn-sm"
+                          style={{ marginTop: '12px' }}
+                        >
+                          <Settings className="w-4 h-4" />
+                          Open Background Processing Settings
+                        </button>
+                      </div>
+
                       <h4>Three Processing Modes</h4>
                       <p><strong>1. Automatic Mode</strong></p>
                       <ul>
