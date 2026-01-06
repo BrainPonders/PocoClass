@@ -789,7 +789,7 @@ function LayoutContent({ children }) {
                       <ul>
                         <li><strong>OCR results</strong> (primary evidence)</li>
                         <li><strong>Filename patterns</strong> (secondary evidence)</li>
-                        <li><strong>Paperless metadata</strong> (verification evidence)</li>
+                        <li><strong>Paperless classifications</strong> (verification evidence)</li>
                       </ul>
                       <p>
                         Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score determines whether the rule should be applied.
@@ -835,17 +835,17 @@ function LayoutContent({ children }) {
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
                             Maximum possible: (5 × 3) + (2 × 1) + (4 × 0.25) = 18<br/>
                             Percentage: 14.75 ÷ 18 = <strong>82%</strong><br/>
-                            If your threshold is 75% → ✓ Match applied (82% exceeds 75%)
+                            If your threshold is 75% → ✓ Classification applied (82% exceeds 75%)
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
                             <strong>Example 2 – Weak OCR, Filename Disagrees</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
-                            <li>OCR: 3/5, multiplier = 3 → (3/5 × 5 × 3) = 9</li>
-                            <li>Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0</li>
-                            <li>Metadata: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
-                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
+                          <li>OCR: 3/4, multiplier = 3 → (3/4 × 4 × 3) = 9</li>
+                          <li>Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0</li>
+                          <li>Classifications: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
+                          <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
                           </ul>
                           <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
                             Maximum possible: 18 (same as Example 1)<br/>
@@ -863,7 +863,7 @@ function LayoutContent({ children }) {
                         <li><strong>POCO Score</strong> – final classification confidence (custom field)</li>
                         <li><strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field)</li>
                         <li><strong>POCO+ tag</strong> – rule matched and classification applied</li>
-                        <li><strong>POCO– tag</strong> – rule evaluated but did not meet the threshold</li>
+                        <li><strong>POCO- tag</strong> – rule evaluated but did not meet the threshold</li>
                       </ul>
                     </div>
 
