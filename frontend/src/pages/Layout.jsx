@@ -811,7 +811,7 @@ function LayoutContent({ children }) {
                       </ul>
                       <h4>Why Multipliers?</h4>
                       <p>
-                        Multipliers let you say: "Trust the OCR text 3 times more than the filename."
+                        Multipliers control how much each data source contributes to the final score. A higher multiplier means that source carries more weight in determining classification confidence.
                       </p>
                       <p><strong>Default multipliers:</strong></p>
                       <ul>
@@ -1296,7 +1296,7 @@ function LayoutContent({ children }) {
                       </div>
 
                       <h4>Why Multipliers?</h4>
-                      <p>Multipliers let you say: "Trust the OCR text 3 times more than the filename."</p>
+                      <p>Multipliers control how much each data source contributes to the final score. A higher multiplier means that source carries more weight in determining classification confidence.</p>
                       <p><strong>Default multipliers</strong>:</p>
                       <ul>
                         <li><strong>OCR: 3×</strong> - OCR text is usually very reliable</li>
