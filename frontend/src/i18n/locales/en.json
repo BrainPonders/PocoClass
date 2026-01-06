@@ -370,6 +370,8 @@
       "tagPocoPlusDesc": "Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds",
+      "removeNewTag": "Remove NEW tag after processing",
+      "removeNewTagDesc": "When enabled, PocoClass will automatically remove the NEW tag from documents after processing them. This helps keep your inbox clean by removing the trigger tag once a document has been classified.",
       "retentionPolicy": "Processing History Retention Policy",
       "retentionPolicyDesc": "Control how long processing history is kept in the database",
       "retentionType": "Retention Type",
