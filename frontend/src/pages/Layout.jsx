@@ -1135,11 +1135,11 @@ function LayoutContent({ children }) {
                       <h4>How It Works</h4>
                       <p>Think of background processing as a worker that wakes up periodically and asks: "Are there any new documents I should classify?"</p>
                       <ul>
-                        <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>"NEW"</strong> tag</li>
-                        <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with "NEW" and NOT already tagged with "POCO+" or "POCO-"</li>
+                        <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <span style={{ color: '#2563eb' }}><strong>"NEW"</strong></span> tag</li>
+                        <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with <span style={{ color: '#2563eb' }}>"NEW"</span> and NOT already tagged with <span style={{ color: '#16a34a' }}>"POCO+"</span> or <span style={{ color: '#dc2626' }}>"POCO-"</span></li>
                         <li><strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order</li>
-                        <li><strong>Step 4: Tag & Score</strong> - Apply metadata, write POCO Score, apply POCO+ or POCO- tag, remove NEW tag</li>
-                        <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the "NEW" tag</li>
+                        <li><strong>Step 4: Tag & Score</strong> - Apply metadata, write <span style={{ color: '#2563eb' }}>POCO Score</span> and <span style={{ color: '#2563eb' }}>POCO OCR</span>, apply <span style={{ color: '#16a34a' }}>POCO+</span> or <span style={{ color: '#dc2626' }}>POCO-</span> tag, remove <span style={{ color: '#2563eb' }}>NEW</span> tag</li>
+                        <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the <span style={{ color: '#2563eb' }}>"NEW"</span> tag</li>
                       </ul>
 
                       <h4>Three Processing Modes</h4>
@@ -1254,8 +1254,8 @@ function LayoutContent({ children }) {
                       <h4>Classification Tags</h4>
                       <p>Every processed document gets one of two tags:</p>
                       <ul>
-                        <li><strong>POCO+</strong>: Rule matched and classification was applied</li>
-                        <li><strong>POCO-</strong>: Rule tested but didn't match (score was too low)</li>
+                        <li><strong style={{ color: '#16a34a' }}>POCO+</strong>: Rule matched and classification was applied</li>
+                        <li><strong style={{ color: '#dc2626' }}>POCO-</strong>: Rule tested but didn't match (score was too low)</li>
                       </ul>
                     </div>
 
@@ -1269,7 +1269,7 @@ function LayoutContent({ children }) {
                         <li><strong>Metadata</strong>: Information about a document (static = always same; dynamic = extracted)</li>
                         <li><strong>Correspondent</strong>: Who the document is from (sender)</li>
                         <li><strong>Document Type</strong>: What kind of document</li>
-                        <li><strong>Custom Field</strong>: Extra information fields you create</li>
+                        <li><strong>Custom Field</strong>: Extra information fields you create (e.g., <span style={{ color: '#2563eb' }}>"POCO Score"</span>, <span style={{ color: '#2563eb' }}>"POCO OCR"</span>)</li>
                         <li><strong>Cache</strong>: Temporary storage of Paperless data for fast access</li>
                         <li><strong>Threshold</strong>: A minimum score that triggers an action</li>
                       </ul>
