@@ -1011,11 +1011,11 @@ function LayoutContent({ children }) {
                         These settings determine how heavily each data source influences the final score. For full details, see How PocoClass Scores Your Documents.
                       </p>
 
-                      <h4>Step 5 — Metadata Assignment</h4>
+                      <h4>Step 5 — Document Classifications</h4>
                       <p>
                         Here you define what PocoClass should write into Paperless if the rule matches.
                       </p>
-                      <p><strong>Static Metadata</strong></p>
+                      <p><strong>Static Classifications</strong></p>
                       <p>
                         Values that always apply when the rule matches:
                       </p>
@@ -1028,7 +1028,7 @@ function LayoutContent({ children }) {
                       <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
                         <strong>Example</strong>: Assign Correspondent → "Bank XYZ", Assign Document Type → "Monthly Statement", Tags → Finance, 2024
                       </p>
-                      <p><strong>Dynamic Metadata</strong></p>
+                      <p><strong>Dynamic Classifications</strong></p>
                       <p>
                         Extracted directly from the document using anchors.
                       </p>
