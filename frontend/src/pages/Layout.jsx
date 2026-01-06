@@ -700,7 +700,6 @@ function LayoutContent({ children }) {
                         PocoClass works alongside Paperless to automatically organize your documents. Here's how it all fits together:
                       </p>
                       
-                      <h4>The Simple Flow</h4>
                       <div className="guide-workflow">
                         <div className="guide-step">
                           <div className="guide-step-number">1</div>
@@ -864,6 +863,21 @@ function LayoutContent({ children }) {
                             Maximum possible: 18 (same as Example 1)<br/>
                             Percentage: 9.5 ÷ 18 = <strong>53%</strong><br/>
                             If your threshold is 75% → ✗ Rule skipped (53% is below 75%)
+                          </p>
+
+                          <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '16px' }}>
+                            <strong>Example 3 – OCR Failure (Filename & Paperless Can't Save It)</strong>
+                          </p>
+                          <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
+                            <li>OCR: 1/5, multiplier = 3 → (1/5 × 5 × 3) = 3</li>
+                            <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
+                            <li>Paperless: 4/4, multiplier = 0.25 → (4/4 × 4 × 0.25) = 1</li>
+                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 3 + 2 + 1 = <strong>6</strong></li>
+                          </ul>
+                          <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
+                            Maximum possible: 18 (same as Example 1)<br/>
+                            Percentage: 6 ÷ 18 = <strong>33%</strong><br/>
+                            If your threshold is 75% → ✗ Rule skipped (even perfect filename & Paperless can't compensate for weak OCR)
                           </p>
 
                           <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '8px' }}>
