@@ -55,7 +55,7 @@ Paperless exposes a REST API (a way for programs to communicate with Paperless).
 - Retrieve your document types, correspondents, and tags
 - Fetch custom field information
 - Apply classifications to documents
-- Create tags and update documents with new metadata
+- Create tags and update documents with new classifications
 
 ---
 
@@ -169,7 +169,7 @@ These patterns search for text in the **document filename** (not the content).
 Filename patterns are optional. The system applies a multiplier (default 1×) to their scoring.
 
 #### **Step 4: Paperless Comparison**
-This is a safety check. You can verify that extracted or assigned metadata matches what's already in Paperless.
+This is a safety check. You can verify that extracted or assigned classifications match what's already in Paperless.
 
 **Example**:
 - Rule extracted "John Smith" as the correspondent
@@ -226,7 +226,7 @@ Before you let PocoClass automatically classify hundreds of documents, you want 
 "Apply this rule for real"
 - PocoClass tests your rule and actually classifies the documents
 - Makes changes in Paperless
-- Applied tags, correspondents, and metadata to documents
+- Applied tags, correspondents, and classifications to documents
 - Scores are recorded in the POCO Score custom field
 
 **How to do it**:
@@ -284,7 +284,7 @@ PocoClass runs all enabled rules against these documents in order, testing each 
 
 #### Step 4: Tag & Score
 When a rule matches, PocoClass:
-- Applies the rule's metadata (correspondent, document type, tags)
+- Applies the rule's classifications (correspondent, document type, tags)
 - Writes the POCO Score to the custom field
 - Applies either **"POCO+"** tag (matched) or **"POCO-"** tag (no match)
 - Removes the **"NEW"** tag
@@ -325,7 +325,7 @@ Shows each document:
 - Which rule matched (if any)
 - OCR and POCO scores
 - What classification it got (POCO+ or POCO-)
-- What metadata was applied
+- What classifications were applied
 
 ### Monitoring Background Processing
 
