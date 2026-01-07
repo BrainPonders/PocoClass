@@ -1118,9 +1118,9 @@
     },
     "backgroundProcessing": {
       "title": "Achtergrondverwerking",
-      "intro": "Achtergrondverwerking is hoe PocoClass automatisch nieuwe documenten classificeert zonder dat u iets hoeft te doen.",
+      "intro": "Achtergrondverwerking is hoe PocoClass automatisch nieuwe documenten classificeert.",
       "howItWorksTitle": "Hoe het werkt",
-      "howItWorksIntro": "Achtergrondverwerking werkt als een geplande service die periodiek scant naar nieuwe documenten en automatisch classificatieregels toepast.",
+      "howItWorksIntro": "Wanneer geactiveerd, scant PocoClass naar documenten met de NEW-tag en past uw classificatieregels toe. Uw beheerder configureert hoe de activering werkt (automatisch via post-consumption script, handmatig of gepland).",
       "step1": "<strong>Stap 1: De trigger</strong> - PocoClass zoekt naar documenten met de <strong>\"NEW\"</strong> tag",
       "step2": "<strong>Stap 2: Documenten filteren</strong> - Vind documenten getagd met <strong>\"NEW\"</strong> en NIET al getagd met <strong>\"POCO+\"</strong> of <strong>\"POCO-\"</strong>",
       "step3": "<strong>Stap 3: Regels toepassen</strong> - Voer alle ingeschakelde regels uit op deze documenten in volgorde",
@@ -1170,7 +1170,7 @@
       "description": "PocoClass kijkt naar documenten met de tag \"NEW\" in Paperless, vergelijkt ze met uw classificatieregels en past de juiste tags en metagegevens toe. Documenten die slagen krijgen een POCO+ tag; documenten die niet slagen krijgen een POCO- tag."
     },
     "minimumSetup": {
-      "title": "Minimale installatie",
+      "title": "Minimale installatievereisten",
       "intro": "Voordat u PocoClass kunt gebruiken, heeft uw Paperless-systeem deze items nodig:",
       "pocoScore": "<strong>POCO Score</strong> – een aangepast veld om classificatievertrouwen op te slaan",
       "pocoOCR": "<strong>POCO OCR</strong> (optioneel) – een aangepast veld om de OCR-transparantiescore op te slaan",

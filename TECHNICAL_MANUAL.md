@@ -1159,38 +1159,30 @@ def values_match(extracted, paperless):
 
 ### 7.1.1 Paperless-ngx Post-Consumption Script Setup
 
-To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents:
+To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents.
+
+A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script:
+1. Adds the "NEW" tag to newly consumed documents (preserving existing tags)
+2. Triggers PocoClass background processing with debouncing
 
 **In Paperless-ngx configuration** (docker-compose.yml or environment):
 ```yaml
 environment:
-  - PAPERLESS_POST_CONSUME_SCRIPT=/usr/src/paperless/scripts/post_consume_pococlass.sh
+  - PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
 ```
 
-**Create the script** (`/usr/src/paperless/scripts/post_consume_pococlass.sh`):
-```bash
-#!/bin/bash
-# Post-consumption script for PocoClass integration
-# Called by Paperless-ngx after consuming each document
-
-POCOCLASS_URL="http://pococlass:8000"  # Adjust to your PocoClass URL
-ENDPOINT="${POCOCLASS_URL}/api/background/trigger"
-
-# Make HTTP POST request to trigger PocoClass processing
-curl -X POST "$ENDPOINT" \
-  -H "Content-Type: application/json" \
-  -d '{"source": "post-consumption"}' \
-  --max-time 5 \
-  --silent \
-  --show-error
-
-exit 0  # Always exit 0 so Paperless doesn't fail on network issues
-```
+**Configuration required** in `scripts/pococlass_trigger.sh`:
+- `POCOCLASS_URL` - Your PocoClass server address
+- `POCOCLASS_TOKEN` - PocoClass session token (from browser cookies after login)
+- `PAPERLESS_URL` - Your Paperless-ngx server address  
+- `PAPERLESS_TOKEN` - Your Paperless API token
 
 **Make script executable**:
 ```bash
-chmod +x /usr/src/paperless/scripts/post_consume_pococlass.sh
+chmod +x scripts/pococlass_trigger.sh
 ```
+
+See `ADMIN_GUIDE.md` for detailed setup instructions including authentication token retrieval.
 
 **Flow**:
 ```

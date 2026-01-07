@@ -1120,9 +1120,9 @@
     },
     "backgroundProcessing": {
       "title": "Elaborazione in Background",
-      "intro": "L'elaborazione in background è il modo in cui PocoClass classifica automaticamente i nuovi documenti senza che tu debba fare nulla.",
+      "intro": "L'elaborazione in background è il modo in cui PocoClass classifica automaticamente i nuovi documenti.",
       "howItWorksTitle": "Come Funziona",
-      "howItWorksIntro": "L'elaborazione in background opera come un servizio programmato che scansiona periodicamente i nuovi documenti e applica automaticamente le regole di classificazione.",
+      "howItWorksIntro": "Quando attivata, PocoClass scansiona i documenti con l'etichetta NEW e applica le tue regole di classificazione. Il tuo amministratore configura come funziona l'attivazione (automatica tramite script post-consumption, manuale o programmata).",
       "step1": "<strong>Passo 1: Il Trigger</strong> - PocoClass cerca i documenti con l'etichetta <strong>\"NEW\"</strong>",
       "step2": "<strong>Passo 2: Filtra Documenti</strong> - Trova i documenti etichettati con <strong>\"NEW\"</strong> e NON già etichettati con <strong>\"POCO+\"</strong> o <strong>\"POCO-\"</strong>",
       "step3": "<strong>Passo 3: Applica Regole</strong> - Esegui tutte le regole abilitate su questi documenti in ordine",
@@ -1172,7 +1172,7 @@
       "description": "PocoClass monitora i documenti etichettati con \"NEW\" in Paperless, li confronta con le tue regole di classificazione e applica le etichette e i metadati appropriati. I documenti che passano ricevono un'etichetta POCO+; quelli che non passano ricevono un'etichetta POCO-."
     },
     "minimumSetup": {
-      "title": "Configurazione Minima",
+      "title": "Requisiti Minimi di Configurazione",
       "intro": "Prima di poter usare PocoClass, il tuo sistema Paperless ha bisogno di questi elementi:",
       "pocoScore": "<strong>POCO Score</strong> – un campo personalizzato per memorizzare la confidenza della classificazione",
       "pocoOCR": "<strong>POCO OCR</strong> (opzionale) – un campo personalizzato per memorizzare il punteggio di trasparenza OCR",
