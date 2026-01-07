@@ -55,7 +55,7 @@ COPY scripts/ ./scripts/
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-COPY docker-entrypoint.sh ./
+COPY docker/docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
 RUN mkdir -p /app/data \
