@@ -410,7 +410,9 @@
       "copiedDesc": "Token copied to clipboard",
       "saveWarning": "Save this token now - it will not be shown again!",
       "usageHint": "Use this token in your post-consumption script with: -H \"X-API-Key: YOUR_TOKEN\"",
-      "adminOnly": "Only administrators can manage the system API token"
+      "adminOnly": "Only administrators can manage the system API token",
+      "scriptSetupRequired": "Post-Consumption Script Required",
+      "scriptSetupDesc": "For automatic processing, you must configure a post-consumption script in Paperless-ngx. Copy pococlass_trigger.sh to your scripts folder and set the environment variable:"
     },
     "requiredCustomFields": "Required Custom Fields",
     "optionalCustomFields": "Optional Custom Fields",
