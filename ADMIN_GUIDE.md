@@ -416,9 +416,9 @@ Background processing is how PocoClass classifies new documents. When enabled, P
 There are three ways to trigger background processing:
 
 #### **1. Post-Consumption Script (Recommended for Automation)**
-Paperless-ngx supports post-consumption scripts that run automatically after a document is consumed. You can configure a script that:
-1. Tags the new document with "NEW"
-2. Calls PocoClass's trigger endpoint
+Paperless-ngx supports post-consumption scripts that run automatically after a document is consumed. You can configure a script that calls PocoClass's trigger endpoint.
+
+**Note:** The NEW tag is assigned automatically by Paperless-ngx when the tag is configured as an "inbox tag". PocoClass creates the NEW tag with this option enabled by default.
 
 See the [Setting Up Automatic Processing](#setting-up-automatic-processing) section below for setup instructions.
 
@@ -433,7 +433,7 @@ Set up a cron job or scheduled task that calls PocoClass's API endpoint at regul
 ### The Processing Flow
 
 #### Step 1: The Trigger
-When triggered, PocoClass looks for documents with the **"NEW"** tag. This tag should be applied to incoming documents (either manually, by a post-consumption script, or via Paperless workflow).
+When triggered, PocoClass looks for documents with the **"NEW"** tag. Paperless-ngx automatically applies this tag to new documents because it's configured as an "inbox tag" (PocoClass sets this up automatically when creating the tag).
 
 #### Step 2: Filter Documents
 PocoClass finds documents that are:
@@ -520,9 +520,9 @@ Paperless-ngx runs post-consumption scripts automatically after a document is fu
 
 ### The Post-Consumption Script
 
-A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script:
-1. Adds the "NEW" tag to newly consumed documents (preserving any existing tags)
-2. Triggers PocoClass background processing with debouncing
+A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
+
+**Note:** The NEW tag is assigned automatically by Paperless-ngx. When PocoClass creates the NEW tag, it configures it as an "inbox tag", which makes Paperless automatically assign it to all newly consumed documents. The script only needs to trigger PocoClass - it doesn't need to tag documents.
 
 ### Setup Steps
 
@@ -531,8 +531,6 @@ A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script
 2. Edit the configuration section at the top:
    - `POCOCLASS_URL` - Your PocoClass server address (e.g., `http://192.168.1.100:5000`)
    - `POCOCLASS_TOKEN` - Session token from PocoClass (see Authentication below)
-   - `PAPERLESS_URL` - Your Paperless-ngx server address
-   - `PAPERLESS_TOKEN` - Your Paperless API token
 
 #### Step 2: Make it Executable
 ```bash
@@ -554,11 +552,6 @@ PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
 ```
 
 ### Authentication
-
-#### Getting Your Paperless API Token
-1. Log into Paperless-ngx as an admin
-2. Go to Settings → Admin → API Token
-3. Copy the token and use it for `PAPERLESS_TOKEN`
 
 #### Getting Your PocoClass Session Token
 1. Log into PocoClass in your browser

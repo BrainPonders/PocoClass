@@ -251,7 +251,7 @@ class SyncService:
         required_tags = [
             {'name': 'POCO+', 'color': '#10b981', 'is_inbox_tag': False},  # Green
             {'name': 'POCO-', 'color': '#ef4444', 'is_inbox_tag': False},  # Red
-            {'name': 'NEW', 'color': '#3b82f6', 'is_inbox_tag': False}      # Blue
+            {'name': 'NEW', 'color': '#3b82f6', 'is_inbox_tag': True}       # Blue - inbox tag so Paperless auto-assigns to new documents
         ]
         
         for tag_spec in required_tags:
