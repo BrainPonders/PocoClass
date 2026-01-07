@@ -672,8 +672,8 @@ function LayoutContent({ children }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <div className="modal-header">
                     <div>
-                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>PocoClass Guide</h2>
-                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>A beginner-friendly guide to document classification</p>
+                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>{t('guide.title')}</h2>
+                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>{t('guide.subtitle')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -699,256 +699,235 @@ function LayoutContent({ children }) {
                   
                   <div className="modal-body">
                     <div className="guide-section">
-                      <h3>Introduction</h3>
+                      <h3>{t('guide.introduction.title')}</h3>
                       <p>
-                        PocoClass is an intelligent rule-based classification engine designed to enhance Paperless-ngx. While Paperless already provides 
-                        a powerful search interface and a built-in classifier, it might struggle to recognize complex document types, especially during initial 
-                        bulk imports or when documents follow complex formats. PocoClass fills this gap by letting you explicitly define how each type of 
-                        document should be identified through patterns and how it should be classified.
+                        {t('guide.introduction.p1')}
                       </p>
                       <p>
-                        Its primary objective is to deliver consistent, accurate classification—no matter how many documents you are importing or how varied 
-                        they may be. Once configured, PocoClass can run fully automatically, quietly keeping your Paperless library structured with minimal 
-                        effort from you.
+                        {t('guide.introduction.p2')}
                       </p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>How PocoClass Works with Paperless</h3>
+                      <h3>{t('guide.howItWorks.title')}</h3>
                       <p>
-                        PocoClass works alongside Paperless to automatically organize your documents. Here's how it all fits together:
+                        {t('guide.howItWorks.intro')}
                       </p>
                       
                       <div className="guide-workflow">
                         <div className="guide-step">
                           <div className="guide-step-number">1</div>
                           <div className="guide-step-content">
-                            <strong>Document Arrives in Paperless</strong>
+                            <strong>{t('guide.howItWorks.step1Title')}</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              You scan or upload a document. Paperless extracts the text (OCR) so it can be searched. Paperless automatically notifies PocoClass that one or more new documents are available for analysis.
+                              {t('guide.howItWorks.step1Desc')}
                             </p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">2</div>
                           <div className="guide-step-content">
-                            <strong>PocoClass Analyzes It</strong>
+                            <strong>{t('guide.howItWorks.step2Title')}</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              PocoClass checks the document against your personal defined rules. It looks at the text, filename, and other information, then calculates a confidence score (POCO Score) for each possible match. The scoring system evaluates how well the document fits each rule.
+                              {t('guide.howItWorks.step2Desc')}
                             </p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">3</div>
                           <div className="guide-step-content">
-                            <strong>PocoClass Assigns Classifications</strong>
+                            <strong>{t('guide.howItWorks.step3Title')}</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              If a match is found, PocoClass automatically applies the classifications you specified in your rule—like tags, correspondents, document type, and other details—directly to the document in Paperless.
+                              {t('guide.howItWorks.step3Desc')}
                             </p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">4</div>
                           <div className="guide-step-content">
-                            <strong>Document is Organized</strong>
+                            <strong>{t('guide.howItWorks.step4Title')}</strong>
                             <p style={{ marginTop: '4px', marginBottom: '0', fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                              Your document now has the right classification and is easy to find. You can also use Paperless workflows to do additional processing based on these classifications, like automatically moving documents to specific folders.
+                              {t('guide.howItWorks.step4Desc')}
                             </p>
                           </div>
                         </div>
                       </div>
 
                       <div className="guide-highlight">
-                        <strong>Automatic Background Processing</strong>
-                        <p>PocoClass is triggered automatically whenever Paperless finishes consuming documents. It applies your rules without any manual action required, ensuring consistent classification for bulk imports and daily new documents.</p>
+                        <strong>{t('guide.howItWorks.autoProcessingTitle')}</strong>
+                        <p>{t('guide.howItWorks.autoProcessingDesc')}</p>
                       </div>
 
-                      <h4>What PocoClass Can Edit in Paperless</h4>
+                      <h4>{t('guide.howItWorks.whatCanEditTitle')}</h4>
                       <p>
-                        PocoClass updates your documents directly in Paperless once a rule matches. Depending on your rule configuration, PocoClass can set or update the following fields:
+                        {t('guide.howItWorks.whatCanEditIntro')}
                       </p>
                       <ul>
-                        <li><strong>Correspondent</strong> - Who the document is from (e.g., a bank, insurer, or government agency)</li>
-                        <li><strong>Document Type</strong> - The category of the document (e.g., invoice, statement, receipt, contract)</li>
-                        <li><strong>Tags</strong> - Labels that help group or filter documents (e.g., "Finance", "Tax", "2024")</li>
-                        <li><strong>Custom Fields</strong> - Additional information extracted from the document, such as invoice numbers, reference codes, dates, or account numbers</li>
+                        <li><strong>{t('guide.howItWorks.correspondent')}</strong> - {t('guide.howItWorks.correspondentDesc')}</li>
+                        <li><strong>{t('guide.howItWorks.documentType')}</strong> - {t('guide.howItWorks.documentTypeDesc')}</li>
+                        <li><strong>{t('guide.howItWorks.tags')}</strong> - {t('guide.howItWorks.tagsDesc')}</li>
+                        <li><strong>{t('guide.howItWorks.customFields')}</strong> - {t('guide.howItWorks.customFieldsDesc')}</li>
                       </ul>
                       <p>
-                        All these updates happen within Paperless itself, meaning your library stays organized, searchable, and consistent.
+                        {t('guide.howItWorks.updatesNote')}
                       </p>
 
                     </div>
 
                     <div className="guide-section">
-                      <h3>The Scoring System</h3>
+                      <h3>{t('guide.scoring.title')}</h3>
                       <p>
-                        PocoClass uses a confidence-based scoring system to decide whether a document matches a rule. This score determines whether the rule is applied, skipped, or flagged for review.
+                        {t('guide.scoring.intro')}
                       </p>
                       <p>
-                        To keep the process transparent, PocoClass generates two scores for every document:
+                        {t('guide.scoring.twoScoresIntro')}
                       </p>
 
-                      <h4>1. POCO OCR Score (Transparency Score)</h4>
+                      <h4>{t('guide.scoring.ocrScoreTitle')}</h4>
                       <p>
-                        This score reflects how many OCR identifiers were found in the document text. It shows how well the document content matches your rule.
+                        {t('guide.scoring.ocrScoreDesc')}
                       </p>
                       <ul>
-                        <li>It acts as a gatekeeper: if the OCR score is below the <strong>OCR Threshold (default 75%)</strong>, rule evaluation stops immediately</li>
-                        <li>This threshold is configurable per rule in the rule builder</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.ocrScorePoint1') }} />
+                        <li>{t('guide.scoring.ocrScorePoint2')}</li>
                       </ul>
                       <p>
-                        If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or Paperless checks.
+                        {t('guide.scoring.ocrScoreNote')}
                       </p>
 
-                      <h4>2. POCO Score (Final Classification Score)</h4>
+                      <h4>{t('guide.scoring.pocoScoreTitle')}</h4>
                       <p>
-                        Once OCR passes the minimum threshold, PocoClass evaluates the full document using:
+                        {t('guide.scoring.pocoScoreIntro')}
                       </p>
                       <ul>
-                        <li><strong>OCR results</strong> (primary evidence)</li>
-                        <li><strong>Filename patterns</strong> (secondary evidence)</li>
-                        <li><strong>Paperless classifications</strong> (verification evidence)</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.pocoScorePoint1') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.pocoScorePoint2') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.pocoScorePoint3') }} />
                       </ul>
                       <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.9rem', marginTop: '12px' }}>
-                        POCO Score = (OCR_weighted + Filename_weighted + Paperless_weighted) / Total_max_weight × 100%
+                        {t('guide.scoring.pocoScoreFormula')}
                       </p>
-                      <p>
-                        Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score must meet the <strong>POCO Threshold (default 75%)</strong> for the rule to be applied.
-                      </p>
+                      <p dangerouslySetInnerHTML={{ __html: t('guide.scoring.pocoScoreNote') }} />
 
-                      <h4>Score Calculation</h4>
+                      <h4>{t('guide.scoring.calculationTitle')}</h4>
                       <p>
-                        PocoClass evaluates each data source using this formula:
+                        {t('guide.scoring.calculationIntro')}
                       </p>
                       <p style={{ fontFamily: 'monospace', backgroundColor: 'var(--app-bg)', padding: '8px', borderRadius: '4px', fontSize: '0.9rem' }}>
-                        Weighted Score = (<span style={{ color: '#3b82f6', fontWeight: '600' }}>matches</span> / <span style={{ color: '#10b981', fontWeight: '600' }}>total</span>) × <span style={{ color: '#10b981', fontWeight: '600' }}>total</span> × <span style={{ color: '#f59e0b', fontWeight: '600' }}>multiplier</span>
+                        {t('guide.scoring.calculationFormula')}
                       </p>
                       <p>
-                        This method ensures:
+                        {t('guide.scoring.calculationEnsures')}
                       </p>
                       <ul>
-                        <li>More <span style={{ color: '#3b82f6', fontWeight: '600' }}>matches</span> → higher score</li>
-                        <li>More <span style={{ color: '#10b981', fontWeight: '600' }}>identifiers</span> → stronger evidence</li>
-                        <li>More <span style={{ color: '#f59e0b', fontWeight: '600' }}>trusted domains</span> → greater impact</li>
+                        <li>{t('guide.scoring.calculationPoint1')}</li>
+                        <li>{t('guide.scoring.calculationPoint2')}</li>
+                        <li>{t('guide.scoring.calculationPoint3')}</li>
                       </ul>
-                      <h4>Why Multipliers?</h4>
+                      <h4>{t('guide.scoring.multipliersTitle')}</h4>
                       <p>
-                        Multipliers control how much each data source contributes to the final score. A higher multiplier means that source carries more weight in determining classification confidence.
+                        {t('guide.scoring.multipliersIntro')}
                       </p>
-                      <p><strong>Default multipliers:</strong></p>
+                      <p><strong>{t('guide.scoring.defaultMultipliers')}</strong></p>
                       <ul>
-                        <li><strong>OCR: 3×</strong> - OCR text is usually very reliable</li>
-                        <li><strong>Filename: 1×</strong> - Filenames are less reliable</li>
-                        <li><strong>Classifications: Auto</strong> - By default, the classification multiplier neutralizes the number of Paperless classifications, ensuring they can influence confidence without overpowering OCR</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.ocrMultiplier') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.filenameMultiplier') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.classificationsMultiplier') }} />
                       </ul>
-                      <p><strong>When to adjust:</strong></p>
+                      <p><strong>{t('guide.scoring.whenToAdjust')}</strong></p>
                       <ul>
-                        <li>Using unreliable OCR? Lower the OCR multiplier</li>
-                        <li>Filenames are super reliable in your organization? Raise the Filename multiplier</li>
-                        <li>Trust Paperless classifications more? Adjust accordingly</li>
+                        <li>{t('guide.scoring.adjustPoint1')}</li>
+                        <li>{t('guide.scoring.adjustPoint2')}</li>
+                        <li>{t('guide.scoring.adjustPoint3')}</li>
                       </ul>
 
                       <details style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: '500', color: 'var(--app-text-primary)' }}>
-                          Examples (and Converting to Percentages)
+                          {t('guide.scoring.examplesTitle')}
                         </summary>
                         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--app-border)' }}>
-                          <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Understanding the Threshold Percentage:</strong> The scores shown here are absolute values. To convert them to the percentages you define in the rule builder (like 75%), divide the score by the maximum possible score for that rule. The maximum possible score is what you'd get if all identifiers matched perfectly.
-                          </p>
+                          <p style={{ fontSize: '0.9rem', marginBottom: '16px' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.examplesThresholdNote') }} />
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 1 – Strong Match</strong>
+                            <strong>{t('guide.scoring.example1Title')}</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
-                            <li>OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12</li>
-                            <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
-                            <li>Paperless: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75</li>
-                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 12 + 2 + 0.75 = <strong>14.75</strong></li>
+                            <li>{t('guide.scoring.example1OCR')}</li>
+                            <li>{t('guide.scoring.example1Filename')}</li>
+                            <li>{t('guide.scoring.example1Paperless')}</li>
+                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example1Total') }} />
                           </ul>
-                          <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
-                            Maximum possible: (5 × 3) + (2 × 1) + (4 × 0.25) = 18<br/>
-                            Percentage: 14.75 ÷ 18 = <strong>82%</strong><br/>
-                            If your threshold is 75% → ✓ Classification applied (82% exceeds 75%)
-                          </p>
+                          <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example1Result') }} />
 
                           <p style={{ fontSize: '0.9rem', marginBottom: '16px' }}>
-                            <strong>Example 2 – Weak OCR, Filename Disagrees</strong>
+                            <strong>{t('guide.scoring.example2Title')}</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
-                          <li>OCR: 3/4, multiplier = 3 → (3/4 × 4 × 3) = 9</li>
-                          <li>Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0</li>
-                          <li>Paperless: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5</li>
-                          <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 9 + 0 + 0.5 = <strong>9.5</strong></li>
+                            <li>{t('guide.scoring.example2OCR')}</li>
+                            <li>{t('guide.scoring.example2Filename')}</li>
+                            <li>{t('guide.scoring.example2Paperless')}</li>
+                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example2Total') }} />
                           </ul>
-                          <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                            Maximum possible: 18 (same as Example 1)<br/>
-                            Percentage: 9.5 ÷ 18 = <strong>53%</strong><br/>
-                            If your threshold is 75% → ✗ Rule skipped (53% is below 75%)
-                          </p>
+                          <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example2Result') }} />
 
                           <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '16px' }}>
-                            <strong>Example 3 – OCR Failure (Filename & Paperless Can't Save It)</strong>
+                            <strong>{t('guide.scoring.example3Title')}</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '12px', fontFamily: 'monospace' }}>
-                            <li>OCR: 1/5, multiplier = 3 → (1/5 × 5 × 3) = 3</li>
-                            <li>Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2</li>
-                            <li>Paperless: 4/4, multiplier = 0.25 → (4/4 × 4 × 0.25) = 1</li>
-                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }}>Total score = 3 + 2 + 1 = <strong>6</strong></li>
+                            <li>{t('guide.scoring.example3OCR')}</li>
+                            <li>{t('guide.scoring.example3Filename')}</li>
+                            <li>{t('guide.scoring.example3Paperless')}</li>
+                            <li style={{ marginTop: '8px', borderTop: '1px solid var(--app-border)', paddingTop: '8px' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example3Total') }} />
                           </ul>
-                          <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }}>
-                            Maximum possible: 18 (same as Example 1)<br/>
-                            Percentage: 6 ÷ 18 = <strong>33%</strong><br/>
-                            If your threshold is 75% → ✗ Rule skipped (even perfect filename & Paperless can't compensate for weak OCR)
-                          </p>
+                          <p style={{ fontSize: '0.9rem', marginBottom: '16px', color: 'var(--app-text-secondary)' }} dangerouslySetInnerHTML={{ __html: t('guide.scoring.example3Result') }} />
 
                           <p style={{ fontSize: '0.9rem', marginTop: '16px', marginBottom: '8px' }}>
-                            <strong>Rule of thumb:</strong>
+                            <strong>{t('guide.scoring.ruleOfThumb')}</strong>
                           </p>
                           <ul style={{ fontSize: '0.9rem', marginBottom: '0' }}>
-                            <li>If OCR is strong, filename and Paperless usually confirm it.</li>
-                            <li>If OCR is borderline, filename and Paperless decide whether the rule passes or fails.</li>
-                            <li>If OCR is weak, the rule never proceeds.</li>
+                            <li>{t('guide.scoring.ruleOfThumbPoint1')}</li>
+                            <li>{t('guide.scoring.ruleOfThumbPoint2')}</li>
+                            <li>{t('guide.scoring.ruleOfThumbPoint3')}</li>
                           </ul>
                         </div>
                       </details>
 
-                      <h4 style={{ marginTop: '24px' }}>Where Scores Are Stored in Paperless</h4>
+                      <h4 style={{ marginTop: '24px' }}>{t('guide.scoring.whereStoredTitle')}</h4>
                       <p>
-                        PocoClass writes its evaluation results back into Paperless so you always know what happened:
+                        {t('guide.scoring.whereStoredIntro')}
                       </p>
                       <ul>
-                        <li><strong>POCO Score</strong> – final classification confidence (custom field)</li>
-                        <li><strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field). Every document gets an OCR score recorded, even if it's 0%</li>
-                        <li><strong>POCO+ tag</strong> – rule matched and classification applied</li>
-                        <li><strong>POCO- tag</strong> – rule evaluated but did not meet the threshold</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.whereStoredScore') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.whereStoredOCR') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.whereStoredPlus') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.scoring.whereStoredMinus') }} />
                       </ul>
                       <div className="guide-highlight" style={{ marginTop: '16px' }}>
-                        <strong>Document Notes</strong>
-                        <p>A detailed scoring breakdown is also appended to the document's notes in Paperless, providing full transparency for every evaluation.</p>
+                        <strong>{t('guide.scoring.documentNotesTitle')}</strong>
+                        <p>{t('guide.scoring.documentNotesDesc')}</p>
                       </div>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Setup Requirements & Data Synchronization</h3>
+                      <h3>{t('guide.setup.title')}</h3>
                       <p>
-                        Before PocoClass can work, you need to set up a few things in your Paperless system. These required fields allow PocoClass to track its work and store important information.
+                        {t('guide.setup.intro')}
                       </p>
 
-                      <h4>Required Setup</h4>
-                      <p><strong>Custom Fields:</strong></p>
+                      <h4>{t('guide.setup.requiredTitle')}</h4>
+                      <p><strong>{t('guide.setup.customFieldsLabel')}</strong></p>
                       <ul>
-                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO Score (Required)</strong> - Stores the confidence score calculated by PocoClass for each document after rule evaluation</li>
-                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO OCR (Optional)</strong> - Stores the OCR-specific confidence score component for analysis and troubleshooting</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>{t('guide.setup.pocoScoreRequired')}</strong> - {t('guide.setup.pocoScoreDesc')}</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>{t('guide.setup.pocoOCROptional')}</strong> - {t('guide.setup.pocoOCRDesc')}</li>
                       </ul>
-                      <p style={{ marginTop: '12px' }}><strong>Tags:</strong></p>
+                      <p style={{ marginTop: '12px' }}><strong>{t('guide.setup.tagsLabel')}</strong></p>
                       <ul>
-                        <li><strong style={{ color: 'var(--app-primary)' }}>NEW Tag (Required)</strong> - Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation</li>
-                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO+ Tag (Required)</strong> - Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches</li>
-                        <li><strong style={{ color: 'var(--app-primary)' }}>POCO- Tag (Required)</strong> - Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>{t('guide.setup.newTagRequired')}</strong> - {t('guide.setup.newTagDesc')}</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>{t('guide.setup.plusTagRequired')}</strong> - {t('guide.setup.plusTagDesc')}</li>
+                        <li><strong style={{ color: 'var(--app-primary)' }}>{t('guide.setup.minusTagRequired')}</strong> - {t('guide.setup.minusTagDesc')}</li>
                       </ul>
                       <p style={{ marginTop: '12px' }}>
-                        Custom fields and tag requirements are managed in{' '}
+                        {t('guide.setup.managedIn')}{' '}
                         <button 
                           onClick={() => {
                             sessionStorage.setItem('settings_active_tab', 'validation');
@@ -957,21 +936,21 @@ function LayoutContent({ children }) {
                           className="btn btn-outline btn-sm"
                         >
                           <FileText className="w-4 h-4" />
-                          Data Validation
+                          {t('guide.setup.dataValidation')}
                         </button>
                       </p>
 
-                      <h4>Data Synchronization Architecture</h4>
+                      <h4>{t('guide.setup.syncArchTitle')}</h4>
                       <p>
-                        PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these classification references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.
+                        {t('guide.setup.syncArchDesc')}
                       </p>
 
-                      <h4>Automatic Synchronization</h4>
+                      <h4>{t('guide.setup.autoSyncTitle')}</h4>
                       <p>
-                        Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.
+                        {t('guide.setup.autoSyncDesc')}
                       </p>
                       <p>
-                        In most cases, automatic synchronization handles all data consistency needs. If you need to force an immediate update, it can be managed through{' '}
+                        {t('guide.setup.forceSyncNote')}{' '}
                         <button 
                           onClick={() => {
                             sessionStorage.setItem('settings_active_tab', 'system');
@@ -980,134 +959,130 @@ function LayoutContent({ children }) {
                           className="btn btn-outline btn-sm"
                         >
                           <Settings className="w-4 h-4" />
-                          System
+                          {t('guide.setup.system')}
                         </button>
                       </p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Building Rules: The 6-Step Wizard</h3>
+                      <h3>{t('guide.buildingRules.title')}</h3>
                       <p>
-                        A rule tells PocoClass: "If a document contains these patterns, classify it like this."
+                        {t('guide.buildingRules.intro')}
                       </p>
                       <p>
-                        The rule builder wizard guides you step by step through defining how a document should be identified and what classifications should be assigned when it matches.
+                        {t('guide.buildingRules.wizardIntro')}
                       </p>
                       
-                      <h4>Step 1 — Basic Information</h4>
+                      <h4>{t('guide.buildingRules.step1Title')}</h4>
                       <p>
-                        Give your rule a clear identity:
+                        {t('guide.buildingRules.step1Intro')}
                       </p>
                       <ul>
-                        <li><strong>Rule Name</strong> – A descriptive, human-friendly name (e.g., Bank Statements, Tax Letters)</li>
-                        <li><strong>Rule ID</strong> – A unique identifier automatically generated. You may customize it for readability</li>
-                        <li><strong>Description</strong> – Optional notes to remind yourself what the rule does</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.ruleName') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.ruleId') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.description') }} />
                       </ul>
                       <p>
-                        This helps keep your rules organized, especially once you build many of them.
+                        {t('guide.buildingRules.step1Note')}
                       </p>
 
-                      <h4>Step 2 — OCR Pattern Matching</h4>
+                      <h4>{t('guide.buildingRules.step2Title')}</h4>
                       <p>
-                        In this step you define the text patterns PocoClass should look for in the OCR text extracted from the document.
+                        {t('guide.buildingRules.step2Intro')}
                       </p>
-                      <p><strong>What you can match</strong>:</p>
+                      <p><strong>{t('guide.buildingRules.whatCanMatch')}</strong></p>
                       <ul>
-                        <li>Organization names</li>
-                        <li>Keywords like Invoice, Statement, Receipt</li>
-                        <li>Reference numbers</li>
-                        <li>Dates or short phrases unique to a document format</li>
+                        <li>{t('guide.buildingRules.matchOrgNames')}</li>
+                        <li>{t('guide.buildingRules.matchKeywords')}</li>
+                        <li>{t('guide.buildingRules.matchRefNumbers')}</li>
+                        <li>{t('guide.buildingRules.matchDates')}</li>
                       </ul>
-                      <p><strong>How it works</strong>:</p>
+                      <p><strong>{t('guide.buildingRules.howItWorksLabel')}</strong></p>
                       <ul>
-                        <li>Add 3 to 10 OCR patterns</li>
-                        <li>Choose how they must match (ALL / ANY / logic groups)</li>
-                        <li>Set the OCR Threshold (default: 75%) – this determines how many patterns must match before PocoClass considers the rule valid</li>
+                        <li>{t('guide.buildingRules.add3to10')}</li>
+                        <li>{t('guide.buildingRules.chooseMatch')}</li>
+                        <li>{t('guide.buildingRules.setOCRThreshold')}</li>
                       </ul>
                       <p>
-                        PocoClass only continues to filename and classifications evaluation if the OCR threshold is met. (See the scoring section for details.)
+                        {t('guide.buildingRules.ocrContinueNote')}
                       </p>
-                      <p><strong>Regex Support</strong></p>
+                      <p><strong>{t('guide.buildingRules.regexSupport')}</strong></p>
                       <p>
-                        You may use simple text patterns or more advanced regular expressions (regex).
+                        {t('guide.buildingRules.regexIntro')}
                       </p>
                       <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
-                        <p><strong>Examples</strong>:</p>
+                        <p><strong>{t('guide.buildingRules.examplesLabel')}</strong></p>
                         <ul style={{ fontSize: '0.9rem' }}>
-                          <li><code>/invoice/i</code> – matches "invoice", "Invoice", "INVOICE"</li>
-                          <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> – matches dates like "2024-01-15"</li>
-                          <li><code>/Visa|Mastercard/i</code> – matches either "Visa" OR "Mastercard"</li>
+                          <li><code>/invoice/i</code> – {t('guide.buildingRules.regexExample1')}</li>
+                          <li><code>/\d{'{4}'}-\d{'{2}'}-\d{'{2}'}/</code> – {t('guide.buildingRules.regexExample2')}</li>
+                          <li><code>/Visa|Mastercard/i</code> – {t('guide.buildingRules.regexExample3')}</li>
                         </ul>
-                        <p style={{ fontSize: '0.9rem', marginTop: '8px', marginBottom: '0' }}>Regex is optional — most rules work fine with simple patterns.</p>
+                        <p style={{ fontSize: '0.9rem', marginTop: '8px', marginBottom: '0' }}>{t('guide.buildingRules.regexOptionalNote')}</p>
                       </div>
 
                       <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
-                        <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                          <strong>Tip:</strong> There is a built-in <strong>Regex Builder</strong> (available in the pattern editor) to assist in creating complex patterns without writing code manually.
-                        </p>
+                        <p style={{ margin: 0, fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.regexBuilderTip') }} />
                       </div>
 
-                      <h4>Step 3 — Filename Patterns</h4>
+                      <h4>{t('guide.buildingRules.step3Title')}</h4>
                       <p>
-                        Filename patterns allow PocoClass to use the document's filename as a secondary signal.
+                        {t('guide.buildingRules.step3Intro')}
                       </p>
-                      <p><strong>Example filename</strong>: <code>2024-01-Bank-Statement.pdf</code></p>
-                      <p><strong>Possible patterns</strong>:</p>
+                      <p><strong>{t('guide.buildingRules.exampleFilename')}</strong>: <code>2024-01-Bank-Statement.pdf</code></p>
+                      <p><strong>{t('guide.buildingRules.possiblePatterns')}</strong></p>
                       <ul style={{ fontSize: '0.9rem' }}>
                         <li><code>/Bank/i</code></li>
                         <li><code>/Statement/i</code></li>
                         <li><code>/2024/i</code></li>
                       </ul>
-                      <p><strong>Key points</strong>:</p>
+                      <p><strong>{t('guide.buildingRules.keyPoints')}</strong></p>
                       <ul>
-                        <li>Filename patterns are optional</li>
-                        <li>They are evaluated only after OCR passes</li>
-                        <li>Their influence is controlled by the Filename Multiplier (default: 1×)</li>
+                        <li>{t('guide.buildingRules.filenameOptional')}</li>
+                        <li>{t('guide.buildingRules.filenameAfterOCR')}</li>
+                        <li>{t('guide.buildingRules.filenameMultiplierNote')}</li>
                       </ul>
 
-                      <h4>Step 4 — Rule Configuration</h4>
+                      <h4>{t('guide.buildingRules.step4Title')}</h4>
                       <p>
-                        This is where you define how confident PocoClass must be before applying the rule.
+                        {t('guide.buildingRules.step4Intro')}
                       </p>
-                      <p>You can adjust:</p>
+                      <p>{t('guide.buildingRules.youCanAdjust')}</p>
                       <ul>
-                        <li><strong>OCR Threshold</strong> – Minimum percentage of OCR patterns that must match</li>
-                        <li><strong>POCO Threshold</strong> – Minimum final score required for the rule to apply</li>
-                        <li><strong>OCR Multiplier</strong> – Trust level for OCR (default: 3×)</li>
-                        <li><strong>Filename Multiplier</strong> – Trust level for filename matching (default: 1×)</li>
-                        <li><strong>Classification Multiplier</strong> – Trust level for Paperless classifications</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.ocrThreshold') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.pocoThreshold') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.ocrMultiplierConfig') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.filenameMultiplierConfig') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.classificationMultiplierConfig') }} />
                       </ul>
                       <p>
-                        These settings determine how heavily each data source influences the final score. For full details, see The Scoring System.
+                        {t('guide.buildingRules.step4Note')}
                       </p>
 
-                      <h4>Step 5 — Document Classifications</h4>
+                      <h4>{t('guide.buildingRules.step5Title')}</h4>
                       <p>
-                        Here you define what PocoClass should write into Paperless if the rule matches.
+                        {t('guide.buildingRules.step5Intro')}
                       </p>
-                      <p><strong>Static Classifications</strong></p>
+                      <p><strong>{t('guide.buildingRules.staticClassifications')}</strong></p>
                       <p>
-                        Values that always apply when the rule matches:
+                        {t('guide.buildingRules.staticDesc')}
                       </p>
                       <ul>
-                        <li>Correspondent</li>
-                        <li>Document Type</li>
-                        <li>Tags</li>
-                        <li>Custom fields</li>
+                        <li>{t('guide.buildingRules.staticCorrespondent')}</li>
+                        <li>{t('guide.buildingRules.staticDocType')}</li>
+                        <li>{t('guide.buildingRules.staticTags')}</li>
+                        <li>{t('guide.buildingRules.staticCustomFields')}</li>
                       </ul>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                        <strong>Example</strong>: Assign Correspondent → "Bank XYZ", Assign Document Type → "Monthly Statement", Tags → Finance, 2024
-                      </p>
-                      <p><strong>Dynamic Classifications</strong></p>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }} dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.staticExample') }} />
+                      <p><strong>{t('guide.buildingRules.dynamicClassifications')}</strong></p>
                       <p>
-                        Extracted directly from the document using anchors.
+                        {t('guide.buildingRules.dynamicDesc')}
                       </p>
                       <div style={{ padding: '12px', backgroundColor: '#f0fdf4', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
                         <p style={{ fontSize: '0.9rem', marginBottom: '12px' }}>
-                          <strong>Example extraction</strong>: You want to extract an invoice number that appears after "Inv: "
+                          <strong>{t('guide.buildingRules.dynamicExampleTitle')}</strong>: {t('guide.buildingRules.dynamicExampleIntro')}
                         </p>
                         
-                        <p style={{ fontSize: '0.85rem', marginBottom: '8px', fontWeight: '500' }}>Simulated OCR text from document:</p>
+                        <p style={{ fontSize: '0.85rem', marginBottom: '8px', fontWeight: '500' }}>{t('guide.buildingRules.simulatedOCR')}</p>
                         <div style={{ 
                           backgroundColor: '#ffffff', 
                           border: '1px solid #ddd',
@@ -1123,102 +1098,96 @@ function LayoutContent({ children }) {
                         </div>
                         
                         <ul style={{ fontSize: '0.9rem' }}>
-                          <li>Before Anchor: <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span></li>
-                          <li>Text to extract: <span style={{ backgroundColor: '#81c784', padding: '2px 4px', color: '#fff', fontWeight: 'bold' }}>INV-2024-0547</span></li>
-                          <li>After Anchor: <span style={{ backgroundColor: '#ff9800', padding: '2px 4px', color: '#fff' }}>has been generated</span></li>
+                          <li>{t('guide.buildingRules.beforeAnchor')} <span style={{ backgroundColor: '#ffeb3b', padding: '2px 4px' }}>Inv: </span></li>
+                          <li>{t('guide.buildingRules.textToExtract')} <span style={{ backgroundColor: '#81c784', padding: '2px 4px', color: '#fff', fontWeight: 'bold' }}>INV-2024-0547</span></li>
+                          <li>{t('guide.buildingRules.afterAnchor')} <span style={{ backgroundColor: '#ff9800', padding: '2px 4px', color: '#fff' }}>has been generated</span></li>
                         </ul>
                       </div>
 
-                      <h4>Step 6 — Verification</h4>
+                      <h4>{t('guide.buildingRules.step6Title')}</h4>
                       <p>
-                        Verification allows PocoClass to confirm that the extracted or assigned classifications aligns with what is already stored in Paperless.
+                        {t('guide.buildingRules.step6Intro')}
                       </p>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>
-                        <strong>Example</strong>: Extracted Correspondent → "John Smith", Paperless Correspondent → "John Smith" → Verification passes
-                      </p>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }} dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.step6Example') }} />
                       <p>
-                        If verification fails, you can choose to allow the rule anyway or block it from applying. Verification adds an extra safety layer, especially when similar document formats may overlap.
+                        {t('guide.buildingRules.step6Note')}
                       </p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Testing Your Rules</h3>
+                      <h3>{t('guide.testing.title')}</h3>
                       <p>
-                        Before you let PocoClass automatically classify hundreds of documents, you want to make sure your rule works correctly on real documents.
+                        {t('guide.testing.intro')}
                       </p>
                       
-                      <h4>Two Types of Testing</h4>
+                      <h4>{t('guide.testing.twoTypesTitle')}</h4>
                       
-                      <p><strong>1. Dry Run</strong> (Simulation - No Changes)</p>
-                      <p>"What would happen if I ran this rule?"</p>
+                      <p><strong>{t('guide.testing.dryRunTitle')}</strong> {t('guide.testing.dryRunSubtitle')}</p>
+                      <p>{t('guide.testing.dryRunQuestion')}</p>
                       <ul>
-                        <li>PocoClass tests your rule against selected documents</li>
-                        <li>Shows you what would happen (classifications, scores)</li>
-                        <li><strong>Does not make any changes</strong> to Paperless</li>
-                        <li>Perfect for testing before you're confident</li>
+                        <li>{t('guide.testing.dryRunPoint1')}</li>
+                        <li>{t('guide.testing.dryRunPoint2')}</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.dryRunPoint3') }} />
+                        <li>{t('guide.testing.dryRunPoint4')}</li>
                       </ul>
 
-                      <p><strong>2. Full Run</strong> (Real - Makes Changes)</p>
-                      <p>"Apply this rule for real"</p>
+                      <p><strong>{t('guide.testing.fullRunTitle')}</strong> {t('guide.testing.fullRunSubtitle')}</p>
+                      <p>{t('guide.testing.fullRunQuestion')}</p>
                       <ul>
-                        <li>PocoClass tests your rule and actually classifies the documents</li>
-                        <li>Makes changes in Paperless</li>
-                        <li>Applied tags, correspondents, and classifications to documents</li>
-                        <li>Scores are recorded in the POCO Score custom field</li>
+                        <li>{t('guide.testing.fullRunPoint1')}</li>
+                        <li>{t('guide.testing.fullRunPoint2')}</li>
+                        <li>{t('guide.testing.fullRunPoint3')}</li>
+                        <li>{t('guide.testing.fullRunPoint4')}</li>
                       </ul>
 
-                      <h4>Understanding Test Results</h4>
-                      <p>When you test, PocoClass shows you a report with:</p>
+                      <h4>{t('guide.testing.understandingTitle')}</h4>
+                      <p>{t('guide.testing.understandingIntro')}</p>
                       <ul>
-                        <li><strong>Document</strong>: Which document was tested</li>
-                        <li><strong>Rule Matched</strong>: Did the rule match? (Yes/No)</li>
-                        <li><strong>OCR Score</strong>: What % of OCR patterns matched?</li>
-                        <li><strong>POCO Score</strong>: What was the final classification score?</li>
-                        <li><strong>Classification</strong>: POCO+ (matched) or POCO- (no match) - shows whether the rule matched the document</li>
-                        <li><strong>Classifications Applied</strong>: What got assigned (correspondent, tags, etc.) - which identifiers like OCR or filename were successful</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultDocument') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultMatched') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultOCR') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultPOCO') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultClassification') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.testing.resultApplied') }} />
                       </ul>
                       <div className="guide-highlight">
-                        <strong>Scores Explained</strong>
+                        <strong>{t('guide.testing.scoresExplainedTitle')}</strong>
                         <ul>
-                          <li><strong>OCR Score</strong> – Percentage of OCR patterns that matched</li>
-                          <li><strong>POCO Score</strong> – Combined confidence from OCR, filename, and Paperless</li>
-                          <li>Rule triggers when POCO Score meets your threshold (default 75%)</li>
+                          <li dangerouslySetInnerHTML={{ __html: t('guide.testing.scoresOCR') }} />
+                          <li dangerouslySetInnerHTML={{ __html: t('guide.testing.scoresPOCO') }} />
+                          <li>{t('guide.testing.scoresTrigger')}</li>
                         </ul>
                       </div>
                       <p>
-                        Test results include a bar chart showing:
+                        {t('guide.testing.barChartIntro')}
                       </p>
                       <ul>
-                        <li>Blue bar = OCR Score (how many patterns matched)</li>
-                        <li>Green/Red bar = POCO Score (final decision score)</li>
-                        <li>Orange line = Your threshold (75% by default)</li>
+                        <li>{t('guide.testing.barBlue')}</li>
+                        <li>{t('guide.testing.barGreen')}</li>
+                        <li>{t('guide.testing.barOrange')}</li>
                       </ul>
-                      <p>If the bars reach the orange line, the rule triggers.</p>
+                      <p>{t('guide.testing.barNote')}</p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Background Processing</h3>
+                      <h3>{t('guide.backgroundProcessing.title')}</h3>
                       <p>
-                        Background processing is how PocoClass automatically classifies new documents without you doing anything.
+                        {t('guide.backgroundProcessing.intro')}
                       </p>
                       
-                      <h4>How It Works</h4>
-                      <p>Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.</p>
+                      <h4>{t('guide.backgroundProcessing.howItWorksTitle')}</h4>
+                      <p>{t('guide.backgroundProcessing.howItWorksIntro')}</p>
                       <ul>
-                        <li><strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>"NEW"</strong> tag</li>
-                        <li><strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>"NEW"</strong> and NOT already tagged with <strong>"POCO+"</strong> or <strong>"POCO-"</strong></li>
-                        <li><strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order</li>
-                        <li><strong>Step 4: Tag & Score</strong> - Apply classifications, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, optionally remove <strong>NEW</strong> tag (if enabled in Settings)</li>
-                        <li><strong>Step 5: Repeat</strong> - Continue looking for more documents with the <strong>"NEW"</strong> tag</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step1') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step2') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step3') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step4') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step5') }} />
                       </ul>
 
                       <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
-                        <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                          <strong>Tip:</strong> You can choose whether PocoClass automatically removes the <strong>NEW</strong> tag after processing. Enable this option to keep your Paperless inbox clean, or leave it disabled if you prefer to manually verify documents before removing the tag yourself.
-                        </p>
-                        <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }}>
-                          <strong>Location:</strong> Settings → Background Processing → Tag Configuration
-                        </p>
+                        <p style={{ margin: 0, fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipNewTag') }} />
+                        <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipLocation') }} />
                         <button
                           onClick={() => {
                             sessionStorage.setItem('settings_active_tab', 'backgroundProcessing');
@@ -1229,58 +1198,56 @@ function LayoutContent({ children }) {
                           style={{ marginTop: '12px' }}
                         >
                           <Settings className="w-4 h-4" />
-                          Open Background Processing Settings
+                          {t('guide.backgroundProcessing.openSettings')}
                         </button>
                       </div>
 
-                      <h4>Three Processing Modes</h4>
-                      <p><strong>1. Automatic Mode</strong></p>
+                      <h4>{t('guide.backgroundProcessing.modesTitle')}</h4>
+                      <p><strong>{t('guide.backgroundProcessing.automaticMode')}</strong></p>
                       <ul>
-                        <li>Runs continuously in the background every few minutes</li>
-                        <li>Always watching for new documents with "NEW" tag</li>
-                        <li>Pauses when you're using the web interface (so it doesn't interfere)</li>
-                        <li>Pauses when no documents need processing (saves resources)</li>
+                        <li>{t('guide.backgroundProcessing.automaticPoint1')}</li>
+                        <li>{t('guide.backgroundProcessing.automaticPoint2')}</li>
+                        <li>{t('guide.backgroundProcessing.automaticPoint3')}</li>
+                        <li>{t('guide.backgroundProcessing.automaticPoint4')}</li>
                       </ul>
 
-                      <p><strong>2. Trigger Mode</strong></p>
+                      <p><strong>{t('guide.backgroundProcessing.triggerMode')}</strong></p>
                       <ul>
-                        <li>Runs once when you manually ask it to</li>
-                        <li>Useful for testing or processing a specific batch of documents</li>
-                        <li>You click "Trigger Background Processing" and it processes once</li>
+                        <li>{t('guide.backgroundProcessing.triggerPoint1')}</li>
+                        <li>{t('guide.backgroundProcessing.triggerPoint2')}</li>
+                        <li>{t('guide.backgroundProcessing.triggerPoint3')}</li>
                       </ul>
 
-                      <p><strong>3. Dry Run Mode</strong></p>
+                      <p><strong>{t('guide.backgroundProcessing.dryRunMode')}</strong></p>
                       <ul>
-                        <li>Same as Trigger Mode, but doesn't make changes</li>
-                        <li>Shows you what would happen without actually classifying</li>
+                        <li>{t('guide.backgroundProcessing.dryRunPoint1')}</li>
+                        <li>{t('guide.backgroundProcessing.dryRunPoint2')}</li>
                       </ul>
 
-                      <h4>Processing History</h4>
-                      <p>PocoClass keeps track of what it processed:</p>
-                      <p><strong>Summary View</strong>:</p>
+                      <h4>{t('guide.backgroundProcessing.historyTitle')}</h4>
+                      <p>{t('guide.backgroundProcessing.historyIntro')}</p>
+                      <p><strong>{t('guide.backgroundProcessing.summaryView')}</strong></p>
                       <ul>
-                        <li>When was the run (timestamp)</li>
-                        <li>What type of run (Automatic, Manual, Dry Run)</li>
-                        <li>How many documents were processed</li>
-                        <li>How many matched rules</li>
+                        <li>{t('guide.backgroundProcessing.summaryPoint1')}</li>
+                        <li>{t('guide.backgroundProcessing.summaryPoint2')}</li>
+                        <li>{t('guide.backgroundProcessing.summaryPoint3')}</li>
+                        <li>{t('guide.backgroundProcessing.summaryPoint4')}</li>
                       </ul>
-                      <p><strong>Detail View</strong> (expandable):</p>
+                      <p><strong>{t('guide.backgroundProcessing.detailView')}</strong></p>
                       <ul>
-                        <li>Document title</li>
-                        <li>Which rule matched (if any)</li>
-                        <li>OCR and POCO scores</li>
-                        <li>What classification it got (POCO+ or POCO-)</li>
-                        <li>What classifications were applied</li>
+                        <li>{t('guide.backgroundProcessing.detailPoint1')}</li>
+                        <li>{t('guide.backgroundProcessing.detailPoint2')}</li>
+                        <li>{t('guide.backgroundProcessing.detailPoint3')}</li>
+                        <li>{t('guide.backgroundProcessing.detailPoint4')}</li>
+                        <li>{t('guide.backgroundProcessing.detailPoint5')}</li>
                       </ul>
                     </div>
 
                     <div className="guide-section">
-                      <h3>About the Name</h3>
+                      <h3>{t('guide.aboutName.title')}</h3>
+                      <p dangerouslySetInnerHTML={{ __html: t('guide.aboutName.p1') }} />
                       <p>
-                        The name PocoClass originates from the earliest script this project was based on, called POCO. POCO stands for <strong>Post Consumption</strong> and referred to a simple script that was triggered by Paperless through its built-in post-consumption mechanism.
-                      </p>
-                      <p>
-                        That original script performed basic rule-based classification immediately after documents were imported. Over time, this concept evolved into a full document classification system with scoring, verification, and a web-based interface. The name PocoClass was kept to reflect these origins while representing the broader classification capabilities the project now provides.
+                        {t('guide.aboutName.p2')}
                       </p>
                     </div>
 
@@ -1294,8 +1261,8 @@ function LayoutContent({ children }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <div className="modal-header">
                     <div>
-                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>Quick Start</h2>
-                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>Get up and running with PocoClass</p>
+                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>{t('quickStart.title')}</h2>
+                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>{t('quickStart.subtitle')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -1305,7 +1272,7 @@ function LayoutContent({ children }) {
                         }}
                         className="btn btn-outline btn-sm"
                       >
-                        Guide
+                        {t('nav.guide')}
                       </button>
                       <button 
                         onClick={() => setShowQuickGuide(false)}
@@ -1321,89 +1288,83 @@ function LayoutContent({ children }) {
                   
                   <div className="modal-body">
                     <div className="guide-section">
-                      <h3>How PocoClass Works</h3>
+                      <h3>{t('quickStart.howItWorks.title')}</h3>
                       <p>
-                        PocoClass watches for documents tagged with "NEW" in Paperless, matches them against your classification rules, and applies the appropriate tags and metadata. Documents that pass get a POCO+ tag; those that don't get a POCO- tag.
+                        {t('quickStart.howItWorks.description')}
                       </p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Minimum Setup</h3>
+                      <h3>{t('quickStart.minimumSetup.title')}</h3>
                       <p>
-                        Before you can use PocoClass, your Paperless system needs these items:
+                        {t('quickStart.minimumSetup.intro')}
                       </p>
                       <ul>
-                        <li><strong>POCO Score</strong> – a custom field to store classification confidence</li>
-                        <li><strong>POCO OCR</strong> (optional) – a custom field to store OCR transparency score</li>
-                        <li><strong>NEW tag</strong> – marks documents ready for processing (Paperless must be configured to assign this tag to incoming documents)</li>
-                        <li><strong>POCO+ tag</strong> – applied when classification succeeds</li>
-                        <li><strong>POCO- tag</strong> – applied when classification fails</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.pocoScore') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.pocoOCR') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.newTag') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.plusTag') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.minusTag') }} />
                       </ul>
-                      <p>
-                        Go to <strong>Settings → Data Validation</strong> to check if these exist. PocoClass can create missing items for you.
-                      </p>
+                      <p dangerouslySetInnerHTML={{ __html: t('quickStart.minimumSetup.checkSettings') }} />
                     </div>
 
                     <div className="guide-section">
-                      <h3>How Scoring Works</h3>
+                      <h3>{t('quickStart.scoring.title')}</h3>
                       <p>
-                        PocoClass uses a confidence-based scoring system to decide if a document matches a rule:
+                        {t('quickStart.scoring.intro')}
                       </p>
                       <ul>
-                        <li><strong>OCR Score</strong> – percentage of text patterns found in the document. Must reach 75% (default) for the rule to continue.</li>
-                        <li><strong>POCO Score</strong> – combines OCR, filename, and Paperless verification into a final confidence score. Must reach 75% (default) to apply the classification.</li>
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.scoring.ocrScore') }} />
+                        <li dangerouslySetInnerHTML={{ __html: t('quickStart.scoring.pocoScore') }} />
                       </ul>
-                      <p>
-                        If both thresholds are met, the document gets a <strong>POCO+</strong> tag and your chosen classifications. If not, it gets a <strong>POCO-</strong> tag.
-                      </p>
+                      <p dangerouslySetInnerHTML={{ __html: t('quickStart.scoring.result') }} />
                       <div className="info-box info-box-blue">
-                        <h4 style={{ marginTop: 0 }}>Formula</h4>
-                        <p><code>POCO Score = (OCR × 3 + Filename × 1 + Verification) / Total Max Weight × 100%</code></p>
-                        <p>
-                          <strong>Example:</strong> A rule has 4 OCR patterns (3 match), 1 filename pattern (matches), and no verification. OCR contributes 3×3=9 out of 3×4=12, filename contributes 1×1=1 out of 1×1=1. Total: (9+1)/(12+1) = 77% → passes the 75% threshold.
-                        </p>
+                        <h4 style={{ marginTop: 0 }}>{t('quickStart.scoring.formulaTitle')}</h4>
+                        <p><code>{t('quickStart.scoring.formula')}</code></p>
+                        <p dangerouslySetInnerHTML={{ __html: t('quickStart.scoring.example') }} />
                         <p style={{ marginBottom: 0 }}>
-                          For a detailed explanation, see the <button onClick={() => { setShowQuickGuide(false); setShowGuide(true); }} className="text-[var(--app-primary)] hover:underline font-medium" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>full Guide</button>.
+                          {t('quickStart.scoring.seeGuide')} <button onClick={() => { setShowQuickGuide(false); setShowGuide(true); }} className="text-[var(--app-primary)] hover:underline font-medium" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>{t('quickStart.fullGuide')}</button>.
                         </p>
                       </div>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Getting Started</h3>
+                      <h3>{t('quickStart.gettingStarted.title')}</h3>
                       <div className="guide-workflow">
                         <div className="guide-step">
                           <div className="guide-step-number">1</div>
                           <div className="guide-step-content">
-                            <strong>Complete Setup</strong>
-                            <p>Go to Settings → Data Validation and ensure all required fields and tags exist in Paperless.</p>
+                            <strong>{t('quickStart.gettingStarted.step1Title')}</strong>
+                            <p>{t('quickStart.gettingStarted.step1Desc')}</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">2</div>
                           <div className="guide-step-content">
-                            <strong>Create Your First Rule</strong>
-                            <p>Go to Rules and click "New Rule". The wizard will guide you through naming your rule, adding OCR patterns, and choosing what classifications to apply.</p>
+                            <strong>{t('quickStart.gettingStarted.step2Title')}</strong>
+                            <p>{t('quickStart.gettingStarted.step2Desc')}</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">3</div>
                           <div className="guide-step-content">
-                            <strong>Test with Dry Run</strong>
-                            <p>Go to Rule Evaluation, select your rule and some documents, then click "Dry Run" to see what would happen without making changes.</p>
+                            <strong>{t('quickStart.gettingStarted.step3Title')}</strong>
+                            <p>{t('quickStart.gettingStarted.step3Desc')}</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">4</div>
                           <div className="guide-step-content">
-                            <strong>Run for Real</strong>
-                            <p>Once satisfied with Dry Run results, click "Run" to apply classifications to documents in Paperless.</p>
+                            <strong>{t('quickStart.gettingStarted.step4Title')}</strong>
+                            <p>{t('quickStart.gettingStarted.step4Desc')}</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">5</div>
                           <div className="guide-step-content">
-                            <strong>Enable Background Processing</strong>
-                            <p>Go to Settings → Background Processing and enable automatic mode. PocoClass will now classify new documents automatically.</p>
+                            <strong>{t('quickStart.gettingStarted.step5Title')}</strong>
+                            <p>{t('quickStart.gettingStarted.step5Desc')}</p>
                           </div>
                         </div>
                       </div>
