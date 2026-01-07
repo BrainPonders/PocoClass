@@ -405,7 +405,9 @@
       "copiedDesc": "Token copiado al portapapeles",
       "saveWarning": "¡Guarde este token ahora - no se mostrará de nuevo!",
       "usageHint": "Use este token en su script post-consumo con: -H \"X-API-Key: SU_TOKEN\"",
-      "adminOnly": "Solo los administradores pueden gestionar el token API del sistema"
+      "adminOnly": "Solo los administradores pueden gestionar el token API del sistema",
+      "scriptSetupRequired": "Se requiere script post-consumo",
+      "scriptSetupDesc": "Para el procesamiento automático, debe configurar un script post-consumo en Paperless-ngx. Copie pococlass_trigger.sh a su carpeta de scripts y configure la variable de entorno:"
     },
     "pocoPlus": "Etiqueta de éxito - Se agrega cuando un documento coincide con una regla y supera los umbrales POCO y OCR",
     "pocoMinus": "Etiqueta de fallo - Se agrega cuando un documento se procesa pero no coincide con ninguna regla o falla en los umbrales",
