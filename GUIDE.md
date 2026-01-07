@@ -7,8 +7,9 @@
 4. [Building Rules: The 6-Step Wizard](#building-rules-the-6-step-wizard)
 5. [Testing Your Rules](#testing-your-rules)
 6. [Background Processing](#background-processing)
-7. [The POCO Scoring Mechanism](#the-poco-scoring-mechanism)
-8. [Key Concepts & Terminology](#key-concepts--terminology)
+7. [Setting Up Automatic Processing](#setting-up-automatic-processing)
+8. [The POCO Scoring Mechanism](#the-poco-scoring-mechanism)
+9. [Key Concepts & Terminology](#key-concepts--terminology)
 
 ---
 
@@ -265,14 +266,35 @@ If the bars reach the orange line, the rule triggers.
 
 ## Background Processing
 
-Background processing is how PocoClass automatically classifies new documents without you doing anything.
+Background processing is how PocoClass classifies new documents. When enabled, PocoClass waits for a trigger event, then processes all documents tagged with "NEW".
 
 ### How It Works
 
-Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.
+**Important:** PocoClass does **not** continuously poll or watch for new documents. It requires an external trigger to start processing. This is by design - it prevents resource waste and gives you control over when processing happens.
+
+### Triggering Methods
+
+There are three ways to trigger background processing:
+
+#### **1. Post-Consumption Script (Recommended for Automation)**
+Paperless-ngx supports post-consumption scripts that run automatically after a document is consumed. You can configure a script that:
+1. Tags the new document with "NEW"
+2. Calls PocoClass's trigger endpoint
+
+See the [Setting Up Automatic Processing](#setting-up-automatic-processing) section below for setup instructions.
+
+#### **2. Manual Trigger via UI**
+Click "Trigger Background Processing" in Settings → Background Processing to run processing once on demand.
+
+#### **3. Scheduled Trigger (Cron Job)**
+Set up a cron job or scheduled task that calls PocoClass's API endpoint at regular intervals.
+
+---
+
+### The Processing Flow
 
 #### Step 1: The Trigger
-PocoClass looks for documents with the **"NEW"** tag. This tag should be applied automatically by Paperless when a new document arrives.
+When triggered, PocoClass looks for documents with the **"NEW"** tag. This tag should be applied to incoming documents (either manually, by a post-consumption script, or via Paperless workflow).
 
 #### Step 2: Filter Documents
 PocoClass finds documents that are:
@@ -343,9 +365,108 @@ You can see:
 
 ---
 
+## Setting Up Automatic Processing
+
+To have PocoClass automatically process documents as they arrive in Paperless-ngx, you need to configure a post-consumption script.
+
+### What is a Post-Consumption Script?
+
+Paperless-ngx runs post-consumption scripts automatically after a document is fully processed (OCR completed, added to database). This is the perfect hook to trigger PocoClass.
+
+### Requirements
+
+1. PocoClass must be accessible from your Paperless-ngx server (via network URL)
+2. You need a valid authentication token for PocoClass
+3. Background processing must be enabled in PocoClass settings
+
+### The Post-Consumption Script
+
+A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script:
+1. Adds the "NEW" tag to newly consumed documents (preserving any existing tags)
+2. Triggers PocoClass background processing with debouncing
+
+### Setup Steps
+
+#### Step 1: Copy and Configure the Script
+1. Copy `scripts/pococlass_trigger.sh` to your Paperless scripts directory
+2. Edit the configuration section at the top:
+   - `POCOCLASS_URL` - Your PocoClass server address (e.g., `http://192.168.1.100:5000`)
+   - `POCOCLASS_TOKEN` - Session token from PocoClass (see Authentication below)
+   - `PAPERLESS_URL` - Your Paperless-ngx server address
+   - `PAPERLESS_TOKEN` - Your Paperless API token
+
+#### Step 2: Make it Executable
+```bash
+chmod +x pococlass_trigger.sh
+```
+
+#### Step 3: Configure Paperless-ngx
+Add the script path to your Paperless configuration:
+
+**For Docker installations**, add to your `docker-compose.yml`:
+```yaml
+environment:
+  PAPERLESS_POST_CONSUME_SCRIPT: /path/to/scripts/pococlass_trigger.sh
+```
+
+**For bare-metal installations**, add to your `paperless.conf`:
+```
+PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
+```
+
+### Authentication
+
+#### Getting Your Paperless API Token
+1. Log into Paperless-ngx as an admin
+2. Go to Settings → Admin → API Token
+3. Copy the token and use it for `PAPERLESS_TOKEN`
+
+#### Getting Your PocoClass Session Token
+1. Log into PocoClass in your browser
+2. Open Developer Tools (F12) → Application tab → Cookies
+3. Find the `session` cookie and copy its value
+4. Use this for `POCOCLASS_TOKEN`
+
+**Important:** Session tokens expire when:
+- You log out of PocoClass
+- The session times out after inactivity
+- PocoClass server restarts
+
+For reliable automation, consider:
+- Using a dedicated automation user account
+- Keeping PocoClass running continuously
+- Checking logs periodically for authentication errors
+
+### Debouncing
+
+PocoClass includes built-in debouncing (default: 30 seconds). This means:
+- Multiple rapid triggers (e.g., bulk import of 50 documents) won't cause 50 separate processing runs
+- PocoClass waits for triggers to stop, then processes all pending documents in one batch
+- Configure the debounce delay in Settings → Background Processing
+
+### Troubleshooting
+
+**Script not running?**
+- Check Paperless logs for script execution errors
+- Verify the script has execute permissions
+- Test the script manually: `./pococlass_trigger.sh`
+
+**PocoClass not processing?**
+- Verify background processing is enabled
+- Check documents have the "NEW" tag
+- Look at PocoClass logs for connection errors
+- Verify the URL and token are correct
+
+**Documents processed but no results?**
+- Check Processing History in PocoClass
+- Verify your rules match the document patterns
+- Test rules manually using Dry Run
+
+---
+
 ## The POCO Scoring Mechanism
 
-POCO stands for "Pattern-Oriented Classification Operations." It's PocoClass's intelligent scoring system.
+POCO stands for "Post Consumption" - it originated from a simple script triggered by Paperless's post-consumption mechanism. It's PocoClass's intelligent scoring system.
 
 ### Why Two Scores?
 
