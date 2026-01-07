@@ -11,9 +11,10 @@
 #
 # Setup:
 # 1. Update POCOCLASS_URL to your PocoClass server address
-# 2. Update POCOCLASS_TOKEN with a valid session token
-# 3. Make executable: chmod +x pococlass_trigger.sh
-# 4. Configure in Paperless: PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
+# 2. Generate a System API Token in PocoClass: Settings > Background Processing > System API Token
+# 3. Update POCOCLASS_TOKEN with the generated token
+# 4. Make executable: chmod +x pococlass_trigger.sh
+# 5. Configure in Paperless: PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
 
 # ============================================
 # CONFIGURATION - UPDATE THESE VALUES
@@ -22,12 +23,9 @@
 # PocoClass server URL (no trailing slash)
 POCOCLASS_URL="http://your-pococlass-server:5000"
 
-# PocoClass session token (from browser dev tools after login)
-# NOTE: Session tokens expire. For long-term automation, consider:
-# - Refreshing the token periodically by logging in again
-# - Using a dedicated automation user account
-# - Keeping PocoClass running to maintain session
-POCOCLASS_TOKEN="your-pococlass-session-token"
+# PocoClass System API Token (generate in Settings > Background Processing > System API Token)
+# This is a permanent token that does not expire - recommended for automation
+POCOCLASS_TOKEN="your-pococlass-system-token"
 
 # Optional: Log file location (set to empty string to disable logging)
 LOG_FILE="/var/log/pococlass_trigger.log"
@@ -58,7 +56,7 @@ log_message "Triggering PocoClass processing..."
 
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "${POCOCLASS_URL}/api/background/trigger" \
     -H "Content-Type: application/json" \
-    -H "Cookie: session=${POCOCLASS_TOKEN}" \
+    -H "X-API-Key: ${POCOCLASS_TOKEN}" \
     --max-time 10 \
     2>&1)
 
@@ -71,8 +69,8 @@ if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
     log_message "SUCCESS - PocoClass triggered (HTTP ${HTTP_CODE})"
     exit 0
 elif [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
-    log_message "ERROR - Authentication failed (HTTP ${HTTP_CODE}). Session token may have expired."
-    log_message "To refresh: Log into PocoClass, get new session token from browser dev tools"
+    log_message "ERROR - Authentication failed (HTTP ${HTTP_CODE}). Check your System API Token."
+    log_message "Generate a new token in PocoClass: Settings > Background Processing > System API Token"
     exit 0
 else
     log_message "ERROR - Failed to trigger PocoClass (HTTP ${HTTP_CODE}): ${BODY}"
