@@ -44,7 +44,15 @@ PocoClass can be installed using Docker (recommended) or manually. Both methods 
 
 Docker is the easiest way to run PocoClass alongside your existing Paperless-ngx setup.
 
-**1. Create a docker-compose.yml** (or add to your existing stack):
+**1. Generate a secret key** for session encryption:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Save this key securely - you'll need it for the configuration.
+
+**2. Create a docker-compose.yml** (or add to your existing Paperless stack):
 
 ```yaml
 version: "3.8"
@@ -53,25 +61,64 @@ services:
   pococlass:
     image: pococlass:latest
     container_name: pococlass
+    restart: unless-stopped
     ports:
       - "5000:5000"
-    volumes:
-      - ./pococlass-data:/app/data
-      - ./pococlass-rules:/app/rules
     environment:
-      - SECRET_KEY=your-secret-key-here
-    restart: unless-stopped
+      - POCOCLASS_SECRET_KEY=your-generated-secret-key-here
+      - PAPERLESS_URL=http://paperless-ngx:8000
+      - GUNICORN_WORKERS=3
+      - GUNICORN_THREADS=2
+    volumes:
+      - pococlass-data:/app/data
+      - ./rules:/app/rules:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - paperless-network
+
+volumes:
+  pococlass-data:
+
+networks:
+  paperless-network:
+    external: true
 ```
 
-**2. Start the container:**
+**3. Build and start the container:**
 
 ```bash
-docker-compose up -d pococlass
+# Navigate to project root, then build from docker folder
+cd docker
+docker-compose up -d --build
+
+# Or build manually from project root
+docker build -t pococlass:latest -f docker/Dockerfile .
 ```
 
-**3. Access PocoClass:**
+**4. Access PocoClass:**
 
 Open `http://your-server:5000` in your browser.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `POCOCLASS_SECRET_KEY` | **Required.** Encryption key for sessions and API tokens | None (auto-generated if not set) |
+| `PAPERLESS_URL` | URL to your Paperless-ngx instance | `http://localhost:8000` |
+| `GUNICORN_WORKERS` | Number of Gunicorn worker processes | `3` |
+| `GUNICORN_THREADS` | Number of threads per worker | `2` |
+| `GUNICORN_TIMEOUT` | Request timeout in seconds | `120` |
+
+### Docker Volumes
+
+| Volume | Description |
+|--------|-------------|
+| `/app/data` | Persistent storage for SQLite database (user data, settings, logs) |
+| `/app/rules` | Classification rules directory (mount your rules here) |
 
 ### Manual Installation
 
