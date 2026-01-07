@@ -1125,9 +1125,9 @@
     },
     "backgroundProcessing": {
       "title": "Background Processing",
-      "intro": "Background processing is how PocoClass automatically classifies new documents without you doing anything.",
+      "intro": "Background processing is how PocoClass automatically classifies new documents.",
       "howItWorksTitle": "How It Works",
-      "howItWorksIntro": "Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.",
+      "howItWorksIntro": "When triggered, PocoClass scans for documents with the NEW tag and applies your classification rules. Your administrator configures how triggering works (automatic via post-consumption script, manual, or scheduled).",
       "step1": "<strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>\"NEW\"</strong> tag",
       "step2": "<strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>\"NEW\"</strong> and NOT already tagged with <strong>\"POCO+\"</strong> or <strong>\"POCO-\"</strong>",
       "step3": "<strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order",
@@ -1177,7 +1177,7 @@
       "description": "PocoClass watches for documents tagged with \"NEW\" in Paperless, matches them against your classification rules, and applies the appropriate tags and metadata. Documents that pass get a POCO+ tag; those that don't get a POCO- tag."
     },
     "minimumSetup": {
-      "title": "Minimum Setup",
+      "title": "Minimum Setup Requirements",
       "intro": "Before you can use PocoClass, your Paperless system needs these items:",
       "pocoScore": "<strong>POCO Score</strong> – a custom field to store classification confidence",
       "pocoOCR": "<strong>POCO OCR</strong> (optional) – a custom field to store OCR transparency score",

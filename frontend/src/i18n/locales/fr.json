@@ -1118,9 +1118,9 @@
     },
     "backgroundProcessing": {
       "title": "Traitement en arrière-plan",
-      "intro": "Le traitement en arrière-plan est la façon dont PocoClass classe automatiquement les nouveaux documents sans que vous ne fassiez quoi que ce soit.",
+      "intro": "Le traitement en arrière-plan est la façon dont PocoClass classe automatiquement les nouveaux documents.",
       "howItWorksTitle": "Comment ça fonctionne",
-      "howItWorksIntro": "Le traitement en arrière-plan fonctionne comme un service planifié qui analyse périodiquement les nouveaux documents et applique automatiquement les règles de classification.",
+      "howItWorksIntro": "Lorsqu'il est déclenché, PocoClass analyse les documents avec l'étiquette NEW et applique vos règles de classification. Votre administrateur configure comment le déclenchement fonctionne (automatique via script post-consumption, manuel ou planifié).",
       "step1": "<strong>Étape 1 : Le déclencheur</strong> - PocoClass recherche les documents avec l'étiquette <strong>« NEW »</strong>",
       "step2": "<strong>Étape 2 : Filtrer les documents</strong> - Trouver les documents étiquetés <strong>« NEW »</strong> et PAS déjà étiquetés <strong>« POCO+ »</strong> ou <strong>« POCO- »</strong>",
       "step3": "<strong>Étape 3 : Appliquer les règles</strong> - Exécuter toutes les règles activées sur ces documents dans l'ordre",
@@ -1170,7 +1170,7 @@
       "description": "PocoClass surveille les documents étiquetés « NEW » dans Paperless, les compare à vos règles de classification et applique les étiquettes et métadonnées appropriées. Les documents qui réussissent reçoivent une étiquette POCO+ ; ceux qui échouent reçoivent une étiquette POCO-."
     },
     "minimumSetup": {
-      "title": "Configuration minimale",
+      "title": "Configuration minimale requise",
       "intro": "Avant de pouvoir utiliser PocoClass, votre système Paperless a besoin de ces éléments :",
       "pocoScore": "<strong>POCO Score</strong> – un champ personnalisé pour stocker la confiance de classification",
       "pocoOCR": "<strong>POCO OCR</strong> (optionnel) – un champ personnalisé pour stocker le score de transparence OCR",

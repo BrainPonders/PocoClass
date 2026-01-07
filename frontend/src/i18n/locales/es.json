@@ -1122,9 +1122,9 @@
     },
     "backgroundProcessing": {
       "title": "Procesamiento en segundo plano",
-      "intro": "El procesamiento en segundo plano es cómo PocoClass clasifica automáticamente nuevos documentos sin que usted haga nada.",
+      "intro": "El procesamiento en segundo plano es cómo PocoClass clasifica automáticamente nuevos documentos.",
       "howItWorksTitle": "Cómo funciona",
-      "howItWorksIntro": "El procesamiento en segundo plano opera como un servicio programado que escanea periódicamente en busca de nuevos documentos y aplica reglas de clasificación automáticamente.",
+      "howItWorksIntro": "Cuando se activa, PocoClass escanea documentos con la etiqueta NEW y aplica sus reglas de clasificación. Su administrador configura cómo funciona la activación (automática vía script post-consumption, manual o programada).",
       "step1": "<strong>Paso 1: El disparador</strong> - PocoClass busca documentos con la etiqueta <strong>\"NEW\"</strong>",
       "step2": "<strong>Paso 2: Filtrar documentos</strong> - Encontrar documentos etiquetados con <strong>\"NEW\"</strong> y que NO estén ya etiquetados con <strong>\"POCO+\"</strong> o <strong>\"POCO-\"</strong>",
       "step3": "<strong>Paso 3: Aplicar reglas</strong> - Ejecutar todas las reglas habilitadas contra estos documentos en orden",
@@ -1174,7 +1174,7 @@
       "description": "PocoClass busca documentos etiquetados con \"NEW\" en Paperless, los compara con sus reglas de clasificación y aplica las etiquetas y metadatos apropiados. Los documentos que pasan obtienen una etiqueta POCO+; los que no, obtienen una etiqueta POCO-."
     },
     "minimumSetup": {
-      "title": "Configuración mínima",
+      "title": "Requisitos mínimos de configuración",
       "intro": "Antes de poder usar PocoClass, su sistema Paperless necesita estos elementos:",
       "pocoScore": "<strong>POCO Score</strong> – un campo personalizado para almacenar la confianza de clasificación",
       "pocoOCR": "<strong>POCO OCR</strong> (opcional) – un campo personalizado para almacenar la puntuación de transparencia OCR",
