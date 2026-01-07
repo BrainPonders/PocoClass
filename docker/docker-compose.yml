@@ -3,8 +3,8 @@ version: '3.8'
 services:
   pococlass:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: pococlass
     restart: unless-stopped
     ports:
@@ -17,7 +17,7 @@ services:
       - GUNICORN_TIMEOUT=120
     volumes:
       - pococlass-data:/app/data
-      - ./rules:/app/rules:ro
+      - ../rules:/app/rules:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
       interval: 30s

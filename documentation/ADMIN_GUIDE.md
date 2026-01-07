@@ -91,12 +91,12 @@ networks:
 **3. Build and start the container:**
 
 ```bash
-# If building from source
-docker build -t pococlass:latest .
-docker-compose up -d pococlass
+# Navigate to project root, then build from docker folder
+cd docker
+docker-compose up -d --build
 
-# Or pull from registry (if published)
-docker-compose up -d pococlass
+# Or build manually from project root
+docker build -t pococlass:latest -f docker/Dockerfile .
 ```
 
 **4. Access PocoClass:**
