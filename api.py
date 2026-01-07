@@ -161,6 +161,22 @@ def require_system_token_or_admin(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint for Docker/container orchestration"""
+    try:
+        db_status = "ok" if db else "error"
+        return jsonify({
+            'status': 'healthy',
+            'database': db_status,
+            'version': '2.0'
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e)
+        }), 500
+
 def normalize_paperless_url(url):
     """
     Normalize Paperless URL by removing trailing slashes and validating scheme
