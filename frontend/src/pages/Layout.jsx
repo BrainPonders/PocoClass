@@ -417,82 +417,95 @@ function LayoutContent({ children }) {
               }
 
               .modal-body {
-                padding: 24px;
+                padding: 32px 36px;
               }
 
               .guide-section {
-                margin-bottom: 32px;
+                margin-bottom: 40px;
+                padding-top: 8px;
+              }
+
+              .guide-section:not(:first-child) {
+                border-top: 1px solid var(--app-border);
+                padding-top: 32px;
               }
 
               .guide-section h3 {
-                font-size: 1.25rem;
-                font-weight: 600;
+                font-size: 1.5rem;
+                font-weight: 700;
                 color: var(--app-text);
-                margin-bottom: 12px;
+                margin-bottom: 16px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid var(--app-primary);
+                display: inline-block;
               }
 
               .guide-section h4 {
-                font-size: 1rem;
+                font-size: 1.05rem;
                 font-weight: 600;
                 color: var(--app-text);
-                margin-top: 16px;
-                margin-bottom: 8px;
+                margin-top: 28px;
+                margin-bottom: 12px;
+                padding-left: 12px;
+                border-left: 3px solid var(--app-primary-light);
               }
 
               .guide-section p {
                 color: var(--app-text-secondary);
-                line-height: 1.6;
-                margin-bottom: 12px;
+                line-height: 1.7;
+                margin-bottom: 16px;
               }
 
               .guide-section ul {
                 list-style: disc;
                 margin-left: 24px;
+                margin-bottom: 16px;
                 color: var(--app-text-secondary);
               }
 
               .guide-section li {
-                margin-bottom: 8px;
-                line-height: 1.6;
+                margin-bottom: 10px;
+                line-height: 1.7;
               }
 
               .guide-workflow {
                 background: var(--app-surface-light);
                 border-radius: 8px;
-                padding: 16px;
-                margin: 16px 0;
+                padding: 20px;
+                margin: 20px 0;
               }
 
               .guide-step {
                 display: flex;
                 align-items: start;
-                gap: 12px;
-                margin-bottom: 12px;
+                gap: 14px;
+                margin-bottom: 16px;
               }
 
               .guide-step-number {
                 background: var(--app-primary);
                 color: white;
-                width: 28px;
-                height: 28px;
+                width: 32px;
+                height: 32px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-weight: 600;
-                font-size: 0.875rem;
+                font-size: 0.9rem;
                 flex-shrink: 0;
               }
 
               .guide-step-content {
                 flex: 1;
+                padding-top: 4px;
               }
 
               .guide-highlight {
                 background: var(--app-primary-light);
                 border-left: 3px solid var(--app-primary);
-                padding: 12px 16px;
-                margin: 16px 0;
+                padding: 16px 20px;
+                margin: 20px 0;
                 border-radius: 4px;
               }
             `}</style>
