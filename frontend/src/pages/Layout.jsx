@@ -1269,58 +1269,6 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>Key Concepts & Terminology</h3>
-                      <ul>
-                        <li><strong>Regex (Regular Expression)</strong>: A pattern language for searching text. Format: <code>/pattern/flags</code></li>
-                        <li><strong>Anchors (beforeAnchor / afterAnchor)</strong>: Text markers that tell PocoClass where to extract data from</li>
-                        <li><strong>Logic Groups</strong>: A way to combine multiple OCR patterns with logic (ALL must match, ANY can match, etc.)</li>
-                        <li><strong>Dry Run vs Run</strong>: Dry Run = test without changes; Run = apply for real</li>
-                        <li><strong>Classifications</strong>: Information about a document (static = always same; dynamic = extracted)</li>
-                        <li><strong>Correspondent</strong>: Who the document is from (sender)</li>
-                        <li><strong>Document Type</strong>: What kind of document</li>
-                        <li><strong>Custom Field</strong>: Extra information fields you create (e.g., "POCO Score", "POCO OCR")</li>
-                        <li><strong>Cache</strong>: Temporary storage of Paperless data for fast access</li>
-                        <li><strong>Threshold</strong>: A minimum score that triggers an action</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Troubleshooting Tips</h3>
-                      
-                      <h4>Rule Isn't Matching Documents</h4>
-                      <ul>
-                        <li>Check OCR threshold - are your patterns too strict?</li>
-                        <li>Test with Dry Run first - see what scores you're getting</li>
-                        <li>Lower the POCO threshold - try 70% instead of 75%</li>
-                        <li>Use the Regex helper - make sure your patterns are correct</li>
-                        <li>Check the OCR text - maybe the text isn't in the document</li>
-                      </ul>
-
-                      <h4>Documents Not Syncing from Paperless</h4>
-                      <ul>
-                        <li>Go to Settings → System → Paperless Datafield Synchronisation</li>
-                        <li>Click "Sync Now"</li>
-                        <li>Check the sync status - any errors?</li>
-                        <li>Verify your Paperless connection is still working (test connection button)</li>
-                      </ul>
-
-                      <h4>Custom Field Deleted from Paperless But Still Shows in PocoClass</h4>
-                      <ul>
-                        <li>Sync manually: Settings → System → Sync Now</li>
-                        <li>The field should disappear after sync</li>
-                      </ul>
-
-                      <h4>Background Processing Not Working</h4>
-                      <ul>
-                        <li>Go to Settings → Background Processing</li>
-                        <li>Check if it's enabled</li>
-                        <li>Look for any error messages</li>
-                        <li>Try clicking "Trigger Background Processing" manually</li>
-                        <li>Check if you have documents tagged with "NEW"</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
                       <h3>Best Practices</h3>
                       <ul>
                         <li><strong>Start with Dry Run</strong>: Always test rules with dry run first</li>
@@ -1334,15 +1282,6 @@ function LayoutContent({ children }) {
                       </ul>
                     </div>
 
-                    <div className="guide-section">
-                      <h3>Need Help?</h3>
-                      <ul>
-                        <li>Check the rule preview pane - it shows example matches from your documents</li>
-                        <li>Use the Regex helper modal when building patterns</li>
-                        <li>Review past test results in Processing History to understand how rules are working</li>
-                        <li>Use Dry Run liberally - it's risk-free testing</li>
-                      </ul>
-                    </div>
                   </div>
                 </div>
               </div>
