@@ -72,7 +72,7 @@
     "logs": "Logs",
     "settings": "Settings",
     "guide": "Guide",
-    "quickGuide": "Quick Guide",
+    "quickStart": "Quick Start",
     "logout": "Logout"
   },
   "auth": {
