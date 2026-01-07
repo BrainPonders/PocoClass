@@ -1173,14 +1173,19 @@ environment:
 
 **Configuration required** in `scripts/pococlass_trigger.sh`:
 - `POCOCLASS_URL` - Your PocoClass server address
-- `POCOCLASS_TOKEN` - PocoClass session token (from browser cookies after login)
+- `POCOCLASS_TOKEN` - PocoClass System API Token (generated in Settings → Background Processing)
 
 **Make script executable**:
 ```bash
 chmod +x scripts/pococlass_trigger.sh
 ```
 
-See `ADMIN_GUIDE.md` for detailed setup instructions including authentication token retrieval.
+**Authentication**: The script uses the `X-API-Key` header with a permanent System API Token. This token:
+- Is generated once and does not expire
+- Is stored as SHA-256 hash in the database (cannot be retrieved after generation)
+- Can be regenerated or revoked from Settings → Background Processing
+
+See `ADMIN_GUIDE.md` for detailed setup instructions.
 
 **Flow**:
 ```
@@ -1775,6 +1780,10 @@ Authorization: Bearer {sessionToken}
 #### POST /api/background/trigger
 **Description**: Manually trigger background processing.
 
+**Authentication**: This endpoint accepts two authentication methods:
+1. **System API Token** (recommended for automation): `X-API-Key: <token>`
+2. **Session Cookie**: Standard admin user session
+
 **Request**:
 ```json
 {
@@ -1796,6 +1805,41 @@ Authorization: Bearer {sessionToken}
 - `scheduled`: Processing queued with debounce
 - `running`: Processing currently executing
 - `locked`: Another run is active, needs_rerun flag set
+
+#### System Token Management Endpoints
+
+#### GET /api/system-token
+**Description**: Check if a system token exists and when it was created. Admin only.
+
+**Response**:
+```json
+{
+  "has_token": true,
+  "created_at": "2024-11-04T08:00:00Z"
+}
+```
+
+#### POST /api/system-token
+**Description**: Generate or regenerate the system token. Admin only.
+
+**Response**:
+```json
+{
+  "token": "pc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "created_at": "2024-11-04T08:00:00Z"
+}
+```
+Note: The token is only returned once at generation time and cannot be retrieved later.
+
+#### DELETE /api/system-token
+**Description**: Revoke (delete) the current system token. Admin only.
+
+**Response**:
+```json
+{
+  "success": true
+}
+```
 
 ---
 

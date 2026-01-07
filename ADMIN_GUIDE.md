@@ -526,18 +526,25 @@ A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script
 
 ### Setup Steps
 
-#### Step 1: Copy and Configure the Script
+#### Step 1: Generate a System API Token
+1. Log into PocoClass as an administrator
+2. Go to **Settings → Background Processing**
+3. Scroll down to **System API Token** section
+4. Click **Generate Token**
+5. **Important:** Copy the token immediately and save it securely. It will only be shown once.
+
+#### Step 2: Copy and Configure the Script
 1. Copy `scripts/pococlass_trigger.sh` to your Paperless scripts directory
 2. Edit the configuration section at the top:
    - `POCOCLASS_URL` - Your PocoClass server address (e.g., `http://192.168.1.100:5000`)
-   - `POCOCLASS_TOKEN` - Session token from PocoClass (see Authentication below)
+   - `POCOCLASS_TOKEN` - The System API Token you generated in Step 1
 
-#### Step 2: Make it Executable
+#### Step 3: Make it Executable
 ```bash
 chmod +x pococlass_trigger.sh
 ```
 
-#### Step 3: Configure Paperless-ngx
+#### Step 4: Configure Paperless-ngx
 Add the script path to your Paperless configuration:
 
 **For Docker installations**, add to your `docker-compose.yml`:
@@ -553,21 +560,24 @@ PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
 
 ### Authentication
 
-#### Getting Your PocoClass Session Token
-1. Log into PocoClass in your browser
-2. Open Developer Tools (F12) → Application tab → Cookies
-3. Find the `session` cookie and copy its value
-4. Use this for `POCOCLASS_TOKEN`
+#### System API Token (Recommended for Automation)
+PocoClass provides a permanent System API Token specifically designed for automation scripts.
 
-**Important:** Session tokens expire when:
-- You log out of PocoClass
-- The session times out after inactivity
-- PocoClass server restarts
+**Benefits:**
+- **Permanent**: Does not expire like user session tokens
+- **System-wide**: Not tied to any specific user account
+- **Secure**: Token is hashed and stored securely; cannot be retrieved after initial generation
+- **Revocable**: Can be regenerated or revoked at any time from the settings
 
-For reliable automation, consider:
-- Using a dedicated automation user account
-- Keeping PocoClass running continuously
-- Checking logs periodically for authentication errors
+**To generate or regenerate:**
+1. Go to Settings → Background Processing → System API Token
+2. Click "Generate Token" (or "Regenerate Token" if one exists)
+3. Copy and save the token immediately - it cannot be retrieved later
+
+**If the token is compromised:**
+1. Go to Settings → Background Processing → System API Token
+2. Click "Revoke Token" to immediately invalidate the old token
+3. Generate a new token and update your scripts
 
 ### Debouncing
 
@@ -587,7 +597,8 @@ PocoClass includes built-in debouncing (default: 30 seconds). This means:
 - Verify background processing is enabled
 - Check documents have the "NEW" tag
 - Look at PocoClass logs for connection errors
-- Verify the URL and token are correct
+- Verify the URL and System API Token are correct
+- If token errors occur, regenerate the System API Token in Settings
 
 **Documents processed but no results?**
 - Check Processing History in PocoClass
