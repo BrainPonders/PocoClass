@@ -822,7 +822,7 @@ class BackgroundProcessor:
             logger.error(f"Error adding POCO scores to document {doc_id}: {e}")
     
     def _add_poco_tag(self, doc_id: int, doc: Dict, classified: bool, api_client: PaperlessAPIClient) -> None:
-        """Add POCO+ tag if classified, POCO- tag if not"""
+        """Add POCO+ tag if classified, POCO- tag if not. Optionally remove NEW tag."""
         try:
             tag_name = 'POCO+' if classified else 'POCO-'
             tag_id = api_client.get_tag_id(tag_name)
@@ -831,9 +831,19 @@ class BackgroundProcessor:
                 current_tags = doc.get('tags', [])
                 if tag_id not in current_tags:
                     current_tags.append(tag_id)
-                    success = api_client.update_document(doc_id, {'tags': current_tags})
-                    if not success:
-                        logger.warning(f"Failed to add {tag_name} tag to document {doc_id}")
+                
+                # Remove NEW tag if configured
+                remove_new = self.db.get_config('bg_remove_new_tag') == 'true'
+                if remove_new:
+                    tag_new = self.db.get_config('bg_tag_new') or 'NEW'
+                    new_tag_id = api_client.get_tag_id(tag_new)
+                    if new_tag_id and new_tag_id in current_tags:
+                        current_tags.remove(new_tag_id)
+                        logger.info(f"Removing '{tag_new}' tag from document {doc_id}")
+                
+                success = api_client.update_document(doc_id, {'tags': current_tags})
+                if not success:
+                    logger.warning(f"Failed to update tags for document {doc_id}")
             else:
                 logger.warning(f"Tag '{tag_name}' not found, cannot tag document {doc_id}")
         except Exception as e:

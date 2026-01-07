@@ -35,7 +35,7 @@ Paperless-ngx is a document management system that stores and organizes your phy
 #### 1. **Documents**
 Each document you scan or upload becomes a searchable entry in Paperless. When you extract text from a PDF (OCR), Paperless makes that text searchable.
 
-#### 2. **Document Properties** (Metadata)
+#### 2. **Document Properties** (Classifications)
 Each document has properties that help organize it:
 - **Correspondent**: Who the document is from (e.g., "Financial Institution", "Government Agency")
 - **Document Type**: What kind of document it is (e.g., "Invoice", "Receipt", "Letter")
@@ -46,7 +46,7 @@ Each document has properties that help organize it:
 When you scan a document, Paperless uses OCR to extract the text from images so you can search for it. The extracted text is what PocoClass analyzes to make classification decisions.
 
 #### 4. **Custom Fields**
-These are extra information fields you create in Paperless beyond the standard properties. For PocoClass to work, you need at least one custom field called **"POCO Score"** which stores classification confidence scores.
+These are extra information fields you create in Paperless beyond the standard properties. For PocoClass to work, you need at least one custom field called <span style="color: #2563eb;">**"POCO Score"**</span> which stores classification confidence scores and <span style="color: #2563eb;">**"POCO OCR"**</span> for transparency scores.
 
 ### How Paperless API Works
 
@@ -55,7 +55,7 @@ Paperless exposes a REST API (a way for programs to communicate with Paperless).
 - Retrieve your document types, correspondents, and tags
 - Fetch custom field information
 - Apply classifications to documents
-- Create tags and update documents with new metadata
+- Create tags and update documents with new classifications
 
 ---
 
@@ -132,7 +132,7 @@ A "rule" is a set of instructions that tells PocoClass: "If a document looks lik
 - **Rule ID**: A unique identifier for the rule (auto-generated, but you can customize it)
 - **Description**: Optional notes about what this rule does
 
-#### **Step 2: OCR Pattern Matching**
+#### **Step 2: OCR Identification**
 OCR patterns are text strings you're looking for in the document's extracted text. Think of it as: "Does this document mention specific keywords or patterns?"
 
 **How it works**:
@@ -151,6 +151,9 @@ Regular expressions (regex) are a way to describe text patterns. The `/pattern/f
 - `pattern` is what you're searching for
 - `flags` are options like `i` (case-insensitive)
 
+> [!TIP]
+> **Regex Builder Available**: Use the built-in Regex Generator (available in the pattern editor) to assist in creating complex patterns without writing code manually.
+
 Example patterns:
 - `/invoice/i` - matches "invoice", "Invoice", "INVOICE" (case-insensitive)
 - `/\d{4}-\d{2}-\d{2}/` - matches dates like "2024-01-15"
@@ -165,26 +168,25 @@ These patterns search for text in the **document filename** (not the content).
 
 Filename patterns are optional. The system applies a multiplier (default 1×) to their scoring.
 
-#### **Step 4: Configuration Tuning**
-This is where you adjust the "sensitivity" of your rule:
+#### **Step 4: Paperless Comparison**
+This is a safety check. You can verify that extracted or assigned classifications match what's already in Paperless.
 
-- **POCO Threshold** (default 75%): Minimum score needed for the rule to trigger
-- **OCR Threshold** (default 75%): Minimum percentage of OCR patterns that must match
-- **OCR Multiplier** (default 3×): How much weight OCR gets in the final score
-- **Filename Multiplier** (default 1×): How much weight filename matches get
-- **Metadata Multiplier** (default auto): Weight for Paperless metadata matches
+**Example**:
+- Rule extracted "John Smith" as the correspondent
+- Paperless has a correspondent called "John Smith"
+- Verification confirms: ✓ Match found
 
-These multipliers determine which data source you trust most. If OCR is 3×, you're saying "trust the OCR text 3 times more than other sources."
+If verification fails, the document might not be classified using this rule (depending on your settings).
 
-#### **Step 5: Metadata Assignment**
+#### **Step 5: Document Classifications**
 This is what happens when the rule matches a document:
 
-**Static Metadata** (Always assign the same value):
+**Static Classifications** (Always assign the same value):
 - "Assign Correspondent → Financial Institution"
 - "Assign Document Type → Statement"
 - "Assign Tags → Finance, 2024"
 
-**Dynamic Metadata** (Extract from the document):
+**Dynamic Classifications** (Extract from the document):
 - "Extract Correspondent from the document text using a pattern"
 - "Extract Invoice Number from text between 'Invoice #' and the next space"
 - Uses "anchors" - text markers that tell PocoClass where to look
@@ -195,15 +197,8 @@ This is what happens when the rule matches a document:
 - Set `afterAnchor` = (space or newline)
 - PocoClass will find the text between these markers
 
-#### **Step 6: Verification**
-This is a safety check. You can verify that extracted or assigned metadata matches what's already in Paperless.
-
-**Example**:
-- Rule extracted "John Smith" as the correspondent
-- Paperless has a correspondent called "John Smith"
-- Verification confirms: ✓ Match found
-
-If verification fails, the document might not be classified using this rule (depending on your settings).
+#### **Step 6: Review**
+Review your rule configuration before saving. You can see the calculated max weights and thresholds that will be applied to documents.
 
 ---
 
@@ -231,7 +226,7 @@ Before you let PocoClass automatically classify hundreds of documents, you want 
 "Apply this rule for real"
 - PocoClass tests your rule and actually classifies the documents
 - Makes changes in Paperless
-- Applied tags, correspondents, and metadata to documents
+- Applied tags, correspondents, and classifications to documents
 - Scores are recorded in the POCO Score custom field
 
 **How to do it**:
@@ -250,7 +245,7 @@ When you test, PocoClass shows you a report with:
 | OCR Score | What % of OCR patterns matched? |
 | POCO Score | What was the final classification score? |
 | Classification | Was it tagged POCO+ (matched) or POCO- (no match)? |
-| Metadata Applied | What got assigned (correspondent, tags, etc.) |
+| Classifications Applied | What got assigned (correspondent, tags, etc.) |
 
 **Scores Explained**:
 - **OCR Score 85%**: 85% of your OCR patterns matched the document
@@ -274,28 +269,32 @@ Background processing is how PocoClass automatically classifies new documents wi
 
 ### How It Works
 
-Think of background processing as a worker that wakes up periodically and asks: "Are there any new documents I should classify?"
+Background processing operates as a scheduled service that periodically scans for new documents and applies classification rules automatically.
 
 #### Step 1: The Trigger
 PocoClass looks for documents with the **"NEW"** tag. This tag should be applied automatically by Paperless when a new document arrives.
 
 #### Step 2: Filter Documents
 PocoClass finds documents that are:
-- Tagged with "NEW"
-- NOT already tagged with "POCO+" or "POCO-" (not already classified)
+- Tagged with **"NEW"**
+- NOT already tagged with **"POCO+"** or **"POCO-"** (not already classified)
 
 #### Step 3: Apply Rules
 PocoClass runs all enabled rules against these documents in order, testing each document until one rule matches.
 
 #### Step 4: Tag & Score
 When a rule matches, PocoClass:
-- Applies the rule's metadata (correspondent, document type, tags)
+- Applies the rule's classifications (correspondent, document type, tags)
 - Writes the POCO Score to the custom field
-- Applies either "POCO+" tag (matched) or "POCO-" tag (no match)
-- Removes the "NEW" tag
+- Applies either **"POCO+"** tag (matched) or **"POCO-"** tag (no match)
+- Optionally removes the **"NEW"** tag (if enabled in Settings → Background Processing → Tag Configuration)
 
 #### Step 5: Repeat
 Background processing continues looking for more documents with the "NEW" tag.
+
+> **Tip:** You can choose whether PocoClass automatically removes the **NEW** tag after processing. Enable this option to keep your Paperless inbox clean, or leave it disabled if you prefer to manually verify documents before removing the tag yourself.
+>
+> **Location:** Settings → Background Processing → Tag Configuration
 
 ### Three Processing Modes
 
@@ -330,7 +329,7 @@ Shows each document:
 - Which rule matched (if any)
 - OCR and POCO scores
 - What classification it got (POCO+ or POCO-)
-- What metadata was applied
+- What classifications were applied
 
 ### Monitoring Background Processing
 
@@ -374,18 +373,18 @@ OCR Score = (Patterns that matched / Total patterns) × 100%
 
 **Calculation**:
 ```
-POCO Score = (OCR_weighted + Filename_weighted + Metadata_weighted) / Total_weights × 100%
+POCO Score = (OCR_weighted + Filename_weighted + Classification_weighted) / Total_weights × 100%
 ```
 
 Where:
 - `OCR_weighted` = OCR patterns matched × OCR multiplier
 - `Filename_weighted` = Filename patterns matched × Filename multiplier
-- `Metadata_weighted` = Metadata verification results × Metadata multiplier
+- `Classification_weighted` = Classification verification results × Classification multiplier
 
-**Example with defaults** (OCR 3×, Filename 1×, Metadata auto):
+**Example with defaults** (OCR 3×, Filename 1×, Classifications auto):
 - OCR patterns: 3 matched out of 4 (75%)
 - Filename patterns: 1 matched out of 2 (50%)
-- Metadata verification: Passed
+- Classification verification: Passed
 
 POCO Score = ((0.75 × 3) + (0.50 × 1)) / 4 ≈ 69%
 
@@ -398,19 +397,19 @@ Multipliers let you say: "Trust the OCR text 3 times more than the filename."
 **Default multipliers**:
 - **OCR: 3×** - OCR text is usually very reliable
 - **Filename: 1×** - Filenames are less reliable
-- **Metadata: Auto** - Calculated based on other factors
+- **Classifications: Auto** - Calculated based on other factors
 
 **When to adjust**:
 - Using unreliable OCR? Lower the OCR multiplier
 - Filenames are super reliable in your organization? Raise the Filename multiplier
-- Trust Paperless metadata more? Adjust accordingly
+- Trust Paperless classifications more? Adjust accordingly
 
 ### Thresholds
 
 **POCO Threshold** (default 75%):
 - The minimum POCO Score needed to trigger the rule
 - If POCO Score ≥ 75%, the rule matches
-- Documents below 75% get tagged "POCO-" (no match)
+- Documents below 75% get tagged **"POCO-"** (no match)
 
 **OCR Threshold** (default 75%):
 - Minimum percentage of OCR patterns that must match
@@ -455,10 +454,10 @@ A way to combine multiple OCR patterns with logic (ALL must match, ANY can match
 - **Dry Run**: Test without making changes (simulation mode)
 - **Run**: Apply the rule for real (makes changes in Paperless)
 
-### Metadata
+### Classifications
 Information about a document:
-- Static metadata: Always the same value
-- Dynamic metadata: Extracted from the document
+- Static classifications: Always the same value
+- Dynamic classifications: Extracted from the document
 
 ### Correspondent
 Who the document is from (sender). Examples: "Bank", "Insurance Company", "Government"

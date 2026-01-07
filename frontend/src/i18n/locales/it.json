@@ -72,7 +72,7 @@
     "logs": "Registri",
     "settings": "Impostazioni",
     "guide": "Guida",
-    "quickGuide": "Guida rapida",
+    "quickStart": "Avvio rapido",
     "logout": "Esci"
   },
   "auth": {
@@ -363,6 +363,8 @@
       "tagPocoPlusDesc": "Etichetta di successo - Aggiunta quando un documento corrisponde a una regola e supera entrambe le soglie POCO e OCR",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Etichetta di fallimento - Aggiunta quando un documento viene elaborato ma non corrisponde a nessuna regola o non supera le soglie",
+      "removeNewTag": "Rimuovi etichetta NEW dopo l'elaborazione",
+      "removeNewTagDesc": "Quando abilitato, PocoClass rimuoverà automaticamente l'etichetta NEW dai documenti dopo averli elaborati. Questo mantiene la tua inbox pulita rimuovendo l'etichetta di attivazione una volta che un documento è stato classificato.",
       "retentionPolicy": "Criteri di conservazione della cronologia di elaborazione",
       "retentionPolicyDesc": "Controlla per quanto tempo la cronologia di elaborazione viene mantenuta nel database",
       "retentionType": "Tipo di conservazione",

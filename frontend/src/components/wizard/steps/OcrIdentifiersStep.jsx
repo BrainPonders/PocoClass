@@ -172,7 +172,7 @@ export default function OcrIdentifiersStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('wizard.step2')}</h2>
+          <h2 className="text-2xl font-bold">{t('wizard.step2Title')}</h2>
           <Tooltip content={t('tooltips.ocrThresholdHelp')} />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step2Description')}</p>

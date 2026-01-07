@@ -70,7 +70,7 @@ export default function Login() {
         <div className="wizard-container">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="relative inline-block">
+              <div className="relative inline-block" style={{ marginLeft: '-130px' }}>
                 <img src="/logo.png" alt="PocoClass Logo" className="h-40 w-auto" />
                 <div className="absolute bottom-0 right-0 transform translate-x-[30px] -translate-y-[1px]">
                   <span className="text-xs font-semibold text-gray-500">v2.0</span>
