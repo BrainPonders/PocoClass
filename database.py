@@ -106,7 +106,9 @@ class TokenEncryption:
             raise
 
 class Database:
-    def __init__(self, db_path: str = "pococlass.db"):
+    def __init__(self, db_path: str = None):
+        if db_path is None:
+            db_path = os.getenv('POCOCLASS_DB_PATH', 'pococlass.db')
         self.db_path = db_path
         self.encryption = TokenEncryption()
         self.init_database()
