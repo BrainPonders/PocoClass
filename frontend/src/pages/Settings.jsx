@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity, Sliders, Info, Key, Copy, Trash2 } from 'lucide-react';
+import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity, Sliders, Info, Key, Copy, Trash2, Terminal } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
@@ -2336,6 +2336,174 @@ export default function Settings() {
                         </p>
                       </div>
 
+                      {/* System API Token & Post Consumption Script Section */}
+                      <div className="border-t pt-6">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Key className="w-5 h-5" style={{ color: 'var(--app-text)' }} />
+                          <h3 className="text-md font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.systemToken.title')}</h3>
+                        </div>
+                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+                          {t('settings.systemToken.description')}
+                        </p>
+
+                        {/* Post Consumption Script Info */}
+                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+                          <div className="flex items-start gap-3">
+                            <Terminal className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--info-text)' }} />
+                            <div>
+                              <p className="text-sm font-medium mb-1" style={{ color: 'var(--info-text)' }}>
+                                {t('settings.systemToken.scriptSetupRequired')}
+                              </p>
+                              <p className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
+                                {t('settings.systemToken.scriptSetupDesc')}
+                              </p>
+                              <p className="text-xs mt-2 font-mono" style={{ color: 'var(--app-text-muted)' }}>
+                                PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Token Status */}
+                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--app-surface-hover)', border: '1px solid var(--app-border)' }}>
+                          {systemTokenInfo.exists ? (
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                                <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
+                                  {t('settings.systemToken.active')}
+                                </span>
+                              </div>
+                              {systemTokenInfo.created_at && (
+                                <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                                  {t('settings.systemToken.createdAt')}: {new Date(systemTokenInfo.created_at).toLocaleString()}
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <XCircle className="w-4 h-4 text-amber-500" />
+                              <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
+                                {t('settings.systemToken.notConfigured')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Show newly generated token */}
+                        {newSystemToken && (
+                          <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                            <div className="flex items-start gap-2 mb-2">
+                              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                              <span className="text-sm font-medium" style={{ color: 'var(--warning-text)' }}>
+                                {t('settings.systemToken.saveWarning')}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-3">
+                              <input
+                                type="text"
+                                value={newSystemToken}
+                                readOnly
+                                className="flex-1 font-mono text-sm px-3 py-2 rounded-md"
+                                style={{ 
+                                  backgroundColor: 'var(--app-surface)', 
+                                  border: '1px solid var(--app-border)',
+                                  color: 'var(--app-text)'
+                                }}
+                              />
+                              <Button
+                                onClick={copyTokenToClipboard}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                              >
+                                <Copy className="w-4 h-4" />
+                                {t('settings.systemToken.copy')}
+                              </Button>
+                            </div>
+                            <p className="text-xs mt-2" style={{ color: 'var(--app-text-muted)' }}>
+                              {t('settings.systemToken.usageHint')}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                          {!showTokenConfirm ? (
+                            <Button
+                              onClick={() => setShowTokenConfirm(true)}
+                              disabled={!isAdmin || generatingToken}
+                              className="flex items-center gap-2"
+                            >
+                              <Key className="w-4 h-4" />
+                              {systemTokenInfo.exists ? t('settings.systemToken.regenerate') : t('settings.systemToken.generate')}
+                            </Button>
+                          ) : (
+                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                              <span className="text-sm" style={{ color: 'var(--warning-text)' }}>
+                                {systemTokenInfo.exists ? t('settings.systemToken.confirmRegenerate') : t('settings.systemToken.confirmGenerate')}
+                              </span>
+                              <Button
+                                onClick={handleGenerateSystemToken}
+                                disabled={generatingToken}
+                                size="sm"
+                                className="bg-amber-600 hover:bg-amber-700 text-white"
+                              >
+                                {generatingToken ? t('settings.systemToken.generating') : t('settings.systemToken.confirm')}
+                              </Button>
+                              <Button
+                                onClick={() => setShowTokenConfirm(false)}
+                                variant="outline"
+                                size="sm"
+                              >
+                                {t('settings.systemToken.cancel')}
+                              </Button>
+                            </div>
+                          )}
+
+                          {systemTokenInfo.exists && !showRevokeConfirm && (
+                            <Button
+                              onClick={() => setShowRevokeConfirm(true)}
+                              disabled={!isAdmin || revokingToken}
+                              variant="outline"
+                              className="flex items-center gap-2 text-red-600 border-red-300 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              {t('settings.systemToken.revoke')}
+                            </Button>
+                          )}
+
+                          {showRevokeConfirm && (
+                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--danger-bg)', border: '1px solid var(--danger-border)' }}>
+                              <span className="text-sm" style={{ color: 'var(--danger-text)' }}>
+                                {t('settings.systemToken.confirmRevoke')}
+                              </span>
+                              <Button
+                                onClick={handleRevokeSystemToken}
+                                disabled={revokingToken}
+                                size="sm"
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                              >
+                                {revokingToken ? t('settings.systemToken.revoking') : t('settings.systemToken.confirm')}
+                              </Button>
+                              <Button
+                                onClick={() => setShowRevokeConfirm(false)}
+                                variant="outline"
+                                size="sm"
+                              >
+                                {t('settings.systemToken.cancel')}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {!isAdmin && (
+                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                            {t('settings.systemToken.adminOnly')}
+                          </p>
+                        )}
+                      </div>
+
                       <div className="border-t pt-6">
                         <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagConfiguration')}</h3>
                         <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
@@ -2498,156 +2666,6 @@ export default function Settings() {
                         {!isAdmin && (
                           <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
                             Only administrators can update background processing settings
-                          </p>
-                        )}
-                      </div>
-
-                      {/* System API Token Section */}
-                      <div className="border-t pt-6 mt-6">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Key className="w-5 h-5" style={{ color: 'var(--app-text)' }} />
-                          <h3 className="text-md font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.systemToken.title')}</h3>
-                        </div>
-                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          {t('settings.systemToken.description')}
-                        </p>
-
-                        {/* Token Status */}
-                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--app-surface-hover)', border: '1px solid var(--app-border)' }}>
-                          {systemTokenInfo.exists ? (
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2">
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                                <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                  {t('settings.systemToken.active')}
-                                </span>
-                              </div>
-                              {systemTokenInfo.created_at && (
-                                <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                                  {t('settings.systemToken.createdAt')}: {new Date(systemTokenInfo.created_at).toLocaleString()}
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <XCircle className="w-4 h-4 text-amber-500" />
-                              <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                {t('settings.systemToken.notConfigured')}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Show newly generated token */}
-                        {newSystemToken && (
-                          <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                            <div className="flex items-start gap-2 mb-2">
-                              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                              <span className="text-sm font-medium" style={{ color: 'var(--warning-text)' }}>
-                                {t('settings.systemToken.saveWarning')}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-3">
-                              <input
-                                type="text"
-                                value={newSystemToken}
-                                readOnly
-                                className="flex-1 font-mono text-sm px-3 py-2 rounded-md"
-                                style={{ 
-                                  backgroundColor: 'var(--app-surface)', 
-                                  border: '1px solid var(--app-border)',
-                                  color: 'var(--app-text)'
-                                }}
-                              />
-                              <Button
-                                onClick={copyTokenToClipboard}
-                                variant="outline"
-                                size="sm"
-                                className="flex items-center gap-1"
-                              >
-                                <Copy className="w-4 h-4" />
-                                {t('settings.systemToken.copy')}
-                              </Button>
-                            </div>
-                            <p className="text-xs mt-2" style={{ color: 'var(--app-text-muted)' }}>
-                              {t('settings.systemToken.usageHint')}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3">
-                          {!showTokenConfirm ? (
-                            <Button
-                              onClick={() => setShowTokenConfirm(true)}
-                              disabled={!isAdmin || generatingToken}
-                              className="flex items-center gap-2"
-                            >
-                              <Key className="w-4 h-4" />
-                              {systemTokenInfo.exists ? t('settings.systemToken.regenerate') : t('settings.systemToken.generate')}
-                            </Button>
-                          ) : (
-                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                              <span className="text-sm" style={{ color: 'var(--warning-text)' }}>
-                                {systemTokenInfo.exists ? t('settings.systemToken.confirmRegenerate') : t('settings.systemToken.confirmGenerate')}
-                              </span>
-                              <Button
-                                onClick={handleGenerateSystemToken}
-                                disabled={generatingToken}
-                                size="sm"
-                                className="bg-amber-600 hover:bg-amber-700 text-white"
-                              >
-                                {generatingToken ? t('settings.systemToken.generating') : t('settings.systemToken.confirm')}
-                              </Button>
-                              <Button
-                                onClick={() => setShowTokenConfirm(false)}
-                                variant="outline"
-                                size="sm"
-                              >
-                                {t('settings.systemToken.cancel')}
-                              </Button>
-                            </div>
-                          )}
-
-                          {systemTokenInfo.exists && !showRevokeConfirm && (
-                            <Button
-                              onClick={() => setShowRevokeConfirm(true)}
-                              disabled={!isAdmin || revokingToken}
-                              variant="outline"
-                              className="flex items-center gap-2 text-red-600 border-red-300 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              {t('settings.systemToken.revoke')}
-                            </Button>
-                          )}
-
-                          {showRevokeConfirm && (
-                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--danger-bg)', border: '1px solid var(--danger-border)' }}>
-                              <span className="text-sm" style={{ color: 'var(--danger-text)' }}>
-                                {t('settings.systemToken.confirmRevoke')}
-                              </span>
-                              <Button
-                                onClick={handleRevokeSystemToken}
-                                disabled={revokingToken}
-                                size="sm"
-                                className="bg-red-600 hover:bg-red-700 text-white"
-                              >
-                                {revokingToken ? t('settings.systemToken.revoking') : t('settings.systemToken.confirm')}
-                              </Button>
-                              <Button
-                                onClick={() => setShowRevokeConfirm(false)}
-                                variant="outline"
-                                size="sm"
-                              >
-                                {t('settings.systemToken.cancel')}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-
-                        {!isAdmin && (
-                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            {t('settings.systemToken.adminOnly')}
                           </p>
                         )}
                       </div>

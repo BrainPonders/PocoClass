@@ -403,7 +403,9 @@
       "copiedDesc": "Token in die Zwischenablage kopiert",
       "saveWarning": "Speichern Sie dieses Token jetzt - es wird nicht erneut angezeigt!",
       "usageHint": "Verwenden Sie dieses Token in Ihrem Post-Consumption-Skript mit: -H \"X-API-Key: IHR_TOKEN\"",
-      "adminOnly": "Nur Administratoren können das System-API-Token verwalten"
+      "adminOnly": "Nur Administratoren können das System-API-Token verwalten",
+      "scriptSetupRequired": "Post-Consumption-Skript erforderlich",
+      "scriptSetupDesc": "Für die automatische Verarbeitung müssen Sie ein Post-Consumption-Skript in Paperless-ngx konfigurieren. Kopieren Sie pococlass_trigger.sh in Ihren Skriptordner und setzen Sie die Umgebungsvariable:"
     },
     "pocoPlus": "Erfolgstag - Wird hinzugefügt, wenn ein Dokument einer Regel entspricht und sowohl POCO- als auch OCR-Schwellwerte erfüllt",
     "pocoMinus": "Fehler-Tag - Wird hinzugefügt, wenn ein Dokument verarbeitet wird, aber keiner Regel entspricht oder die Schwellwerte nicht erfüllt",
