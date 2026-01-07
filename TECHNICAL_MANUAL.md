@@ -1161,9 +1161,9 @@ def values_match(extracted, paperless):
 
 To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents.
 
-A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script:
-1. Adds the "NEW" tag to newly consumed documents (preserving existing tags)
-2. Triggers PocoClass background processing with debouncing
+A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
+
+**Note:** The NEW tag is assigned automatically by Paperless-ngx. When PocoClass creates the NEW tag, it configures it as an "inbox tag" (`is_inbox_tag=True`), which makes Paperless automatically assign it to all newly consumed documents.
 
 **In Paperless-ngx configuration** (docker-compose.yml or environment):
 ```yaml
@@ -1174,8 +1174,6 @@ environment:
 **Configuration required** in `scripts/pococlass_trigger.sh`:
 - `POCOCLASS_URL` - Your PocoClass server address
 - `POCOCLASS_TOKEN` - PocoClass session token (from browser cookies after login)
-- `PAPERLESS_URL` - Your Paperless-ngx server address  
-- `PAPERLESS_TOKEN` - Your Paperless API token
 
 **Make script executable**:
 ```bash
@@ -1186,7 +1184,7 @@ See `ADMIN_GUIDE.md` for detailed setup instructions including authentication to
 
 **Flow**:
 ```
-1. Paperless consumes document → adds NEW tag (manual or auto-tagging rule)
+1. Paperless consumes document → Paperless auto-assigns NEW tag (inbox tag feature)
 2. Paperless runs post-consumption script
 3. Script calls POST /api/background/trigger
 4. PocoClass debouncer resets 30-second timer
