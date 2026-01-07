@@ -269,6 +269,12 @@ function LayoutContent({ children }) {
                 color: var(--info-yellow-text);
               }
               
+              .info-box-blue {
+                background: var(--app-primary-light);
+                border-color: var(--app-primary);
+                color: var(--app-text);
+              }
+              
               .btn {
                 display: inline-flex;
                 align-items: center;
@@ -1350,14 +1356,16 @@ function LayoutContent({ children }) {
                       <p>
                         If both thresholds are met, the document gets a <strong>POCO+</strong> tag and your chosen classifications. If not, it gets a <strong>POCO-</strong> tag.
                       </p>
-                      <h4>Formula</h4>
-                      <p><code>POCO Score = (OCR × 3 + Filename × 1 + Verification) / Total Max Weight × 100%</code></p>
-                      <p>
-                        <strong>Example:</strong> A rule has 4 OCR patterns (3 match), 1 filename pattern (matches), and no verification. OCR contributes 3×3=9 out of 3×4=12, filename contributes 1×1=1 out of 1×1=1. Total: (9+1)/(12+1) = 77% → passes the 75% threshold.
-                      </p>
-                      <p>
-                        For a detailed explanation, see the <button onClick={() => { setShowQuickGuide(false); setShowGuide(true); }} className="text-[var(--app-primary)] hover:underline font-medium" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>full Guide</button>.
-                      </p>
+                      <div className="info-box info-box-blue">
+                        <h4 style={{ marginTop: 0 }}>Formula</h4>
+                        <p><code>POCO Score = (OCR × 3 + Filename × 1 + Verification) / Total Max Weight × 100%</code></p>
+                        <p>
+                          <strong>Example:</strong> A rule has 4 OCR patterns (3 match), 1 filename pattern (matches), and no verification. OCR contributes 3×3=9 out of 3×4=12, filename contributes 1×1=1 out of 1×1=1. Total: (9+1)/(12+1) = 77% → passes the 75% threshold.
+                        </p>
+                        <p style={{ marginBottom: 0 }}>
+                          For a detailed explanation, see the <button onClick={() => { setShowQuickGuide(false); setShowGuide(true); }} className="text-[var(--app-primary)] hover:underline font-medium" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>full Guide</button>.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="guide-section">
