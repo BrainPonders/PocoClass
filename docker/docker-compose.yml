@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  pococlass:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: pococlass
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - POCOCLASS_SECRET_KEY=${POCOCLASS_SECRET_KEY}
+      - PAPERLESS_URL=${PAPERLESS_URL:-http://paperless-ngx:8000}
+      - GUNICORN_WORKERS=3
+      - GUNICORN_THREADS=2
+      - GUNICORN_TIMEOUT=120
+    volumes:
+      - pococlass-data:/app/data
+      - ../rules:/app/rules:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - paperless-network
+
+volumes:
+  pococlass-data:
+
+networks:
+  paperless-network:
+    external: true
