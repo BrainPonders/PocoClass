@@ -1315,12 +1315,20 @@ function LayoutContent({ children }) {
                   
                   <div className="modal-body">
                     <div className="guide-section">
+                      <h3>How PocoClass Works</h3>
+                      <p>
+                        PocoClass watches for documents tagged with "NEW" in Paperless, matches them against your classification rules, and applies the appropriate tags and metadata. Documents that pass get a POCO+ tag; those that don't get a POCO- tag.
+                      </p>
+                    </div>
+
+                    <div className="guide-section">
                       <h3>Minimum Setup</h3>
                       <p>
                         Before you can use PocoClass, your Paperless system needs these items:
                       </p>
                       <ul>
                         <li><strong>POCO Score</strong> – a custom field to store classification confidence</li>
+                        <li><strong>POCO OCR</strong> (optional) – a custom field to store OCR transparency score</li>
                         <li><strong>NEW tag</strong> – marks documents ready for processing</li>
                         <li><strong>POCO+ tag</strong> – applied when classification succeeds</li>
                         <li><strong>POCO- tag</strong> – applied when classification fails</li>
@@ -1341,6 +1349,14 @@ function LayoutContent({ children }) {
                       </ul>
                       <p>
                         If both thresholds are met, the document gets a <strong>POCO+</strong> tag and your chosen classifications. If not, it gets a <strong>POCO-</strong> tag.
+                      </p>
+                      <h4>Formula</h4>
+                      <p><code>POCO Score = (OCR × 3 + Filename × 1 + Verification) / Total Max Weight × 100%</code></p>
+                      <p>
+                        <strong>Example:</strong> A rule has 4 OCR patterns (3 match), 1 filename pattern (matches), and no verification. OCR contributes 3×3=9 out of 3×4=12, filename contributes 1×1=1 out of 1×1=1. Total: (9+1)/(12+1) = 77% → passes the 75% threshold.
+                      </p>
+                      <p>
+                        For a detailed explanation, see the <button onClick={() => { setShowQuickGuide(false); setShowGuide(true); }} className="text-[var(--app-primary)] hover:underline font-medium" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>full Guide</button>.
                       </p>
                     </div>
 
@@ -1385,15 +1401,6 @@ function LayoutContent({ children }) {
                       </div>
                     </div>
 
-                    <div className="guide-section">
-                      <h3>Tips for Success</h3>
-                      <ul>
-                        <li>Start with 3-5 unique text patterns that appear in your target documents</li>
-                        <li>Use Dry Run to verify rules before applying them</li>
-                        <li>Test on varied documents to ensure consistent matching</li>
-                        <li>If rules aren't matching, try lowering the threshold to 70%</li>
-                      </ul>
-                    </div>
                   </div>
                 </div>
               </div>
