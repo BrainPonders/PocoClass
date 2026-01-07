@@ -1,15 +1,20 @@
-# PocoClass Complete Guide
+# PocoClass Administrator Guide
+
+This guide is intended for administrators who need to install, configure, and maintain PocoClass. For user-focused documentation, refer to the in-app Guide and Quick Start accessible from the navigation menu.
 
 ## Table of Contents
 1. [What is PocoClass?](#what-is-pococlass)
-2. [Understanding Paperless-ngx](#understanding-paperless-ngx)
-3. [How PocoClass Syncs with Paperless](#how-pococlass-syncs-with-paperless)
-4. [Building Rules: The 6-Step Wizard](#building-rules-the-6-step-wizard)
-5. [Testing Your Rules](#testing-your-rules)
-6. [Background Processing](#background-processing)
-7. [Setting Up Automatic Processing](#setting-up-automatic-processing)
-8. [The POCO Scoring Mechanism](#the-poco-scoring-mechanism)
-9. [Key Concepts & Terminology](#key-concepts--terminology)
+2. [Installation](#installation)
+3. [Initial Setup](#initial-setup)
+4. [Understanding Paperless-ngx](#understanding-paperless-ngx)
+5. [How PocoClass Syncs with Paperless](#how-pococlass-syncs-with-paperless)
+6. [Building Rules: The 6-Step Wizard](#building-rules-the-6-step-wizard)
+7. [Testing Your Rules](#testing-your-rules)
+8. [Background Processing](#background-processing)
+9. [Setting Up Automatic Processing](#setting-up-automatic-processing)
+10. [The POCO Scoring Mechanism](#the-poco-scoring-mechanism)
+11. [Key Concepts & Terminology](#key-concepts--terminology)
+12. [Troubleshooting](#troubleshooting-tips)
 
 ---
 
@@ -22,6 +27,140 @@
 - **Bulk imports**: You have 500 documents to process and they need to be sorted into departments
 - **Daily processing**: New documents arrive daily and need consistent, reliable categorization
 - **Pattern recognition**: Your documents follow recognizable patterns (letterheads, specific formats, keywords)
+
+---
+
+## Installation
+
+PocoClass can be installed using Docker (recommended) or manually. Both methods require a running Paperless-ngx instance to connect to.
+
+### Prerequisites
+
+- A running Paperless-ngx instance (v2.0+)
+- Network connectivity between PocoClass and Paperless-ngx
+- Admin credentials for Paperless-ngx
+
+### Docker Installation (Recommended)
+
+Docker is the easiest way to run PocoClass alongside your existing Paperless-ngx setup.
+
+**1. Create a docker-compose.yml** (or add to your existing stack):
+
+```yaml
+version: "3.8"
+
+services:
+  pococlass:
+    image: pococlass:latest
+    container_name: pococlass
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./pococlass-data:/app/data
+      - ./pococlass-rules:/app/rules
+    environment:
+      - SECRET_KEY=your-secret-key-here
+    restart: unless-stopped
+```
+
+**2. Start the container:**
+
+```bash
+docker-compose up -d pococlass
+```
+
+**3. Access PocoClass:**
+
+Open `http://your-server:5000` in your browser.
+
+### Manual Installation
+
+For environments where Docker is not available.
+
+**1. Clone the repository:**
+
+```bash
+git clone https://github.com/your-repo/pococlass.git
+cd pococlass
+```
+
+**2. Install Python dependencies:**
+
+```bash
+# Recommended: use a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+**3. Install frontend dependencies:**
+
+```bash
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+**4. Start PocoClass:**
+
+```bash
+# Development mode
+python api.py
+
+# Or use the start script
+./start.sh
+```
+
+**5. Access PocoClass:**
+
+Open `http://localhost:5000` in your browser.
+
+---
+
+## Initial Setup
+
+After installation, complete these steps to connect PocoClass to your Paperless-ngx instance.
+
+### Step 1: Create Required Items in Paperless
+
+Before using PocoClass, create these items in Paperless-ngx:
+
+**Required Custom Fields:**
+- **POCO Score** (Number type) - Stores classification confidence (0-100)
+
+**Optional Custom Fields:**
+- **POCO OCR** (Number type) - Stores OCR transparency score (0-100)
+
+**Required Tags:**
+- **NEW** - Marks documents ready for processing
+- **POCO+** - Applied when classification succeeds
+- **POCO-** - Applied when classification fails
+
+> **Tip:** PocoClass can create missing items for you during setup. Go to Settings → Data Validation to check and create missing items.
+
+### Step 2: First Login
+
+1. Open PocoClass in your browser
+2. Enter your Paperless-ngx admin credentials
+3. PocoClass will validate the connection and guide you through setup
+
+### Step 3: Run Initial Sync
+
+1. Go to Settings → System → Paperless Datafield Synchronisation
+2. Click "Sync Now"
+3. Wait for sync to complete
+
+This fetches all your tags, correspondents, document types, and custom fields from Paperless.
+
+### Step 4: Verify Setup
+
+Go to Settings → Data Validation to confirm:
+- ✅ POCO Score custom field exists
+- ✅ Required tags (NEW, POCO+, POCO-) exist
+- ✅ Connection to Paperless is working
 
 ---
 

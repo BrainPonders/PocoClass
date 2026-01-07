@@ -1118,9 +1118,9 @@
     },
     "backgroundProcessing": {
       "title": "Hintergrundverarbeitung",
-      "intro": "Die Hintergrundverarbeitung ist die Art und Weise, wie PocoClass neue Dokumente automatisch klassifiziert, ohne dass Sie etwas tun müssen.",
+      "intro": "Die Hintergrundverarbeitung ist die Art und Weise, wie PocoClass neue Dokumente automatisch klassifiziert.",
       "howItWorksTitle": "Wie es funktioniert",
-      "howItWorksIntro": "Die Hintergrundverarbeitung arbeitet als geplanter Dienst, der regelmäßig nach neuen Dokumenten sucht und Klassifizierungsregeln automatisch anwendet.",
+      "howItWorksIntro": "Wenn ausgelöst, scannt PocoClass nach Dokumenten mit dem NEW-Tag und wendet Ihre Klassifizierungsregeln an. Ihr Administrator konfiguriert, wie die Auslösung funktioniert (automatisch über Post-Consumption-Skript, manuell oder geplant).",
       "step1": "<strong>Schritt 1: Der Auslöser</strong> - PocoClass sucht nach Dokumenten mit dem <strong>\"NEW\"</strong>-Tag",
       "step2": "<strong>Schritt 2: Dokumente filtern</strong> - Finde Dokumente mit dem <strong>\"NEW\"</strong>-Tag, die NICHT bereits mit <strong>\"POCO+\"</strong> oder <strong>\"POCO-\"</strong> getaggt sind",
       "step3": "<strong>Schritt 3: Regeln anwenden</strong> - Führe alle aktivierten Regeln der Reihe nach gegen diese Dokumente aus",
@@ -1170,7 +1170,7 @@
       "description": "PocoClass überwacht Dokumente mit dem \"NEW\"-Tag in Paperless, gleicht sie mit Ihren Klassifizierungsregeln ab und wendet die entsprechenden Tags und Metadaten an. Dokumente, die bestehen, erhalten ein POCO+-Tag; diejenigen, die nicht bestehen, erhalten ein POCO--Tag."
     },
     "minimumSetup": {
-      "title": "Minimales Setup",
+      "title": "Mindestanforderungen für das Setup",
       "intro": "Bevor Sie PocoClass verwenden können, benötigt Ihr Paperless-System diese Elemente:",
       "pocoScore": "<strong>POCO Score</strong> – ein benutzerdefiniertes Feld zum Speichern des Klassifizierungsvertrauens",
       "pocoOCR": "<strong>POCO OCR</strong> (optional) – ein benutzerdefiniertes Feld zum Speichern des OCR-Transparenz-Scores",
