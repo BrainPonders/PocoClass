@@ -1335,7 +1335,7 @@ function LayoutContent({ children }) {
                       <ul>
                         <li><strong>POCO Score</strong> – a custom field to store classification confidence</li>
                         <li><strong>POCO OCR</strong> (optional) – a custom field to store OCR transparency score</li>
-                        <li><strong>NEW tag</strong> – marks documents ready for processing</li>
+                        <li><strong>NEW tag</strong> – marks documents ready for processing (Paperless must be configured to assign this tag to incoming documents)</li>
                         <li><strong>POCO+ tag</strong> – applied when classification succeeds</li>
                         <li><strong>POCO- tag</strong> – applied when classification fails</li>
                       </ul>
