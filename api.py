@@ -2682,6 +2682,7 @@ def get_background_settings():
             'bg_debounce_seconds': int(db.get_config('bg_debounce_seconds') or '30'),
             'bg_tag_new': db.get_config('bg_tag_new') or 'NEW',
             'bg_tag_poco': db.get_config('bg_tag_poco') or 'POCO',
+            'bg_remove_new_tag': db.get_config('bg_remove_new_tag') == 'true',
             'history_retention_type': db.get_config('history_retention_type') or 'days',
             'history_retention_days': int(db.get_config('history_retention_days') or '365'),
             'history_retention_count': int(db.get_config('history_retention_count') or '100')
@@ -2710,6 +2711,9 @@ def update_background_settings():
         
         if 'bg_tag_poco' in data:
             db.set_config('bg_tag_poco', data['bg_tag_poco'])
+        
+        if 'bg_remove_new_tag' in data:
+            db.set_config('bg_remove_new_tag', 'true' if data['bg_remove_new_tag'] else 'false')
         
         if 'history_retention_type' in data:
             retention_type = data['history_retention_type']
