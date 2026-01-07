@@ -1269,20 +1269,6 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>Best Practices</h3>
-                      <ul>
-                        <li><strong>Start with Dry Run</strong>: Always test rules with dry run first</li>
-                        <li><strong>Test on varied documents</strong>: Try your rule on 5-10 different documents</li>
-                        <li><strong>Use meaningful patterns</strong>: Specific patterns work better than generic ones</li>
-                        <li><strong>Document your rules</strong>: Give rules clear names describing what they match</li>
-                        <li><strong>Keep rules organized</strong>: Use naming conventions (e.g., "Bank-", "Invoice-")</li>
-                        <li><strong>Monitor processing history</strong>: Check results regularly to see if rules are working</li>
-                        <li><strong>Adjust thresholds slowly</strong>: Change by 5% at a time, not 20%</li>
-                        <li><strong>Sync regularly</strong>: Keep PocoClass in sync with Paperless changes</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
                       <h3>About the Name</h3>
                       <p>
                         The name PocoClass originates from the earliest script this project was based on, called POCO. POCO stands for <strong>Post Consumption</strong> and referred to a simple script that was triggered by Paperless through its built-in post-consumption mechanism.
