@@ -443,6 +443,64 @@ class Database:
         conn.commit()
         conn.close()
     
+    # System API Token Management
+    def generate_system_token(self) -> str:
+        """Generate a new system-wide API token for automation.
+        
+        Returns the raw token (to display to admin once).
+        Stores a hashed version in the database.
+        """
+        # Generate a secure random token (32 bytes = 64 hex chars)
+        raw_token = secrets.token_hex(32)
+        
+        # Hash the token for storage (we don't store the raw token)
+        token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+        
+        # Store the hash
+        self.set_config('system_api_token_hash', token_hash)
+        self.set_config('system_api_token_created', datetime.now().isoformat())
+        
+        logger.info("Generated new system API token")
+        return raw_token
+    
+    def validate_system_token(self, token: str) -> bool:
+        """Validate a system API token by comparing hashes."""
+        if not token:
+            return False
+        
+        stored_hash = self.get_config('system_api_token_hash')
+        if not stored_hash:
+            return False
+        
+        # Hash the provided token and compare
+        token_hash = hashlib.sha256(token.encode()).hexdigest()
+        return secrets.compare_digest(token_hash, stored_hash)
+    
+    def has_system_token(self) -> bool:
+        """Check if a system API token exists."""
+        return self.get_config('system_api_token_hash') is not None
+    
+    def get_system_token_info(self) -> Optional[Dict]:
+        """Get metadata about the system token (not the token itself)."""
+        token_hash = self.get_config('system_api_token_hash')
+        if not token_hash:
+            return None
+        
+        return {
+            'exists': True,
+            'created_at': self.get_config('system_api_token_created'),
+            'token_prefix': 'poco_'  # Just for display purposes
+        }
+    
+    def revoke_system_token(self):
+        """Revoke the current system API token."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM config WHERE key IN ('system_api_token_hash', 'system_api_token_created')")
+        conn.commit()
+        conn.close()
+        logger.info("Revoked system API token")
+    
     def create_user(self, paperless_username: str, paperless_user_id: int, role: str = 'user') -> Optional[int]:
         """Create a new user"""
         conn = self.get_connection()
