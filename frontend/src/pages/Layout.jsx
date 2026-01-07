@@ -1282,6 +1282,16 @@ function LayoutContent({ children }) {
                       </ul>
                     </div>
 
+                    <div className="guide-section">
+                      <h3>About the Name</h3>
+                      <p>
+                        The name PocoClass originates from the earliest script this project was based on, called POCO. POCO stands for <strong>Post Consumption</strong> and referred to a simple script that was triggered by Paperless through its built-in post-consumption mechanism.
+                      </p>
+                      <p>
+                        That original script performed basic rule-based classification immediately after documents were imported. Over time, this concept evolved into a full document classification system with scoring, verification, and a web-based interface. The name PocoClass was kept to reflect these origins while representing the broader classification capabilities the project now provides.
+                      </p>
+                    </div>
+
                   </div>
                 </div>
               </div>
