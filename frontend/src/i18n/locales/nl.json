@@ -72,7 +72,7 @@
     "logs": "Logboeken",
     "settings": "Instellingen",
     "guide": "Gids",
-    "quickGuide": "Snelgids",
+    "quickStart": "Snelstart",
     "logout": "Afmelden"
   },
   "auth": {

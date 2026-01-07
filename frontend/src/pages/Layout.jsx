@@ -677,7 +677,7 @@ function LayoutContent({ children }) {
                         }}
                         className="btn btn-outline btn-sm"
                       >
-                        {t('nav.quickGuide')}
+                        {t('nav.quickStart')}
                       </button>
                       <button 
                         onClick={() => setShowGuide(false)}
@@ -1288,8 +1288,8 @@ function LayoutContent({ children }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                   <div className="modal-header">
                     <div>
-                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>Quick Reference Guide</h2>
-                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>TL;DR - Key concepts and workflows</p>
+                      <h2 className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>Quick Start</h2>
+                      <p className="text-sm mt-1" style={{ color: 'var(--app-text-secondary)' }}>Get up and running with PocoClass</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
@@ -1299,7 +1299,7 @@ function LayoutContent({ children }) {
                         }}
                         className="btn btn-outline btn-sm"
                       >
-                        Full Guide
+                        Guide
                       </button>
                       <button 
                         onClick={() => setShowQuickGuide(false)}
@@ -1315,142 +1315,83 @@ function LayoutContent({ children }) {
                   
                   <div className="modal-body">
                     <div className="guide-section">
-                      <h3>Core Concept</h3>
-                      <p>POCO = Weighted scoring system combining OCR content, filename patterns, and classifications verification.</p>
+                      <h3>Minimum Setup</h3>
+                      <p>
+                        Before you can use PocoClass, your Paperless system needs these items:
+                      </p>
+                      <ul>
+                        <li><strong>POCO Score</strong> – a custom field to store classification confidence</li>
+                        <li><strong>NEW tag</strong> – marks documents ready for processing</li>
+                        <li><strong>POCO+ tag</strong> – applied when classification succeeds</li>
+                        <li><strong>POCO- tag</strong> – applied when classification fails</li>
+                      </ul>
+                      <p>
+                        Go to <strong>Settings → Data Validation</strong> to check if these exist. PocoClass can create missing items for you.
+                      </p>
                     </div>
 
                     <div className="guide-section">
-                      <h3>The 6-Step Rule Building Workflow</h3>
+                      <h3>How Scoring Works</h3>
+                      <p>
+                        PocoClass uses a confidence-based scoring system to decide if a document matches a rule:
+                      </p>
+                      <ul>
+                        <li><strong>OCR Score</strong> – percentage of text patterns found in the document. Must reach 75% (default) for the rule to continue.</li>
+                        <li><strong>POCO Score</strong> – combines OCR, filename, and Paperless verification into a final confidence score. Must reach 75% (default) to apply the classification.</li>
+                      </ul>
+                      <p>
+                        If both thresholds are met, the document gets a <strong>POCO+</strong> tag and your chosen classifications. If not, it gets a <strong>POCO-</strong> tag.
+                      </p>
+                    </div>
+
+                    <div className="guide-section">
+                      <h3>Getting Started</h3>
                       <div className="guide-workflow">
                         <div className="guide-step">
                           <div className="guide-step-number">1</div>
                           <div className="guide-step-content">
-                            <strong>Basic Info</strong>
-                            <p>Name your rule and add an optional description</p>
+                            <strong>Complete Setup</strong>
+                            <p>Go to Settings → Data Validation and ensure all required fields and tags exist in Paperless.</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">2</div>
                           <div className="guide-step-content">
-                            <strong>OCR Patterns</strong>
-                            <p>Define text patterns to search for in document content using regex (e.g., <code>/invoice/i</code>)</p>
+                            <strong>Create Your First Rule</strong>
+                            <p>Go to Rules and click "New Rule". The wizard will guide you through naming your rule, adding OCR patterns, and choosing what classifications to apply.</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">3</div>
                           <div className="guide-step-content">
-                            <strong>Filename Patterns</strong>
-                            <p>Define patterns to match against document filenames (optional)</p>
+                            <strong>Test with Dry Run</strong>
+                            <p>Go to Rule Evaluation, select your rule and some documents, then click "Dry Run" to see what would happen without making changes.</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">4</div>
                           <div className="guide-step-content">
-                            <strong>Configuration</strong>
-                            <p>Adjust thresholds and multipliers (defaults: POCO 75%, OCR 75%, OCR 3×, Filename 1×)</p>
+                            <strong>Run for Real</strong>
+                            <p>Once satisfied with Dry Run results, click "Run" to apply classifications to documents in Paperless.</p>
                           </div>
                         </div>
                         <div className="guide-step">
                           <div className="guide-step-number">5</div>
                           <div className="guide-step-content">
-                            <strong>classifications Assignment</strong>
-                            <p>Define what to assign (static) or extract (dynamic) when rule matches</p>
-                          </div>
-                        </div>
-                        <div className="guide-step">
-                          <div className="guide-step-number">6</div>
-                          <div className="guide-step-content">
-                            <strong>Verification</strong>
-                            <p>Cross-check extracted/assigned classifications against existing Paperless data</p>
+                            <strong>Enable Background Processing</strong>
+                            <p>Go to Settings → Background Processing and enable automatic mode. PocoClass will now classify new documents automatically.</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="guide-section">
-                      <h3>Dual Scoring System</h3>
-                      <h4>POCO OCR Score (Transparency)</h4>
-                      <p><code>OCR Score = (Matched Patterns / Total Patterns) × 100%</code></p>
-                      <p>Shows what percentage of your expected text patterns were found. Recorded in document notes.</p>
-                      
-                      <h4>POCO Score (Actionable)</h4>
-                      <p><code>POCO Score = (OCR × 3 + Filename × 1 + classifications) / Total × 100%</code></p>
-                      <p>Combines all factors with weighted multipliers. Must meet threshold (default 75%) to trigger classification.</p>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Testing & Execution</h3>
+                      <h3>Tips for Success</h3>
                       <ul>
-                        <li><strong>Dry Run</strong>: Test without making changes - shows what would happen</li>
-                        <li><strong>Run</strong>: Apply classifications for real - updates Paperless documents</li>
-                        <li><strong>Results</strong>: View OCR score, POCO score, and classifications applied for each document</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Background Processing Modes</h3>
-                      <ul>
-                        <li><strong>Automatic</strong>: Runs continuously every few minutes, watching for NEW-tagged documents</li>
-                        <li><strong>Trigger</strong>: Run once manually when you click the button</li>
-                        <li><strong>Dry Run</strong>: Trigger mode but without making changes (simulation)</li>
-                      </ul>
-                      <p><strong>How it works</strong>: Finds documents with "NEW" tag → Applies enabled rules → Tags as POCO+ or POCO- → Removes NEW tag</p>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Syncing with Paperless</h3>
-                      <p><strong>Location</strong>: Settings → System → Paperless Datafield Synchronisation</p>
-                      <p><strong>What gets synced</strong>: Tags, correspondents, document types, custom fields</p>
-                      <p><strong>When to sync</strong>:</p>
-                      <ul>
-                        <li>After creating/deleting tags or custom fields in Paperless</li>
-                        <li>When PocoClass doesn't recognize Paperless data</li>
-                        <li>Roughly once per day during active configuration</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Required Paperless Setup</h3>
-                      <ul>
-                        <li><strong>Custom Field</strong>: "POCO Score" (required) - stores classification confidence</li>
-                        <li><strong>Custom Field</strong>: "POCO OCR" (optional) - stores OCR transparency score</li>
-                        <li><strong>Tags</strong>: "POCO+", "POCO-", "NEW" - used for classification workflow</li>
-                      </ul>
-                      <p>Check status: Settings → Data Validation</p>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Key Terminology</h3>
-                      <ul>
-                        <li><strong>Regex</strong>: Pattern format <code>/pattern/flags</code> (e.g., <code>/invoice/i</code> for case-insensitive)</li>
-                        <li><strong>Anchors</strong>: Text markers for dynamic extraction (<code>beforeAnchor</code>, <code>afterAnchor</code>)</li>
-                        <li><strong>Threshold</strong>: Minimum score required to trigger action (default 75%)</li>
-                        <li><strong>Multiplier</strong>: Weight given to data source (OCR 3×, Filename 1×)</li>
-                        <li><strong>Static classifications</strong>: Always assign the same value</li>
-                        <li><strong>Dynamic classifications</strong>: Extract value from document using patterns</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Quick Troubleshooting</h3>
-                      <ul>
-                        <li><strong>Rule not matching?</strong> Lower POCO threshold to 70%, check OCR patterns with Dry Run</li>
-                        <li><strong>Sync issues?</strong> Settings → System → Sync Now, verify connection</li>
-                        <li><strong>Background not working?</strong> Check Settings → Background Processing for errors, verify NEW tag exists</li>
-                        <li><strong>Missing fields?</strong> Run manual sync, check Data Validation tab</li>
-                      </ul>
-                    </div>
-
-                    <div className="guide-section">
-                      <h3>Best Practices</h3>
-                      <ul>
-                        <li>Always test with Dry Run before using Run</li>
-                        <li>Test rules on 5-10 varied documents</li>
-                        <li>Use specific patterns over generic ones</li>
-                        <li>Give rules descriptive names (e.g., "Bank-Statement-RaboBank")</li>
-                        <li>Adjust thresholds in small increments (5% at a time)</li>
-                        <li>Monitor Processing History regularly</li>
-                        <li>Keep PocoClass synced with Paperless</li>
+                        <li>Start with 3-5 unique text patterns that appear in your target documents</li>
+                        <li>Use Dry Run to verify rules before applying them</li>
+                        <li>Test on varied documents to ensure consistent matching</li>
+                        <li>If rules aren't matching, try lowering the threshold to 70%</li>
                       </ul>
                     </div>
                   </div>

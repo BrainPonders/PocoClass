@@ -72,7 +72,7 @@
     "logs": "Journaux",
     "settings": "Paramètres",
     "guide": "Guide",
-    "quickGuide": "Guide rapide",
+    "quickStart": "Démarrage rapide",
     "logout": "Déconnexion"
   },
   "auth": {
