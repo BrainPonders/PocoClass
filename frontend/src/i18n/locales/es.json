@@ -72,7 +72,7 @@
     "logs": "Registros",
     "settings": "Configuración",
     "guide": "Guía",
-    "quickGuide": "Guía rápida",
+    "quickStart": "Inicio rápido",
     "logout": "Cerrar sesión"
   },
   "auth": {
@@ -365,6 +365,8 @@
       "tagPocoPlusDesc": "Etiqueta de éxito - Se agrega cuando un documento coincide con una regla y supera los umbrales POCO y OCR",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Etiqueta de fallo - Se agrega cuando un documento se procesa pero no coincide con ninguna regla o falla en los umbrales",
+      "removeNewTag": "Eliminar etiqueta NEW después del procesamiento",
+      "removeNewTagDesc": "Cuando está habilitado, PocoClass eliminará automáticamente la etiqueta NEW de los documentos después de procesarlos. Esto mantiene su bandeja de entrada limpia al eliminar la etiqueta de activación una vez que un documento ha sido clasificado.",
       "retentionPolicy": "Política de retención del historial de procesamiento",
       "retentionPolicyDesc": "Controle cuánto tiempo se mantiene el historial de procesamiento en la base de datos",
       "retentionType": "Tipo de retención",

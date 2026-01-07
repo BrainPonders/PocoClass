@@ -72,7 +72,7 @@
     "logs": "Logboeken",
     "settings": "Instellingen",
     "guide": "Gids",
-    "quickGuide": "Snelgids",
+    "quickStart": "Snelstart",
     "logout": "Afmelden"
   },
   "auth": {
@@ -363,6 +363,8 @@
       "tagPocoPlusDesc": "Succesvol label - Toegevoegd wanneer een document aan een regel voldoet en de POCO- en OCR-drempels overschrijdt",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Mislukt label - Toegevoegd wanneer een document wordt verwerkt maar aan geen regel voldoet of de drempels niet bereikt",
+      "removeNewTag": "Verwijder NEW label na verwerking",
+      "removeNewTagDesc": "Indien ingeschakeld, verwijdert PocoClass automatisch het NEW label van documenten na verwerking. Dit houdt uw inbox schoon door het trigger label te verwijderen zodra een document is geclassificeerd.",
       "retentionPolicy": "Retentiebeleid voor verwerkingsgeschiedenis",
       "retentionPolicyDesc": "Bepaal hoe lang verwerkingsgeschiedenis in de database wordt bewaard",
       "retentionType": "Retentietype",

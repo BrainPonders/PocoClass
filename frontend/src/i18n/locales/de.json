@@ -72,7 +72,7 @@
     "logs": "Protokolle",
     "settings": "Einstellungen",
     "guide": "Anleitung",
-    "quickGuide": "Schnellanleitungen",
+    "quickStart": "Schnellstart",
     "logout": "Abmelden"
   },
   "auth": {
@@ -363,6 +363,8 @@
       "tagPocoPlusDesc": "Erfolgs-Tag - Hinzugefügt, wenn ein Dokument einer Regel entspricht und die POCO- und OCR-Schwellen überschreitet",
       "tagPocoMinus": "POCO-",
       "tagPocoMinusDesc": "Fehler-Tag - Hinzugefügt, wenn ein Dokument verarbeitet wird, aber keiner Regel entspricht oder die Schwellen nicht erreicht",
+      "removeNewTag": "NEW-Tag nach Verarbeitung entfernen",
+      "removeNewTagDesc": "Wenn aktiviert, entfernt PocoClass automatisch das NEW-Tag von Dokumenten nach der Verarbeitung. Dies hält Ihren Posteingang sauber, indem das Auslöser-Tag entfernt wird, sobald ein Dokument klassifiziert wurde.",
       "retentionPolicy": "Aufbewahrungsrichtlinie für Verarbeitungsverlauf",
       "retentionPolicyDesc": "Kontrollieren Sie, wie lange der Verarbeitungsverlauf in der Datenbank aufbewahrt wird",
       "retentionType": "Aufbewahrungstyp",

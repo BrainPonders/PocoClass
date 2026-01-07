@@ -456,7 +456,7 @@ export default function DocumentClassificationsStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('documentClassifications.stepTitle')}</h2>
+          <h2 className="text-2xl font-bold">{t('wizard.step5Title')}</h2>
           <Tooltip content={t('documentClassifications.stepTooltip')} />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
@@ -642,20 +642,6 @@ export default function DocumentClassificationsStep({
           {t('documentClassifications.dynamicDataDescription')}
         </p>
 
-
-        {/* Graphic Representation */}
-        <div className="flex items-center justify-center gap-3 mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)' }}>
-          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
-            {t('documentClassifications.visualization.beforeAnchor')}
-          </div>
-          <div className="px-4 py-2 bg-green-100 border-2 border-green-500 rounded-lg font-mono text-sm text-green-800">
-            {t('documentClassifications.visualization.extractedData')}
-          </div>
-          <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
-            {t('documentClassifications.visualization.afterAnchor')}
-          </div>
-        </div>
-
         {(ruleData.dynamicData?.extractionRules?.length || 0) === 0 ? (
           <div className="text-center py-12 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
             <div className="text-6xl mb-4">📊</div>
@@ -671,8 +657,10 @@ export default function DocumentClassificationsStep({
             {ruleData.dynamicData?.extractionRules?.map((rule, index) => {
               // Determine if current field is custom field or document category for purple styling
               // Tags should not receive custom field styling, but default green.
-              const isCustomFieldOrDocumentCategory = rule.targetField === 'documentCategory' || 
-                                                      rule.targetField.startsWith('customField');
+              const isCustomField = allPlaceholders.some(p => 
+                p.is_custom_field && p.placeholder_name === rule.targetField
+              );
+              const isCustomFieldOrDocumentCategory = rule.targetField === 'documentCategory' || isCustomField;
               const isTag = rule.targetField === 'tags';
               
               const customFieldStyle = { backgroundColor: '#f3e8ff', borderColor: '#a855f7' };
@@ -690,6 +678,23 @@ export default function DocumentClassificationsStep({
                   </div>
 
                   <div className="space-y-4">
+                    {/* Graphic Representation - anchors stay blue, extracted data changes color */}
+                    <div className="flex items-center justify-center gap-3 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)' }}>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
+                        {t('documentClassifications.visualization.beforeAnchor')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ 
+                        backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#e9d5ff' : '#d1fae5',
+                        borderColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#a855f7' : '#10b981',
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857'
+                      }}>
+                        {t('documentClassifications.visualization.extractedData')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
+                        {t('documentClassifications.visualization.afterAnchor')}
+                      </div>
+                    </div>
+
                     {/* Target Field */}
                     <div className="form-group">
                       <label className="form-label">{t('documentClassifications.labels.targetField')}</label>
@@ -811,7 +816,7 @@ export default function DocumentClassificationsStep({
                         </div>
                       )}
 
-                      {rule.targetField && (rule.targetField.startsWith('customField') || rule.targetField === 'documentCategory') && (
+                      {rule.targetField && (isCustomField || rule.targetField === 'documentCategory') && (
                         <div className="form-group">
                           <label className="form-label">{t('documentClassifications.labels.patternToMatch')}</label>
                           <div className="flex items-center gap-2">

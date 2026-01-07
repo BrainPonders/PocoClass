@@ -43,7 +43,7 @@ export default function StaticMetadataStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">{t('wizard.step4Of7Title')}</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step4Title')}</h2>
         {!showInfoBoxes[4] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 4: true }))}
