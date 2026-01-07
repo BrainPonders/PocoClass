@@ -72,7 +72,7 @@
     "logs": "Protokolle",
     "settings": "Einstellungen",
     "guide": "Anleitung",
-    "quickGuide": "Schnellanleitungen",
+    "quickStart": "Schnellstart",
     "logout": "Abmelden"
   },
   "auth": {

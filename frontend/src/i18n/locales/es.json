@@ -72,7 +72,7 @@
     "logs": "Registros",
     "settings": "Configuración",
     "guide": "Guía",
-    "quickGuide": "Guía rápida",
+    "quickStart": "Inicio rápido",
     "logout": "Cerrar sesión"
   },
   "auth": {
