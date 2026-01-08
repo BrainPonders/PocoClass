@@ -767,13 +767,13 @@ export default function SetupWizard() {
                               The <strong>NEW</strong> tag is currently missing from your Paperless-ngx instance.
                             </p>
                             <p className="text-sm text-gray-700 mb-2">
-                              Please make sure Paperless-ngx adds the <strong>NEW</strong> tag to all newly consumed documents.
+                              Click "Create Missing Items" to create it. PocoClass will configure it as an <strong>inbox tag</strong>, so Paperless-ngx will automatically apply it to all newly consumed documents.
                             </p>
                             <p className="text-sm text-gray-700 mb-3">
                               This tag tells PocoClass which documents still need to be processed.
                             </p>
                             <p className="text-xs text-gray-600 italic">
-                              This is a manual requirement in your Paperless workflow. Use Paperless-ngx workflows to automatically apply the NEW tag to all newly consumed documents.
+                              No additional configuration needed - inbox tags are applied automatically by Paperless-ngx.
                             </p>
                           </div>
                         </>
@@ -783,13 +783,13 @@ export default function SetupWizard() {
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">Important Reminder</h3>
                             <p className="text-sm text-gray-700 mb-2">
-                              Please make sure Paperless-ngx adds the <strong>NEW</strong> tag to all newly consumed documents.
+                              The <strong>NEW</strong> tag is configured as an inbox tag, so Paperless-ngx automatically applies it to all newly consumed documents.
                             </p>
                             <p className="text-sm text-gray-700 mb-3">
                               This tag tells PocoClass which documents still need to be processed.
                             </p>
                             <p className="text-xs text-gray-600 italic">
-                              This is a manual requirement in your Paperless workflow. Use Paperless-ngx workflows to automatically apply the NEW tag to all newly consumed documents.
+                              No additional configuration needed - this happens automatically.
                             </p>
                           </div>
                         </>

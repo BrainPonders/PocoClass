@@ -27,6 +27,35 @@ class PaperlessAPIClient:
             'Content-Type': 'application/json'
         })
     
+    def _fix_pagination_url(self, next_url: Optional[str]) -> Optional[str]:
+        """Fix pagination URLs to use configured paperless_url instead of internal hostname.
+        
+        Paperless returns absolute URLs in 'next' field using its internal hostname,
+        which may differ from the public URL we're configured to use. This method
+        rewrites the URL to use our configured base URL.
+        """
+        if not next_url:
+            return None
+        
+        try:
+            from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+            
+            parsed_next = urlparse(next_url)
+            parsed_base = urlparse(self.config.paperless_url)
+            
+            fixed_url = urlunparse((
+                parsed_base.scheme,
+                parsed_base.netloc,
+                parsed_next.path,
+                parsed_next.params,
+                parsed_next.query,
+                parsed_next.fragment
+            ))
+            return fixed_url
+        except Exception as e:
+            self.logger.warning(f"Failed to fix pagination URL '{next_url}': {e}")
+            return next_url
+    
     def test_connection(self) -> bool:
         """Test connection to Paperless API"""
         try:
@@ -59,7 +88,7 @@ class PaperlessAPIClient:
                 response.raise_for_status()
                 data = response.json()
                 all_tags.extend(data.get('results', []))
-                url = data.get('next')
+                url = self._fix_pagination_url(data.get('next'))
             
             # Search for existing tag (case-sensitive exact match)
             for tag in all_tags:
@@ -98,7 +127,7 @@ class PaperlessAPIClient:
                 response.raise_for_status()
                 data = response.json()
                 all_tags.extend(data.get('results', []))
-                url = data.get('next')
+                url = self._fix_pagination_url(data.get('next'))
             
             # Search for existing tag
             for tag in all_tags:
@@ -243,7 +272,7 @@ class PaperlessAPIClient:
                 response.raise_for_status()
                 data = response.json()
                 all_fields.extend(data.get('results', []))
-                url = data.get('next')
+                url = self._fix_pagination_url(data.get('next'))
             
             # Search for existing custom field (case-sensitive exact match)
             for field in all_fields:
@@ -282,7 +311,7 @@ class PaperlessAPIClient:
                 response.raise_for_status()
                 data = response.json()
                 all_fields.extend(data.get('results', []))
-                url = data.get('next')
+                url = self._fix_pagination_url(data.get('next'))
             
             # Search for existing custom field (case-sensitive exact match)
             for field in all_fields:
@@ -545,7 +574,7 @@ class PaperlessAPIClient:
                 for correspondent in data.get('results', []):
                     correspondents[correspondent['name']] = correspondent['id']
                 
-                url = data.get('next')  # Get next page URL or None
+                url = self._fix_pagination_url(data.get('next'))  # Get next page URL or None
             
             return correspondents
         except requests.RequestException as e:
@@ -566,7 +595,7 @@ class PaperlessAPIClient:
                 for doc_type in data.get('results', []):
                     document_types[doc_type['name']] = doc_type['id']
                 
-                url = data.get('next')  # Get next page URL or None
+                url = self._fix_pagination_url(data.get('next'))  # Get next page URL or None
             
             return document_types
         except requests.RequestException as e:
@@ -587,7 +616,7 @@ class PaperlessAPIClient:
                 for tag in data.get('results', []):
                     tags[tag['name']] = tag['id']
                 
-                url = data.get('next')  # Get next page URL or None
+                url = self._fix_pagination_url(data.get('next'))  # Get next page URL or None
             
             return tags
         except requests.RequestException as e:
