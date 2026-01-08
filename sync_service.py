@@ -296,7 +296,8 @@ class SyncService:
                 if not isinstance(results, list):
                     raise ValueError(f"Invalid paginated response: 'results' is not a list (got {type(results).__name__})")
                 all_items.extend(results)
-                url = data.get('next')
+                # Fix pagination URL to use configured base URL (not internal hostname)
+                url = api_client._fix_pagination_url(data.get('next'))
             else:
                 raise ValueError(f"Invalid response format: expected list or dict, got {type(data).__name__}")
         
