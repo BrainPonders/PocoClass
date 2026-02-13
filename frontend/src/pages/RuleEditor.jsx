@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Rule } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Eye, FileText, X } from 'lucide-react';
+import { ArrowLeft, Eye, FileText, X, Lightbulb } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
@@ -57,6 +57,12 @@ export default function RuleEditor() {
   const [stepEdited, setStepEdited] = useState(false);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [showOcrModal, setShowOcrModal] = useState(false);
+  const [showWizardHelp, setShowWizardHelp] = useState(() => {
+    try {
+      const stored = localStorage.getItem('pococlass_wizard_help');
+      return stored !== null ? stored === 'true' : true;
+    } catch { return true; }
+  });
   const [ocrContent, setOcrContent] = useState('');
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
@@ -483,10 +489,11 @@ export default function RuleEditor() {
       showInfoBoxes,
       setShowInfoBoxes,
       currentStep,
-      selectedDocumentId: ruleData.sourceDocumentId || selectedDocumentId,  // Use saved or URL param
+      selectedDocumentId: ruleData.sourceDocumentId || selectedDocumentId,
       selectedDocumentName: selectedFile,
       onViewOcr: handleViewOcr,
-      onViewPdf: () => setShowPdfViewer(true)
+      onViewPdf: () => setShowPdfViewer(true),
+      showWizardHelp
     };
 
     switch (currentStep) {
@@ -544,6 +551,30 @@ export default function RuleEditor() {
           >
             <ArrowLeft size={16} />
             Back
+          </button>
+          <button
+            onClick={() => {
+              const next = !showWizardHelp;
+              setShowWizardHelp(next);
+              try { localStorage.setItem('pococlass_wizard_help', String(next)); } catch {}
+            }}
+            className="btn btn-ghost"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: showWizardHelp ? '#f59e0b' : 'var(--app-text-secondary)',
+              border: showWizardHelp ? '1px solid #f59e0b' : '1px solid var(--app-border, #d1d5db)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              fontSize: '0.8125rem',
+              fontWeight: '500',
+              transition: 'all 0.2s'
+            }}
+            title={t('wizard.helpToggle')}
+          >
+            <Lightbulb size={16} />
+            {t('wizard.helpToggle')}
           </button>
           <LoadingButton 
             onClick={handleSave}

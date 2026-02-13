@@ -6,11 +6,13 @@ import ValidatedTextarea from '@/components/ValidatedTextarea';
 import Tooltip from '@/components/Tooltip';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import { HelpCircle, AlertTriangle } from 'lucide-react';
+import WizardHelpPanel, { HelpSection, HelpExample, HelpTip } from '../WizardHelpPanel';
 
 export default function BasicInfoStep({ 
   ruleData, 
   updateRuleData,
-  currentStep 
+  currentStep,
+  showWizardHelp
 }) {
   const { t } = useLanguage();
   const [showThresholdWarning, setShowThresholdWarning] = useState(false);
@@ -97,6 +99,26 @@ export default function BasicInfoStep({
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step1Description')}</p>
       </div>
+
+      <WizardHelpPanel stepNumber={1} showHelp={showWizardHelp}>
+        <HelpSection>
+          <p style={{ fontStyle: 'italic', marginBottom: '10px', opacity: 0.85 }}>{t('wizard.help.scenarioIntro')}</p>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step1.whatTitle')}>
+          <p>{t('wizard.help.step1.whatText')}</p>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step1.exampleTitle')}>
+          <HelpExample label={t('wizard.ruleNameLabel')} value={t('wizard.help.step1.ruleName')} explanation={t('wizard.help.step1.ruleNameWhy')} />
+          <HelpExample label={t('wizard.ruleIdLabel')} value={t('wizard.help.step1.ruleId')} explanation={t('wizard.help.step1.ruleIdWhy')} />
+          <HelpExample label={t('rules.description')} value={t('wizard.help.step1.description')} explanation={t('wizard.help.step1.descriptionWhy')} />
+          <HelpExample label={t('wizard.pocoScoreReq')} value={t('wizard.help.step1.pocoThreshold')} explanation={t('wizard.help.step1.pocoThresholdWhy')} />
+          <HelpExample label={t('wizard.ocrScoreReq')} value={t('wizard.help.step1.ocrThreshold')} explanation={t('wizard.help.step1.ocrThresholdWhy')} />
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step1.tipTitle')}>
+          <HelpTip>{t('wizard.help.step1.tip1')}</HelpTip>
+          <HelpTip>{t('wizard.help.step1.tip2')}</HelpTip>
+        </HelpSection>
+      </WizardHelpPanel>
 
       <div className="space-y-6">
         <ValidatedInput
