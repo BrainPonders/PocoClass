@@ -1288,7 +1288,7 @@ function LayoutContent({ children }) {
             )}
 
             {showPaperlessInfo && (
-              <div className="modal-overlay" onClick={() => setShowPaperlessInfo(false)} style={{ zIndex: 1100 }}>
+              <div className="modal-overlay" onClick={() => setShowPaperlessInfo(false)} style={{ zIndex: 10000 }}>
                 <div onClick={(e) => e.stopPropagation()} style={{
                   backgroundColor: 'var(--app-card-bg, white)',
                   borderRadius: '12px',
