@@ -925,7 +925,15 @@
     "introduction": {
       "title": "Introduzione",
       "p1": "PocoClass è un motore di classificazione intelligente basato su regole progettato per migliorare Paperless-ngx. Sebbene Paperless fornisca già una potente interfaccia di ricerca e un classificatore integrato, potrebbe avere difficoltà a riconoscere tipi di documenti complessi, specialmente durante le importazioni massive iniziali o quando i documenti seguono formati complessi. PocoClass colma questa lacuna permettendoti di definire esplicitamente come ogni tipo di documento dovrebbe essere identificato attraverso pattern e come dovrebbe essere classificato.",
-      "p2": "Il suo obiettivo principale è fornire una classificazione coerente e accurata, indipendentemente da quanti documenti stai importando o quanto siano vari. Una volta configurato, PocoClass può funzionare in modo completamente automatico, mantenendo silenziosamente la tua libreria Paperless organizzata con il minimo sforzo da parte tua."
+      "p2": "Il suo obiettivo principale è fornire una classificazione coerente e accurata, indipendentemente da quanti documenti stai importando o quanto siano vari. Una volta configurato, PocoClass può funzionare in modo completamente automatico, mantenendo silenziosamente la tua libreria Paperless organizzata con il minimo sforzo da parte tua.",
+      "paperlessTip": "Sei arrivato qui senza conoscere Paperless-ngx?",
+      "paperlessTipLink": "Scopri cos'è Paperless-ngx",
+      "paperlessPopupTitle": "Cos'è Paperless-ngx?",
+      "paperlessPopupP1": "Paperless-ngx è un sistema di gestione documenti gratuito e open-source. Prende i tuoi documenti fisici, scansioni, e-mail e altri file e li trasforma in un archivio online ricercabile.",
+      "paperlessPopupP2": "Quando aggiungi un documento, Paperless-ngx esegue automaticamente l'OCR (riconoscimento del testo), così puoi cercare nei tuoi documenti per contenuto — non solo per nome del file.",
+      "paperlessPopupP3": "PocoClass estende Paperless-ngx aggiungendo una classificazione intelligente basata su regole. È necessaria un'istanza Paperless-ngx in esecuzione per utilizzare PocoClass.",
+      "paperlessVisitSite": "Visita Paperless-ngx",
+      "paperlessClose": "Chiudi"
     },
     "howItWorks": {
       "title": "Come Funziona PocoClass con Paperless",
