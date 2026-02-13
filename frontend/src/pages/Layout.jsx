@@ -1293,8 +1293,10 @@ function LayoutContent({ children }) {
                   backgroundColor: 'var(--app-card-bg, white)',
                   borderRadius: '12px',
                   padding: '32px',
-                  maxWidth: '550px',
+                  maxWidth: '600px',
                   width: '90%',
+                  maxHeight: '80vh',
+                  overflowY: 'auto',
                   boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                   position: 'relative'
                 }}>
@@ -1322,8 +1324,14 @@ function LayoutContent({ children }) {
                   <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
                     {t('guide.introduction.paperlessPopupP2')}
                   </p>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '20px', lineHeight: '1.6' }}>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
                     {t('guide.introduction.paperlessPopupP3')}
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
+                    {t('guide.introduction.paperlessPopupP4')}
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '20px', lineHeight: '1.6' }}>
+                    {t('guide.introduction.paperlessPopupP5')}
                   </p>
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                     <a
