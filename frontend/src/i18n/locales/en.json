@@ -228,6 +228,8 @@
     "helpToggle": "Help",
     "helpPanelTitle": "Step {step} — Guided Help",
     "help": {
+      "exampleDocTitle": "Example Document — Electricity Bill",
+      "exampleLabel": "Example document",
       "scenarioIntro": "Example scenario: You have an electricity bill from your energy provider and want PocoClass to automatically recognise all future electricity bills.",
       "step1": {
         "whatTitle": "What is this step for?",
@@ -272,6 +274,30 @@
         "tip2": "Use simple text patterns first — you don't need regex for most cases. \"kWh\" is a perfectly good pattern.",
         "tip3": "Open the OCR viewer (eye icon) to see the actual text content of a document. This helps you pick patterns that are really there.",
         "tip4": "The search range (lines) lets you limit where patterns are searched. For example, the word \"Electricity\" usually appears near the top of the bill (lines 0–200), while \"Amount Due\" could be anywhere."
+      },
+      "step3": {
+        "whatTitle": "What is this step for?",
+        "whatText": "Here you define patterns that match against the document's filename — not its content. This is a secondary identification method. Filenames often contain useful clues like the document type or provider name.",
+        "filenameTitle": "Example filename for this document",
+        "filenameExplanation": "The filename contains 'electricity_bill' — a simple pattern like 'electricity' or 'bill' would match this.",
+        "tip1": "Filename patterns are optional but can help distinguish similar documents. They are most useful when your files follow a consistent naming convention."
+      },
+      "step4": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This step lets you cross-check extracted data with what Paperless-ngx already knows. For example, if PocoClass extracted a correspondent name, this step can verify it matches an existing correspondent in Paperless. It's an extra layer of confidence.",
+        "tip1": "This step is optional. If you're just starting out, you can skip it and come back later once your basic rules are working reliably."
+      },
+      "step5": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This is where you tell PocoClass what to do once a document is recognised. You assign classification data — like which Correspondent, Document Type, and Tags to apply. You can also extract dynamic data from the document content using anchors.",
+        "correspondentLabel": "Correspondent",
+        "dateLabel": "Date",
+        "highlightedFields": "Fields that would be assigned",
+        "tip1": "Static data (like Correspondent = 'GreenPower Energy') is applied identically to every matching document. Dynamic data (like extracting the invoice date) is pulled from each document individually."
+      },
+      "step6": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This final step shows a summary of everything you have configured. Review it carefully before saving. You can go back to any previous step to make changes."
       }
     }
   },

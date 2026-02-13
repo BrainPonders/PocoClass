@@ -22,6 +22,7 @@ import DataVerificationStep from '../components/wizard/steps/DataVerificationSte
 import SummaryStep from '../components/wizard/steps/SummaryStep';
 import PageLayout from '@/components/PageLayout';
 import TabbedPreviewPanel from '@/components/TabbedPreviewPanel';
+import ExampleDocumentPanel from '../components/wizard/ExampleDocumentPanel';
 
 // Helper hook for debouncing values
 function useDebounce(value, delay) {
@@ -633,7 +634,11 @@ export default function RuleEditor() {
               </div>
             </div>
 
-            {showYamlPreview && (
+            {showWizardHelp ? (
+              <div style={{height: '100%', marginTop: '24px'}}>
+                <ExampleDocumentPanel currentStep={currentStep} />
+              </div>
+            ) : showYamlPreview ? (
               <div style={{height: '100%', marginTop: '24px'}}>
                 <TabbedPreviewPanel 
                   ruleData={debouncedRuleData}
@@ -641,7 +646,7 @@ export default function RuleEditor() {
                   documentId={ruleData.sourceDocumentId || selectedDocumentId}
                 />
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
