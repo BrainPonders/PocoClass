@@ -34,6 +34,7 @@ function LayoutContent({ children }) {
   const { t } = useLanguage();
   const [showGuide, setShowGuide] = useState(false);
   const [showQuickGuide, setShowQuickGuide] = useState(false);
+  const [showPaperlessInfo, setShowPaperlessInfo] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
@@ -706,6 +707,36 @@ function LayoutContent({ children }) {
                       <p>
                         {t('guide.introduction.p2')}
                       </p>
+                      <div style={{
+                        backgroundColor: '#fef9c3',
+                        border: '1px solid #eab308',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        marginTop: '12px',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '10px'
+                      }}>
+                        <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <p style={{ margin: 0, fontSize: '13px', color: '#854d0e' }}>
+                          {t('guide.introduction.paperlessTip')}{' '}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setShowPaperlessInfo(true); }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#1d4ed8',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                              padding: 0,
+                              font: 'inherit',
+                              fontSize: '13px'
+                            }}
+                          >
+                            {t('guide.introduction.paperlessTipLink')}
+                          </button>
+                        </p>
+                      </div>
                     </div>
 
                     <div className="guide-section">
@@ -1251,6 +1282,83 @@ function LayoutContent({ children }) {
                       </p>
                     </div>
 
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showPaperlessInfo && (
+              <div className="modal-overlay" onClick={() => setShowPaperlessInfo(false)} style={{ zIndex: 1100 }}>
+                <div onClick={(e) => e.stopPropagation()} style={{
+                  backgroundColor: 'var(--app-card-bg, white)',
+                  borderRadius: '12px',
+                  padding: '32px',
+                  maxWidth: '550px',
+                  width: '90%',
+                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                  position: 'relative'
+                }}>
+                  <button
+                    onClick={() => setShowPaperlessInfo(false)}
+                    style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      color: 'var(--app-text-secondary)'
+                    }}
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '16px', color: 'var(--app-text)' }}>
+                    {t('guide.introduction.paperlessPopupTitle')}
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
+                    {t('guide.introduction.paperlessPopupP1')}
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '12px', lineHeight: '1.6' }}>
+                    {t('guide.introduction.paperlessPopupP2')}
+                  </p>
+                  <p style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', marginBottom: '20px', lineHeight: '1.6' }}>
+                    {t('guide.introduction.paperlessPopupP3')}
+                  </p>
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <a
+                      href="https://docs.paperless-ngx.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '8px 16px',
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        fontSize: '0.875rem',
+                        fontWeight: '500'
+                      }}
+                    >
+                      {t('guide.introduction.paperlessVisitSite')} ↗
+                    </a>
+                    <button
+                      onClick={() => setShowPaperlessInfo(false)}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: 'var(--app-hover-bg, #f3f4f6)',
+                        color: 'var(--app-text)',
+                        borderRadius: '6px',
+                        border: '1px solid var(--app-border-color, #e5e7eb)',
+                        cursor: 'pointer',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      {t('guide.introduction.paperlessClose')}
+                    </button>
                   </div>
                 </div>
               </div>

@@ -923,7 +923,15 @@
     "introduction": {
       "title": "Introductie",
       "p1": "PocoClass is een intelligente, op regels gebaseerde classificatie-engine ontworpen om Paperless-ngx te verbeteren. Hoewel Paperless al een krachtige zoekinterface en een ingebouwde classificatie biedt, kan het moeite hebben met het herkennen van complexe documenttypen, vooral tijdens eerste bulk-imports of wanneer documenten complexe formaten volgen. PocoClass vult deze leemte door u expliciet te laten definiëren hoe elk type document moet worden geïdentificeerd door middel van patronen en hoe het moet worden geclassificeerd.",
-      "p2": "Het primaire doel is het leveren van consistente, nauwkeurige classificatie — ongeacht hoeveel documenten u importeert of hoe gevarieerd ze zijn. Eenmaal geconfigureerd, kan PocoClass volledig automatisch werken en uw Paperless-bibliotheek gestructureerd houden met minimale inspanning van uw kant."
+      "p2": "Het primaire doel is het leveren van consistente, nauwkeurige classificatie — ongeacht hoeveel documenten u importeert of hoe gevarieerd ze zijn. Eenmaal geconfigureerd, kan PocoClass volledig automatisch werken en uw Paperless-bibliotheek gestructureerd houden met minimale inspanning van uw kant.",
+      "paperlessTip": "Hier terechtgekomen zonder Paperless-ngx te kennen?",
+      "paperlessTipLink": "Ontdek wat Paperless-ngx is",
+      "paperlessPopupTitle": "Wat is Paperless-ngx?",
+      "paperlessPopupP1": "Paperless-ngx is een gratis, open-source documentbeheersysteem. Het neemt uw fysieke documenten, scans, e-mails en andere bestanden en transformeert ze in een doorzoekbaar online archief.",
+      "paperlessPopupP2": "Wanneer u een document toevoegt, voert Paperless-ngx automatisch OCR (tekstherkenning) uit, zodat u uw documenten op inhoud kunt doorzoeken — niet alleen op bestandsnaam.",
+      "paperlessPopupP3": "PocoClass breidt Paperless-ngx uit met intelligente, op regels gebaseerde classificatie. U heeft een draaiende Paperless-ngx-installatie nodig om PocoClass te gebruiken.",
+      "paperlessVisitSite": "Paperless-ngx bezoeken",
+      "paperlessClose": "Sluiten"
     },
     "howItWorks": {
       "title": "Hoe PocoClass werkt met Paperless",

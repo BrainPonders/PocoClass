@@ -930,7 +930,15 @@
     "introduction": {
       "title": "Introduction",
       "p1": "PocoClass is an intelligent rule-based classification engine designed to enhance Paperless-ngx. While Paperless already provides a powerful search interface and a built-in classifier, it might struggle to recognize complex document types, especially during initial bulk imports or when documents follow complex formats. PocoClass fills this gap by letting you explicitly define how each type of document should be identified through patterns and how it should be classified.",
-      "p2": "Its primary objective is to deliver consistent, accurate classification—no matter how many documents you are importing or how varied they may be. Once configured, PocoClass can run fully automatically, quietly keeping your Paperless library structured with minimal effort from you."
+      "p2": "Its primary objective is to deliver consistent, accurate classification—no matter how many documents you are importing or how varied they may be. Once configured, PocoClass can run fully automatically, quietly keeping your Paperless library structured with minimal effort from you.",
+      "paperlessTip": "Arrived here without knowing Paperless-ngx?",
+      "paperlessTipLink": "Learn what Paperless-ngx is",
+      "paperlessPopupTitle": "What is Paperless-ngx?",
+      "paperlessPopupP1": "Paperless-ngx is a free, open-source document management system. It takes your physical documents, scans, emails, and other files and transforms them into a searchable online archive.",
+      "paperlessPopupP2": "When you add a document, Paperless-ngx automatically performs OCR (text recognition), so you can search through your documents by their content — not just their filename.",
+      "paperlessPopupP3": "PocoClass extends Paperless-ngx by adding intelligent, rule-based classification on top of it. You need a running Paperless-ngx instance to use PocoClass.",
+      "paperlessVisitSite": "Visit Paperless-ngx",
+      "paperlessClose": "Close"
     },
     "howItWorks": {
       "title": "How PocoClass Works with Paperless",
