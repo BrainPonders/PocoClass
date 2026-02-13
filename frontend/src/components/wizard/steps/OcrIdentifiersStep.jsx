@@ -5,6 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import LogicGroupEditor from '../LogicGroupEditor';
 import Tooltip from '@/components/Tooltip';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import WizardHelpPanel, { HelpSection, HelpExample, HelpTip } from '../WizardHelpPanel';
 
 export default function OcrIdentifiersStep({ 
   ruleData, 
@@ -12,7 +13,8 @@ export default function OcrIdentifiersStep({
   selectedDocumentId,
   selectedDocumentName,
   onViewOcr,
-  onViewPdf
+  onViewPdf,
+  showWizardHelp
 }) {
   const { t } = useLanguage();
   const isInitialized = useRef(false);
@@ -187,6 +189,47 @@ export default function OcrIdentifiersStep({
           </div>
         )}
       </div>
+
+      <WizardHelpPanel stepNumber={2} showHelp={showWizardHelp}>
+        <HelpSection>
+          <p style={{ fontStyle: 'italic', marginBottom: '10px', opacity: 0.85 }}>{t('wizard.help.scenarioIntro')}</p>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step2.whatTitle')}>
+          <p>{t('wizard.help.step2.whatText')}</p>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step2.conceptTitle')}>
+          <p style={{ marginBottom: '6px' }}>{t('wizard.help.step2.conceptText')}</p>
+          <div style={{ paddingLeft: '8px', borderLeft: '2px solid var(--help-panel-code-bg, #bfdbfe)', marginBottom: '4px', paddingTop: '2px', paddingBottom: '2px' }}>
+            <p style={{ marginBottom: '4px' }}><strong>OR:</strong> {t('wizard.help.step2.conceptOR')}</p>
+            <p style={{ marginBottom: '4px' }}><strong>AND:</strong> {t('wizard.help.step2.conceptAND')}</p>
+            <p><strong>Mandatory:</strong> {t('wizard.help.step2.conceptMandatory')}</p>
+          </div>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step2.exampleTitle')}>
+          <p style={{ marginBottom: '8px' }}>{t('wizard.help.step2.exampleIntro')}</p>
+          <div style={{ marginBottom: '6px' }}>
+            <div style={{ fontWeight: '600', fontSize: '0.8rem', marginBottom: '2px' }}>{t('wizard.help.step2.group1Title')}</div>
+            <HelpExample label={t('wizard.help.step2.patternsLabel')} value={t('wizard.help.step2.group1Patterns')} />
+            <div style={{ fontSize: '0.775rem', color: 'var(--help-panel-explanation, #6b7280)', fontStyle: 'italic', paddingLeft: '10px', marginBottom: '4px' }}>{t('wizard.help.step2.group1Why')}</div>
+          </div>
+          <div style={{ marginBottom: '6px' }}>
+            <div style={{ fontWeight: '600', fontSize: '0.8rem', marginBottom: '2px' }}>{t('wizard.help.step2.group2Title')}</div>
+            <HelpExample label={t('wizard.help.step2.patternsLabel')} value={t('wizard.help.step2.group2Patterns')} />
+            <div style={{ fontSize: '0.775rem', color: 'var(--help-panel-explanation, #6b7280)', fontStyle: 'italic', paddingLeft: '10px', marginBottom: '4px' }}>{t('wizard.help.step2.group2Why')}</div>
+          </div>
+          <div style={{ marginBottom: '6px' }}>
+            <div style={{ fontWeight: '600', fontSize: '0.8rem', marginBottom: '2px' }}>{t('wizard.help.step2.group3Title')}</div>
+            <HelpExample label={t('wizard.help.step2.patternsLabel')} value={t('wizard.help.step2.group3Patterns')} />
+            <div style={{ fontSize: '0.775rem', color: 'var(--help-panel-explanation, #6b7280)', fontStyle: 'italic', paddingLeft: '10px', marginBottom: '4px' }}>{t('wizard.help.step2.group3Why')}</div>
+          </div>
+        </HelpSection>
+        <HelpSection title={t('wizard.help.step2.tipTitle')}>
+          <HelpTip>{t('wizard.help.step2.tip1')}</HelpTip>
+          <HelpTip>{t('wizard.help.step2.tip2')}</HelpTip>
+          <HelpTip>{t('wizard.help.step2.tip3')}</HelpTip>
+          <HelpTip>{t('wizard.help.step2.tip4')}</HelpTip>
+        </HelpSection>
+      </WizardHelpPanel>
 
       <div className="space-y-4 mb-6">
         {ruleData.ocrIdentifiers?.map((group, index) => (
