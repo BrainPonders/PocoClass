@@ -99,14 +99,15 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
       return convertDateFormatToRegex(datePattern);
     } else if (patternType === 'complex') {
       const parts = complexElements.map(el => {
+        const elValue = el.value || '';
         if (el.type === 'string') {
           if (el.spaceFlexibility === 'exact') {
-            return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           } else if (el.spaceFlexibility === 'flexible') {
-            let pattern = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let pattern = elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             return pattern.replace(/ /g, '\\s*');
           } else if (el.spaceFlexibility === 'very-flexible') {
-            const escaped = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escaped = elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const parts = [];
             let i = 0;
             while (i < escaped.length) {
@@ -123,13 +124,13 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
             return parts.join('\\s*');
           }
           
-          return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         } else if (el.type === 'date') {
-          return convertDateFormatToRegex(el.value);
+          return convertDateFormatToRegex(elValue);
         } else if (el.type === 'wildcard') {
-          return el.value === 'any' ? '.*?' : '.+?'; // Made wildcards non-greedy by default
+          return elValue === 'any' ? '.*?' : '.+?';
         }
-        return el.value;
+        return elValue;
       });
       return parts.join('');
     }
@@ -146,7 +147,8 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     return '';
   };
 
-  const convertDateFormatToRegex = (format) => {
+  const convertDateFormatToRegex = (format = '') => {
+    if (!format) return '';
     const mapping = {
       'DDDD': '(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)',
       'DDD': '(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)',
@@ -265,6 +267,12 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   const updateComplexElement = (index, field, value) => {
     const newElements = [...complexElements];
     newElements[index] = { ...newElements[index], [field]: value };
+    if (field === 'type' && value === 'date' && !newElements[index].value) {
+      newElements[index].value = dateFormatExamples[0]?.format || 'DD-MM-YYYY';
+    }
+    if (field === 'type' && value === 'wildcard' && !['any', 'some'].includes(newElements[index].value)) {
+      newElements[index].value = 'any';
+    }
     setComplexElements(newElements);
   };
 
@@ -297,21 +305,31 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   };
 
   const handleUsePattern = () => {
-    const pattern = generateRegexPattern();
-    const flags = getRegexFlags(); // Get flags to pass them along or format the final regex with them
-    // Depending on how onUsePattern is used, you might want to pass the flags separately
-    // or include them in the regex string like /pattern/flags
-    onUsePattern(`/${pattern}/${flags}`);
+    try {
+      const pattern = generateRegexPattern();
+      const flags = getRegexFlags();
+      onUsePattern(`/${pattern}/${flags}`);
+    } catch (e) {
+      console.error('Error generating pattern:', e);
+    }
   };
 
   if (!isOpen) return null;
 
-  const currentRegex = generateRegexPattern();
-  const regexFlags = getRegexFlags();
-  const dynamicExamples = patternType === 'string' ? generateDynamicExamples() : null;
+  let currentRegex = '';
+  let regexFlags = '';
+  let dynamicExamples = null;
+  try {
+    currentRegex = generateRegexPattern() || '';
+    regexFlags = getRegexFlags() || '';
+    dynamicExamples = patternType === 'string' ? generateDynamicExamples() : null;
+  } catch (e) {
+    console.error('Regex generation error:', e);
+    currentRegex = '(error generating pattern)';
+  }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <style>{`
         .regex-builder-modal {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
