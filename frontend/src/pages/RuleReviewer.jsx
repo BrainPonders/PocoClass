@@ -588,7 +588,23 @@ export default function RuleReviewer() {
               {performanceData.map((data, index) => (
                 <div key={index} id={`doc-result-${data.documentId}`} className="border rounded-lg p-4 transition-all duration-300">
                   <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-semibold">{data.documentTitle}</h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold">{data.documentTitle}</h4>
+                      <button
+                        onClick={() => handleViewOCR({ id: data.documentId, title: data.documentTitle })}
+                        className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title="View OCR Text"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleViewPDF({ id: data.documentId })}
+                        className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title="View PDF"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </div>
                     <div className="flex gap-4 items-center">
                       <div className="text-right">
                         <div className="text-xs text-gray-500">POCO OCR</div>
