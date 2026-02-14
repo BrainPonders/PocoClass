@@ -574,7 +574,13 @@ class PaperlessAPIClient:
             self.logger.info(f"Successfully updated document {document_id}")
             return True
         except requests.RequestException as e:
-            self.logger.error(f"Failed to update document {document_id}: {e}")
+            response_body = ''
+            if hasattr(e, 'response') and e.response is not None:
+                try:
+                    response_body = e.response.text[:500]
+                except Exception:
+                    pass
+            self.logger.error(f"Failed to update document {document_id}: {e} | Response: {response_body} | Payload: {updates}")
             return False
     
     def get_all_correspondents(self) -> Dict[str, int]:
