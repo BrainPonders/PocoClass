@@ -1,3 +1,9 @@
+/**
+ * @file ConfirmDialog.jsx
+ * @description Reusable confirmation dialog with danger/warning/info visual variants.
+ * Supports a "Don't show again" checkbox that persists the preference in
+ * sessionStorage using a configurable warning key.
+ */
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
@@ -24,6 +30,7 @@ export default function ConfirmDialog({
 
   if (!isOpen) return null;
 
+  // Persist "don't show again" preference in sessionStorage before confirming
   const handleConfirm = () => {
     if (showDontShowAgain && dontShowAgain && warningKey) {
       sessionStorage.setItem(`hideWarning_${warningKey}`, 'true');

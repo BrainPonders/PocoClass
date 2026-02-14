@@ -1,3 +1,10 @@
+/**
+ * @file RuleReviewer.jsx
+ * @description Rule testing and evaluation page. Users select a rule and one or more
+ * Paperless documents, run the rule engine in dry-run mode, and review per-document
+ * scoring breakdowns (OCR, filename, verification, dynamic data) with a bar chart
+ * visualization. Results are cached in sessionStorage for persistence across navigation.
+ */
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +32,7 @@ export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
+  // Restore previous session state (selected rule, docs, results) from sessionStorage
   const cachedSession = (() => {
     try {
       const raw = sessionStorage.getItem('ruleReviewerCache');
@@ -79,8 +87,10 @@ export default function RuleReviewer() {
     loadCacheData();
   }, []);
   
+  // Track whether filters were changed by user (vs initial load) to clear selection
   const userChangedFiltersRef = React.useRef(false);
   const prevFiltersRef = React.useRef(filters);
+  // Reload documents whenever filters change
   useEffect(() => {
     const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters);
     prevFiltersRef.current = filters;
@@ -90,6 +100,7 @@ export default function RuleReviewer() {
     loadDocuments();
   }, [filters]);
 
+  // Reset document selections when documents list changes due to user filter change
   useEffect(() => {
     if (!userChangedFiltersRef.current) {
       return;
@@ -269,7 +280,7 @@ export default function RuleReviewer() {
     });
   };
 
-  // Get performance data from real test results
+  // Transform raw test results into a normalized performance dataset for rendering
   const getPerformanceData = () => {
     return selectedDocuments.map(docId => {
       const doc = documents.find(d => d.id === docId);

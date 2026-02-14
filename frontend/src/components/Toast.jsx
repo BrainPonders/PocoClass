@@ -1,3 +1,8 @@
+/**
+ * @file Toast.jsx
+ * @description Individual toast notification component with auto-dismiss timer.
+ * Renders success/error/warning/info variants with matching icons and theme colors.
+ */
 import React, { useEffect } from 'react';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 

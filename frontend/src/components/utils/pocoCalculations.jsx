@@ -1,6 +1,12 @@
-import { WEIGHTS } from '../constants';
+/**
+ * @file pocoCalculations.jsx
+ * @description POCO (Percentage of Confidence) score calculation utilities.
+ * Computes maximum weights for OCR, filename, and verification categories
+ * based on item counts, base weights, and multipliers. Used throughout
+ * the wizard to display weight breakdowns and example confidence scores.
+ */
 
-// Re-export commonly used constants for convenience
+import { WEIGHTS } from '../constants';
 export const OCR_DEFAULT_MULTIPLIER = WEIGHTS.OCR_MULTIPLIER_DEFAULT;
 export const FILENAME_DEFAULT_MULTIPLIER = WEIGHTS.FILENAME_MULTIPLIER_DEFAULT;
 export const VERIFICATION_DEFAULT_MULTIPLIER = WEIGHTS.VERIFICATION_MULTIPLIER_DEFAULT;

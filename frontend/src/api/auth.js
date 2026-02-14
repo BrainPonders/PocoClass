@@ -1,5 +1,8 @@
 /**
- * Authentication utilities for POCOclass
+ * @file auth.js
+ * @description Authentication utilities for POCOclass. Manages session tokens
+ * and user data in localStorage, provides setup status checks, session
+ * validation against the backend, and logout with cleanup.
  */
 
 import API_BASE_URL from '../config/api';

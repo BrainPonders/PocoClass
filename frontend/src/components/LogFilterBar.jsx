@@ -1,3 +1,9 @@
+/**
+ * @file LogFilterBar.jsx
+ * @description Filter bar for the application logs page. Provides pill-style controls
+ * for filtering logs by free-text search, event type (rule_execution, classification,
+ * system, error, paperless_api), severity level, and date range.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Calendar, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';

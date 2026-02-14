@@ -1,3 +1,9 @@
+/**
+ * @file InfoBox.jsx
+ * @description Dismissible gradient info box used in wizard steps to display contextual
+ * help text. Visibility is controlled per step via the showInfoBoxes state object.
+ */
+
 import React from 'react';
 import { X } from 'lucide-react';
 

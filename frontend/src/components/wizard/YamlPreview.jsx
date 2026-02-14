@@ -1,3 +1,9 @@
+/**
+ * @file YamlPreview.jsx
+ * @description Live YAML preview panel for the rule builder wizard. Generates a complete
+ * YAML rule file from the current ruleData state and renders it with syntax-highlighted
+ * coloring. Exposes a generator function via onGeneratorReady for export functionality.
+ */
 
 import React from 'react';
 import { User } from '@/api/entities';

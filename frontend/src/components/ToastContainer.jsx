@@ -1,3 +1,9 @@
+/**
+ * @file ToastContainer.jsx
+ * @description Toast notification system provider. Exposes a `useToast` hook with
+ * `showToast(message, type, duration)` for triggering notifications from anywhere
+ * in the component tree. Renders toasts in a fixed overlay at the top-center.
+ */
 import React, { createContext, useContext, useState } from 'react';
 import Toast from './Toast';
 

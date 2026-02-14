@@ -1,3 +1,9 @@
+/**
+ * @file YamlExportButton.jsx
+ * @description Compact button group for exporting a rule's configuration as YAML.
+ * Provides copy-to-clipboard (with brief checkmark feedback) and file download
+ * actions. Generates the YAML string from the ruleData prop on demand.
+ */
 import React, { useState } from 'react';
 import { Download, Copy, Check } from 'lucide-react';
 

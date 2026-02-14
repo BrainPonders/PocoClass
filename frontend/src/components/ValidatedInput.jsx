@@ -1,3 +1,9 @@
+/**
+ * @file ValidatedInput.jsx
+ * @description Form input wrapper with built-in validation feedback. Displays
+ * error/success icons, colored borders, help text, and error messages based on
+ * the validation state passed via props. Supports optional label and tooltip.
+ */
 import React from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import Tooltip from './Tooltip';

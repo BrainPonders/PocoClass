@@ -1,3 +1,10 @@
+/**
+ * @file RuleEditor.jsx
+ * @description 6-step wizard for creating and editing document classification rules.
+ * Steps: Basic Info → OCR Identifiers → Filename Patterns → Data Verification →
+ * Document Classifications → Summary. Includes YAML live preview, OCR/PDF viewer,
+ * unsaved-changes guard, and step validation with status tracking.
+ */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -213,6 +220,7 @@ export default function RuleEditor() {
     };
   }, [ruleId]); // Only depend on ruleId to prevent infinite loops
 
+  // Update rule data; tracks user changes to mark unsaved state and auto-revert status
   const updateRuleData = useCallback((section, data, isUserChange = true) => {
     setRuleData(prev => {
         const newData = section === '' 
@@ -251,6 +259,7 @@ export default function RuleEditor() {
     }
   }, [currentStep]);
 
+  // Check if a given wizard step has any user-entered data
   const hasStepData = useCallback((step) => {
     switch(step) {
       case 1:
@@ -281,6 +290,7 @@ export default function RuleEditor() {
     }
   }, [ruleData]);
 
+  // Validate a wizard step; steps 3 and 4 are optional and always pass
   const validateStep = useCallback((step) => {
     switch(step) {
       case 1:
@@ -393,6 +403,7 @@ export default function RuleEditor() {
     setPendingNavigation(null); // Clear the pending navigation
   };
 
+  // Navigate to a wizard step, validating and recording status of the previous step
   const goToStep = useCallback((step) => {
     const prevStep = currentStep;
     
@@ -470,6 +481,7 @@ export default function RuleEditor() {
     }
   }, [currentStep, stepEdited, validateStep, hasStepData, stepStatus]);
 
+  // Recalculate all step statuses when an existing rule finishes loading
   useEffect(() => {
     if (ruleId && ruleData.ruleName) {
       const newStatus = {};
