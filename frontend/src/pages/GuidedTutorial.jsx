@@ -6,6 +6,7 @@ import PageLayout from '@/components/PageLayout';
 import StepProgress from '@/components/wizard/StepProgress';
 import TabbedPreviewPanel from '@/components/TabbedPreviewPanel';
 import TutorialTooltip from '@/components/tutorial/TutorialTooltip';
+import SpotlightOverlay from '@/components/tutorial/SpotlightOverlay';
 import BankStatementPdf from '@/components/tutorial/BankStatementPdf';
 import { EXAMPLE_OCR_TEXT, EXAMPLE_RULE_DATA, TUTORIAL_STEPS } from '@/components/tutorial/tutorialData';
 
@@ -26,12 +27,20 @@ export default function GuidedTutorial() {
 
   const currentTutorialStep = TUTORIAL_STEPS[tutorialIndex];
   const wizardStep = currentTutorialStep?.step || 1;
+  const isOrientation = wizardStep === 0;
+  const displayWizardStep = isOrientation ? 1 : wizardStep;
 
   const stepStatus = {};
-  for (let i = 1; i <= 6; i++) {
-    if (i < wizardStep) stepStatus[i] = 'completed';
-    else if (i === wizardStep) stepStatus[i] = 'edited';
-    else stepStatus[i] = 'untouched';
+  if (isOrientation) {
+    for (let i = 1; i <= 6; i++) {
+      stepStatus[i] = 'untouched';
+    }
+  } else {
+    for (let i = 1; i <= 6; i++) {
+      if (i < wizardStep) stepStatus[i] = 'completed';
+      else if (i === wizardStep) stepStatus[i] = 'edited';
+      else stepStatus[i] = 'untouched';
+    }
   }
 
   const noOp = useCallback(() => {}, []);
@@ -51,12 +60,12 @@ export default function GuidedTutorial() {
     const stepProps = {
       ruleData,
       updateRuleData: noOp,
-      currentStep: wizardStep,
+      currentStep: displayWizardStep,
       showInfoBoxes,
       setShowInfoBoxes,
     };
 
-    switch (wizardStep) {
+    switch (displayWizardStep) {
       case 1: return <BasicInfoStep {...stepProps} />;
       case 2: return <OcrIdentifiersStep {...stepProps} />;
       case 3: return <FilenameIdentificationStep {...stepProps} />;
@@ -85,16 +94,16 @@ export default function GuidedTutorial() {
       }
     >
       <div className="max-w-[1800px] mx-auto px-12">
-        <div>
+        <div data-tutorial-area="step-progress">
           <StepProgress
-            currentStep={wizardStep}
+            currentStep={isOrientation ? null : wizardStep}
             stepStatus={stepStatus}
             onStepClick={handleStepClick}
           />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,2.35fr)_minmax(0,2.65fr)] gap-6" style={{ paddingBottom: '100px', marginTop: '24px' }}>
-          <div style={{ pointerEvents: 'none', opacity: 0.95 }}>
+          <div data-tutorial-area="input-area" style={{ pointerEvents: 'none', opacity: 0.95 }}>
             <div style={{
               padding: '8px 12px',
               marginBottom: '12px',
@@ -113,7 +122,7 @@ export default function GuidedTutorial() {
             {renderCurrentStep()}
           </div>
 
-          <div style={{ height: '100%', marginTop: '24px' }}>
+          <div data-tutorial-area="preview-panel" style={{ height: '100%', marginTop: '24px' }}>
             <TabbedPreviewPanel
               ruleData={ruleData}
               ocrContent={EXAMPLE_OCR_TEXT}
@@ -124,6 +133,8 @@ export default function GuidedTutorial() {
         </div>
       </div>
 
+      <SpotlightOverlay targetSelector={currentTutorialStep?.spotlightTarget || null} />
+
       <TutorialTooltip
         step={currentTutorialStep}
         totalSteps={TUTORIAL_STEPS.length}
@@ -131,6 +142,7 @@ export default function GuidedTutorial() {
         onNext={() => goToTutorialStep(tutorialIndex + 1)}
         onPrev={() => goToTutorialStep(tutorialIndex - 1)}
         onClose={() => navigate(createPageUrl('Rules'))}
+        spotlightTarget={currentTutorialStep?.spotlightTarget || null}
       />
     </PageLayout>
   );
