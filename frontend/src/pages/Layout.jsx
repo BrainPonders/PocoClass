@@ -594,7 +594,7 @@ function LayoutContent({ children }) {
                               e.currentTarget.style.color = '';
                             }}
                           >
-                            <div className="flex items-center gap-3 px-3 py-2 w-full">
+                            <div className="flex items-center gap-3 px-3 py-2 w-full" data-guide-trigger="true">
                               <BookOpen className="w-4 h-4" />
                               <span className="font-medium">{t('nav.guide')}</span>
                             </div>

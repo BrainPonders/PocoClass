@@ -67,22 +67,22 @@ export const EXAMPLE_RULE_DATA = {
     {
       type: 'match',
       mandatory: false,
-      conditions: [{ pattern: 'Royal\\s*Bank\\s*of\\s*Scotland', range: '1300-1628' }]
+      conditions: [{ pattern: 'Royal Bank of Scotland', range: 'last-10' }]
     },
     {
       type: 'match',
       mandatory: true,
-      conditions: [{ pattern: 'GB11RBOS', range: '0-260' }]
+      conditions: [{ pattern: 'GB11RBOS 1610 0011 1111 11', range: 'first-10' }]
     },
     {
       type: 'match',
       mandatory: true,
-      conditions: [{ pattern: 'Account\\s*Number', range: '0-260' }]
+      conditions: [{ pattern: 'Account Number', range: 'first-10' }]
     },
     {
       type: 'match',
       mandatory: false,
-      conditions: [{ pattern: 'Statement', range: '0-260' }]
+      conditions: [{ pattern: 'Statement', range: 'first-10' }]
     },
     {
       type: 'match',
@@ -230,8 +230,8 @@ export const TUTORIAL_STEPS = [
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '120px',
-    highlightFields: ['tutorial-field-rulename', 'tutorial-field-ruleid', 'tutorial-field-description'],
+    tooltipBodyMinHeight: '160px',
+    highlightFields: ['tutorial-field-rulename'],
     ocrHighlights: [],
     pdfHighlights: []
   },
@@ -242,7 +242,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '120px',
+    tooltipBodyMinHeight: '160px',
     highlightFields: ['tutorial-field-threshold'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -250,7 +250,13 @@ export const TUTORIAL_STEPS = [
   {
     step: 2, sub: 0, id: '2.0',
     title: 'Step 2: OCR Identifying Patterns',
-    text: 'This is the most important step. Here you define text patterns that uniquely identify your document type. Patterns use regular expressions (regex) — a way to describe text patterns flexibly. Don\'t worry, the Pattern Helper button makes this easy even without regex experience.',
+    textParts: [
+      { text: 'This is the most important step. Here you define text patterns that uniquely identify your document type. A text pattern can be as simple as a word or phrase — like "Royal Bank of Scotland" or "Invoice Number".' },
+      { text: '\n\n' },
+      { text: 'For more flexibility, you can use regular expressions (regex) — a way to describe text patterns that handles variations like extra spaces or different formatting. The Pattern Helper button makes building regex easy, even without experience. For more details, see ' },
+      { text: 'Regex Support in the Guide', action: 'openGuide' },
+      { text: '.' }
+    ],
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
@@ -277,8 +283,9 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 2, id: '2.2',
     title: 'Logic Group 1 — Bank Identification',
     textParts: [
-      { text: 'Our first pattern looks for "Royal Bank of Scotland" — text that appears at the bottom of every RBS statement. Notice in the OCR view (lines 56-57) this text is at the very end. We set the range to search only the last 10 lines, making the match faster and more precise. ' },
-      { text: 'This group is optional — it boosts confidence but won\'t reject documents if missing.' }
+      { text: 'Our first pattern looks for "Royal Bank of Scotland" as plain text — it appears at the bottom of every RBS statement. The search area is set to the last 10 lines, making the match faster and more precise. This group is optional — it boosts confidence but won\'t reject documents if missing.' },
+      { text: '\n\n' },
+      { text: 'With the help of the regex builder, this same pattern could be written as Royal\\s*Bank\\s*of\\s*Scotland — which would also match variations like "Royal  Bank  of  Scotland" with extra spaces. Simple text works for most cases; regex adds flexibility when needed.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: null,
@@ -292,9 +299,10 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 3, id: '2.3',
     title: 'Logic Group 2 — Account Identification',
     textParts: [
-      { text: 'This pattern searches for your IBAN number "GB11RBOS" in the first 10 lines of the document. Your bank statement typically has your IBAN near the top. ' },
-      { text: 'This group is mandatory', bold: true },
-      { text: ' — if you have multiple accounts with Royal Bank, this ensures you identify the correct account\'s statement, not just any RBS document.' }
+      { text: 'This pattern searches for your full IBAN "GB11RBOS 1610 0011 1111 11" in the first 10 lines of the document — where bank statements typically show account details.' },
+      { text: '\n\n' },
+      { text: 'This group has been made mandatory' , bold: true },
+      { text: ', meaning the rule will only pass if this pattern is found. This is important when you have multiple accounts with Royal Bank — it ensures you identify the correct account\'s statement, not just any RBS document.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: null,
@@ -308,8 +316,11 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 4, id: '2.4',
     title: 'More Logic Groups',
     textParts: [
-      { text: 'You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match). ' },
-      { text: 'The Pattern Helper button (look for the wand icon) helps you build regex patterns without needing to know regex syntax.' }
+      { text: 'You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match).' },
+      { text: '\n\n' },
+      { text: 'The Pattern Helper button (look for the wand icon) helps you build regex patterns without needing to know regex syntax. For more details, see ' },
+      { text: 'Regex Support in the Guide', action: 'openGuide' },
+      { text: '.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: null,
@@ -321,8 +332,12 @@ export const TUTORIAL_STEPS = [
   },
   {
     step: 2, sub: 5, id: '2.5',
-    title: 'OCR Threshold & Multiplier',
-    text: 'The OCR Threshold (75%) sets the minimum OCR confidence needed. The multiplier (×3) means OCR matches count 3× more in the final score — because the text content is usually the strongest signal for identifying documents. The defaults work well for most rules, but you can fine-tune them to improve accuracy for tricky documents.',
+    title: 'OCR Threshold & Weight Multiplier',
+    textParts: [
+      { text: 'The OCR Threshold (75%) sets the minimum percentage of OCR patterns that must match before the document can be classified. This ensures a base level of text-based confidence.' },
+      { text: '\n\n' },
+      { text: 'The Weight Multiplier (x3) controls how much OCR patterns count toward the final POCO Score. A rule can use three sources to identify documents: OCR text patterns (the main source), filename patterns, and Paperless-ngx classifications. The multiplier lets you prioritize OCR over the other sources.' }
+    ],
     previewTab: 'ocr',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },

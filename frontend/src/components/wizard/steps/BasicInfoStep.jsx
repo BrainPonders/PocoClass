@@ -98,7 +98,7 @@ export default function BasicInfoStep({
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step1Description')}</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-6" data-tutorial-field="tutorial-field-rulename">
         <ValidatedInput
           label={t('rules.ruleName')}
           value={ruleData.ruleName}
@@ -135,7 +135,7 @@ export default function BasicInfoStep({
           rows={4}
         />
 
-        <div className="form-group">
+        <div className="form-group" data-tutorial-field="tutorial-field-threshold">
           <label className="form-label flex items-center gap-2">
             {t('wizard.pocoScoreReq')}
             <Tooltip content={t('tooltips.pocoScoreHelp')} />

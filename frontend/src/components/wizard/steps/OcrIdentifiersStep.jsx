@@ -209,7 +209,7 @@ export default function OcrIdentifiersStep({
         </button>
       </div>
 
-      <div>
+      <div data-tutorial-field="tutorial-field-ocrthreshold">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('wizard.ocrScoreRequirement')}</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
@@ -253,7 +253,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" data-tutorial-field="tutorial-field-ocrmultiplier">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('wizard.ocrWeightMultiplier')}</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />

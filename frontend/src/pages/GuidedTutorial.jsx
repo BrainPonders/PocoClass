@@ -48,10 +48,31 @@ export default function GuidedTutorial() {
     setPreviewTabOverride(null);
   }, [tutorialIndex]);
 
+  useEffect(() => {
+    const prevHighlights = document.querySelectorAll('.tutorial-highlight');
+    prevHighlights.forEach(el => el.classList.remove('tutorial-highlight'));
+
+    if (currentTutorialStep?.highlightFields) {
+      currentTutorialStep.highlightFields.forEach(fieldId => {
+        const el = document.querySelector(`[data-tutorial-field="${fieldId}"]`);
+        if (el) el.classList.add('tutorial-highlight');
+      });
+    }
+
+    return () => {
+      const highlights = document.querySelectorAll('.tutorial-highlight');
+      highlights.forEach(el => el.classList.remove('tutorial-highlight'));
+    };
+  }, [tutorialIndex, currentTutorialStep]);
+
   const handleTutorialAction = (action) => {
     if (action === 'togglePreview') {
       const currentTab = previewTabOverride || currentTutorialStep?.previewTab || 'pdf';
       setPreviewTabOverride(currentTab === 'pdf' ? 'ocr' : 'pdf');
+    }
+    if (action === 'openGuide') {
+      const guideButton = document.querySelector('[data-guide-trigger]');
+      if (guideButton) guideButton.click();
     }
   };
 
