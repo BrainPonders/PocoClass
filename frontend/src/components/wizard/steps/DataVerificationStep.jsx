@@ -206,6 +206,7 @@ export default function DataVerificationStep({
           )}
         </div>
 
+        <div data-tutorial-field="tutorial-field-verification-multiplier">
         {enabledCount > 0 && (
           <MDMultiplierSlider
             mode={multiplierConfig.mode}
@@ -215,6 +216,7 @@ export default function DataVerificationStep({
             onChange={handleMultiplierChange}
           />
         )}
+        </div>
       </div>
     </div>
   );

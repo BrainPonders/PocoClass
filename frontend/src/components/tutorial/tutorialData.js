@@ -424,22 +424,73 @@ export const TUTORIAL_STEPS = [
     pdfHighlights: []
   },
   {
-    step: 5, sub: 1, id: '5.1',
-    title: 'Assigning Metadata',
-    text: 'When a document matches this rule, PocoClass can automatically assign metadata in Paperless-ngx. Here we set the document type to "Bank Statement" and the correspondent to "Royal Bank of Scotland".',
-    previewTab: 'yaml',
+    step: 4, sub: 2, id: '4.2',
+    title: 'Verification Multiplier',
+    textParts: [
+      { text: 'The verification multiplier controls how much weight Paperless-ngx field matches add to the final POCO Score. By default, the mode is set to "Auto" which neutralises the weight of this source — keeping verification as a gentle confidence boost rather than a dominant factor.' },
+      { text: '\n\n' },
+      { text: 'Without Auto mode, the scoring calculation could give Paperless classifications a very high weight (up to x5), potentially overshadowing your OCR patterns. Auto mode prevents this by dynamically adjusting the multiplier. For more details, see ' },
+      { text: 'Scoring System in the Guide', action: 'openGuideScoring' },
+      { text: '.' }
+    ],
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-verification-multiplier"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 5, sub: 0, id: '5.0',
+    title: 'Step 5: Document Metadata',
+    text: 'Now that PocoClass knows how to identify your documents, it\'s time to tell it what to do when a match is found. In this step, you define which metadata to assign — from setting the correspondent and document type, to extracting specific values directly from the document text.',
+    previewTab: 'pdf',
     spotlightTarget: null,
-    highlightFields: ['tutorial-field-doctype', 'tutorial-field-correspondent'],
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 5, sub: 1, id: '5.1',
+    title: 'Predefined Paperless Fields',
+    text: 'These fields come directly from your Paperless-ngx instance — Date Created, Correspondent, Document Type, and Tags. They are not free-text editable; instead, you select from values that already exist in Paperless-ngx. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".',
+    previewTab: 'yaml',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-predefined-paperless"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
     step: 5, sub: 2, id: '5.2',
-    title: 'Tags & Dynamic Data',
-    text: 'Tags like "Financial" and "Bank" help organize documents. Dynamic extraction can pull specific values from the document — like the account number — and store them in Paperless-ngx fields.',
+    title: 'Custom Fields',
+    textParts: [
+      { text: 'Custom fields let you store additional data specific to your workflow. The fields shown here depend on your Field Visibility Settings — you may see more or fewer fields depending on your configuration.' },
+      { text: '\n\n' },
+      { text: 'Each custom field can be set to a fixed value here in the predefined section, or extracted dynamically from the document text (configured in the next section). For more details about field configuration, see ' },
+      { text: 'Metadata in the Guide', action: 'openGuideMetadata' },
+      { text: '.' }
+    ],
     previewTab: 'yaml',
-    spotlightTarget: null,
-    highlightFields: ['tutorial-field-tags', 'tutorial-field-dynamic'],
+    spotlightTarget: '[data-tutorial-field="tutorial-field-predefined-custom"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 5, sub: 3, id: '5.3',
+    title: 'Dynamic Data Extraction',
+    text: 'Dynamic extraction pulls specific values directly from the document text using anchor patterns. For example, you can extract an account number by looking for the text "Account Number:" and capturing the digits that follow. Each target field can only be used once — either as a predefined value above or as a dynamic extraction here, never both at the same time.',
+    previewTab: 'yaml',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '160px',
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
