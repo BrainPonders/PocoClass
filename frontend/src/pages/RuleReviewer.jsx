@@ -442,7 +442,7 @@ export default function RuleReviewer() {
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="pc-select w-80 h-8 text-sm"
+              className="pc-select w-96 text-sm py-1.5"
             >
               <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (
@@ -452,7 +452,7 @@ export default function RuleReviewer() {
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
-              className="btn btn-primary h-8 text-sm px-3"
+              className="btn btn-primary text-sm px-3 py-1.5"
             >
               {isRunning ? (
                 <>
@@ -469,7 +469,7 @@ export default function RuleReviewer() {
             {selectedRule && (
               <button
                 onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${selectedRule}`)}
-                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 h-8 w-8 flex items-center justify-center"
+                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 flex items-center justify-center"
                 title="Edit this rule"
               >
                 <Pencil className="w-3.5 h-3.5" />
