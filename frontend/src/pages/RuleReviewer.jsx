@@ -14,6 +14,11 @@ import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const truncatePattern = (pattern, maxLen = 40) => {
+  if (!pattern || pattern.length <= maxLen) return pattern;
+  return pattern.substring(0, maxLen) + '...';
+};
+
 export default function RuleReviewer() {
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -663,9 +668,9 @@ export default function RuleReviewer() {
                                     </span>
                                   </div>
                                   {group.conditions.map((cond, condIdx) => (
-                                    <div key={condIdx} className="ml-2 text-xs">
+                                    <div key={condIdx} className="ml-2 text-xs truncate">
                                       <span className={cond.matched ? 'text-green-600' : 'text-gray-400'}>
-                                        {cond.matched ? '✓' : '○'} {cond.pattern}
+                                        {cond.matched ? '✓' : '○'} {truncatePattern(cond.pattern)}
                                       </span>
                                       {cond.matched && cond.matched_text && (
                                         <span className="text-gray-500 text-[10px] ml-1">
@@ -677,9 +682,9 @@ export default function RuleReviewer() {
                                 </div>
                               ) : (
                                 group.conditions.map((cond, condIdx) => (
-                                  <div key={condIdx} className="text-xs">
+                                  <div key={condIdx} className="text-xs truncate">
                                     <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
-                                      {cond.matched ? '✓' : '✗'} {cond.pattern}
+                                      {cond.matched ? '✓' : '✗'} {truncatePattern(cond.pattern)}
                                     </span>
                                     {cond.matched && cond.matched_text && (
                                       <span className="text-gray-500 text-[10px] ml-1">
