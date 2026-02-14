@@ -686,11 +686,12 @@ class BackgroundProcessor:
                             current_value = current_custom_fields.get(field_id)
                             new_value = str(cf['value'])
                             if current_value != new_value:
+                                api_value = self._resolve_select_value(field_id, new_value, api_client)
                                 custom_fields.append({
                                     'field': field_id,
-                                    'value': new_value
+                                    'value': api_value
                                 })
-                                logger.info(f"Custom field '{cf['name']}' differs: current='{current_value}' vs extracted='{new_value}'")
+                                logger.info(f"Custom field '{cf['name']}' differs: current='{current_value}' vs extracted='{new_value}' (api_value='{api_value}')")
         
         # Handle flattened custom fields from dynamic extraction
         for field_name, value in extracted.items():
@@ -701,11 +702,12 @@ class BackgroundProcessor:
                     new_value = str(value)
                     logger.info(f"Smart update check - Field '{field_name}' (ID={field_id}): current='{current_value}' (type={type(current_value).__name__}), new='{new_value}' (type={type(new_value).__name__}), equal={current_value == new_value}")
                     if current_value != new_value:
+                        api_value = self._resolve_select_value(field_id, new_value, api_client)
                         custom_fields.append({
                             'field': field_id,
-                            'value': new_value
+                            'value': api_value
                         })
-                        logger.info(f"→ WILL UPDATE: Custom field '{field_name}' differs")
+                        logger.info(f"→ WILL UPDATE: Custom field '{field_name}' differs (api_value='{api_value}')")
                     else:
                         logger.info(f"→ SKIP: Custom field '{field_name}' already correct")
         
@@ -829,6 +831,19 @@ class BackgroundProcessor:
         
         return applied
     
+    def _resolve_select_value(self, field_id: int, label_value: str, api_client: PaperlessAPIClient) -> str:
+        """Resolve a select field label to its option ID for the Paperless API.
+        For non-select fields, returns the value unchanged."""
+        cf_def = api_client.get_custom_field_by_id(field_id)
+        if cf_def and cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+            select_options = cf_def['extra_data'].get('select_options', [])
+            for option in select_options:
+                if option.get('label') == label_value:
+                    logger.info(f"Resolved select value '{label_value}' to option ID '{option['id']}' for field {field_id}")
+                    return option['id']
+            logger.warning(f"Select option '{label_value}' not found for field {field_id}, using label as-is")
+        return label_value
+
     def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
         """Add POCO Score and POCO OCR to document custom fields"""
         try:
@@ -976,7 +991,7 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         cutoff_time = (datetime.now() - timedelta(minutes=5)).isoformat()
         cursor.execute("""
             SELECT COUNT(*) as count FROM sessions 
-            WHERE last_activity > ?
+            WHERE expires_at > ?
         """, (cutoff_time,))
         
         row = cursor.fetchone()
@@ -996,7 +1011,7 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
             FROM sessions s
             JOIN users u ON s.user_id = u.id
             WHERE u.pococlass_role = 'admin'
-            ORDER BY s.last_activity DESC
+            ORDER BY s.created_at DESC
             LIMIT 1
         """)
         
