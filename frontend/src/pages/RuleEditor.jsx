@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Rule } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Eye, FileText, X } from 'lucide-react';
+import { ArrowLeft, Eye, FileText, X, Lightbulb } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
@@ -483,10 +483,10 @@ export default function RuleEditor() {
       showInfoBoxes,
       setShowInfoBoxes,
       currentStep,
-      selectedDocumentId: ruleData.sourceDocumentId || selectedDocumentId,  // Use saved or URL param
+      selectedDocumentId: ruleData.sourceDocumentId || selectedDocumentId,
       selectedDocumentName: selectedFile,
       onViewOcr: handleViewOcr,
-      onViewPdf: () => setShowPdfViewer(true)
+      onViewPdf: () => setShowPdfViewer(true),
     };
 
     switch (currentStep) {
@@ -545,6 +545,26 @@ export default function RuleEditor() {
             <ArrowLeft size={16} />
             Back
           </button>
+          <button
+            onClick={() => navigate(createPageUrl('GuidedTutorial') + '?step=' + currentStep)}
+            className="btn btn-ghost"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: 'var(--app-text-secondary)',
+              border: '1px solid var(--app-border, #d1d5db)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              fontSize: '0.8125rem',
+              fontWeight: '500',
+              transition: 'all 0.2s'
+            }}
+            title={t('wizard.helpToggle')}
+          >
+            <Lightbulb size={16} />
+            {t('wizard.helpToggle')}
+          </button>
           <LoadingButton 
             onClick={handleSave}
             loading={isSaving}
@@ -602,7 +622,7 @@ export default function RuleEditor() {
               </div>
             </div>
 
-            {showYamlPreview && (
+            {showYamlPreview ? (
               <div style={{height: '100%', marginTop: '24px'}}>
                 <TabbedPreviewPanel 
                   ruleData={debouncedRuleData}
@@ -610,7 +630,7 @@ export default function RuleEditor() {
                   documentId={ruleData.sourceDocumentId || selectedDocumentId}
                 />
               </div>
-            )}
+            ) : null}
           </div>
         </div>
 
