@@ -160,7 +160,7 @@ export default function DataVerificationStep({
       </div>
 
       <div className="space-y-6">
-        <div>
+        <div data-tutorial-field="tutorial-field-verification-placeholders">
           <h3 className="font-semibold text-lg mb-4">{t('wizard.selectPlaceholdersLabel')}</h3>
           {verificationFields.length === 0 ? (
             <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
@@ -206,6 +206,7 @@ export default function DataVerificationStep({
           )}
         </div>
 
+        <div data-tutorial-field="tutorial-field-verification-multiplier">
         {enabledCount > 0 && (
           <MDMultiplierSlider
             mode={multiplierConfig.mode}
@@ -215,6 +216,7 @@ export default function DataVerificationStep({
             onChange={handleMultiplierChange}
           />
         )}
+        </div>
       </div>
     </div>
   );

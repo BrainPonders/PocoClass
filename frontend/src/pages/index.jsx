@@ -20,6 +20,8 @@ import Login from "./Login";
 
 import BackgroundProcess from "./BackgroundProcess";
 
+import GuidedTutorial from "./GuidedTutorial";
+
 import AuthGuard from "@/components/AuthGuard";
 import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
 
@@ -42,6 +44,8 @@ const PAGES = {
     ChangePassword: ChangePassword,
     
     BackgroundProcess: BackgroundProcess,
+
+    GuidedTutorial: GuidedTutorial,
     
 }
 
@@ -80,6 +84,7 @@ function PagesContent() {
                 <Route path="/Logs" element={<Layout currentPageName={currentPage}><Logs /></Layout>} />
                 <Route path="/ChangePassword" element={<Layout currentPageName={currentPage}><ChangePassword /></Layout>} />
                 <Route path="/BackgroundProcess" element={<Layout currentPageName={currentPage}><BackgroundProcess /></Layout>} />
+                <Route path="/GuidedTutorial" element={<Layout currentPageName={currentPage}><GuidedTutorial /></Layout>} />
             </Routes>
         </AuthGuard>
     );

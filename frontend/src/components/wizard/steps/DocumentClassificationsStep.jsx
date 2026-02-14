@@ -481,6 +481,7 @@ export default function DocumentClassificationsStep({
             </div>
           )}
 
+          <div data-tutorial-field="tutorial-field-predefined-paperless">
           {(fieldDisplaySettings.dateCreated === 'predefined' || fieldDisplaySettings.dateCreated === 'both') && (
             <div className="form-group">
               <label className="form-label">{t('documentClassifications.labels.dateCreated')}</label>
@@ -546,7 +547,9 @@ export default function DocumentClassificationsStep({
               />
             </div>
           )}
+          </div>
 
+          <div data-tutorial-field="tutorial-field-predefined-custom">
           {/* Dynamically render ALL custom fields from Settings */}
           {getCustomFieldPlaceholders('predefined').map(placeholder => {
             const fieldName = placeholder.placeholder_name;
@@ -626,11 +629,12 @@ export default function DocumentClassificationsStep({
               </div>
             );
           })}
+          </div>
         </div>
       </div>
 
       {/* Dynamic Data Section */}
-      <div>
+      <div className="mt-10" data-tutorial-field="tutorial-field-dynamic-extraction">
         <div className="flex justify-between items-center mb-4 pb-2 border-b">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-semibold">{t('documentClassifications.dynamicDataSection')}</h3>

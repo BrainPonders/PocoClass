@@ -4,7 +4,7 @@ import { Rule, Document, Paperless } from "@/api/entities";
 import { DeletedRule } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown, Eye, X } from 'lucide-react';
+import { FileText, Plus, Pencil, Trash2, Copy, Power, PowerOff, Search, ArrowUpDown, Eye, X, GraduationCap } from 'lucide-react';
 import API_BASE_URL from '@/config/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
@@ -490,6 +490,15 @@ export default function Rules() {
           >
             <Trash2 className="w-5 h-5" />
             {t('rulesPage.trash')}
+          </button>
+          <button
+            onClick={() => navigate(createPageUrl('GuidedTutorial'))}
+            className="btn btn-ghost"
+            aria-label="Guided tutorial"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <GraduationCap className="w-5 h-5" />
+            Tutorial
           </button>
           <button 
             onClick={() => navigate(createPageUrl('RuleEditor'))}
