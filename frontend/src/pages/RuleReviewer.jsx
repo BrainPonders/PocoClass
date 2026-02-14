@@ -438,11 +438,11 @@ export default function RuleReviewer() {
       {/* Rule Selector and Run Button */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="pc-select w-64 h-10"
+              className="pc-select w-80 h-8 text-sm"
             >
               <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (
@@ -452,16 +452,16 @@ export default function RuleReviewer() {
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
-              className="btn btn-primary h-10"
+              className="btn btn-primary h-8 text-sm px-3"
             >
               {isRunning ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1.5"></div>
                   Running...
                 </>
               ) : (
                 <>
-                  <Play className="w-5 h-5 mr-2" />
+                  <Play className="w-4 h-4 mr-1.5" />
                   RUN
                 </>
               )}
@@ -469,10 +469,10 @@ export default function RuleReviewer() {
             {selectedRule && (
               <button
                 onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${selectedRule}`)}
-                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 h-10 w-10 flex items-center justify-center"
+                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 h-8 w-8 flex items-center justify-center"
                 title="Edit this rule"
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
