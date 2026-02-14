@@ -291,6 +291,7 @@ export default function RuleReviewer() {
         name: group.name || `Logic Group ${idx + 1}`,
         matched: group.matched || false,
         score: group.score || 0,
+        group_type: group.group_type || 'match',
         conditions: group.conditions || []
       }));
       
@@ -651,23 +652,48 @@ export default function RuleReviewer() {
                         {data.ocrGroupResults.map((group, idx) => (
                           <div key={idx}>
                             {group.conditions && group.conditions.length > 0 ? (
-                              group.conditions.map((cond, condIdx) => (
-                                <div key={condIdx} className="text-xs">
-                                  <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
-                                    {cond.matched ? '✓' : '✗'} {cond.pattern}
-                                  </span>
-                                  {cond.matched && cond.matched_text && (
-                                    <span className="text-gray-500 text-[10px] ml-1">
-                                      ("{cond.matched_text}")
+                              group.group_type === 'match' && group.conditions.length > 1 ? (
+                                <div className={`text-xs border-l-2 pl-2 ${group.matched ? 'border-green-400' : 'border-red-400'}`}>
+                                  <div className="mb-0.5">
+                                    <span className={`font-semibold ${group.matched ? 'text-green-600' : 'text-red-600'}`}>
+                                      {group.matched ? '✓' : '✗'} OR Group
                                     </span>
-                                  )}
-                                  {!cond.matched && (
-                                    <span className="text-gray-500 text-[10px] ml-1">
-                                      (Not matched)
+                                    <span className="text-gray-400 text-[10px] ml-1">
+                                      (any match = pass)
                                     </span>
-                                  )}
+                                  </div>
+                                  {group.conditions.map((cond, condIdx) => (
+                                    <div key={condIdx} className="ml-2 text-xs">
+                                      <span className={cond.matched ? 'text-green-600' : 'text-gray-400'}>
+                                        {cond.matched ? '✓' : '○'} {cond.pattern}
+                                      </span>
+                                      {cond.matched && cond.matched_text && (
+                                        <span className="text-gray-500 text-[10px] ml-1">
+                                          ("{cond.matched_text}")
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
-                              ))
+                              ) : (
+                                group.conditions.map((cond, condIdx) => (
+                                  <div key={condIdx} className="text-xs">
+                                    <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
+                                      {cond.matched ? '✓' : '✗'} {cond.pattern}
+                                    </span>
+                                    {cond.matched && cond.matched_text && (
+                                      <span className="text-gray-500 text-[10px] ml-1">
+                                        ("{cond.matched_text}")
+                                      </span>
+                                    )}
+                                    {!cond.matched && (
+                                      <span className="text-gray-500 text-[10px] ml-1">
+                                        (Not matched)
+                                      </span>
+                                    )}
+                                  </div>
+                                ))
+                              )
                             ) : (
                               <div className="text-xs">
                                 <span className={group.matched ? 'text-green-600' : 'text-red-600'}>
