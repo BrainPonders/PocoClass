@@ -12,6 +12,8 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   const [complexElements, setComplexElements] = useState([
     { type: 'string', value: '', caseSensitive: false, spaceFlexibility: 'exact' }
   ]);
+  const [rawRegexPattern, setRawRegexPattern] = useState('');
+  const [rawRegexFlags, setRawRegexFlags] = useState('');
   const [testString, setTestString] = useState('');
   const [testResult, setTestResult] = useState(null);
   const [dateFormatExamples, setDateFormatExamples] = useState([
@@ -27,11 +29,26 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     if (isOpen) {
       loadDateFormats();
       if (initialValue) {
-        setStringPattern(initialValue);
         if (restrictToDateOnly) {
           setPatternType('date');
           setDatePattern(initialValue);
+          setStringPattern('');
+        } else {
+          const regexMatch = initialValue.match(/^\/(.*)\/([gimsuy]*)$/);
+          if (regexMatch) {
+            const [, rawPattern, flags] = regexMatch;
+            setPatternType('raw');
+            setRawRegexPattern(rawPattern);
+            setRawRegexFlags(flags);
+            setStringPattern('');
+          } else {
+            setPatternType('string');
+            setStringPattern(initialValue);
+          }
         }
+      } else {
+        setStringPattern('');
+        setPatternType(restrictToDateOnly ? 'date' : 'string');
       }
     }
   }, [isOpen, initialValue, restrictToDateOnly]);
@@ -133,11 +150,16 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
         return elValue;
       });
       return parts.join('');
+    } else if (patternType === 'raw') {
+      return rawRegexPattern;
     }
     return '';
   };
 
   const getRegexFlags = () => {
+    if (patternType === 'raw') {
+      return rawRegexFlags;
+    }
     if (patternType === 'string') {
       return caseSensitive ? '' : 'i';
     } else if (patternType === 'complex') {
@@ -435,6 +457,61 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
               >
                 Complex Pattern
               </button>
+              {patternType === 'raw' && (
+                <button
+                  className="px-4 py-2 rounded-lg font-medium transition-colors bg-white text-purple-700"
+                >
+                  Raw Regex
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Raw Regex - shown when editing an existing regex pattern */}
+          {patternType === 'raw' && (
+            <div className="regex-content-card p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    This pattern was previously generated as a regex expression. You can edit it directly below, or switch to String/Date/Complex mode to build a new pattern from scratch.
+                  </p>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Regex Pattern</label>
+                  <input
+                    type="text"
+                    value={rawRegexPattern}
+                    onChange={(e) => setRawRegexPattern(e.target.value)}
+                    placeholder="Enter regex pattern..."
+                    className="pc-input font-mono"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Flags</label>
+                  <div className="flex gap-3">
+                    {['i', 'g', 'm', 's'].map(flag => (
+                      <label key={flag} className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={rawRegexFlags.includes(flag)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setRawRegexFlags(prev => prev + flag);
+                            } else {
+                              setRawRegexFlags(prev => prev.replace(flag, ''));
+                            }
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm font-mono">{flag}</span>
+                        <span className="text-xs text-gray-500">
+                          {flag === 'i' ? '(case insensitive)' : flag === 'g' ? '(global)' : flag === 'm' ? '(multiline)' : '(dotAll)'}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
