@@ -487,7 +487,6 @@ export default function RuleEditor() {
       selectedDocumentName: selectedFile,
       onViewOcr: handleViewOcr,
       onViewPdf: () => setShowPdfViewer(true),
-      showWizardHelp
     };
 
     switch (currentStep) {
