@@ -1,3 +1,10 @@
+/**
+ * @file ValidationBanner.jsx
+ * @description Dismissable warning banner displayed at the top of the app when
+ * required POCO custom fields (POCO Score, POCO OCR) are missing from the
+ * Paperless-ngx instance. Provides a "Fix Now" button that navigates to the
+ * Settings validation tab.
+ */
 import { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -12,15 +19,14 @@ export default function ValidationBanner() {
   // Consume validation state from shared context instead of polling independently
   const { hasMissingFields, pocoScoreExists, pocoOcrExists } = usePOCOFields();
 
+  // Navigate to the Settings page validation tab, or switch tabs if already there
   const handleFixNow = () => {
     const settingsPath = createPageUrl('Settings');
     const isOnSettings = location.pathname === settingsPath;
     
     if (isOnSettings) {
-      // If already on Settings, dispatch custom event to switch tabs
       window.dispatchEvent(new CustomEvent('switchSettingsTab', { detail: { tab: 'validation' } }));
     } else {
-      // Navigate to Settings and store tab selection
       sessionStorage.setItem('settings_active_tab', 'validation');
       navigate(settingsPath);
     }

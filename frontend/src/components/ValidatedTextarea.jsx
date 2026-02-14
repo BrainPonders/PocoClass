@@ -1,3 +1,9 @@
+/**
+ * @file ValidatedTextarea.jsx
+ * @description Textarea wrapper with validation feedback, matching the ValidatedInput
+ * pattern. Shows error/success indicators, colored borders, help text, and error
+ * messages. Uses the shared `pc-textarea` CSS class for consistent styling.
+ */
 import React from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import Tooltip from './Tooltip';

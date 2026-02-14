@@ -1,3 +1,9 @@
+/**
+ * @file Tooltip.jsx
+ * @description Custom tooltip component that auto-positions above or below the
+ * trigger based on available viewport space. Renders a help-circle icon by default
+ * or wraps arbitrary children when `icon={false}`.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { HelpCircle } from 'lucide-react';
 
@@ -7,13 +13,13 @@ export default function Tooltip({ content, children, icon = true }) {
   const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
 
+  // Auto-position: place tooltip below if it would overflow above the viewport
   useEffect(() => {
     if (isVisible && triggerRef.current && tooltipRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       
-      // Check if tooltip would go above viewport or if there's more space below
       if (triggerRect.top - tooltipRect.height - 8 < 0 || triggerRect.top < viewportHeight / 2) {
         setPosition('bottom');
       } else {

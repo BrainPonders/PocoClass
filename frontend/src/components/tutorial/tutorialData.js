@@ -1,3 +1,11 @@
+/**
+ * @file tutorialData.js
+ * @description Tutorial step definitions and example data for the interactive walkthrough.
+ * Contains the example bank statement OCR text, pre-built rule data for the tutorial,
+ * and the ordered list of tutorial steps with spotlight targets, tooltip positions,
+ * and rich text content.
+ */
+
 export const EXAMPLE_OCR_TEXT = `Account Number: 1111111
 Sort Code: 16-10-00
 Statement

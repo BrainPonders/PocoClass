@@ -1,3 +1,10 @@
+/**
+ * @file OcrIdentifiersStep.jsx
+ * @description Step 2 of the rule builder wizard - OCR identifying patterns configuration.
+ * Manages logic groups with pattern conditions, OCR threshold slider (50-100%),
+ * OCR weight multiplier slider (1-10x), and displays a configuration summary
+ * with max weight calculations.
+ */
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, FileText, Eye, HelpCircle, AlertTriangle } from 'lucide-react';

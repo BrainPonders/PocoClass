@@ -1,3 +1,10 @@
+/**
+ * @file DynamicDataStep.jsx
+ * @description Step 6 of the rule builder wizard - Dynamic data extraction configuration.
+ * Defines anchor-based extraction rules that pull values from OCR text using
+ * before/after anchor patterns and target field assignment.
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Wand2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';

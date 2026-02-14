@@ -1,3 +1,10 @@
+/**
+ * @file SpotlightOverlay.jsx
+ * @description Full-screen dimming overlay with a spotlight cutout around a target element.
+ * Used by the tutorial system to focus user attention on specific UI elements.
+ * Tracks target position via ResizeObserver and scroll/resize event listeners.
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 
 export default function SpotlightOverlay({ targetSelector, scrollBehavior = 'center' }) {
