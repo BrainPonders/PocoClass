@@ -108,7 +108,7 @@ export default function FilenameIdentificationStep({
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>{t('wizard.step3Description')}</p>
       </div>
 
-      <div className="space-y-4 mb-6">
+      <div className="space-y-4 mb-6" data-tutorial-field="tutorial-field-filename-patterns">
         {patterns.map((pattern, index) => (
           <div key={index}>
             <div className="flex items-center gap-2 mb-2">
@@ -161,7 +161,7 @@ export default function FilenameIdentificationStep({
         </button>
       </div>
 
-      <div>
+      <div data-tutorial-field="tutorial-field-filename-multiplier">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('patterns.filenameWeightMultiplier')}</h3>
           <Tooltip content={t('tooltips.filenameMultiplierHelp')} />

@@ -188,8 +188,8 @@ export default function OcrIdentifiersStep({
         )}
       </div>
 
-      <div className="space-y-4 mb-6">
-        {ruleData.ocrIdentifiers?.map((group, index) => (
+      <div className="space-y-4 mb-6" data-tutorial-field="tutorial-field-ocrgroups-container">
+        {ruleData.ocrIdentifiers?.slice(0, 2).map((group, index) => (
           <LogicGroupEditor
             key={index}
             group={group}
@@ -200,6 +200,22 @@ export default function OcrIdentifiersStep({
             canDelete={ruleData.ocrIdentifiers.length > 3}
           />
         ))}
+        <div data-tutorial-field="tutorial-field-ocrgroups-remaining">
+        {ruleData.ocrIdentifiers?.slice(2).map((group, sliceIndex) => {
+          const index = sliceIndex + 2;
+          return (
+            <LogicGroupEditor
+              key={index}
+              group={group}
+              index={index}
+              onUpdate={(updatedGroup) => updateOcrLogicGroup(index, updatedGroup)}
+              onDelete={() => removeOcrLogicGroup(index)}
+              type="ocr"
+              canDelete={ruleData.ocrIdentifiers.length > 3}
+            />
+          );
+        })}
+        </div>
         <button 
           onClick={addOcrLogicGroup}
           className="btn btn-outline w-full"
@@ -209,7 +225,8 @@ export default function OcrIdentifiersStep({
         </button>
       </div>
 
-      <div>
+      <div data-tutorial-field="tutorial-field-ocr-settings">
+      <div data-tutorial-field="tutorial-field-ocrthreshold">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('wizard.ocrScoreRequirement')}</h3>
           <Tooltip content={t('ocr_score_requirement_tooltip')} />
@@ -229,7 +246,6 @@ export default function OcrIdentifiersStep({
             style={{ backgroundColor: 'var(--app-bg-secondary)' }}
           />
           
-          {/* Scale markers */}
           <div className="relative mt-2 px-2 pb-8">
             <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
@@ -253,7 +269,7 @@ export default function OcrIdentifiersStep({
         </div>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" data-tutorial-field="tutorial-field-ocrmultiplier">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('wizard.ocrWeightMultiplier')}</h3>
           <Tooltip content={t('ocr_weight_multiplier_tooltip')} />
@@ -294,6 +310,7 @@ export default function OcrIdentifiersStep({
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
