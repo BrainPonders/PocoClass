@@ -133,7 +133,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '100px',
+    tooltipBodyMinHeight: '140px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -145,7 +145,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-area="step-progress"]',
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '100px',
+    tooltipBodyMinHeight: '140px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -179,7 +179,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-area="preview-panel"]',
     tooltipPosition: { top: '50%', left: '35%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '120px',
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -195,7 +195,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'ocr',
     spotlightTarget: '[data-tutorial-area="preview-panel"]',
     tooltipPosition: { top: '50%', left: '35%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '120px',
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -207,7 +207,7 @@ export const TUTORIAL_STEPS = [
     previewTab: 'yaml',
     spotlightTarget: '[data-tutorial-area="preview-panel"]',
     tooltipPosition: { top: '50%', left: '35%', transform: 'translate(-50%, -50%)' },
-    tooltipBodyMinHeight: '120px',
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
