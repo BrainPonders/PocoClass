@@ -104,7 +104,7 @@ export default function LogicGroupEditor({ group, index, onUpdate, onDelete, typ
   };
 
   return (
-    <div className="card">
+    <div className="card" data-tutorial-field={`tutorial-field-ocrgroup-${index}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <h4 className="font-semibold text-lg">{t('wizard.step2.logicGroup')} {index + 1}</h4>
