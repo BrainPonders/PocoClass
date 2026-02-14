@@ -107,12 +107,6 @@ export const EXAMPLE_RULE_DATA = {
   dynamicData: {
     extractionRules: [
       {
-        fieldName: 'account_number',
-        anchor: 'Account Number:',
-        extractionPattern: '\\d{7}',
-        targetField: 'title'
-      },
-      {
         fieldName: 'statement_date',
         anchor: '\\d{1,2} \\w{3} \\d{4} to',
         extractionPattern: '\\d{1,2} \\w{3} \\d{4}',
@@ -121,7 +115,7 @@ export const EXAMPLE_RULE_DATA = {
     ]
   },
   filenamePatterns: {
-    patterns: ['RBS.*statement', '\\d{4}-\\d{2}'],
+    patterns: ['RBS.*statement', '\\d{4}-\\d{2}-\\d{2}'],
     dateFormats: ['yyyy-MM-dd']
   },
   verification: {
@@ -314,7 +308,9 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 3, id: '2.3',
     title: 'Logic Group 2 — Account Identification',
     textParts: [
-      { text: 'This pattern searches for your full IBAN "GB11RBOS 1610 0011 1111 11" in the first 10 lines of the document — where bank statements typically show account details.' },
+      { text: 'This pattern searches for your full IBAN ' },
+      { text: '"GB11RBOS 1610 0011 1111 11"', bold: true },
+      { text: ' in the first 10 lines of the document — where bank statements typically show account details.' },
       { text: '\n\n' },
       { text: 'This group has been made mandatory' , bold: true },
       { text: ', meaning the rule will only pass if this pattern is found. This is important when you have multiple accounts with Royal Bank — it ensures you identify the correct account\'s statement, not just any RBS document.' }
@@ -372,7 +368,7 @@ export const TUTORIAL_STEPS = [
   {
     step: 3, sub: 0, id: '3.0',
     title: 'Step 3: Filename Patterns',
-    text: 'Besides OCR text, the filename itself can help identify documents. For example, your bank might provide automated digital statements with consistent filenames like "RBS_Statement_2024-01.pdf". Filename patterns let you leverage this.',
+    text: 'Besides OCR text, the filename itself can help identify documents. For example, your bank might provide automated digital statements with consistent filenames like "RBS_Statement_2014-12-21.pdf". Filename patterns let you leverage this.',
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
@@ -386,11 +382,11 @@ export const TUTORIAL_STEPS = [
     textParts: [
       { text: 'Pattern 1: ' },
       { text: '"RBS.*statement"', bold: true },
-      { text: ' matches any filename containing "RBS" followed by any characters and then "statement". The .* means any number of characters can appear between them — matching "RBS_Statement_2024-01.pdf" or "RBS-Monthly-Statement.pdf".' },
+      { text: ' matches any filename containing "RBS" followed by any characters and then "statement". The .* means any number of characters can appear between them — matching "RBS_Statement_2014-12-21.pdf" or "RBS-Monthly-Statement.pdf".' },
       { text: '\n\n' },
       { text: 'Pattern 2: ' },
-      { text: '"\\d{4}-\\d{2}"', bold: true },
-      { text: ' looks for a date-like pattern in the filename — four digits, a dash, and two digits. This matches the "2024-01" part in "RBS_Statement_2024-01.pdf", helping identify documents by their date stamp.' }
+      { text: '"\\d{4}-\\d{2}-\\d{2}"', bold: true },
+      { text: ' looks for a full date pattern in the filename — four digits, a dash, two digits, a dash, and two digits. This matches the "2014-12-21" part in "RBS_Statement_2014-12-21.pdf", helping identify documents by their date stamp.' }
     ],
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-filename-patterns"]',
@@ -474,7 +470,15 @@ export const TUTORIAL_STEPS = [
     step: 5, sub: 1, id: '5.1',
     title: 'Predefined Paperless Fields',
     textParts: [
-      { text: 'These fields come directly from your Paperless-ngx instance — Correspondent, Document Type, and Tags are dropdown selections from values that already exist in Paperless-ngx. Date Created is different — it\'s a free date input that lets you set a specific date. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".' },
+      { text: 'These fields come directly from your Paperless-ngx instance — Correspondent, Document Type, and Tags are dropdown selections from values that already exist in Paperless-ngx. Date Created is different — it\'s a free date input that lets you set a specific date. In our example, we assign ' },
+      { text: '"Royal Bank of Scotland"', bold: true },
+      { text: ' as correspondent, ' },
+      { text: '"Bank Statement"', bold: true },
+      { text: ' as document type, and add the tags ' },
+      { text: '"Financial"', bold: true },
+      { text: ' and ' },
+      { text: '"Bank"', bold: true },
+      { text: '.' },
       { text: '\n\n' },
       { text: 'Notice that Date Created has been left empty here on purpose. Setting a fixed date here would apply the same date to every document this rule matches — which rarely makes sense. This is where dynamic extraction really shines. Paperless-ngx has its own built-in date detection, but you have no control over which date it picks. In our bank statement, Paperless might choose 22 October 2014 instead of the correct statement end date of 21 December 2014. With dynamic extraction, you tell PocoClass exactly where to find the right date.' }
     ],
@@ -522,21 +526,24 @@ export const TUTORIAL_STEPS = [
   },
   {
     step: 5, sub: 4, id: '5.4',
-    title: 'Example: Extracting the Statement Date',
+    title: 'Finding the Date in the OCR Text',
     textParts: [
-      { text: 'Let\'s see how dynamic extraction solves the date problem from Step 5.1. Look at the OCR text on the right — find the line ' },
+      { text: 'Let\'s see how dynamic extraction solves the date problem from Step 5.1. Look at the OCR text — find the highlighted line ' },
       { text: '"Period 22 Oct 2014 to 21 Dec 2014"', bold: true },
-      { text: '. We want to extract the end date "21 Dec 2014" — the actual statement date.' },
+      { text: '. We want to extract the end date ' },
+      { text: '"21 Dec 2014"', bold: true },
+      { text: ' — the actual statement date.' },
       { text: '\n\n' },
-      { text: 'The before anchor is ' },
+      { text: 'To build the before anchor, start with the human-readable text you can see: ' },
+      { text: '"22 Oct 2014 to"', bold: true },
+      { text: '. This translates into the regex pattern ' },
       { text: '"\\d{1,2} \\w{3} \\d{4} to"', bold: true },
-      { text: ' — this matches the start date followed by "to", positioning PocoClass right before the end date. The extraction pattern ' },
-      { text: '"\\d{1,2} \\w{3} \\d{4}"', bold: true },
-      { text: ' then captures the next date it finds: "21 Dec 2014".' }
+      { text: ' — which matches any date followed by "to". The Regex Helper (wand icon) is really useful here to build these patterns step by step without needing to know regex syntax.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
-    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    scrollBehavior: 'start',
+    tooltipPosition: { top: '50%', left: '25%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
     highlightFields: [],
     ocrHighlights: ['22 Oct 2014 to 21 Dec 2014'],
@@ -544,15 +551,17 @@ export const TUTORIAL_STEPS = [
   },
   {
     step: 5, sub: 5, id: '5.5',
-    title: 'After Anchor (Optional)',
+    title: 'Configuring the Extraction Rule',
     textParts: [
-      { text: 'An after anchor is not required in this case — the extraction pattern already captures exactly what we need. However, if the document contained multiple dates in a row, you could add an after anchor like ' },
-      { text: '"ANY BRACH MR T TESTER"', bold: true },
-      { text: ' to narrow down the exact position.' },
-      { text: '\n\n' },
       { text: 'The target field is set to ' },
       { text: '"Date Created"', bold: true },
-      { text: ', so the extracted date "21 Dec 2014" will be written directly to the document\'s Date Created field in Paperless-ngx — giving you precise, automatic date assignment instead of relying on Paperless\'s best guess.' }
+      { text: ', the before anchor is ' },
+      { text: '"\\d{1,2} \\w{3} \\d{4} to"', bold: true },
+      { text: ', and the extraction pattern ' },
+      { text: '"\\d{1,2} \\w{3} \\d{4}"', bold: true },
+      { text: ' captures the next date after the anchor — giving you "21 Dec 2014" written directly to the document\'s Date Created field.' },
+      { text: '\n\n' },
+      { text: 'An after anchor is optional. When provided, it limits the search area — if the extraction pattern is not found before the after anchor, the search stops. This is useful when a document contains many similar values and you need to constrain exactly where PocoClass looks. In this example, an after anchor is not needed because the pattern is precise enough on its own.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
