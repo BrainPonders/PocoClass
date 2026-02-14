@@ -5,6 +5,11 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
   const [position, setPosition] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
 
   const computePosition = useCallback(() => {
+    if (step?.tooltipPosition) {
+      setPosition(step.tooltipPosition);
+      return;
+    }
+
     if (!spotlightTarget) {
       setPosition({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
       return;
@@ -36,7 +41,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
         transform: 'translateX(-50%)',
       });
     }
-  }, [spotlightTarget]);
+  }, [spotlightTarget, step]);
 
   useEffect(() => {
     computePosition();
@@ -92,7 +97,9 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
 
       <div style={{ padding: '20px', color: 'var(--app-text, #333)' }}>
         <p style={{ fontSize: '0.9375rem', lineHeight: '1.6', margin: 0 }}>
-          {step.text}
+          {step.textParts ? step.textParts.map((part, i) => (
+            part.bold ? <strong key={i}>{part.text}</strong> : <span key={i}>{part.text}</span>
+          )) : step.text}
         </p>
       </div>
 
