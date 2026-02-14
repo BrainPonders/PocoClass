@@ -23,7 +23,14 @@ export default function SpotlightOverlay({ targetSelector }) {
   }, [targetSelector]);
 
   useEffect(() => {
-    updateRect();
+    if (targetSelector) {
+      const el = document.querySelector(targetSelector);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    const scrollTimeout = setTimeout(() => updateRect(), 400);
 
     const rafId = requestAnimationFrame(updateRect);
 
@@ -41,6 +48,7 @@ export default function SpotlightOverlay({ targetSelector }) {
     window.addEventListener('scroll', handleResize, true);
 
     return () => {
+      clearTimeout(scrollTimeout);
       cancelAnimationFrame(rafId);
       if (observer) observer.disconnect();
       window.removeEventListener('resize', handleResize);
