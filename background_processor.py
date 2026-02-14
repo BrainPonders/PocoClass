@@ -501,23 +501,56 @@ class BackgroundProcessor:
             if classified and best_result:
                 updates = self._build_metadata_updates(best_result, doc, api_client)
                 if updates:
-                    # Track what metadata will be applied
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
-                    
-                    success = api_client.update_document(doc_id, updates)
-                    if success:
+                else:
+                    updates = {}
+                    metadata_applied = self._build_metadata_applied_list({}, best_result, api_client)
+            else:
+                updates = {}
+            
+            # Merge POCO scores into custom_fields (instead of separate call that overwrites)
+            poco_score_field_id = api_client.get_custom_field_id('POCO Score')
+            poco_ocr_field_id = api_client.get_custom_field_id('POCO OCR')
+            existing_cf = updates.get('custom_fields', [])
+            if poco_score_field_id:
+                existing_cf.append({'field': poco_score_field_id, 'value': str(round(poco_score, 1))})
+            if poco_ocr_field_id:
+                existing_cf.append({'field': poco_ocr_field_id, 'value': str(round(poco_ocr, 1))})
+            if existing_cf:
+                updates['custom_fields'] = existing_cf
+            
+            # Merge POCO tag into tags (instead of separate call that overwrites)
+            tag_name = 'POCO+' if classified else 'POCO-'
+            opposite_tag_name = 'POCO-' if classified else 'POCO+'
+            tag_id = api_client.get_tag_id(tag_name)
+            opposite_tag_id = api_client.get_tag_id(opposite_tag_name)
+            if tag_id:
+                current_tags = updates.get('tags', list(doc.get('tags', [])))
+                if tag_id not in current_tags:
+                    current_tags.append(tag_id)
+                if opposite_tag_id and opposite_tag_id in current_tags:
+                    current_tags.remove(opposite_tag_id)
+                remove_new = self.db.get_config('bg_remove_new_tag') == 'true'
+                if remove_new:
+                    tag_new = self.db.get_config('bg_tag_new') or 'NEW'
+                    new_tag_id = api_client.get_tag_id(tag_new)
+                    if new_tag_id and new_tag_id in current_tags:
+                        current_tags.remove(new_tag_id)
+                        logger.info(f"Removing '{tag_new}' tag from document {doc_id}")
+                updates['tags'] = current_tags
+            
+            # Single consolidated update call
+            if updates:
+                success = api_client.update_document(doc_id, updates)
+                if success:
+                    if classified and best_result:
                         rules_applied = 1
-                    else:
-                        logger.error(f"Failed to update metadata for document {doc_id}")
-                        metadata_applied = []  # Clear if update failed
+                    logger.info(f"Successfully applied all updates to document {doc_id}")
+                else:
+                    logger.error(f"Failed to update document {doc_id}")
+                    metadata_applied = []
             
-            # ALWAYS add POCO scores to custom fields (even if 0)
-            self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
-            
-            # ALWAYS add POCO+ or POCO- tag
-            self._add_poco_tag(doc_id, doc, classified, api_client)
-            
-            # ALWAYS add scoring table to document notes
+            # Add scoring table to document notes (separate call - notes use different API)
             self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
         else:
             # In dry run mode, build what would be applied
