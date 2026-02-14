@@ -560,7 +560,7 @@ export const TUTORIAL_STEPS = [
       { text: '"\\d{1,2} \\w{3} \\d{4} to"', bold: true },
       { text: ' and the date format ' },
       { text: '"DD MMM YYYY"', bold: true },
-      { text: ' to extract the statement end date. You can see these values filled in below — the target field is set to ' },
+      { text: ' to extract the statement end date. You can see these values filled in on the left — the target field is set to ' },
       { text: '"Date Created"', bold: true },
       { text: ', so "21 Dec 2014" will be written directly to the document\'s Date Created field in Paperless-ngx.' },
       { text: '\n\n' },
