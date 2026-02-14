@@ -2149,7 +2149,15 @@ def get_document_ocr_content(doc_id):
         if content is None:
             return jsonify({'error': 'Could not retrieve document content'}), 500
         
-        return jsonify({'ocr': content, 'content': content})  # Return both 'ocr' and 'content' for compatibility
+        original_filename = ''
+        try:
+            docs = api_client.get_documents(document_id=doc_id, ignore_tags=True)
+            if docs and len(docs) > 0:
+                original_filename = docs[0].get('original_file_name', '')
+        except Exception:
+            pass
+        
+        return jsonify({'ocr': content, 'content': content, 'originalFileName': original_filename})
     except Exception as e:
         logger.error(f"Error getting document content: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
