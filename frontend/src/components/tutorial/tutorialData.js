@@ -66,28 +66,28 @@ export const EXAMPLE_RULE_DATA = {
   ocrIdentifiers: [
     {
       type: 'match',
+      mandatory: false,
+      conditions: [{ pattern: 'Royal\\s*Bank\\s*of\\s*Scotland', range: '1300-1628' }]
+    },
+    {
+      type: 'match',
       mandatory: true,
-      conditions: [{ pattern: 'Account\\s*Number', range: '0-500' }]
+      conditions: [{ pattern: 'GB11RBOS', range: '0-260' }]
     },
     {
       type: 'match',
       mandatory: true,
-      conditions: [{ pattern: 'Sort\\s*Code', range: '0-500' }]
+      conditions: [{ pattern: 'Account\\s*Number', range: '0-260' }]
     },
     {
       type: 'match',
       mandatory: false,
-      conditions: [{ pattern: 'Statement', range: '0-200' }]
+      conditions: [{ pattern: 'Statement', range: '0-260' }]
     },
     {
       type: 'match',
       mandatory: false,
-      conditions: [{ pattern: 'Balance', range: '0-1600' }]
-    },
-    {
-      type: 'match',
-      mandatory: false,
-      conditions: [{ pattern: 'Paid\\s*(In|Out)', range: '0-1600' }]
+      conditions: [{ pattern: 'Balance', range: '0-1628' }]
     }
   ],
   ocrMultiplier: 3,
@@ -213,71 +213,120 @@ export const TUTORIAL_STEPS = [
     pdfHighlights: []
   },
   {
-    step: 1, sub: 1, id: '1.1',
-    title: 'Welcome to the Rule Builder',
-    text: 'This is where you create classification rules. Each rule teaches PocoClass how to recognize a specific type of document. Let\'s walk through building a rule for bank statements.',
+    step: 1, sub: 0, id: '1.0',
+    title: 'Step 1: Basic Information',
+    text: 'Let\'s start with the basics. In this first step, you give your rule a name, an ID, and a description. You also set the POCO Score threshold — the minimum confidence level needed to classify a document.',
     previewTab: 'pdf',
     spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
-    step: 1, sub: 2, id: '1.2',
+    step: 1, sub: 1, id: '1.1',
     title: 'Rule Name & ID',
     text: 'Give your rule a clear name — like "Bank Statement". The Rule ID is generated automatically and is used internally. The description helps you remember what this rule does.',
     previewTab: 'pdf',
     spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '120px',
     highlightFields: ['tutorial-field-rulename', 'tutorial-field-ruleid', 'tutorial-field-description'],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
-    step: 1, sub: 3, id: '1.3',
+    step: 1, sub: 2, id: '1.2',
     title: 'POCO Score Threshold',
     text: 'The POCO Score threshold decides how confident the system must be before classifying a document. 80% is a good starting point — it means at least 80% of the patterns must match. Too low = false positives, too high = missed documents.',
     previewTab: 'pdf',
     spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '120px',
     highlightFields: ['tutorial-field-threshold'],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
-    step: 2, sub: 1, id: '2.1',
-    title: 'What PocoClass "Sees"',
-    text: 'Before we define patterns, look at the difference between the PDF (how you see the document) and the OCR text (how PocoClass sees it). Switch between the PDF and OCR tabs on the right — notice how the text ordering is different! PocoClass works with the OCR text, not the visual layout.',
-    previewTab: 'ocr',
+    step: 2, sub: 0, id: '2.0',
+    title: 'Step 2: OCR Identifying Patterns',
+    text: 'This is the most important step. Here you define text patterns that uniquely identify your document type. Patterns use regular expressions (regex) — a way to describe text patterns flexibly. Don\'t worry, the Pattern Helper button makes this easy even without regex experience.',
+    previewTab: 'pdf',
     spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 2, sub: 1, id: '2.1',
+    title: 'PDF vs OCR — What PocoClass Sees',
+    textParts: [
+      { text: 'Before we define patterns, look at the difference between the PDF (how you see the document) and the OCR text (how PocoClass sees it). ' },
+      { text: 'Switch', action: 'togglePreview' },
+      { text: ' between the PDF and OCR tabs on the right — notice how the text ordering is different! PocoClass works with the OCR text, not the visual layout.' }
+    ],
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    tooltipPosition: { top: '50%', left: '35%', transform: 'translate(-50%, -50%)' },
     highlightFields: [],
     ocrHighlights: ['Account Number', 'Sort Code', 'Statement'],
     pdfHighlights: []
   },
   {
     step: 2, sub: 2, id: '2.2',
-    title: 'OCR Patterns — Finding Text',
-    text: 'OCR patterns tell PocoClass what text to look for in the document. Here we\'re searching for "Account Number" and "Sort Code" — text that appears on every bank statement. These are marked as mandatory because a bank statement always has them.',
+    title: 'Logic Group 1 — Bank Identification',
+    textParts: [
+      { text: 'Our first pattern looks for "Royal Bank of Scotland" — text that appears at the bottom of every RBS statement. Notice in the OCR view (lines 56-57) this text is at the very end. We set the range to search only the last 10 lines, making the match faster and more precise. ' },
+      { text: 'This group is optional — it boosts confidence but won\'t reject documents if missing.' }
+    ],
     previewTab: 'ocr',
     spotlightTarget: null,
-    highlightFields: ['tutorial-field-ocrgroup-0', 'tutorial-field-ocrgroup-1'],
-    ocrHighlights: ['Account Number', 'Sort Code'],
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: ['tutorial-field-ocrgroup-0'],
+    ocrHighlights: ['Royal Bank of Scotland'],
     pdfHighlights: []
   },
   {
     step: 2, sub: 3, id: '2.3',
-    title: 'Optional Patterns & Ranges',
-    text: 'Not every pattern needs to be mandatory. "Statement", "Balance", and "Paid In/Out" are optional supporting evidence — they boost the score but won\'t reject the document if missing. The range (e.g., 0-500) limits where in the OCR text to search, making matching faster and more precise.',
+    title: 'Logic Group 2 — Account Identification',
+    textParts: [
+      { text: 'This pattern searches for your IBAN number "GB11RBOS" in the first 10 lines of the document. Your bank statement typically has your IBAN near the top. ' },
+      { text: 'This group is mandatory', bold: true },
+      { text: ' — if you have multiple accounts with Royal Bank, this ensures you identify the correct account\'s statement, not just any RBS document.' }
+    ],
     previewTab: 'ocr',
     spotlightTarget: null,
-    highlightFields: ['tutorial-field-ocrgroup-2', 'tutorial-field-ocrgroup-3', 'tutorial-field-ocrgroup-4'],
-    ocrHighlights: ['Statement', 'Balance', 'Paid In', 'Paid Out'],
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: ['tutorial-field-ocrgroup-1'],
+    ocrHighlights: ['GB11RBOS'],
     pdfHighlights: []
   },
   {
     step: 2, sub: 4, id: '2.4',
-    title: 'OCR Threshold & Multiplier',
-    text: 'The OCR Threshold (75%) is the minimum OCR confidence needed. The multiplier (×3) means OCR matches are worth 3× more than other sources in the final score — because OCR text content is usually the strongest signal.',
+    title: 'More Logic Groups',
+    textParts: [
+      { text: 'You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match). ' },
+      { text: 'The Pattern Helper button (look for the wand icon) helps you build regex patterns without needing to know regex syntax.' }
+    ],
     previewTab: 'ocr',
     spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: ['tutorial-field-ocrgroup-0', 'tutorial-field-ocrgroup-1', 'tutorial-field-ocrgroup-2', 'tutorial-field-ocrgroup-3', 'tutorial-field-ocrgroup-4'],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 2, sub: 5, id: '2.5',
+    title: 'OCR Threshold & Multiplier',
+    text: 'The OCR Threshold (75%) sets the minimum OCR confidence needed. The multiplier (×3) means OCR matches count 3× more in the final score — because the text content is usually the strongest signal for identifying documents. The defaults work well for most rules, but you can fine-tune them to improve accuracy for tricky documents.',
+    previewTab: 'ocr',
+    spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
     highlightFields: ['tutorial-field-ocrthreshold', 'tutorial-field-ocrmultiplier'],
     ocrHighlights: [],
     pdfHighlights: []
