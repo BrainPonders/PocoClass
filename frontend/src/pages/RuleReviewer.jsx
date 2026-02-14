@@ -1,8 +1,10 @@
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Rule, Document, Paperless } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
-import { FileText, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
+import { createPageUrl } from "@/utils";
+import { FileText, Play, CheckSquare, Square, Info, Eye, X, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
@@ -13,6 +15,7 @@ import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function RuleReviewer() {
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
@@ -435,7 +438,7 @@ export default function RuleReviewer() {
       {/* Rule Selector and Run Button */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex justify-end items-center gap-3">
+          <div className="flex items-center gap-3">
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
@@ -463,6 +466,15 @@ export default function RuleReviewer() {
                 </>
               )}
             </button>
+            {selectedRule && (
+              <button
+                onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${selectedRule}`)}
+                className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 h-10 w-10 flex items-center justify-center"
+                title="Edit this rule"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>
