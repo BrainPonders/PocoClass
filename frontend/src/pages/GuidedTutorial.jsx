@@ -126,7 +126,7 @@ export default function GuidedTutorial() {
       }
     >
       <div className="max-w-[1800px] mx-auto px-12">
-        <div data-tutorial-area="step-progress">
+        <div data-tutorial-area="step-progress" style={{ width: 'fit-content' }}>
           <StepProgress
             currentStep={isOrientation ? null : wizardStep}
             stepStatus={stepStatus}
