@@ -352,6 +352,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
           border-radius: 4px;
           font-family: 'Monaco', 'Menlo', monospace;
           font-size: 13px;
+          white-space: pre;
         }
         .non-match-example {
           background: #fee2e2;
@@ -362,6 +363,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
           font-family: 'Monaco', 'Menlo', monospace;
           font-size: 13px;
           text-decoration: line-through;
+          white-space: pre;
         }
       `}</style>
       
@@ -482,7 +484,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
                         onChange={(e) => setSpaceFlexibility(e.target.value)}
                         className="w-4 h-4"
                       />
-                      <span className="text-sm">Flexible Spaces ("BankStatement", "Bank Statement" or "Bank  Statement")</span>
+                      <span className="text-sm">Flexible Spaces ("BankStatement", "Bank Statement" or "Bank{'\u00a0\u00a0'}Statement")</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
@@ -670,7 +672,7 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
                                   onChange={() => updateComplexElement(index, 'spaceFlexibility', 'very-flexible')}
                                   className="mr-2"
                                 />
-                                <span className="text-sm">Very Flexible <span className="text-gray-500">(spaces allowed anywhere: "ABC" matches "A B C", "A B C")</span></span>
+                                <span className="text-sm">Very Flexible <span className="text-gray-500">(spaces allowed anywhere: "ABC" matches "A B C", "A{'\u00a0\u00a0'}B{'\u00a0\u00a0'}C")</span></span>
                               </label>
                             </div>
                           </div>

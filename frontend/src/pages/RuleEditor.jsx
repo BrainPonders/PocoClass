@@ -61,6 +61,7 @@ export default function RuleEditor() {
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [selectedDocId, setSelectedDocId] = useState(null);
+  const [sourceDocumentFilename, setSourceDocumentFilename] = useState('');
   
   const [ruleData, setRuleData] = useState({
     ruleName: '',
@@ -140,6 +141,9 @@ export default function RuleEditor() {
       try {
         const response = await apiClient.get(`/documents/${docId}/content`);
         setOcrContent(response.content || '');
+        if (response.originalFileName) {
+          setSourceDocumentFilename(response.originalFileName);
+        }
       } catch (error) {
         console.error('Error loading OCR content:', error);
       }
@@ -522,6 +526,9 @@ export default function RuleEditor() {
               <FileText className="w-4 h-4 text-blue-600" />
               <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
               <code className="font-mono text-blue-800 font-semibold">{ruleData.sourceDocumentId}</code>
+              {sourceDocumentFilename && (
+                <span className="text-blue-700">— {sourceDocumentFilename}</span>
+              )}
             </span>
           )}
           {selectedFile && (
