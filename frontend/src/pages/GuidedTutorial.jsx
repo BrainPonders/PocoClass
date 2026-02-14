@@ -53,11 +53,11 @@ export default function GuidedTutorial() {
       const currentTab = previewTabOverride || currentTutorialStep?.previewTab || 'pdf';
       setPreviewTabOverride(currentTab === 'pdf' ? 'ocr' : 'pdf');
     }
-    if (action === 'openGuide' || action === 'openGuideScoring') {
+    if (action === 'openGuide' || action === 'openGuideScoring' || action === 'openGuideMetadata') {
       const guideButton = document.querySelector('[data-guide-trigger]');
       if (guideButton) {
         guideButton.click();
-        const anchorId = action === 'openGuideScoring' ? 'guide-scoring-system' : 'guide-regex-support';
+        const anchorId = action === 'openGuideScoring' ? 'guide-scoring-system' : action === 'openGuideMetadata' ? 'guide-metadata-step' : 'guide-regex-support';
         setTimeout(() => {
           const anchor = document.getElementById(anchorId);
           if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });

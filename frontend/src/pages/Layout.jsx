@@ -1089,7 +1089,7 @@ function LayoutContent({ children }) {
                         {t('guide.buildingRules.step4Note')}
                       </p>
 
-                      <h4>{t('guide.buildingRules.step5Title')}</h4>
+                      <h4 id="guide-metadata-step">{t('guide.buildingRules.step5Title')}</h4>
                       <p>
                         {t('guide.buildingRules.step5Intro')}
                       </p>
