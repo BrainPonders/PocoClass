@@ -120,7 +120,10 @@ export const EXAMPLE_RULE_DATA = {
   verification: {
     requiredFields: [],
     validationRules: [],
-    enabledFields: {}
+    enabledFields: {
+      correspondent: true,
+      documentType: true
+    }
   },
   status: 'active'
 };
@@ -228,10 +231,10 @@ export const TUTORIAL_STEPS = [
     title: 'Rule Name & ID',
     text: 'Give your rule a clear name — like "Bank Statement". The Rule ID is generated automatically and is used internally. The description helps you remember what this rule does.',
     previewTab: 'pdf',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-rulename"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '160px',
-    highlightFields: ['tutorial-field-rulename'],
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
@@ -240,10 +243,10 @@ export const TUTORIAL_STEPS = [
     title: 'POCO Score Threshold',
     text: 'The POCO Score threshold decides how confident the system must be before classifying a document. 80% is a good starting point — it means at least 80% of the patterns must match. Too low = false positives, too high = missed documents.',
     previewTab: 'pdf',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-threshold"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '160px',
-    highlightFields: ['tutorial-field-threshold'],
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
@@ -283,15 +286,19 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 2, id: '2.2',
     title: 'Logic Group 1 — Bank Identification',
     textParts: [
-      { text: 'Our first pattern looks for "Royal Bank of Scotland" as plain text — it appears at the bottom of every RBS statement. The search area is set to the last 10 lines, making the match faster and more precise. This group is optional — it boosts confidence but won\'t reject documents if missing.' },
+      { text: 'Our first pattern looks for ' },
+      { text: '"Royal Bank of Scotland"', bold: true },
+      { text: ' as plain text — it appears at the bottom of every RBS statement. The search area is set to the last 10 lines, making the match faster and more precise. This group is optional — it boosts confidence but won\'t reject documents if missing.' },
       { text: '\n\n' },
-      { text: 'With the help of the regex builder, this same pattern could be written as Royal\\s*Bank\\s*of\\s*Scotland — which would also match variations like "Royal  Bank  of  Scotland" with extra spaces. Simple text works for most cases; regex adds flexibility when needed.' }
+      { text: 'With the help of the regex builder, this same pattern could be written as ' },
+      { text: 'Royal\\s*Bank\\s*of\\s*Scotland', bold: true },
+      { text: ' — which would also match variations like "RoyalBank of Scotland" or "Royal   Bank of Scotland" with unusual spacing. Simple text works for most cases; regex adds flexibility when needed.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroup-0"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
-    highlightFields: ['tutorial-field-ocrgroup-0'],
+    highlightFields: [],
     ocrHighlights: ['Royal Bank of Scotland'],
     pdfHighlights: []
   },
@@ -305,10 +312,10 @@ export const TUTORIAL_STEPS = [
       { text: ', meaning the rule will only pass if this pattern is found. This is important when you have multiple accounts with Royal Bank — it ensures you identify the correct account\'s statement, not just any RBS document.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroup-1"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
-    highlightFields: ['tutorial-field-ocrgroup-1'],
+    highlightFields: [],
     ocrHighlights: ['GB11RBOS'],
     pdfHighlights: []
   },
@@ -323,10 +330,10 @@ export const TUTORIAL_STEPS = [
       { text: '.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroups-container"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
-    highlightFields: ['tutorial-field-ocrgroup-0', 'tutorial-field-ocrgroup-1', 'tutorial-field-ocrgroup-2', 'tutorial-field-ocrgroup-3', 'tutorial-field-ocrgroup-4'],
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
@@ -336,32 +343,82 @@ export const TUTORIAL_STEPS = [
     textParts: [
       { text: 'The OCR Threshold (75%) sets the minimum percentage of OCR patterns that must match before the document can be classified. This ensures a base level of text-based confidence.' },
       { text: '\n\n' },
-      { text: 'The Weight Multiplier (x3) controls how much OCR patterns count toward the final POCO Score. A rule can use three sources to identify documents: OCR text patterns (the main source), filename patterns, and Paperless-ngx classifications. The multiplier lets you prioritize OCR over the other sources.' }
+      { text: 'The Weight Multiplier (x3) controls how much OCR patterns count toward the final POCO Score. A rule can use three sources to identify documents: OCR text patterns (the main source), filename patterns, and Paperless-ngx classifications. The multiplier lets you prioritize OCR over the other sources. For more details, see ' },
+      { text: 'Scoring System in the Guide', action: 'openGuideScoring' },
+      { text: '.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-ocr-settings"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
-    highlightFields: ['tutorial-field-ocrthreshold', 'tutorial-field-ocrmultiplier'],
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 3, sub: 0, id: '3.0',
+    title: 'Step 3: Filename Patterns',
+    text: 'Besides OCR text, the filename itself can help identify documents. For example, your bank might provide automated digital statements with consistent filenames like "RBS_Statement_2024-01.pdf". Filename patterns let you leverage this.',
+    previewTab: 'pdf',
+    spotlightTarget: null,
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
     step: 3, sub: 1, id: '3.1',
     title: 'Filename Patterns',
-    text: 'Sometimes the filename itself is a clue. "bank.?statement" matches filenames like "bank_statement.pdf" or "bankstatement.pdf". This is optional but adds extra confidence when the filename is meaningful.',
+    textParts: [
+      { text: 'Pattern 1: "bank.?statement" matches filenames like "bank_statement.pdf" or "bankstatement.pdf". The .? means any single character (or none) can appear between "bank" and "statement".' },
+      { text: '\n\n' },
+      { text: 'Pattern 2: "RBS.*statement" uses a date-like pattern. The .* means any number of characters can appear between "RBS" and "statement", matching filenames like "RBS_Monthly_statement.pdf" or "RBS-2024-statement.pdf".' }
+    ],
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-filename-patterns"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 3, sub: 2, id: '3.2',
+    title: 'Filename Weight Multiplier',
+    textParts: [
+      { text: 'The Filename Weight Multiplier (x1) controls how much filename matches contribute to the final POCO Score — similar to the OCR multiplier you saw earlier. The default of x1 means filename patterns count less than OCR patterns (which use x3).' },
+      { text: '\n\n' },
+      { text: 'This makes sense because filenames are less reliable than document content — they can be renamed or inconsistent. For more details about how all multipliers work together, see ' },
+      { text: 'Scoring System in the Guide', action: 'openGuideScoring' },
+      { text: '.' }
+    ],
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-filename-multiplier"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 4, sub: 0, id: '4.0',
+    title: 'Step 4: Data Verification',
+    text: 'Data verification adds an extra layer of confidence by cross-referencing extracted data with existing Paperless-ngx metadata. This step is optional and mainly useful for advanced setups where you want to validate document data against known values.',
     previewTab: 'pdf',
     spotlightTarget: null,
-    highlightFields: ['tutorial-field-filename-0', 'tutorial-field-filename-1'],
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
     step: 4, sub: 1, id: '4.1',
-    title: 'Data Verification',
-    text: 'This step lets you verify extracted data against existing Paperless-ngx metadata. For example, you could check if the extracted account number matches a stored value. This is an advanced feature — you can skip it when starting out.',
-    previewTab: 'yaml',
-    spotlightTarget: null,
+    title: 'Verification Placeholders',
+    text: 'Here you select which Paperless-ngx fields to use for verification. When enabled, PocoClass checks if the value assigned in Step 5 matches what\'s already in Paperless-ngx — adding a trust multiplier to the final score. In our example, Correspondent and Document Type are enabled for verification.',
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-verification-placeholders"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []

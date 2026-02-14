@@ -188,7 +188,7 @@ export default function OcrIdentifiersStep({
         )}
       </div>
 
-      <div className="space-y-4 mb-6">
+      <div className="space-y-4 mb-6" data-tutorial-field="tutorial-field-ocrgroups-container">
         {ruleData.ocrIdentifiers?.map((group, index) => (
           <LogicGroupEditor
             key={index}
@@ -209,6 +209,7 @@ export default function OcrIdentifiersStep({
         </button>
       </div>
 
+      <div data-tutorial-field="tutorial-field-ocr-settings">
       <div data-tutorial-field="tutorial-field-ocrthreshold">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-semibold text-lg">{t('wizard.ocrScoreRequirement')}</h3>
@@ -229,7 +230,6 @@ export default function OcrIdentifiersStep({
             style={{ backgroundColor: 'var(--app-bg-secondary)' }}
           />
           
-          {/* Scale markers */}
           <div className="relative mt-2 px-2 pb-8">
             <div className="relative" style={{fontSize: '0.7rem', color: 'var(--app-text-muted)'}}>
               <span style={{position: 'absolute', left: '0%', transform: 'translateX(-50%)'}}>50</span>
@@ -294,6 +294,7 @@ export default function OcrIdentifiersStep({
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>

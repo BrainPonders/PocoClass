@@ -806,7 +806,7 @@ function LayoutContent({ children }) {
                     </div>
 
                     <div className="guide-section">
-                      <h3>{t('guide.scoring.title')}</h3>
+                      <h3 id="guide-scoring-system">{t('guide.scoring.title')}</h3>
                       <p>
                         {t('guide.scoring.intro')}
                       </p>
@@ -1037,7 +1037,7 @@ function LayoutContent({ children }) {
                       <p>
                         {t('guide.buildingRules.ocrContinueNote')}
                       </p>
-                      <p><strong>{t('guide.buildingRules.regexSupport')}</strong></p>
+                      <p id="guide-regex-support"><strong>{t('guide.buildingRules.regexSupport')}</strong></p>
                       <p>
                         {t('guide.buildingRules.regexIntro')}
                       </p>
