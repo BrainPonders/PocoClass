@@ -1802,12 +1802,22 @@ def update_rule(rule_id):
             logger.error(f"Failed to update rule {rule_id}: {error_msg}")
             return jsonify({'error': f'Invalid YAML generated: {error_msg}'}), 400
         
-        # Save rule
-        rule_file = os.path.join('rules', f'{rule_id}.yaml')
-        with open(rule_file, 'w') as f:
+        new_rule_id = rule_data.get('ruleId', rule_id)
+        old_rule_file = os.path.join('rules', f'{rule_id}.yaml')
+        new_rule_file = os.path.join('rules', f'{new_rule_id}.yaml')
+        
+        if new_rule_id != rule_id:
+            if os.path.exists(new_rule_file):
+                return jsonify({'error': f'A rule with ID "{new_rule_id}" already exists'}), 409
+            if os.path.exists(old_rule_file):
+                os.rename(old_rule_file, new_rule_file)
+            else:
+                logger.warning(f"Old rule file {old_rule_file} not found during rename to {new_rule_id}")
+        
+        with open(new_rule_file, 'w') as f:
             f.write(formatted_yaml)
         
-        return jsonify({'id': rule_id, 'message': 'Rule updated successfully'})
+        return jsonify({'id': new_rule_id, 'message': 'Rule updated successfully'})
     except Exception as e:
         logger.error(f"Error updating rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
