@@ -1989,13 +1989,13 @@ def list_documents():
         
         # Determine if we should ignore legacy tag filtering:
         # - If user explicitly sets ignore_tags parameter, use that
-        # - Otherwise, automatically ignore legacy tags when NO tag filters are active
+        # - If user has selected any tag filters, skip legacy filtering so it doesn't interfere
+        # - Otherwise, automatically ignore legacy tags when viewing the full document list
         explicit_ignore_tags = request.args.get('ignore_tags')
         if explicit_ignore_tags is not None:
             ignore_tags = explicit_ignore_tags.lower() == 'true'
         else:
-            # Auto-ignore legacy tags when no tag filters are provided
-            ignore_tags = (tags is None and exclude_tags is None)
+            ignore_tags = True
         
         logger.info(f"Document list request - tags={tags}, exclude_tags={exclude_tags}, ignore_tags={ignore_tags}")
         
