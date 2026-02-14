@@ -1,5 +1,6 @@
 export const EXAMPLE_OCR_TEXT = `Account Number: 1111111
-Statement Sort Code: 16-10-00
+Sort Code: 16-10-00
+Statement
 BIC: RBOSGB2L
 SELECT ACCOUNT IBAN: GB11RBOS 1610 0011 1111 11
 
@@ -110,6 +111,12 @@ export const EXAMPLE_RULE_DATA = {
         anchor: 'Account Number:',
         extractionPattern: '\\d{7}',
         targetField: 'title'
+      },
+      {
+        fieldName: 'statement_date',
+        anchor: '\\d{1,2} \\w{3} \\d{4} to',
+        extractionPattern: '\\d{1,2} \\w{3} \\d{4}',
+        targetField: 'dateCreated'
       }
     ]
   },
@@ -241,7 +248,7 @@ export const TUTORIAL_STEPS = [
   {
     step: 1, sub: 2, id: '1.2',
     title: 'POCO Score Threshold',
-    text: 'The POCO Score threshold decides how confident the system must be before classifying a document. 80% is a good starting point — it means at least 80% of the patterns must match. Too low = false positives, too high = missed documents.',
+    text: 'The POCO Score threshold decides how confident the system must be before classifying a document. The default is 75% — it means at least 75% of the weighted patterns must match. Too low = false positives, too high = missed documents.',
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-threshold"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
@@ -324,7 +331,13 @@ export const TUTORIAL_STEPS = [
     step: 2, sub: 4, id: '2.4',
     title: 'More Logic Groups',
     textParts: [
-      { text: 'You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match).' },
+      { text: 'You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match). In our example, groups 3-5 look for ' },
+      { text: '"Account Number"', bold: true },
+      { text: ', ' },
+      { text: '"Statement"', bold: true },
+      { text: ', and ' },
+      { text: '"Balance"', bold: true },
+      { text: '.' },
       { text: '\n\n' },
       { text: 'The Pattern Helper button (look for the wand icon) helps you build regex patterns without needing to know regex syntax. For more details, see ' },
       { text: 'Regex Support in the Guide', action: 'openGuide' },
@@ -371,9 +384,13 @@ export const TUTORIAL_STEPS = [
     step: 3, sub: 1, id: '3.1',
     title: 'Filename Patterns',
     textParts: [
-      { text: 'Pattern 1: "RBS.*statement" matches any filename containing "RBS" followed by any characters and then "statement". The .* means any number of characters can appear between them — matching "RBS_Statement_2024-01.pdf" or "RBS-Monthly-Statement.pdf".' },
+      { text: 'Pattern 1: ' },
+      { text: '"RBS.*statement"', bold: true },
+      { text: ' matches any filename containing "RBS" followed by any characters and then "statement". The .* means any number of characters can appear between them — matching "RBS_Statement_2024-01.pdf" or "RBS-Monthly-Statement.pdf".' },
       { text: '\n\n' },
-      { text: 'Pattern 2: "\\d{4}-\\d{2}" looks for a date-like pattern in the filename — four digits, a dash, and two digits. This matches the "2024-01" part in "RBS_Statement_2024-01.pdf", helping identify documents by their date stamp.' }
+      { text: 'Pattern 2: ' },
+      { text: '"\\d{4}-\\d{2}"', bold: true },
+      { text: ' looks for a date-like pattern in the filename — four digits, a dash, and two digits. This matches the "2024-01" part in "RBS_Statement_2024-01.pdf", helping identify documents by their date stamp.' }
     ],
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-filename-patterns"]',
@@ -444,8 +461,8 @@ export const TUTORIAL_STEPS = [
   },
   {
     step: 5, sub: 0, id: '5.0',
-    title: 'Step 5: Document Metadata',
-    text: 'Now that PocoClass knows how to identify your documents, it\'s time to tell it what to do when a match is found. In this step, you define which metadata to assign — from setting the correspondent and document type to adding tags for organization. You can also configure dynamic data extraction, which pulls specific values directly from the document text — like account numbers, invoice totals, or dates — and stores them in Paperless-ngx fields automatically.',
+    title: 'Step 5: Document Classifications',
+    text: 'Now that PocoClass knows how to identify your documents, it\'s time to tell it what to do when a match is found. In this step, you define which classification data to assign — the correspondent, document type, and tags for organization. You can also configure dynamic data extraction, which pulls specific values directly from the document text — like account numbers, invoice totals, or dates — and stores them in Paperless-ngx fields automatically.',
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
@@ -457,9 +474,9 @@ export const TUTORIAL_STEPS = [
     step: 5, sub: 1, id: '5.1',
     title: 'Predefined Paperless Fields',
     textParts: [
-      { text: 'These fields come directly from your Paperless-ngx instance — Date Created, Correspondent, Document Type, and Tags. They are not free-text editable; instead, you select from values that already exist in Paperless-ngx. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".' },
+      { text: 'These fields come directly from your Paperless-ngx instance — Correspondent, Document Type, and Tags are dropdown selections from values that already exist in Paperless-ngx. Date Created is different — it\'s a free date input that lets you set a specific date. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".' },
       { text: '\n\n' },
-      { text: 'Notice that Date Created has been left empty here on purpose. This is where PocoClass really shines — instead of setting a fixed date, you can extract the actual statement date directly from the document text using dynamic extraction (Step 5.3).' }
+      { text: 'Notice that Date Created has been left empty here on purpose. Setting a fixed date here would apply the same date to every document this rule matches — which rarely makes sense. This is where dynamic extraction really shines. Paperless-ngx has its own built-in date detection, but you have no control over which date it picks. In our bank statement, Paperless might choose 22 October 2014 instead of the correct statement end date of 21 December 2014. With dynamic extraction, you tell PocoClass exactly where to find the right date.' }
     ],
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-predefined-paperless"]',
@@ -479,7 +496,7 @@ export const TUTORIAL_STEPS = [
       { text: 'Metadata in the Guide', action: 'openGuideMetadata' },
       { text: '.' }
     ],
-    previewTab: 'yaml',
+    previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-predefined-custom"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
@@ -495,12 +512,54 @@ export const TUTORIAL_STEPS = [
       { text: '\n\n' },
       { text: 'This is one of PocoClass\'s most powerful features. Combined with custom fields, you can extract virtually any information from your documents — an account number from a bank statement, the total amount from an invoice, consumed kWh from an electricity bill, or a policy number from an insurance document. Each target field can only be used once — either as a predefined value or as a dynamic extraction, never both.' }
     ],
-    previewTab: 'yaml',
+    previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
     highlightFields: [],
     ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 5, sub: 4, id: '5.4',
+    title: 'Example: Extracting the Statement Date',
+    textParts: [
+      { text: 'Let\'s see how dynamic extraction solves the date problem from Step 5.1. Look at the OCR text on the right — find the line ' },
+      { text: '"Period 22 Oct 2014 to 21 Dec 2014"', bold: true },
+      { text: '. We want to extract the end date "21 Dec 2014" — the actual statement date.' },
+      { text: '\n\n' },
+      { text: 'The before anchor is ' },
+      { text: '"\\d{1,2} \\w{3} \\d{4} to"', bold: true },
+      { text: ' — this matches the start date followed by "to", positioning PocoClass right before the end date. The extraction pattern ' },
+      { text: '"\\d{1,2} \\w{3} \\d{4}"', bold: true },
+      { text: ' then captures the next date it finds: "21 Dec 2014".' }
+    ],
+    previewTab: 'ocr',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: ['22 Oct 2014 to 21 Dec 2014'],
+    pdfHighlights: []
+  },
+  {
+    step: 5, sub: 5, id: '5.5',
+    title: 'After Anchor (Optional)',
+    textParts: [
+      { text: 'An after anchor is not required in this case — the extraction pattern already captures exactly what we need. However, if the document contained multiple dates in a row, you could add an after anchor like ' },
+      { text: '"ANY BRACH MR T TESTER"', bold: true },
+      { text: ' to narrow down the exact position.' },
+      { text: '\n\n' },
+      { text: 'The target field is set to ' },
+      { text: '"Date Created"', bold: true },
+      { text: ', so the extracted date "21 Dec 2014" will be written directly to the document\'s Date Created field in Paperless-ngx — giving you precise, automatic date assignment instead of relying on Paperless\'s best guess.' }
+    ],
+    previewTab: 'ocr',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: ['21 Dec 2014'],
     pdfHighlights: []
   },
   {
@@ -545,6 +604,7 @@ export const TUTORIAL_STEPS = [
     text: 'On the right you can see the generated YAML — the actual rule file that PocoClass uses. You\'ve just seen how a rule is built from start to finish. The key idea: find patterns that uniquely identify your document type, set sensible thresholds, and let PocoClass do the rest. Start simple with a few mandatory OCR patterns — you can always refine later.',
     previewTab: 'yaml',
     spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    scrollBehavior: 'start',
     tooltipPosition: { top: '50%', left: '25%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '160px',
     highlightFields: [],
