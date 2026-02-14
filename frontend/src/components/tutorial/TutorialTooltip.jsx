@@ -66,6 +66,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
         zIndex: 9999,
         maxWidth: '500px',
         width: '90vw',
+        minHeight: step.tooltipMinHeight || 'auto',
         backgroundColor: 'var(--app-surface, #fff)',
         border: '2px solid var(--app-primary, #2563eb)',
         borderRadius: '12px',
