@@ -127,10 +127,81 @@ export const EXAMPLE_RULE_DATA = {
 
 export const TUTORIAL_STEPS = [
   {
+    step: 0, sub: 1, id: '0.1',
+    title: 'Welcome to the Rule Builder Tutorial!',
+    text: 'This is where you create classification rules. Each rule teaches PocoClass how to recognize a specific type of document. Let\'s walk through building a rule for bank statements.',
+    previewTab: 'pdf',
+    spotlightTarget: null,
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 2, id: '0.2',
+    title: '6 Steps to Build a Rule',
+    text: 'Every classification rule is built in 6 steps, shown in this progress bar. Each step focuses on a different aspect — from naming your rule, to defining patterns, to assigning metadata. You\'ll complete them left to right.',
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-area="step-progress"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 3, id: '0.3',
+    title: 'The Input Area',
+    text: 'This is where you\'ll fill in your rule data. Each step shows different input fields on this side. The fields change as you move through the 6 steps.',
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-area="input-area"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 4, id: '0.4',
+    title: 'PDF Preview',
+    text: 'This panel shows a preview of the document you\'re building a rule for. Use it to identify text patterns and visual elements that are unique to this type of document.',
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 5, id: '0.5',
+    title: 'OCR Content',
+    text: 'This tab shows the raw text that PocoClass extracts from the document using OCR (Optical Character Recognition). This is what PocoClass actually \'reads\' — notice how the text order may differ from the visual PDF layout. Your patterns need to match this text, not the PDF layout.',
+    previewTab: 'ocr',
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 6, id: '0.6',
+    title: 'YAML Preview',
+    text: 'The YAML tab shows your rule as structured data — this is what gets saved. Most users won\'t need to edit YAML directly, but it\'s useful for power users who want to fine-tune or copy rules.',
+    previewTab: 'yaml',
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 0, sub: 7, id: '0.7',
+    title: 'Configuration Summary',
+    text: 'At the bottom of each step, you\'ll find a configuration summary. This shows an overview of your current settings and highlights anything that might need attention with warnings.',
+    previewTab: 'pdf',
+    spotlightTarget: '[data-tutorial-area="input-area"]',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
     step: 1, sub: 1, id: '1.1',
     title: 'Welcome to the Rule Builder',
     text: 'This is where you create classification rules. Each rule teaches PocoClass how to recognize a specific type of document. Let\'s walk through building a rule for bank statements.',
     previewTab: 'pdf',
+    spotlightTarget: null,
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -140,6 +211,7 @@ export const TUTORIAL_STEPS = [
     title: 'Rule Name & ID',
     text: 'Give your rule a clear name — like "Bank Statement". The Rule ID is generated automatically and is used internally. The description helps you remember what this rule does.',
     previewTab: 'pdf',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-rulename', 'tutorial-field-ruleid', 'tutorial-field-description'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -149,6 +221,7 @@ export const TUTORIAL_STEPS = [
     title: 'POCO Score Threshold',
     text: 'The POCO Score threshold decides how confident the system must be before classifying a document. 80% is a good starting point — it means at least 80% of the patterns must match. Too low = false positives, too high = missed documents.',
     previewTab: 'pdf',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-threshold'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -158,6 +231,7 @@ export const TUTORIAL_STEPS = [
     title: 'What PocoClass "Sees"',
     text: 'Before we define patterns, look at the difference between the PDF (how you see the document) and the OCR text (how PocoClass sees it). Switch between the PDF and OCR tabs on the right — notice how the text ordering is different! PocoClass works with the OCR text, not the visual layout.',
     previewTab: 'ocr',
+    spotlightTarget: null,
     highlightFields: [],
     ocrHighlights: ['Account Number', 'Sort Code', 'Statement'],
     pdfHighlights: []
@@ -167,6 +241,7 @@ export const TUTORIAL_STEPS = [
     title: 'OCR Patterns — Finding Text',
     text: 'OCR patterns tell PocoClass what text to look for in the document. Here we\'re searching for "Account Number" and "Sort Code" — text that appears on every bank statement. These are marked as mandatory because a bank statement always has them.',
     previewTab: 'ocr',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-ocrgroup-0', 'tutorial-field-ocrgroup-1'],
     ocrHighlights: ['Account Number', 'Sort Code'],
     pdfHighlights: []
@@ -176,6 +251,7 @@ export const TUTORIAL_STEPS = [
     title: 'Optional Patterns & Ranges',
     text: 'Not every pattern needs to be mandatory. "Statement", "Balance", and "Paid In/Out" are optional supporting evidence — they boost the score but won\'t reject the document if missing. The range (e.g., 0-500) limits where in the OCR text to search, making matching faster and more precise.',
     previewTab: 'ocr',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-ocrgroup-2', 'tutorial-field-ocrgroup-3', 'tutorial-field-ocrgroup-4'],
     ocrHighlights: ['Statement', 'Balance', 'Paid In', 'Paid Out'],
     pdfHighlights: []
@@ -185,6 +261,7 @@ export const TUTORIAL_STEPS = [
     title: 'OCR Threshold & Multiplier',
     text: 'The OCR Threshold (75%) is the minimum OCR confidence needed. The multiplier (×3) means OCR matches are worth 3× more than other sources in the final score — because OCR text content is usually the strongest signal.',
     previewTab: 'ocr',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-ocrthreshold', 'tutorial-field-ocrmultiplier'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -194,6 +271,7 @@ export const TUTORIAL_STEPS = [
     title: 'Filename Patterns',
     text: 'Sometimes the filename itself is a clue. "bank.?statement" matches filenames like "bank_statement.pdf" or "bankstatement.pdf". This is optional but adds extra confidence when the filename is meaningful.',
     previewTab: 'pdf',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-filename-0', 'tutorial-field-filename-1'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -203,6 +281,7 @@ export const TUTORIAL_STEPS = [
     title: 'Data Verification',
     text: 'This step lets you verify extracted data against existing Paperless-ngx metadata. For example, you could check if the extracted account number matches a stored value. This is an advanced feature — you can skip it when starting out.',
     previewTab: 'yaml',
+    spotlightTarget: null,
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -212,6 +291,7 @@ export const TUTORIAL_STEPS = [
     title: 'Assigning Metadata',
     text: 'When a document matches this rule, PocoClass can automatically assign metadata in Paperless-ngx. Here we set the document type to "Bank Statement" and the correspondent to "Royal Bank of Scotland".',
     previewTab: 'yaml',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-doctype', 'tutorial-field-correspondent'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -221,6 +301,7 @@ export const TUTORIAL_STEPS = [
     title: 'Tags & Dynamic Data',
     text: 'Tags like "Financial" and "Bank" help organize documents. Dynamic extraction can pull specific values from the document — like the account number — and store them in Paperless-ngx fields.',
     previewTab: 'yaml',
+    spotlightTarget: null,
     highlightFields: ['tutorial-field-tags', 'tutorial-field-dynamic'],
     ocrHighlights: [],
     pdfHighlights: []
@@ -230,6 +311,7 @@ export const TUTORIAL_STEPS = [
     title: 'Review & Save',
     text: 'The final step shows your complete rule as YAML. Review everything — the patterns, thresholds, and metadata assignments. When you\'re happy, save the rule and PocoClass will start using it to classify documents automatically!',
     previewTab: 'yaml',
+    spotlightTarget: null,
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -239,6 +321,7 @@ export const TUTORIAL_STEPS = [
     title: 'That\'s It!',
     text: 'You\'ve just seen how a rule is built from start to finish. The key idea: find patterns that uniquely identify your document type, set sensible thresholds, and let PocoClass do the rest. Start simple with a few mandatory OCR patterns — you can always refine later.',
     previewTab: 'yaml',
+    spotlightTarget: null,
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
