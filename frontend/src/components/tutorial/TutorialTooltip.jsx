@@ -66,7 +66,6 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
         zIndex: 9999,
         maxWidth: '500px',
         width: '90vw',
-        minHeight: step.tooltipMinHeight || 'auto',
         backgroundColor: 'var(--app-surface, #fff)',
         border: '2px solid var(--app-primary, #2563eb)',
         borderRadius: '12px',
@@ -96,7 +95,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
         </button>
       </div>
 
-      <div style={{ padding: '20px', color: 'var(--app-text, #333)' }}>
+      <div style={{ padding: '20px', color: 'var(--app-text, #333)', minHeight: step.tooltipBodyMinHeight || undefined }}>
         <p style={{ fontSize: '0.9375rem', lineHeight: '1.6', margin: 0 }}>
           {step.textParts ? step.textParts.map((part, i) => (
             part.bold ? <strong key={i}>{part.text}</strong> : <span key={i}>{part.text}</span>
