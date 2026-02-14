@@ -454,7 +454,6 @@ class PaperlessAPIClient:
                 params['title__icontains'] = title
             
             if tags and len(tags) > 0:
-                # Get tag IDs from names
                 tag_ids = []
                 for tag_name in tags:
                     tag_id = self.get_tag_id(tag_name)
@@ -462,10 +461,12 @@ class PaperlessAPIClient:
                         tag_ids.append(tag_id)
                 
                 if tag_ids:
-                    if tags_mode == 'include':
-                        params['tags__id__in'] = ','.join(map(str, tag_ids))
-                    else:  # exclude
+                    if tags_mode == 'exclude':
                         params['tags__id__none'] = ','.join(map(str, tag_ids))
+                    elif tags_mode == 'all':
+                        params['tags__id__all'] = ','.join(map(str, tag_ids))
+                    else:
+                        params['tags__id__in'] = ','.join(map(str, tag_ids))
             
             # Handle separate exclude_tags parameter (can be used alongside the tags param above)
             if exclude_tags and len(exclude_tags) > 0:
