@@ -8,7 +8,8 @@ export default function TabbedPreviewPanel({
   documentId,
   onTabChange,
   pdfContent,
-  externalActiveTab
+  externalActiveTab,
+  ocrHighlights = []
 }) {
   const [activeTab, setActiveTab] = useState('yaml');
   
@@ -202,7 +203,16 @@ export default function TabbedPreviewPanel({
                       <span className="select-none text-right pr-4 shrink-0" style={{ color: 'var(--app-text-muted)', minWidth: '3ch', borderRight: '1px solid var(--app-border)', marginRight: '16px' }}>
                         {i + 1}
                       </span>
-                      <span className="whitespace-pre-wrap break-words">{line || '\u00A0'}</span>
+                      <span
+                        className="whitespace-pre-wrap break-words"
+                        style={ocrHighlights.length > 0 && ocrHighlights.some(h => line.includes(h)) ? {
+                          backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                          border: '2px solid #ef4444',
+                          borderRadius: '4px',
+                          padding: '2px 4px',
+                          display: 'inline-block'
+                        } : undefined}
+                      >{line || '\u00A0'}</span>
                     </div>
                   ))}
                 </pre>
