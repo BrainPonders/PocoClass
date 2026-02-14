@@ -130,45 +130,52 @@ class MetadataProcessor:
         return extracted
     
     def extract_value_between_anchors(self, text: str, before_pattern: str, after_pattern: str) -> Optional[str]:
-        """Extract value between two anchor patterns using v2 format.
+        """Extract value from a search window defined by anchor patterns.
         
-        Supports three extraction modes:
-        1. Both anchors: Extract text between beforeAnchor and afterAnchor
-        2. After anchor only: Extract text after afterAnchor until newline
-        3. Before anchor only: Extract text before beforeAnchor from line start
+        Uses a windowed search approach:
+        1. Before anchor defines where the search window STARTS (text after the anchor match)
+        2. After anchor defines where the search window ENDS (text before the anchor match)
+        3. The text within this window is returned for further extraction pattern validation
+        
+        Supports four modes:
+        1. Both anchors: Window between beforeAnchor and afterAnchor
+        2. Before anchor only: Window starts after beforeAnchor, extends to end of text
+        3. After anchor only: Window starts at beginning of text, ends at afterAnchor
+        4. No anchors: Returns None
         
         Args:
             text: Source text to extract from
-            before_pattern: Regex pattern for beforeAnchor (text before target value)
-            after_pattern: Regex pattern for afterAnchor (text after target value)
+            before_pattern: Regex pattern for beforeAnchor (text that appears before target value)
+            after_pattern: Regex pattern for afterAnchor (text that appears after target value)
             
         Returns:
-            Extracted value string or None if no match found
+            Text within the search window, or None if anchors not found
         """
         try:
-            # Build combined pattern based on which anchors are provided
-            if before_pattern and after_pattern:
-                # Both anchors: extract between them
-                # Pattern: {before}...VALUE...{after}
-                # Use [\s\S]+? to match across newlines (equivalent to DOTALL)
-                pattern = f"{before_pattern}\\s*([\\s\\S]+?)\\s*{after_pattern}"
-            elif after_pattern:
-                # Only after anchor: extract value after it
-                # Pattern: {after}...VALUE (capture until newline or reasonable boundary)
-                pattern = f"{after_pattern}\\s*([^\\n]+)"
-            elif before_pattern:
-                # Only before anchor: extract value before it  
-                # Pattern: VALUE...{before} (capture reasonable content before anchor)
-                pattern = f"([^\\n]+?)\\s*{before_pattern}"
-            else:
+            search_text = text
+            
+            if not before_pattern and not after_pattern:
                 return None
             
-            match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-            if match:
-                groups = match.groups()
-                if groups:
-                    return groups[0].strip()
-            return None
+            if before_pattern:
+                before_match = re.search(before_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+                if before_match:
+                    search_text = search_text[before_match.end():]
+                else:
+                    self.logger.debug(f"Before anchor not found: {before_pattern}")
+                    return None
+            
+            if after_pattern:
+                after_match = re.search(after_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+                if after_match:
+                    search_text = search_text[:after_match.start()]
+                else:
+                    self.logger.debug(f"After anchor not found: {after_pattern}")
+                    return None
+            
+            result = search_text.strip()
+            return result if result else None
+            
         except Exception as e:
             self.logger.error(f"Error extracting value between anchors: {e}")
             return None
