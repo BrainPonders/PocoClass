@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import PageLayout from '@/components/PageLayout';
@@ -19,7 +19,16 @@ import SummaryStep from '@/components/wizard/steps/SummaryStep';
 
 export default function GuidedTutorial() {
   const navigate = useNavigate();
-  const [tutorialIndex, setTutorialIndex] = useState(0);
+  const [searchParams] = useSearchParams();
+
+  const getInitialIndex = () => {
+    const requestedStep = parseInt(searchParams.get('step'), 10);
+    if (!requestedStep || requestedStep < 1 || requestedStep > 6) return 0;
+    const idx = TUTORIAL_STEPS.findIndex(s => s.step === requestedStep);
+    return idx >= 0 ? idx : 0;
+  };
+
+  const [tutorialIndex, setTutorialIndex] = useState(getInitialIndex);
   const [previewTabOverride, setPreviewTabOverride] = useState(null);
   const [ruleData] = useState(EXAMPLE_RULE_DATA);
   const [showInfoBoxes, setShowInfoBoxes] = useState({

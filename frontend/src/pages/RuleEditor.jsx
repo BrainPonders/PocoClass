@@ -546,7 +546,7 @@ export default function RuleEditor() {
             Back
           </button>
           <button
-            onClick={() => navigate(createPageUrl('GuidedTutorial'))}
+            onClick={() => navigate(createPageUrl('GuidedTutorial') + '?step=' + currentStep)}
             className="btn btn-ghost"
             style={{
               display: 'inline-flex',
