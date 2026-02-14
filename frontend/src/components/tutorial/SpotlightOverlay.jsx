@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-export default function SpotlightOverlay({ targetSelector }) {
+export default function SpotlightOverlay({ targetSelector, scrollBehavior = 'center' }) {
   const [rect, setRect] = useState(null);
 
   const updateRect = useCallback(() => {
@@ -26,7 +26,7 @@ export default function SpotlightOverlay({ targetSelector }) {
     if (targetSelector) {
       const el = document.querySelector(targetSelector);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: 'smooth', block: scrollBehavior });
       }
     }
 
