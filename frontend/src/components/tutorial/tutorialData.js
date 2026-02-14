@@ -114,7 +114,7 @@ export const EXAMPLE_RULE_DATA = {
     ]
   },
   filenamePatterns: {
-    patterns: ['bank.?statement', 'RBS.*statement'],
+    patterns: ['RBS.*statement', '\\d{4}-\\d{2}'],
     dateFormats: ['yyyy-MM-dd']
   },
   verification: {
@@ -277,6 +277,7 @@ export const TUTORIAL_STEPS = [
     ],
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    scrollBehavior: 'start',
     tooltipPosition: { top: '50%', left: '35%', transform: 'translate(-50%, -50%)' },
     highlightFields: [],
     ocrHighlights: ['Account Number', 'Sort Code', 'Statement'],
@@ -292,7 +293,7 @@ export const TUTORIAL_STEPS = [
       { text: '\n\n' },
       { text: 'With the help of the regex builder, this same pattern could be written as ' },
       { text: 'Royal\\s*Bank\\s*of\\s*Scotland', bold: true },
-      { text: ' — which would also match variations like "RoyalBank of Scotland" or "Royal   Bank of Scotland" with unusual spacing. Simple text works for most cases; regex adds flexibility when needed.' }
+      { text: ' — which would also match variations like "RoyalBank of Scotland" or "Royal\u00a0\u00a0\u00a0Bank of Scotland" with unusual spacing. Simple text works for most cases; regex adds flexibility when needed.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroup-0"]',
@@ -330,7 +331,7 @@ export const TUTORIAL_STEPS = [
       { text: '.' }
     ],
     previewTab: 'ocr',
-    spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroups-container"]',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-ocrgroups-remaining"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
     highlightFields: [],
@@ -370,9 +371,9 @@ export const TUTORIAL_STEPS = [
     step: 3, sub: 1, id: '3.1',
     title: 'Filename Patterns',
     textParts: [
-      { text: 'Pattern 1: "bank.?statement" matches filenames like "bank_statement.pdf" or "bankstatement.pdf". The .? means any single character (or none) can appear between "bank" and "statement".' },
+      { text: 'Pattern 1: "RBS.*statement" matches any filename containing "RBS" followed by any characters and then "statement". The .* means any number of characters can appear between them — matching "RBS_Statement_2024-01.pdf" or "RBS-Monthly-Statement.pdf".' },
       { text: '\n\n' },
-      { text: 'Pattern 2: "RBS.*statement" uses a date-like pattern. The .* means any number of characters can appear between "RBS" and "statement", matching filenames like "RBS_Monthly_statement.pdf" or "RBS-2024-statement.pdf".' }
+      { text: 'Pattern 2: "\\d{4}-\\d{2}" looks for a date-like pattern in the filename — four digits, a dash, and two digits. This matches the "2024-01" part in "RBS_Statement_2024-01.pdf", helping identify documents by their date stamp.' }
     ],
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-filename-patterns"]',
@@ -444,7 +445,7 @@ export const TUTORIAL_STEPS = [
   {
     step: 5, sub: 0, id: '5.0',
     title: 'Step 5: Document Metadata',
-    text: 'Now that PocoClass knows how to identify your documents, it\'s time to tell it what to do when a match is found. In this step, you define which metadata to assign — from setting the correspondent and document type, to extracting specific values directly from the document text.',
+    text: 'Now that PocoClass knows how to identify your documents, it\'s time to tell it what to do when a match is found. In this step, you define which metadata to assign — from setting the correspondent and document type to adding tags for organization. You can also configure dynamic data extraction, which pulls specific values directly from the document text — like account numbers, invoice totals, or dates — and stores them in Paperless-ngx fields automatically.',
     previewTab: 'pdf',
     spotlightTarget: null,
     tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
@@ -455,8 +456,12 @@ export const TUTORIAL_STEPS = [
   {
     step: 5, sub: 1, id: '5.1',
     title: 'Predefined Paperless Fields',
-    text: 'These fields come directly from your Paperless-ngx instance — Date Created, Correspondent, Document Type, and Tags. They are not free-text editable; instead, you select from values that already exist in Paperless-ngx. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".',
-    previewTab: 'yaml',
+    textParts: [
+      { text: 'These fields come directly from your Paperless-ngx instance — Date Created, Correspondent, Document Type, and Tags. They are not free-text editable; instead, you select from values that already exist in Paperless-ngx. In our example, we assign "Royal Bank of Scotland" as correspondent, "Bank Statement" as document type, and add the tags "Financial" and "Bank".' },
+      { text: '\n\n' },
+      { text: 'Notice that Date Created has been left empty here on purpose. This is where PocoClass really shines — instead of setting a fixed date, you can extract the actual statement date directly from the document text using dynamic extraction (Step 5.3).' }
+    ],
+    previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-field="tutorial-field-predefined-paperless"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
@@ -485,9 +490,37 @@ export const TUTORIAL_STEPS = [
   {
     step: 5, sub: 3, id: '5.3',
     title: 'Dynamic Data Extraction',
-    text: 'Dynamic extraction pulls specific values directly from the document text using anchor patterns. For example, you can extract an account number by looking for the text "Account Number:" and capturing the digits that follow. Each target field can only be used once — either as a predefined value above or as a dynamic extraction here, never both at the same time.',
+    textParts: [
+      { text: 'Dynamic extraction uses anchor patterns to locate and pull specific values from the document text. Each extraction rule defines a "before anchor" (text that appears just before the value you want) and optionally an "after anchor" (text that appears just after it). The extracted text between these anchors is then stored in a Paperless-ngx field.' },
+      { text: '\n\n' },
+      { text: 'This is one of PocoClass\'s most powerful features. Combined with custom fields, you can extract virtually any information from your documents — an account number from a bank statement, the total amount from an invoice, consumed kWh from an electricity bill, or a policy number from an insurance document. Each target field can only be used once — either as a predefined value or as a dynamic extraction, never both.' }
+    ],
     previewTab: 'yaml',
     spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '190px',
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 6, sub: 0, id: '6.0',
+    title: 'Step 6: Review & Summary',
+    text: 'The final step brings everything together. Here you can review your complete rule configuration, see how the POCO scoring calculation works with your settings, and preview the generated YAML that defines your rule.',
+    previewTab: 'yaml',
+    spotlightTarget: null,
+    scrollBehavior: 'start',
+    tooltipPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
+    highlightFields: [],
+    ocrHighlights: [],
+    pdfHighlights: []
+  },
+  {
+    step: 6, sub: 1, id: '6.1',
+    title: 'Rule Configuration Review',
+    text: 'This overview shows all your rule settings at a glance — basic information, OCR patterns and thresholds, filename patterns, verification fields, and document classifications. Use it to double-check everything before saving.',
+    previewTab: 'yaml',
+    spotlightTarget: '[data-tutorial-field="tutorial-field-summary-review"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '160px',
     highlightFields: [],
@@ -495,21 +528,25 @@ export const TUTORIAL_STEPS = [
     pdfHighlights: []
   },
   {
-    step: 6, sub: 1, id: '6.1',
-    title: 'Review & Save',
-    text: 'The final step shows your complete rule as YAML. Review everything — the patterns, thresholds, and metadata assignments. When you\'re happy, save the rule and PocoClass will start using it to classify documents automatically!',
+    step: 6, sub: 2, id: '6.2',
+    title: 'POCO Score Calculation',
+    text: 'This section shows exactly how the POCO Score is calculated for your rule. It breaks down the maximum possible weights from each source (OCR, filename, verification), shows an example calculation at 80% match rate, and displays both score thresholds that must be met for classification.',
     previewTab: 'yaml',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-field="tutorial-field-summary-score"]',
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
   },
   {
-    step: 6, sub: 2, id: '6.2',
+    step: 6, sub: 3, id: '6.3',
     title: 'That\'s It!',
-    text: 'You\'ve just seen how a rule is built from start to finish. The key idea: find patterns that uniquely identify your document type, set sensible thresholds, and let PocoClass do the rest. Start simple with a few mandatory OCR patterns — you can always refine later.',
+    text: 'On the right you can see the generated YAML — the actual rule file that PocoClass uses. You\'ve just seen how a rule is built from start to finish. The key idea: find patterns that uniquely identify your document type, set sensible thresholds, and let PocoClass do the rest. Start simple with a few mandatory OCR patterns — you can always refine later.',
     previewTab: 'yaml',
-    spotlightTarget: null,
+    spotlightTarget: '[data-tutorial-area="preview-panel"]',
+    tooltipPosition: { top: '50%', left: '25%', transform: 'translate(-50%, -50%)' },
+    tooltipBodyMinHeight: '160px',
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []

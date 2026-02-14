@@ -48,6 +48,15 @@ export default function GuidedTutorial() {
     setPreviewTabOverride(null);
   }, [tutorialIndex]);
 
+  useEffect(() => {
+    if (currentTutorialStep?.scrollBehavior === 'start' && !currentTutorialStep?.spotlightTarget) {
+      const inputArea = document.querySelector('[data-tutorial-area="input-area"]');
+      if (inputArea) {
+        inputArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [tutorialIndex]);
+
   const handleTutorialAction = (action) => {
     if (action === 'togglePreview') {
       const currentTab = previewTabOverride || currentTutorialStep?.previewTab || 'pdf';
@@ -156,7 +165,10 @@ export default function GuidedTutorial() {
         </div>
       </div>
 
-      <SpotlightOverlay targetSelector={currentTutorialStep?.spotlightTarget || null} />
+      <SpotlightOverlay 
+        targetSelector={currentTutorialStep?.spotlightTarget} 
+        scrollBehavior={currentTutorialStep?.scrollBehavior || 'center'} 
+      />
 
       <TutorialTooltip
         step={currentTutorialStep}

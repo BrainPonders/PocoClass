@@ -47,7 +47,7 @@ export default function SummaryStep({
         {t('summary.reviewConfiguration')}
       </p>
 
-      <div className="space-y-6">
+      <div className="space-y-6" data-tutorial-field="tutorial-field-summary-review">
         <div className="card">
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-5 h-5 text-green-600" />
@@ -222,7 +222,7 @@ export default function SummaryStep({
           </div>
         </div>
 
-        <div className="card" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
+        <div className="card" data-tutorial-field="tutorial-field-summary-score" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
           <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--info-text)' }}>{t('summary.pocoScoreCalculation')}</h3>
           <div className="space-y-3 text-sm">
             <div>

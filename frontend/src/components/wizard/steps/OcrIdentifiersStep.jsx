@@ -189,7 +189,7 @@ export default function OcrIdentifiersStep({
       </div>
 
       <div className="space-y-4 mb-6" data-tutorial-field="tutorial-field-ocrgroups-container">
-        {ruleData.ocrIdentifiers?.map((group, index) => (
+        {ruleData.ocrIdentifiers?.slice(0, 2).map((group, index) => (
           <LogicGroupEditor
             key={index}
             group={group}
@@ -200,6 +200,22 @@ export default function OcrIdentifiersStep({
             canDelete={ruleData.ocrIdentifiers.length > 3}
           />
         ))}
+        <div data-tutorial-field="tutorial-field-ocrgroups-remaining">
+        {ruleData.ocrIdentifiers?.slice(2).map((group, sliceIndex) => {
+          const index = sliceIndex + 2;
+          return (
+            <LogicGroupEditor
+              key={index}
+              group={group}
+              index={index}
+              onUpdate={(updatedGroup) => updateOcrLogicGroup(index, updatedGroup)}
+              onDelete={() => removeOcrLogicGroup(index)}
+              type="ocr"
+              canDelete={ruleData.ocrIdentifiers.length > 3}
+            />
+          );
+        })}
+        </div>
         <button 
           onClick={addOcrLogicGroup}
           className="btn btn-outline w-full"
