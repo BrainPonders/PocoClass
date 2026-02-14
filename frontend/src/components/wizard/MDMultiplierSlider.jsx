@@ -1,3 +1,10 @@
+/**
+ * @file MDMultiplierSlider.jsx
+ * @description Metadata (MD) trust multiplier slider for the data verification step.
+ * Supports "Auto" mode (neutraliser: 1/fieldCount) and manual multiplier values (1-10).
+ * Displays a configuration summary with warnings when MD weight exceeds OCR weight.
+ */
+
 import React from 'react';
 import { AlertTriangle, HelpCircle } from 'lucide-react';
 import Tooltip from '@/components/Tooltip';

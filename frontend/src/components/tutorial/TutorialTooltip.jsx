@@ -1,3 +1,10 @@
+/**
+ * @file TutorialTooltip.jsx
+ * @description Floating tooltip component for the tutorial system. Positions itself
+ * relative to the spotlight target element (above or below based on viewport half),
+ * supports rich text parts with bold/action formatting, and provides step navigation.
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 

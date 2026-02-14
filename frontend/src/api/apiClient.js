@@ -1,4 +1,11 @@
-// API Client for PocoClass Python Backend
+/**
+ * @file apiClient.js
+ * @description Centralized API client for the PocoClass Python backend.
+ * Wraps fetch with automatic Bearer token authentication from localStorage,
+ * JSON content-type headers, and error response handling. Provides
+ * convenience methods for GET, POST, PUT, and DELETE requests.
+ */
+
 const API_BASE_URL = '/api';
 
 class APIClient {

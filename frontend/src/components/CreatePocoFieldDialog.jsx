@@ -1,3 +1,9 @@
+/**
+ * @file CreatePocoFieldDialog.jsx
+ * @description Confirmation dialog for creating required POCO custom fields
+ * (POCO Score, POCO OCR) in the user's Paperless-ngx instance. Displays field
+ * purpose, type information, and a note about why the field is required.
+ */
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";

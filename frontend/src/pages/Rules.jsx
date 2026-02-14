@@ -1,3 +1,10 @@
+/**
+ * @file Rules.jsx
+ * @description Rules list page with full CRUD operations (create, duplicate, delete,
+ * activate/deactivate), bulk actions, search/filter/sort, pagination, a trash-can
+ * modal for recovering deleted rules, and a Paperless document browser for creating
+ * rules from existing documents.
+ */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Rule, Document, Paperless } from "@/api/entities";
@@ -253,7 +260,7 @@ export default function Rules() {
     });
   };
 
-  // Apply filters and sorting using useMemo to avoid unnecessary recalculations
+  // Derive filtered & sorted rules from raw data (memoized to avoid re-computation)
   const filteredRules = useMemo(() => {
     let filtered = [...rules];
 
@@ -349,6 +356,7 @@ export default function Rules() {
     }
   };
 
+  // Toggle rule active/inactive with a warning prompt before activation
   const handleToggleStatus = async (rule) => {
     const isCurrentlyActive = rule.status === 'active';
     const newStatus = isCurrentlyActive ? 'inactive' : 'active';
@@ -376,6 +384,7 @@ export default function Rules() {
     }
   };
 
+  // Execute bulk delete, activate, or deactivate on selected rules
   const handleBulkAction = async (action) => {
     if (selectedRules.length === 0) return;
 

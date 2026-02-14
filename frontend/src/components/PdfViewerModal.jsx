@@ -1,3 +1,9 @@
+/**
+ * @file PdfViewerModal.jsx
+ * @description Full-screen modal for viewing PDF documents with zoom controls
+ * (50%–200%), reset-to-fit, and download functionality. Renders the PDF in an
+ * iframe for native browser PDF rendering.
+ */
 import React, { useState } from 'react';
 import { X, ZoomIn, ZoomOut, Download, Maximize2 } from 'lucide-react';
 

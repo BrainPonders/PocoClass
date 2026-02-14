@@ -1,3 +1,11 @@
+/**
+ * @file LanguageContext.jsx
+ * @description Internationalization (i18n) context provider supporting 5 languages
+ * (en, es, fr, de, pt). Provides a translation function `t()` that resolves
+ * dot-notation keys against loaded locale JSON files, with English fallback.
+ * Language preference is persisted in localStorage.
+ */
+
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import enTranslations from '../i18n/locales/en.json';
 import esTranslations from '../i18n/locales/es.json';

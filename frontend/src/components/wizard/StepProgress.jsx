@@ -1,3 +1,10 @@
+/**
+ * @file StepProgress.jsx
+ * @description Horizontal step progress indicator for the 6-step rule builder wizard.
+ * Each step button is color-coded by status (completed, skipped, edited, pending)
+ * with a sliding indicator bar under the current step.
+ */
+
 import React from 'react';
 
 export default function StepProgress({ currentStep, stepStatus, onStepClick }) {

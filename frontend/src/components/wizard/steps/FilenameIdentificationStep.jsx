@@ -1,3 +1,9 @@
+/**
+ * @file FilenameIdentificationStep.jsx
+ * @description Step 3 of the rule builder wizard - Filename pattern identification.
+ * Allows users to define regex patterns that match document filenames,
+ * configure the filename weight multiplier, and view weight comparison with OCR.
+ */
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Plus, Wand2, Trash2, HelpCircle, AlertTriangle } from 'lucide-react';

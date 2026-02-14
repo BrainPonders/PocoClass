@@ -1,3 +1,10 @@
+/**
+ * @file PaperlessFilterBar.jsx
+ * @description Filter bar for Paperless-ngx document lists. Provides pill-style filter
+ * controls for title search, tags (tri-state: include/exclude/off), correspondents,
+ * document types, date ranges, and result limits. Tags support mixed include/exclude
+ * states indicated by distinct visual styling.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { Tag, User, FileText, X, ChevronDown, Calendar } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -66,6 +73,9 @@ export default function PaperlessFilterBar({
            hasCustomDateRange;
   };
 
+  // Returns dynamic className, style, and hover handlers for filter pill buttons.
+  // Active filters get a highlighted style; tags with both include AND exclude
+  // selections get a warning color to indicate mixed state.
   const getFilterButtonClass = (filterName) => {
     let hasValue = false;
     let hasMixedStates = false;
@@ -207,6 +217,7 @@ export default function PaperlessFilterBar({
                     const tagColor = typeof tag === 'string' ? null : tag.color;
                     const tagState = filters.tagStates?.[tagName];
                     
+                    // Calculate contrasting text color based on tag background luminance
                     const getTextColor = (hexColor) => {
                       if (!hexColor) return null;
                       const r = parseInt(hexColor.slice(1, 3), 16);
@@ -229,6 +240,7 @@ export default function PaperlessFilterBar({
                         }
                         onMouseEnter={(e) => !tagState && (e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)')}
                         onMouseLeave={(e) => !tagState && (e.currentTarget.style.backgroundColor = '')}
+                        // Tri-state toggle: off -> include -> exclude -> off
                         onClick={() => {
                           const newTagStates = { ...(filters.tagStates || {}) };
                           if (!tagState) {

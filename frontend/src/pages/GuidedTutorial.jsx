@@ -1,3 +1,10 @@
+/**
+ * @file GuidedTutorial.jsx
+ * @description Interactive guided tutorial that walks users through the 6-step rule
+ * builder using a real bank statement example. All wizard fields are read-only.
+ * Features spotlight overlays, step-by-step tooltips, and a preview panel with
+ * highlighted OCR text and a rendered PDF preview.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
@@ -21,6 +28,7 @@ export default function GuidedTutorial() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Resolve initial tutorial index from ?step= query param
   const getInitialIndex = () => {
     const requestedStep = parseInt(searchParams.get('step'), 10);
     if (!requestedStep || requestedStep < 1 || requestedStep > 6) return 0;
@@ -40,6 +48,7 @@ export default function GuidedTutorial() {
   const isOrientation = wizardStep === 0;
   const displayWizardStep = isOrientation ? 1 : wizardStep;
 
+  // Build step status map: completed for past steps, edited for current
   const stepStatus = {};
   if (isOrientation) {
     for (let i = 1; i <= 6; i++) {
@@ -53,10 +62,12 @@ export default function GuidedTutorial() {
     }
   }
 
+  // Reset preview tab override when navigating between tutorial steps
   useEffect(() => {
     setPreviewTabOverride(null);
   }, [tutorialIndex]);
 
+  // Auto-scroll to the input area when a step specifies scrollBehavior='start'
   useEffect(() => {
     if (currentTutorialStep?.scrollBehavior === 'start' && !currentTutorialStep?.spotlightTarget) {
       const inputArea = document.querySelector('[data-tutorial-area="input-area"]');
@@ -66,6 +77,7 @@ export default function GuidedTutorial() {
     }
   }, [tutorialIndex]);
 
+  // Handle custom tutorial actions (toggle preview, open guide sections)
   const handleTutorialAction = (action) => {
     if (action === 'togglePreview') {
       const currentTab = previewTabOverride || currentTutorialStep?.previewTab || 'pdf';

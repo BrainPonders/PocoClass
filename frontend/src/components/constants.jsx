@@ -1,3 +1,10 @@
+/**
+ * @file constants.jsx
+ * @description Shared constants used across the frontend for POCO scoring weights,
+ * threshold ranges, validation limits, rule statuses, log categories, and UI timing.
+ * Centralizes magic numbers to keep components consistent and maintainable.
+ */
+
 // ============================================
 // POCO SCORING CONSTANTS
 // ============================================

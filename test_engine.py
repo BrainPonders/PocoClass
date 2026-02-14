@@ -1,6 +1,14 @@
 """
-POCOclass - Test/Execute Engine
-Orchestrates rule testing and execution with JSON output for frontend
+PocoClass - Test/Execute Engine
+
+Orchestrates the end-to-end rule evaluation pipeline: pattern matching,
+metadata extraction, Paperless metadata verification, and POCO score
+calculation.  Returns structured JSON results that the frontend renders
+as score breakdowns and match details.
+
+Key class:
+    TestEngine: Combines PatternMatcher, MetadataProcessor, and POCOScoringV2
+                to test or execute rules against individual documents.
 """
 
 import logging
@@ -11,11 +19,18 @@ from scoring_calculator_v2 import POCOScoringV2
 
 class TestEngine:
     """
-    Test and execute rules against documents
-    Returns JSON-formatted results for frontend consumption
+    Test and execute classification rules against documents.
+
+    The engine follows a five-step pipeline:
+        1. Pattern matching  – evaluate OCR and filename patterns
+        2. Metadata extraction – pull static, dynamic, and filename metadata
+        3. Paperless verification – compare extracted data with Paperless metadata
+        4. Score calculation – compute POCO OCR and POCO scores
+        5. Result assembly – build a comprehensive JSON response for the frontend
     """
     
     def __init__(self):
+        """Initialize the engine with its three processing components."""
         self.pattern_matcher = PatternMatcher()
         self.metadata_processor = MetadataProcessor()
         self.scorer = POCOScoringV2()
@@ -27,35 +42,38 @@ class TestEngine:
                   document_filename: str,
                   paperless_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Test a rule against a document
+        Test a rule against a document without applying any changes.
         
         Args:
-            rule: Rule configuration (YAML parsed to dict)
-            document_content: Document OCR text content
-            document_filename: Document filename
+            rule: Rule configuration (YAML parsed to dict).
+            document_content: Document OCR text content.
+            document_filename: Document filename.
             paperless_metadata: Existing Paperless metadata for verification
+                                (optional; omit when testing offline).
         
         Returns:
-            Comprehensive test results with scores and extracted data
+            Comprehensive test results including scores, match breakdowns,
+            extracted metadata, and evaluation status.  On error returns a
+            dict with success=False and an error message.
         """
         
         try:
-            # 1. Pattern matching evaluation (v2)
+            # Step 1: Evaluate OCR logic groups and filename patterns
             match_result = self.pattern_matcher.evaluate_rule_v2(
                 rule, document_content, document_filename
             )
             
-            # 2. Extract metadata
+            # Step 2: Extract metadata defined in the rule (static, dynamic, filename)
             metadata = self.metadata_processor.extract_metadata_from_rule(
                 rule, document_content, document_filename
             )
             
-            # 3. Paperless verification (if metadata provided)
+            # Step 3: Verify extracted metadata against Paperless (if available)
             verification_result = self.verify_paperless_metadata(
                 rule, metadata, paperless_metadata
             ) if paperless_metadata else {'matched': 0, 'total': 0, 'matches': []}
             
-            # 4. Calculate POCO scores
+            # Step 4: Calculate dual POCO scores using rule-defined multipliers/thresholds
             ocr_multiplier = rule.get('ocr_multiplier', 3.0)
             filename_multiplier = rule.get('filename_multiplier', 1.0)
             ocr_threshold = rule.get('ocr_threshold', 75.0)
@@ -74,7 +92,7 @@ class TestEngine:
                 poco_threshold=poco_threshold
             )
             
-            # 5. Build comprehensive result
+            # Step 5: Assemble the comprehensive result structure
             return {
                 'success': True,
                 'rule_id': rule.get('rule_id'),
@@ -97,7 +115,7 @@ class TestEngine:
                         'max_weight': score_result['scores']['ocr']['max_weight'],
                         'percentage': score_result['scores']['ocr']['percentage'],
                         'matches': match_result['ocr']['matches'],
-                        'groups': match_result['ocr']['matches']  # Frontend compatibility
+                        'groups': match_result['ocr']['matches']  # Alias for frontend compatibility
                     },
                     'filename': {
                         'matched': match_result['filename']['matched'],
@@ -106,7 +124,7 @@ class TestEngine:
                         'max_weight': score_result['scores']['filename']['max_weight'],
                         'percentage': score_result['scores']['filename']['percentage'],
                         'matches': match_result['filename']['matches'],
-                        'patterns': match_result['filename']['matches']  # Frontend compatibility
+                        'patterns': match_result['filename']['matches']  # Alias for frontend compatibility
                     },
                     'paperless': {
                         'matched': verification_result['matched'],
@@ -119,7 +137,7 @@ class TestEngine:
                     'verification': {
                         'matched': verification_result['matched'],
                         'total': verification_result['total'],
-                        'matches': verification_result['matches']  # Frontend compatibility
+                        'matches': verification_result['matches']  # Alias for frontend compatibility
                     }
                 },
                 'extracted_metadata': {
@@ -148,38 +166,43 @@ class TestEngine:
                                   extracted_metadata: Dict[str, Any],
                                   paperless_metadata: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Verify extracted metadata against Paperless metadata
+        Verify extracted metadata against existing Paperless document metadata.
         
+        Compares values for each verification field defined in the rule.
+        Fields are only compared when both the extracted and Paperless values
+        are non-None; fields with missing data on either side are skipped.
+        
+        Args:
+            rule: Rule dict containing optional 'verification_fields' list.
+            extracted_metadata: Metadata extracted from document content/filename.
+            paperless_metadata: Current metadata from the Paperless API.
+
         Returns:
-            Match counts for scoring
+            Dict with matched count, total count, and per-field match details.
         """
         
         verification_fields = rule.get('verification_fields', [])
         if not verification_fields:
-            # Default fields to verify
+            # Fall back to a default set of commonly verified fields
             verification_fields = ['correspondent', 'document_type', 'date_created', 'tags']
         
         matched = 0
         matches = []
         
-        # Combine all extracted metadata sources
+        # Merge all extracted metadata sources into a single lookup dict
         all_extracted = {}
         all_extracted.update(extracted_metadata.get('static', {}))
         all_extracted.update(extracted_metadata.get('dynamic', {}))
         all_extracted.update(extracted_metadata.get('filename', {}))
         
         for field in verification_fields:
-            # Resolve field values (handles custom fields and field name mapping)
             extracted_value = self._resolve_field_value(field, all_extracted)
             paperless_value = self._resolve_field_value(field, paperless_metadata)
             
-            # Debug logging
             self.logger.info(f"Verification field '{field}': extracted='{extracted_value}' (type={type(extracted_value).__name__}), paperless='{paperless_value}' (type={type(paperless_value).__name__})")
             
-            # Only verify fields where BOTH extracted AND Paperless have values
-            # If Paperless is empty, there's nothing to verify against (skip)
+            # Only compare when both sides have a value
             if extracted_value is not None and paperless_value is not None:
-                # Compare values (handle different types)
                 match_result = self._values_match(extracted_value, paperless_value)
                 self.logger.info(f"  Comparison result for '{field}': {match_result}")
                 
@@ -201,7 +224,7 @@ class TestEngine:
             else:
                 self.logger.info(f"  Skipped (one or both values are None)")
         
-        # Recalculate total based on fields actually extracted
+        # Total reflects only the fields that were actually compared
         total = len(matches)
         
         return {
@@ -211,21 +234,20 @@ class TestEngine:
         }
     
     def _resolve_field_value(self, field_name: str, metadata: Dict[str, Any]) -> Any:
-        """Resolve field value from metadata, handling custom fields and field name mapping.
+        """Resolve a field value from a metadata dictionary.
         
-        Handles:
-        - Custom fields (documentCategory → custom_fields['Document Category'])
-        - Field name mapping (documentType → document_type)
-        - Paperless nested structure ({"id": X, "name": Y} → Y)
-        - Tags as list of objects ([{"id": X, "name": Y}] → ["Y"])
-        - Direct field access (correspondent, tags)
-        
+        Handles multiple data shapes encountered across the application:
+            - camelCase field names mapped to snake_case (e.g. documentType → document_type)
+            - Paperless nested objects like {"id": 1, "name": "Invoice"} → "Invoice"
+            - Tags as lists of objects or lists of strings
+            - Custom fields stored under a 'custom_fields' key (list or dict)
+
         Args:
-            field_name: Field name from verification_fields (may be camelCase)
-            metadata: Metadata dict to search in
+            field_name: Field identifier, possibly in camelCase from the frontend.
+            metadata: Dict to search for the field value.
             
         Returns:
-            Field value or None if not found
+            Resolved value, or None if not found.
         """
         if not metadata:
             self.logger.debug(f"_resolve_field_value('{field_name}'): metadata is None/empty")
@@ -233,50 +255,42 @@ class TestEngine:
         
         self.logger.debug(f"_resolve_field_value('{field_name}'): metadata keys = {list(metadata.keys())}")
         
-        # Field name mapping: camelCase → snake_case
+        # Map frontend camelCase names to Paperless snake_case equivalents
         field_mapping = {
             'documentType': 'document_type',
             'documentDate': 'date_created',
             'dateCreated': 'date_created',
         }
         
-        # Map field name if needed
         mapped_field = field_mapping.get(field_name, field_name)
         
-        # Try direct lookup first
         if mapped_field in metadata:
             value = metadata[mapped_field]
             
-            # Handle Paperless nested structure for correspondent and document_type
+            # Unwrap Paperless nested objects that have a 'name' key
             if mapped_field in ['correspondent', 'document_type']:
                 if isinstance(value, dict) and 'name' in value:
                     return value['name']
-                # Already a string (from extracted metadata)
                 return value
             
-            # Handle tags - may be list of strings or list of objects
+            # Normalize tag lists: extract names from object-style entries
             elif mapped_field == 'tags':
                 if isinstance(value, list):
-                    # If list of objects with 'name' key, extract names
                     if value and isinstance(value[0], dict) and 'name' in value[0]:
                         return [tag['name'] for tag in value]
-                    # Already list of strings
                     return value
                 return value
             
-            # Other fields return as-is
             return value
         
-        # Check if it's a custom field (camelCase like documentCategory)
-        # Convert camelCase to "Title Case" for custom field lookup
+        # Fall back to custom field lookup using Title Case conversion
         if 'custom_fields' in metadata:
             custom_field_name = self._camel_to_title_case(field_name)
             custom_fields = metadata['custom_fields']
             
-            # Handle both list and dict formats
             if isinstance(custom_fields, list):
                 for cf in custom_fields:
-                    # Handle both 'name' and 'field' keys (different Paperless API responses)
+                    # Paperless returns either 'name' or 'field' depending on the endpoint
                     cf_name = cf.get('name') or cf.get('field')
                     if cf_name == custom_field_name:
                         return cf.get('value')
@@ -286,28 +300,45 @@ class TestEngine:
         return None
     
     def _camel_to_title_case(self, camel_str: str) -> str:
-        """Convert camelCase to Title Case (e.g., documentCategory → Document Category)"""
-        # Insert space before capital letters
+        """Convert a camelCase string to Title Case.
+
+        Example: 'documentCategory' → 'Document Category'
+
+        Args:
+            camel_str: camelCase input string.
+
+        Returns:
+            Title Case string with spaces before each original capital letter.
+        """
         import re
         result = re.sub(r'([A-Z])', r' \1', camel_str)
-        # Capitalize first letter and strip extra spaces
         return result.strip().title()
     
     def _values_match(self, extracted: Any, paperless: Any) -> bool:
-        """Compare extracted value with Paperless value"""
+        """Compare an extracted value with its Paperless counterpart.
+
+        Handles three comparison modes:
+            - Lists (tags): set equality after filtering out the 'NEW' inbox tag
+            - Strings: case-insensitive, whitespace-trimmed comparison
+            - Other types: string-coerced exact comparison
+
+        Args:
+            extracted: Value extracted from the document by metadata rules.
+            paperless: Value currently stored in Paperless.
+
+        Returns:
+            True if the values are considered equivalent.
+        """
         
-        # Handle tags (list comparison)
         if isinstance(extracted, list) and isinstance(paperless, list):
-            # Filter out the NEW tag from Paperless tags before comparison
-            # The NEW tag is typically present on new documents but not in rule definitions
+            # Exclude the 'NEW' tag which Paperless auto-assigns to incoming documents
             paperless_filtered = [tag for tag in paperless if tag.upper() != 'NEW']
             return set(extracted) == set(paperless_filtered)
         
-        # Handle strings (case-insensitive)
         if isinstance(extracted, str) and isinstance(paperless, str):
             return extracted.lower().strip() == paperless.lower().strip()
         
-        # Handle dates (compare as strings)
+        # Fallback: coerce both to string for date and numeric comparisons
         extracted_str = str(extracted).strip()
         paperless_str = str(paperless).strip()
         return extracted_str == paperless_str
@@ -320,27 +351,30 @@ class TestEngine:
                     paperless_metadata: Optional[Dict[str, Any]] = None,
                     dry_run: bool = True) -> Dict[str, Any]:
         """
-        Execute a rule and optionally apply changes to Paperless
+        Execute a rule: test it and optionally apply changes to Paperless.
+        
+        Extends test_rule() by building proposed metadata changes and,
+        when dry_run is False, writing them back to the Paperless API.
         
         Args:
-            rule: Rule configuration
-            document_id: Paperless document ID
-            document_content: Document content
-            document_filename: Document filename
-            paperless_metadata: Current Paperless metadata
-            dry_run: If True, don't actually update Paperless
+            rule: Rule configuration dictionary.
+            document_id: Paperless document ID.
+            document_content: Document OCR text content.
+            document_filename: Document filename.
+            paperless_metadata: Current Paperless metadata for verification.
+            dry_run: If True, compute changes but do not write to Paperless.
         
         Returns:
-            Execution results with proposed/applied changes
+            Test results plus an 'execution' section with proposed/applied changes.
         """
         
-        # First test the rule
+        # Run the standard test pipeline first
         test_result = self.test_rule(rule, document_content, document_filename, paperless_metadata)
         
         if not test_result['success']:
             return test_result
         
-        # Determine if classification is allowed
+        # Abort if scores are below threshold
         if not test_result['classification_allowed']:
             return {
                 **test_result,
@@ -351,13 +385,11 @@ class TestEngine:
                 }
             }
         
-        # Build proposed changes
+        # Determine what metadata changes the rule would set
         proposed_changes = self._build_proposed_changes(test_result['extracted_metadata'])
         
-        # Apply changes if not dry run
         if not dry_run:
             # TODO: Integrate with api_client.py to update Paperless
-            # For now, just return proposed changes
             pass
         
         return {
@@ -370,16 +402,27 @@ class TestEngine:
         }
     
     def _build_proposed_changes(self, extracted_metadata: Dict[str, Any]) -> Dict[str, Any]:
-        """Build proposed changes from extracted metadata"""
+        """Build a dictionary of proposed Paperless field updates.
+
+        Merges static and dynamic metadata (dynamic takes precedence)
+        and maps the result to Paperless API field names.
+
+        Args:
+            extracted_metadata: Dict with 'static', 'dynamic', and
+                                optionally 'filename' sub-dicts.
+
+        Returns:
+            Dict of field names to proposed values, ready for the Paperless API.
+        """
         
         changes = {}
         
-        # Combine all metadata sources (dynamic overrides static)
+        # Dynamic metadata overrides static when both define the same field
         all_metadata = {}
         all_metadata.update(extracted_metadata.get('static', {}))
         all_metadata.update(extracted_metadata.get('dynamic', {}))
         
-        # Map to Paperless fields
+        # Map recognised fields to Paperless API names
         if 'correspondent' in all_metadata:
             changes['correspondent'] = all_metadata['correspondent']
         
@@ -402,11 +445,11 @@ class TestEngine:
 if __name__ == '__main__':
     import yaml
     
-    # Load example rule
+    # Load an example rule from the rules directory
     with open('rules/template_v2.yaml', 'r') as f:
         rule = yaml.safe_load(f)
     
-    # Example document
+    # Sample document content for testing
     document_content = """
     Company Name Inc
     Invoice #12345
@@ -419,7 +462,6 @@ if __name__ == '__main__':
     
     document_filename = "invoice-2024-03-company-12345.pdf"
     
-    # Test the rule
     engine = TestEngine()
     result = engine.test_rule(rule, document_content, document_filename)
     

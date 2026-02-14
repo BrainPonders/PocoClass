@@ -1,3 +1,9 @@
+/**
+ * @file Dashboard.jsx
+ * @description Main dashboard displaying system status overview (background processing,
+ * sync counts for correspondents/tags/doc types/custom fields/users), rule statistics
+ * cards (total, active, deactivated), and a recent rule activity feed.
+ */
 
 import React, { useState, useEffect } from "react";
 import { Rule, User } from "@/api/entities";
@@ -20,6 +26,7 @@ export default function Dashboard() {
   const [backgroundStatus, setBackgroundStatus] = useState(null);
   const [syncStatus, setSyncStatus] = useState(null);
 
+  // Load rules and system status data on mount
   useEffect(() => {
     loadRules();
     loadStatusData();
@@ -36,6 +43,7 @@ export default function Dashboard() {
     setIsLoading(false);
   };
 
+  // Fetch user, background settings, processing status, and sync counts in parallel
   const loadStatusData = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
