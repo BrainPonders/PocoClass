@@ -108,8 +108,11 @@ export const EXAMPLE_RULE_DATA = {
     extractionRules: [
       {
         fieldName: 'statement_date',
-        anchor: '\\d{1,2} \\w{3} \\d{4} to',
-        extractionPattern: '\\d{1,2} \\w{3} \\d{4}',
+        beforeAnchor: { pattern: '\\d{1,2} \\w{3} \\d{4} to' },
+        afterAnchor: { pattern: '' },
+        extractionType: 'dateFormat',
+        dateFormat: 'DD MMM YYYY',
+        regexPattern: '',
         targetField: 'dateCreated'
       }
     ]
@@ -553,22 +556,23 @@ export const TUTORIAL_STEPS = [
     step: 5, sub: 5, id: '5.5',
     title: 'Configuring the Extraction Rule',
     textParts: [
-      { text: 'The target field is set to ' },
-      { text: '"Date Created"', bold: true },
-      { text: ', the before anchor is ' },
+      { text: 'From the previous step, we identified the before anchor ' },
       { text: '"\\d{1,2} \\w{3} \\d{4} to"', bold: true },
-      { text: ', and the extraction pattern ' },
-      { text: '"\\d{1,2} \\w{3} \\d{4}"', bold: true },
-      { text: ' captures the next date after the anchor — giving you "21 Dec 2014" written directly to the document\'s Date Created field.' },
+      { text: ' and the date format ' },
+      { text: '"DD MMM YYYY"', bold: true },
+      { text: ' to extract the statement end date. You can see these values filled in below — the target field is set to ' },
+      { text: '"Date Created"', bold: true },
+      { text: ', so "21 Dec 2014" will be written directly to the document\'s Date Created field in Paperless-ngx.' },
       { text: '\n\n' },
-      { text: 'An after anchor is optional. When provided, it limits the search area — if the extraction pattern is not found before the after anchor, the search stops. This is useful when a document contains many similar values and you need to constrain exactly where PocoClass looks. In this example, an after anchor is not needed because the pattern is precise enough on its own.' }
+      { text: 'The after anchor is optional but recommended', bold: true },
+      { text: ' — it limits the search area so PocoClass stops looking once it reaches that boundary. This helps prevent false matches when a document contains many similar values, and catches mistakes early. In this example, an after anchor is not strictly needed because the before anchor is precise enough, but for more complex documents it\'s good practice to constrain the search.' }
     ],
     previewTab: 'ocr',
     spotlightTarget: '[data-tutorial-field="tutorial-field-dynamic-extraction"]',
     tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     tooltipBodyMinHeight: '190px',
     highlightFields: [],
-    ocrHighlights: ['21 Dec 2014'],
+    ocrHighlights: ['Period 22 Oct 2014 to 21 Dec 2014'],
     pdfHighlights: []
   },
   {
