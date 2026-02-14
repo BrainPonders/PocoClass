@@ -452,7 +452,7 @@ export default function RuleReviewer() {
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
-              className="btn btn-primary text-sm px-3 py-1"
+              className="btn btn-primary text-sm px-3 h-[34px]"
             >
               {isRunning ? (
                 <>
