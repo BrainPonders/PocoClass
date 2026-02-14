@@ -154,7 +154,7 @@ export const TUTORIAL_STEPS = [
     text: 'This is where you\'ll fill in your rule data. Each step shows different input fields on this side. The fields change as you move through the 6 steps.',
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-area="input-area"]',
-    tooltipPosition: { top: '50%', left: '65%', transform: 'translate(-50%, -50%)' },
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
@@ -165,7 +165,7 @@ export const TUTORIAL_STEPS = [
     text: 'At the bottom of each step, you\'ll find a configuration summary. This shows an overview of your current settings and highlights anything that might need attention with warnings.',
     previewTab: 'pdf',
     spotlightTarget: '[data-tutorial-area="input-area"]',
-    tooltipPosition: { top: '50%', left: '65%', transform: 'translate(-50%, -50%)' },
+    tooltipPosition: { top: '50%', left: '75%', transform: 'translate(-50%, -50%)' },
     highlightFields: [],
     ocrHighlights: [],
     pdfHighlights: []
