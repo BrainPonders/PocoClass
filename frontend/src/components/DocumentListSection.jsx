@@ -90,7 +90,7 @@ export default function DocumentListSection({
       docTypesSearch: '',
       dateFrom: '',
       dateTo: '',
-      limit: filters.limit || 10
+      limit: 10
     });
   };
 
