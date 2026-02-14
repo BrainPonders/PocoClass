@@ -169,6 +169,7 @@ export default function GuidedTutorial() {
               ocrContent={EXAMPLE_OCR_TEXT}
               pdfContent={<BankStatementPdf highlights={ocrHighlights} />}
               externalActiveTab={previewTabOverride || currentTutorialStep?.previewTab || 'pdf'}
+              ocrHighlights={ocrHighlights}
             />
           </div>
         </div>
