@@ -76,21 +76,25 @@ export default function RuleReviewer() {
 
   useEffect(() => {
     loadRules();
-    loadDocuments();
     loadCacheData();
   }, []);
   
-  // Reload documents when filters change
+  const userChangedFiltersRef = React.useRef(false);
+  const prevFiltersRef = React.useRef(filters);
   useEffect(() => {
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters);
+    prevFiltersRef.current = filters;
+    if (filtersChanged) {
+      userChangedFiltersRef.current = true;
+    }
     loadDocuments();
   }, [filters]);
 
-  const initialLoadRef = React.useRef(true);
   useEffect(() => {
-    if (initialLoadRef.current) {
-      initialLoadRef.current = false;
+    if (!userChangedFiltersRef.current) {
       return;
     }
+    userChangedFiltersRef.current = false;
     setSelectedDocuments([]);
     setAllSelected(false);
   }, [documents]);
