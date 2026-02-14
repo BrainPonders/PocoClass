@@ -550,11 +550,11 @@ class PaperlessAPIClient:
                     self.logger.warning(f"Document {document_id} does not match filter criteria")
                     return []
             else:
-                # Build query parameters
                 if not ignore_tags:
-                    # Apply tag filters
-                    params['tags__id__in'] = include_tag_id
-                    if exclude_tag_id:
+                    # Apply legacy tag filters only when no user-selected tag filters exist
+                    if 'tags__id__in' not in params and include_tag_id:
+                        params['tags__id__in'] = include_tag_id
+                    if 'tags__id__none' not in params and exclude_tag_id:
                         params['tags__id__none'] = exclude_tag_id
                 
                 # Handle pagination to get all documents
