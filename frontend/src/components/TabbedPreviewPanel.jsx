@@ -195,31 +195,17 @@ export default function TabbedPreviewPanel({
         {displayedActiveTab === 'ocr' && (
           <div className="h-full p-4">
             {ocrContent ? (
-              <div 
-                className="p-4 rounded flex h-full"
-                style={{ backgroundColor: 'var(--app-bg-secondary)' }}
-              >
-                <div 
-                  className="pr-4 text-right select-none"
-                  style={{ borderRight: '1px solid var(--app-border)' }}
-                >
-                  <pre 
-                    className="text-sm font-mono leading-relaxed"
-                    style={{ color: 'var(--app-text-muted)' }}
-                  >
-                    {ocrContent.split('\n').map((_, i) => (
-                      <div key={i}>{i + 1}</div>
-                    ))}
-                  </pre>
-                </div>
-                <div className="flex-1 pl-4 overflow-auto">
-                  <pre 
-                    className="text-sm font-mono whitespace-pre-wrap break-words leading-relaxed"
-                    style={{ color: 'var(--app-text)' }}
-                  >
-                    {ocrContent}
-                  </pre>
-                </div>
+              <div className="p-4 rounded h-full overflow-auto" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
+                <pre className="text-sm font-mono leading-relaxed" style={{ color: 'var(--app-text)' }}>
+                  {ocrContent.split('\n').map((line, i) => (
+                    <div key={i} className="flex">
+                      <span className="select-none text-right pr-4 shrink-0" style={{ color: 'var(--app-text-muted)', minWidth: '3ch', borderRight: '1px solid var(--app-border)', marginRight: '16px' }}>
+                        {i + 1}
+                      </span>
+                      <span className="whitespace-pre-wrap break-words">{line || '\u00A0'}</span>
+                    </div>
+                  ))}
+                </pre>
               </div>
             ) : (
               <div 

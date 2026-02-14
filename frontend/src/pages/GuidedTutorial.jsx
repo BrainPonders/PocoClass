@@ -20,6 +20,7 @@ import SummaryStep from '@/components/wizard/steps/SummaryStep';
 export default function GuidedTutorial() {
   const navigate = useNavigate();
   const [tutorialIndex, setTutorialIndex] = useState(0);
+  const [previewTabOverride, setPreviewTabOverride] = useState(null);
   const [ruleData] = useState(EXAMPLE_RULE_DATA);
   const [showInfoBoxes, setShowInfoBoxes] = useState({
     1: true, 2: true, 3: true, 4: true, 5: true, 6: true
@@ -42,6 +43,17 @@ export default function GuidedTutorial() {
       else stepStatus[i] = 'untouched';
     }
   }
+
+  useEffect(() => {
+    setPreviewTabOverride(null);
+  }, [tutorialIndex]);
+
+  const handleTutorialAction = (action) => {
+    if (action === 'togglePreview') {
+      const currentTab = previewTabOverride || currentTutorialStep?.previewTab || 'pdf';
+      setPreviewTabOverride(currentTab === 'pdf' ? 'ocr' : 'pdf');
+    }
+  };
 
   const noOp = useCallback(() => {}, []);
 
@@ -127,7 +139,7 @@ export default function GuidedTutorial() {
               ruleData={ruleData}
               ocrContent={EXAMPLE_OCR_TEXT}
               pdfContent={<BankStatementPdf highlights={ocrHighlights} />}
-              externalActiveTab={currentTutorialStep?.previewTab || 'pdf'}
+              externalActiveTab={previewTabOverride || currentTutorialStep?.previewTab || 'pdf'}
             />
           </div>
         </div>
@@ -143,6 +155,7 @@ export default function GuidedTutorial() {
         onPrev={() => goToTutorialStep(tutorialIndex - 1)}
         onClose={() => navigate(createPageUrl('Rules'))}
         spotlightTarget={currentTutorialStep?.spotlightTarget || null}
+        onAction={handleTutorialAction}
       />
     </PageLayout>
   );
