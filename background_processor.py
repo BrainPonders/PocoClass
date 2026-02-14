@@ -946,9 +946,20 @@ class BackgroundProcessor:
             # Get OCR threshold
             ocr_threshold = rule.get('ocr_threshold', 75) if rule else 75
             
-            # Get breakdown scores if available
-            filename_score = result.get('filename_score', 0) if result else 0
-            metadata_score = result.get('metadata_score', 0) if result else 0
+            # Get breakdown counts and scores if available
+            breakdown = result.get('breakdown', {}) if result else {}
+            ocr_bd = breakdown.get('ocr', {})
+            filename_bd = breakdown.get('filename', {})
+            paperless_bd = breakdown.get('paperless', {})
+            
+            ocr_matched = ocr_bd.get('matched', 0)
+            ocr_total_count = ocr_bd.get('total', 0)
+            filename_matched = filename_bd.get('matched', 0)
+            filename_total_count = filename_bd.get('total', 0)
+            filename_pct = filename_bd.get('percentage', 0)
+            paperless_matched = paperless_bd.get('matched', 0)
+            paperless_total_count = paperless_bd.get('total', 0)
+            paperless_pct = paperless_bd.get('percentage', 0)
             
             note_text = f"""PocoClass Scoring Report
 ========================
@@ -959,9 +970,9 @@ POCO Score: {poco_score:.1f}%
 POCO OCR: {poco_ocr:.1f}% (Minimum {ocr_threshold}%, Multiplier: {ocr_multiplier}x)
 
 Score Breakdown:
-- OCR Patterns: {poco_ocr:.1f}% (Multiplier: {ocr_multiplier}x)
-- Filename Match: {filename_score:.1f}% (Multiplier: {filename_multiplier}x)
-- Metadata Verification: {metadata_score:.1f}% (Multiplier: {metadata_multiplier}x)
+- OCR Patterns: {ocr_matched}/{ocr_total_count} = {poco_ocr:.1f}% (Multiplier: {ocr_multiplier}x)
+- Filename Match: {filename_matched}/{filename_total_count} = {filename_pct:.1f}% (Multiplier: {filename_multiplier}x)
+- Metadata Verification: {paperless_matched}/{paperless_total_count} = {paperless_pct:.1f}% (Multiplier: {metadata_multiplier}x)
 
 Result: {'✓ MATCHED' if classified else '✗ NO MATCH'} (threshold: {threshold}%)
 Tag Applied: {'POCO+' if classified else 'POCO-'}
