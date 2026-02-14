@@ -25,12 +25,18 @@ export default function RuleReviewer() {
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
-  const [selectedRule, setSelectedRule] = useState('');
-  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  const cachedSession = (() => {
+    try {
+      const raw = sessionStorage.getItem('ruleReviewerCache');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+  const [selectedRule, setSelectedRule] = useState(cachedSession?.selectedRule || '');
+  const [selectedDocuments, setSelectedDocuments] = useState(cachedSession?.selectedDocuments || []);
   const [allSelected, setAllSelected] = useState(false);
-  const [hasRun, setHasRun] = useState(false);
-  const [showQuickGuide, setShowQuickGuide] = useState(false); // New state for quick guide
-  const [testResults, setTestResults] = useState({}); // Store results by document ID
+  const [hasRun, setHasRun] = useState(!!cachedSession?.testResults);
+  const [showQuickGuide, setShowQuickGuide] = useState(false);
+  const [testResults, setTestResults] = useState(cachedSession?.testResults || {});
   const [isRunning, setIsRunning] = useState(false);
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
@@ -79,8 +85,12 @@ export default function RuleReviewer() {
     loadDocuments();
   }, [filters]);
 
-  // Clear selection when documents change
+  const initialLoadRef = React.useRef(true);
   useEffect(() => {
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      return;
+    }
     setSelectedDocuments([]);
     setAllSelected(false);
   }, [documents]);
@@ -205,6 +215,13 @@ export default function RuleReviewer() {
     setTestResults(results);
     setHasRun(true);
     setIsRunning(false);
+    try {
+      sessionStorage.setItem('ruleReviewerCache', JSON.stringify({
+        selectedRule,
+        selectedDocuments,
+        testResults: results
+      }));
+    } catch (e) { /* ignore storage errors */ }
   };
 
   const handleViewOCR = async (doc) => {
