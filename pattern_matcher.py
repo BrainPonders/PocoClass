@@ -119,7 +119,7 @@ class PatternMatcher:
             
             # Evaluate conditions
             group_matched = False
-            if group_type == 'match':
+            if group_type == 'match_all':
                 # ALL conditions must match (AND logic)
                 all_match = True
                 for condition in conditions:
@@ -130,8 +130,8 @@ class PatternMatcher:
                         all_match = False
                 group_matched = all_match
             
-            elif group_type == 'or':
-                # At least ONE condition must match (OR logic)
+            else:
+                # type == 'match' or 'or': At least ONE condition must match (OR logic)
                 for condition in conditions:
                     pattern_str = condition.get('pattern', '')
                     match_result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
@@ -148,6 +148,7 @@ class PatternMatcher:
                     'name': group_name,
                     'matched': True,
                     'score': score,
+                    'group_type': group_type,
                     'conditions': condition_results
                 })
             else:
@@ -155,6 +156,7 @@ class PatternMatcher:
                     'name': group_name,
                     'matched': False,
                     'score': 0,
+                    'group_type': group_type,
                     'conditions': condition_results
                 })
         
