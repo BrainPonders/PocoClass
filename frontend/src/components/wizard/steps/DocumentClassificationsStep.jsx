@@ -630,7 +630,7 @@ export default function DocumentClassificationsStep({
       </div>
 
       {/* Dynamic Data Section */}
-      <div>
+      <div className="mt-10">
         <div className="flex justify-between items-center mb-4 pb-2 border-b">
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-semibold">{t('documentClassifications.dynamicDataSection')}</h3>
