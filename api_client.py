@@ -346,6 +346,23 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to get/create custom field '{field_name}': {e}")
             return None
     
+    def create_custom_field(self, field_name: str, data_type: str = 'string') -> int:
+        """Create a custom field in Paperless-ngx and return its ID"""
+        response = self.session.post(
+            f"{self.config.paperless_url}/api/custom_fields/",
+            json={
+                'name': field_name,
+                'data_type': data_type
+            },
+            timeout=self.REQUEST_TIMEOUT
+        )
+        response.raise_for_status()
+        cf_data = response.json()
+        field_id = cf_data['id']
+        self.logger.info(f"Created new custom field '{field_name}' with ID {field_id}")
+        self.db.cache_custom_field(cf_data)
+        return field_id
+
     def get_custom_field_by_id(self, field_id: int) -> Optional[Dict]:
         """Get custom field definition by ID (cached, includes select options)"""
         try:
