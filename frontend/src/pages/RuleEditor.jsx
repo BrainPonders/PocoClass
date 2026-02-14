@@ -22,7 +22,6 @@ import DataVerificationStep from '../components/wizard/steps/DataVerificationSte
 import SummaryStep from '../components/wizard/steps/SummaryStep';
 import PageLayout from '@/components/PageLayout';
 import TabbedPreviewPanel from '@/components/TabbedPreviewPanel';
-import ExampleDocumentPanel from '../components/wizard/ExampleDocumentPanel';
 
 // Helper hook for debouncing values
 function useDebounce(value, delay) {
@@ -58,12 +57,6 @@ export default function RuleEditor() {
   const [stepEdited, setStepEdited] = useState(false);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [showOcrModal, setShowOcrModal] = useState(false);
-  const [showWizardHelp, setShowWizardHelp] = useState(() => {
-    try {
-      const stored = localStorage.getItem('pococlass_wizard_help');
-      return stored !== null ? stored === 'true' : true;
-    } catch { return true; }
-  });
   const [ocrContent, setOcrContent] = useState('');
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
@@ -554,18 +547,14 @@ export default function RuleEditor() {
             Back
           </button>
           <button
-            onClick={() => {
-              const next = !showWizardHelp;
-              setShowWizardHelp(next);
-              try { localStorage.setItem('pococlass_wizard_help', String(next)); } catch {}
-            }}
+            onClick={() => navigate(createPageUrl('GuidedTutorial'))}
             className="btn btn-ghost"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              color: showWizardHelp ? '#f59e0b' : 'var(--app-text-secondary)',
-              border: showWizardHelp ? '1px solid #f59e0b' : '1px solid var(--app-border, #d1d5db)',
+              color: 'var(--app-text-secondary)',
+              border: '1px solid var(--app-border, #d1d5db)',
               borderRadius: '8px',
               padding: '6px 12px',
               fontSize: '0.8125rem',
@@ -634,11 +623,7 @@ export default function RuleEditor() {
               </div>
             </div>
 
-            {showWizardHelp ? (
-              <div style={{height: '100%', marginTop: '24px'}}>
-                <ExampleDocumentPanel currentStep={currentStep} />
-              </div>
-            ) : showYamlPreview ? (
+            {showYamlPreview ? (
               <div style={{height: '100%', marginTop: '24px'}}>
                 <TabbedPreviewPanel 
                   ruleData={debouncedRuleData}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Eye, FileImage, Copy, Download } from 'lucide-react';
 import YamlPreview from './wizard/YamlPreview';
 
@@ -6,9 +6,14 @@ export default function TabbedPreviewPanel({
   ruleData,
   ocrContent, 
   documentId,
-  onTabChange 
+  onTabChange,
+  pdfContent,
+  externalActiveTab
 }) {
   const [activeTab, setActiveTab] = useState('yaml');
+  
+  // Use externalActiveTab if provided, otherwise use internal state
+  const displayedActiveTab = externalActiveTab !== undefined ? externalActiveTab : activeTab;
   const [yamlGenerator, setYamlGenerator] = useState(null);
 
   const handleTabClick = (tab) => {
@@ -18,14 +23,14 @@ export default function TabbedPreviewPanel({
 
   const getTabClass = (tab) => {
     const baseClass = 'px-4 py-2 border-b-2 font-medium cursor-pointer transition-colors';
-    if (activeTab === tab) {
+    if (displayedActiveTab === tab) {
       return baseClass + ' border-transparent';
     }
     return baseClass + ' border-transparent';
   };
 
   const getTabStyle = (tab) => {
-    if (activeTab === tab) {
+    if (displayedActiveTab === tab) {
       return {
         borderBottomColor: 'var(--app-primary)',
         color: 'var(--info-text)'
@@ -113,6 +118,7 @@ export default function TabbedPreviewPanel({
             className={getTabClass('ocr')}
             style={getTabStyle('ocr')}
             disabled={!ocrContent}
+            title={ocrContent ? 'View OCR content' : 'OCR content not available'}
           >
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4" />
@@ -123,7 +129,8 @@ export default function TabbedPreviewPanel({
             onClick={() => handleTabClick('pdf')}
             className={getTabClass('pdf')}
             style={getTabStyle('pdf')}
-            disabled={!documentId}
+            disabled={!documentId && !pdfContent}
+            title={documentId || pdfContent ? 'View PDF preview' : 'PDF preview not available'}
           >
             <div className="flex items-center gap-2">
               <FileImage className="w-4 h-4" />
@@ -133,10 +140,10 @@ export default function TabbedPreviewPanel({
         </div>
 
         {/* Action Buttons */}
-        {activeTab !== 'pdf' && (
+        {displayedActiveTab !== 'pdf' && (
           <div className="flex items-center gap-2 px-4">
             <button 
-              onClick={activeTab === 'yaml' ? handleCopyYaml : handleCopyOcr}
+              onClick={displayedActiveTab === 'yaml' ? handleCopyYaml : handleCopyOcr}
               className="p-2 rounded transition-colors"
               style={{ 
                 backgroundColor: 'transparent',
@@ -149,7 +156,7 @@ export default function TabbedPreviewPanel({
               <Copy className="w-4 h-4" />
             </button>
             <button 
-              onClick={activeTab === 'yaml' ? handleDownloadYaml : handleDownloadOcr}
+              onClick={displayedActiveTab === 'yaml' ? handleDownloadYaml : handleDownloadOcr}
               className="p-2 rounded transition-colors"
               style={{ 
                 backgroundColor: 'transparent',
@@ -157,7 +164,7 @@ export default function TabbedPreviewPanel({
               }}
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              title={activeTab === 'yaml' ? 'Download YAML' : 'Download OCR'}
+              title={displayedActiveTab === 'yaml' ? 'Download YAML' : 'Download OCR'}
             >
               <Download className="w-4 h-4" />
             </button>
@@ -167,7 +174,7 @@ export default function TabbedPreviewPanel({
 
       {/* Tab Content */}
       <div className="flex-1 overflow-auto">
-        {activeTab === 'yaml' && (
+        {displayedActiveTab === 'yaml' && (
           <div className="h-full">
             {ruleData ? (
               <YamlPreview ruleData={ruleData} onGeneratorReady={setYamlGenerator} />
@@ -185,7 +192,7 @@ export default function TabbedPreviewPanel({
           </div>
         )}
 
-        {activeTab === 'ocr' && (
+        {displayedActiveTab === 'ocr' && (
           <div className="h-full p-4">
             {ocrContent ? (
               <div 
@@ -229,9 +236,11 @@ export default function TabbedPreviewPanel({
           </div>
         )}
 
-        {activeTab === 'pdf' && (
+        {displayedActiveTab === 'pdf' && (
           <div className="h-full">
-            {documentId ? (
+            {pdfContent ? (
+              pdfContent
+            ) : documentId ? (
               <iframe
                 src={`/api/documents/${documentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}`}
                 className="w-full h-full border-0"
