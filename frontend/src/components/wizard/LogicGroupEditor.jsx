@@ -1,3 +1,9 @@
+/**
+ * @file LogicGroupEditor.jsx
+ * @description Editable logic group component for OCR pattern matching in the rule builder wizard.
+ * Manages conditions (patterns), search area configuration (first/last/between line ranges),
+ * match type (OR/AND), and mandatory flag for each logic group.
+ */
 
 import React, { useState } from 'react';
 import { Plus, Trash2, Wand2 } from 'lucide-react';

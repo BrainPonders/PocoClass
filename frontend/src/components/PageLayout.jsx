@@ -1,3 +1,9 @@
+/**
+ * @file PageLayout.jsx
+ * @description Shared page layout wrapper providing a sticky header with title,
+ * subtitle, and action buttons, plus a scrollable content area. Used by all
+ * top-level pages for consistent structure and spacing.
+ */
 import React from 'react';
 
 export default function PageLayout({ title, subtitle, actions, children, headerPadding = 'py-4' }) {

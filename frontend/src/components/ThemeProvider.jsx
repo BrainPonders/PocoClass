@@ -1,3 +1,9 @@
+/**
+ * @file ThemeProvider.jsx
+ * @description React context provider for application theming. Manages light/dark/auto
+ * theme modes (auto follows OS preference) and color-blind accessibility modes.
+ * Persists settings in localStorage and applies CSS classes to the document root.
+ */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
@@ -63,12 +69,11 @@ export function ThemeProvider({ children }) {
     }
   }, [themeMode]);
 
+  // Sync CSS classes on <html> whenever the effective theme or accessibility mode changes
   useEffect(() => {
-    // Apply theme classes to document
     document.documentElement.classList.remove('light', 'dark', 'protanopia', 'deuteranopia', 'tritanopia');
     document.documentElement.classList.add(effectiveTheme);
     
-    // Apply color blind mode if enabled
     if (colorBlindMode !== 'none') {
       document.documentElement.classList.add(colorBlindMode);
     }

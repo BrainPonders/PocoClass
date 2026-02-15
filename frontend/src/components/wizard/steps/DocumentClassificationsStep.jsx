@@ -1,3 +1,10 @@
+/**
+ * @file DocumentClassificationsStep.jsx
+ * @description Step 5 of the rule builder wizard - Document classifications configuration.
+ * Combines predefined metadata assignment (correspondent, document type, tags, custom fields)
+ * with dynamic data extraction rules (anchor-based text extraction from OCR content).
+ * Supports live extraction testing against the selected document's OCR text.
+ */
 
 import React from 'react';
 import { Plus, Trash2, Wand2, Play, CheckCircle, XCircle } from 'lucide-react';

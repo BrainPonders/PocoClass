@@ -1,3 +1,11 @@
+/**
+ * @file POCOFieldsContext.jsx
+ * @description Context provider for POCO field visibility settings. Fetches the
+ * field configuration from the backend API and exposes an `isFieldVisible()`
+ * helper for conditionally rendering UI elements based on admin-configured
+ * field visibility preferences.
+ */
+
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';

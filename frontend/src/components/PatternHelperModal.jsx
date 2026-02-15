@@ -1,4 +1,13 @@
-
+/**
+ * @file PatternHelperModal.jsx
+ * @description Interactive regex pattern builder modal that helps users create regex
+ * patterns without needing regex expertise. Supports four pattern modes:
+ * - String: simple text matching with case/space flexibility options
+ * - Date: date format patterns converted to regex (e.g., DD-MM-YYYY)
+ * - Complex: multi-element patterns combining strings, dates, and wildcards
+ * - Raw: direct regex editing for advanced users
+ * Includes a live test area to validate patterns against sample text.
+ */
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 import API_BASE_URL from '@/config/api';
@@ -12,6 +21,8 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   const [complexElements, setComplexElements] = useState([
     { type: 'string', value: '', caseSensitive: false, spaceFlexibility: 'exact' }
   ]);
+  const [rawRegexPattern, setRawRegexPattern] = useState('');
+  const [rawRegexFlags, setRawRegexFlags] = useState('');
   const [testString, setTestString] = useState('');
   const [testResult, setTestResult] = useState(null);
   const [dateFormatExamples, setDateFormatExamples] = useState([
@@ -23,15 +34,33 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     { format: 'MMMM DD, YYYY', example: 'April 15, 2024' }
   ]);
 
+  // Initialize modal state when opened: detect if initialValue is a raw regex
+  // (e.g., /pattern/flags) or a plain string, and set the appropriate mode
   useEffect(() => {
     if (isOpen) {
       loadDateFormats();
       if (initialValue) {
-        setStringPattern(initialValue);
         if (restrictToDateOnly) {
           setPatternType('date');
           setDatePattern(initialValue);
+          setStringPattern('');
+        } else {
+          // Check if the initial value is already a regex literal (e.g., /\d+/gi)
+          const regexMatch = initialValue.match(/^\/(.*)\/([gimsuy]*)$/);
+          if (regexMatch) {
+            const [, rawPattern, flags] = regexMatch;
+            setPatternType('raw');
+            setRawRegexPattern(rawPattern);
+            setRawRegexFlags(flags);
+            setStringPattern('');
+          } else {
+            setPatternType('string');
+            setStringPattern(initialValue);
+          }
         }
+      } else {
+        setStringPattern('');
+        setPatternType(restrictToDateOnly ? 'date' : 'string');
       }
     }
   }, [isOpen, initialValue, restrictToDateOnly]);
@@ -60,33 +89,30 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     }
   };
 
+  // Build a regex pattern string based on the current pattern type and options.
+  // Returns the raw regex body (without delimiters or flags).
   const generateRegexPattern = () => {
     if (patternType === 'string') {
       if (spaceFlexibility === 'exact') {
-        // Escape special characters
         return stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       } else if (spaceFlexibility === 'flexible') {
-        // Escape special characters first, then make spaces optional
         let pattern = stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Replace literal spaces with \s* so spaces become optional
         pattern = pattern.replace(/ /g, '\\s*');
         return pattern;
       } else if (spaceFlexibility === 'very-flexible') {
-        // For very-flexible, insert \s* between each character
-        // First escape special regex characters, then split ONLY on non-escaped characters
+        // Insert \s* between every character so spaces are allowed anywhere
         const escaped = stringPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        // Split into logical units (handles multi-char escapes like \. as single units)
+        // Parse into logical units preserving multi-char escape sequences (e.g., \.)
         const parts = [];
         let i = 0;
         while (i < escaped.length) {
           if (escaped[i] === '\\' && i + 1 < escaped.length) {
-            // Escaped character - take both the backslash and the next char
             parts.push(escaped.substring(i, i + 2));
             i += 2;
           } else if (escaped[i] === ' ') {
-            // Skip spaces in very-flexible mode
             i++;
           } else {
-            // Regular character
             parts.push(escaped[i]);
             i++;
           }
@@ -99,14 +125,15 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
       return convertDateFormatToRegex(datePattern);
     } else if (patternType === 'complex') {
       const parts = complexElements.map(el => {
+        const elValue = el.value || '';
         if (el.type === 'string') {
           if (el.spaceFlexibility === 'exact') {
-            return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           } else if (el.spaceFlexibility === 'flexible') {
-            let pattern = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let pattern = elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             return pattern.replace(/ /g, '\\s*');
           } else if (el.spaceFlexibility === 'very-flexible') {
-            const escaped = el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escaped = elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const parts = [];
             let i = 0;
             while (i < escaped.length) {
@@ -123,20 +150,25 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
             return parts.join('\\s*');
           }
           
-          return el.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          return elValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         } else if (el.type === 'date') {
-          return convertDateFormatToRegex(el.value);
+          return convertDateFormatToRegex(elValue);
         } else if (el.type === 'wildcard') {
-          return el.value === 'any' ? '.*?' : '.+?'; // Made wildcards non-greedy by default
+          return elValue === 'any' ? '.*?' : '.+?';
         }
-        return el.value;
+        return elValue;
       });
       return parts.join('');
+    } else if (patternType === 'raw') {
+      return rawRegexPattern;
     }
     return '';
   };
 
   const getRegexFlags = () => {
+    if (patternType === 'raw') {
+      return rawRegexFlags;
+    }
     if (patternType === 'string') {
       return caseSensitive ? '' : 'i';
     } else if (patternType === 'complex') {
@@ -146,7 +178,10 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     return '';
   };
 
-  const convertDateFormatToRegex = (format) => {
+  // Convert a human-readable date format string (e.g., "DD-MM-YYYY") into a
+  // regex pattern by replacing date tokens with digit/name patterns
+  const convertDateFormatToRegex = (format = '') => {
+    if (!format) return '';
     const mapping = {
       'DDDD': '(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)',
       'DDD': '(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)',
@@ -265,6 +300,12 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
   const updateComplexElement = (index, field, value) => {
     const newElements = [...complexElements];
     newElements[index] = { ...newElements[index], [field]: value };
+    if (field === 'type' && value === 'date' && !newElements[index].value) {
+      newElements[index].value = dateFormatExamples[0]?.format || 'DD-MM-YYYY';
+    }
+    if (field === 'type' && value === 'wildcard' && !['any', 'some'].includes(newElements[index].value)) {
+      newElements[index].value = 'any';
+    }
     setComplexElements(newElements);
   };
 
@@ -296,22 +337,33 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     }
   };
 
+  // Finalize and pass the regex literal (e.g., /pattern/i) back to the parent
   const handleUsePattern = () => {
-    const pattern = generateRegexPattern();
-    const flags = getRegexFlags(); // Get flags to pass them along or format the final regex with them
-    // Depending on how onUsePattern is used, you might want to pass the flags separately
-    // or include them in the regex string like /pattern/flags
-    onUsePattern(`/${pattern}/${flags}`);
+    try {
+      const pattern = generateRegexPattern();
+      const flags = getRegexFlags();
+      onUsePattern(`/${pattern}/${flags}`);
+    } catch (e) {
+      console.error('Error generating pattern:', e);
+    }
   };
 
   if (!isOpen) return null;
 
-  const currentRegex = generateRegexPattern();
-  const regexFlags = getRegexFlags();
-  const dynamicExamples = patternType === 'string' ? generateDynamicExamples() : null;
+  let currentRegex = '';
+  let regexFlags = '';
+  let dynamicExamples = null;
+  try {
+    currentRegex = generateRegexPattern() || '';
+    regexFlags = getRegexFlags() || '';
+    dynamicExamples = patternType === 'string' ? generateDynamicExamples() : null;
+  } catch (e) {
+    console.error('Regex generation error:', e);
+    currentRegex = '(error generating pattern)';
+  }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <style>{`
         .regex-builder-modal {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -417,6 +469,61 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
               >
                 Complex Pattern
               </button>
+              {patternType === 'raw' && (
+                <button
+                  className="px-4 py-2 rounded-lg font-medium transition-colors bg-white text-purple-700"
+                >
+                  Raw Regex
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Raw Regex - shown when editing an existing regex pattern */}
+          {patternType === 'raw' && (
+            <div className="regex-content-card p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    This pattern was previously generated as a regex expression. You can edit it directly below, or switch to String/Date/Complex mode to build a new pattern from scratch.
+                  </p>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Regex Pattern</label>
+                  <input
+                    type="text"
+                    value={rawRegexPattern}
+                    onChange={(e) => setRawRegexPattern(e.target.value)}
+                    placeholder="Enter regex pattern..."
+                    className="pc-input font-mono"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Flags</label>
+                  <div className="flex gap-3">
+                    {['i', 'g', 'm', 's'].map(flag => (
+                      <label key={flag} className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={rawRegexFlags.includes(flag)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setRawRegexFlags(prev => prev + flag);
+                            } else {
+                              setRawRegexFlags(prev => prev.replace(flag, ''));
+                            }
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm font-mono">{flag}</span>
+                        <span className="text-xs text-gray-500">
+                          {flag === 'i' ? '(case insensitive)' : flag === 'g' ? '(global)' : flag === 'm' ? '(multiline)' : '(dotAll)'}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

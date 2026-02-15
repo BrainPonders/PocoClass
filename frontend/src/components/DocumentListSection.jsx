@@ -1,3 +1,10 @@
+/**
+ * @file DocumentListSection.jsx
+ * @description Reusable document list table with multi-select support, integrated
+ * filter bar, tag color badges, POCO score display, and OCR/PDF view actions.
+ * Auto-fetches tags, correspondents, and document types from Paperless API if
+ * not provided via props.
+ */
 import React, { useState, useEffect } from 'react';
 import { FileText, Eye, X, CheckSquare, Square } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,10 +97,11 @@ export default function DocumentListSection({
       docTypesSearch: '',
       dateFrom: '',
       dateTo: '',
-      limit: filters.limit || 10
+      limit: 10
     });
   };
 
+  // Prefer parent-provided data; fall back to locally fetched cache data
   const tagsToUse = allTags.length > 0 ? allTags : localAllTags;
   const correspondentsToUse = allCorrespondents.length > 0 ? allCorrespondents : localAllCorrespondents;
   const docTypesToUse = allDocTypes.length > 0 ? allDocTypes : localAllDocTypes;
@@ -232,7 +240,8 @@ export default function DocumentListSection({
                           const tagObj = tagsToUse.find(t => t.name === tag);
                           const tagColor = tagObj?.color || '#1e40af';
                           
-                          const getTextColor = (hexColor) => {
+                          // Pick white or dark text for readability over the tag's background color
+                        const getTextColor = (hexColor) => {
                             const r = parseInt(hexColor.slice(1, 3), 16);
                             const g = parseInt(hexColor.slice(3, 5), 16);
                             const b = parseInt(hexColor.slice(5, 7), 16);

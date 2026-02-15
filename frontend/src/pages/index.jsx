@@ -1,3 +1,9 @@
+/**
+ * @file index.jsx
+ * @description Application entry point for page routing. Registers all page
+ * components, maps URL paths to routes (public and protected), and wraps
+ * the app in Router, AuthGuard, and UnsavedChangesProvider contexts.
+ */
 import Layout from "./Layout.jsx";
 
 import Dashboard from "./Dashboard";
@@ -49,6 +55,7 @@ const PAGES = {
     
 }
 
+// Extract the current page name from the URL path, falling back to the first registered page
 function _getCurrentPage(url) {
     if (url.endsWith('/')) {
         url = url.slice(0, -1);

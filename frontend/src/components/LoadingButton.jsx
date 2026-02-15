@@ -1,3 +1,9 @@
+/**
+ * @file LoadingButton.jsx
+ * @description Button component that shows a spinning loader icon and optional
+ * loading text while an async operation is in progress. Automatically disables
+ * itself when loading or explicitly disabled.
+ */
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 

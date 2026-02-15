@@ -1,3 +1,9 @@
+/**
+ * @file TagSelector.jsx
+ * @description Multi-select (or single-select) tag picker that loads available tags
+ * from the Paperless-ngx API. Supports keyboard navigation, custom tag creation,
+ * and displays selected tags as removable pills.
+ */
 import React, { useState, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 
@@ -30,6 +36,7 @@ export default function TagSelector({ selectedTags = [], onChange, placeholder =
     tag.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // In single-select mode, replace the selection; in multi-select, append
   const addTag = (tag) => {
     if (singleSelect) {
       onChange([tag]);

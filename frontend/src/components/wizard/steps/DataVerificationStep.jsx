@@ -1,3 +1,10 @@
+/**
+ * @file DataVerificationStep.jsx
+ * @description Step 4 of the rule builder wizard - Paperless data verification.
+ * Allows toggling Paperless-ngx placeholder fields for cross-reference verification
+ * and configuring the metadata trust multiplier (auto/manual mode).
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Tooltip from '@/components/Tooltip';

@@ -1,3 +1,9 @@
+/**
+ * @file Logs.jsx
+ * @description Log viewer page displaying system, rule execution, classification,
+ * and Paperless API logs with filtering by type, level, date range, and search text.
+ * Supports CSV export of filtered results and manual refresh.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileStack, Download, RefreshCw } from 'lucide-react';
 import { Log } from '@/api/entities';
@@ -40,6 +46,7 @@ export default function Logs() {
     setLoading(false);
   }, []);
 
+  // Apply all active filters (type, level, date range, search) to the raw log data
   const applyFilters = useCallback(() => {
     let filtered = [...logs];
 
@@ -77,10 +84,12 @@ export default function Logs() {
     setFilteredLogs(filtered);
   }, [logs, filters]);
 
+  // Load logs on mount
   useEffect(() => {
     loadLogs();
   }, [loadLogs]);
 
+  // Re-apply filters whenever logs or filter criteria change
   useEffect(() => {
     applyFilters();
   }, [applyFilters]);
@@ -106,6 +115,7 @@ export default function Logs() {
     return styles[type] || styles.system;
   };
 
+  // Export currently filtered logs as a CSV file download
   const exportLogs = () => {
     const csv = [
       ['Timestamp', 'Type', 'Level', 'Rule', 'Document', 'POCO Score', 'Message'],

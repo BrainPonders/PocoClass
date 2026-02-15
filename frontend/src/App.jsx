@@ -1,3 +1,9 @@
+/**
+ * @file App.jsx
+ * @description Root application component. Wraps the page router with the
+ * POCOFieldsProvider context and renders the global toast notification container.
+ */
+
 import './App.css'
 import Pages from "@/pages/index.jsx"
 import { Toaster } from "@/components/ui/toaster"

@@ -1,3 +1,9 @@
+/**
+ * @file ToastContainer.jsx
+ * @description Toast notification system provider. Exposes a `useToast` hook with
+ * `showToast(message, type, duration)` for triggering notifications from anywhere
+ * in the component tree. Renders toasts in a fixed overlay at the top-center.
+ */
 import React, { createContext, useContext, useState } from 'react';
 import Toast from './Toast';
 
@@ -26,7 +32,7 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 flex flex-col gap-2" style={{ zIndex: 10000 }}>
         {toasts.map(toast => (
           <Toast
             key={toast.id}

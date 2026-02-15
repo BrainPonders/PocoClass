@@ -1,3 +1,10 @@
+/**
+ * @file useDebounce.jsx
+ * @description Custom React hook that debounces a value, delaying updates until
+ * the user stops changing it for the specified delay period. Commonly used
+ * for search inputs and API call throttling.
+ */
+
 import { useState, useEffect } from 'react';
 import { UI } from '../constants';
 
