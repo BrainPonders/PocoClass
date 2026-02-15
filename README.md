@@ -1,6 +1,6 @@
 # PocoClass
 
-PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification.
+PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification in a controlled and transparent way.
 
 ### Why PocoClass?
 
