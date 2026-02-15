@@ -42,7 +42,6 @@ COPY api_client.py ./
 COPY background_processor.py ./
 COPY config.py ./
 COPY database.py ./
-COPY document_dict.py ./
 COPY metadata_processor.py ./
 COPY pattern_matcher.py ./
 COPY rule_loader.py ./
@@ -52,6 +51,7 @@ COPY test_engine.py ./
 
 COPY rules/ ./rules/
 COPY scripts/ ./scripts/
+RUN chmod +x scripts/pococlass_trigger.sh
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
