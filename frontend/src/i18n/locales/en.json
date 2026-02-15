@@ -332,6 +332,7 @@
       "themeAuto": "Auto",
       "colorblindMode": "Enable Colour Blind Mode",
       "colorblindModeDesc": "Adjusts colours for better accessibility",
+      "colorblindNotImplemented": "This feature is not yet implemented in this version of PocoClass.",
       "availableLanguages": "Available Languages",
       "loadingSettings": "Loading settings..."
     },
