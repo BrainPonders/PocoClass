@@ -1,3 +1,9 @@
+/**
+ * @file BasicInfoStep.jsx
+ * @description Step 1 of the rule builder wizard - Basic rule information.
+ * Collects rule name (auto-generates rule ID), description, and POCO Score
+ * threshold with a confirmation dialog for non-default values.
+ */
 
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';

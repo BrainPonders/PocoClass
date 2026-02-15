@@ -1,3 +1,9 @@
+/**
+ * @file BackgroundProcess.jsx
+ * @description Admin-only background processing management page. Provides manual
+ * and automatic document processing triggers, real-time status polling, processing
+ * history with per-document results, document filtering, and dry-run capabilities.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square, ChevronDown, ChevronRight, Info } from 'lucide-react';
@@ -57,10 +63,12 @@ export default function BackgroundProcess() {
     limit: 100
   });
 
+  // Load current user on mount
   useEffect(() => {
     loadUser();
   }, []);
 
+  // Verify admin access and load data; redirect non-admins to Dashboard
   useEffect(() => {
     if (currentUser) {
       if (currentUser.role !== 'admin') {
@@ -81,12 +89,11 @@ export default function BackgroundProcess() {
     }
   }, [currentUser, navigate, toast]);
 
-  // Use ref to track previous status for detecting transitions
+  // Track previous processing status to detect idle→running→idle transitions
   const previousStatusRef = useRef('idle');
   
-  // Polling: Auto-refresh when processing completes
+  // Poll processing status every 3s; auto-refresh history when processing completes
   useEffect(() => {
-    // Only start polling if user is admin
     if (!currentUser || currentUser.role !== 'admin') return;
     
     let intervalId = null;
@@ -309,6 +316,7 @@ export default function BackgroundProcess() {
     }
   };
 
+  // Run manual processing (dry-run or real) with current filter/selection criteria
   const handleManualProcess = async (dryRunMode) => {
     if (currentUser?.role !== 'admin') {
       toast({
@@ -469,6 +477,7 @@ export default function BackgroundProcess() {
     window.open(url, '_blank');
   };
 
+  // Render a styled badge based on how the processing run was triggered
   const getTriggerTypeBadge = (triggerType) => {
     switch (triggerType) {
       case 'manual_dry_run':

@@ -1,3 +1,9 @@
+/**
+ * @file ErrorBoundary.jsx
+ * @description React class-based error boundary that catches unhandled rendering
+ * errors in child components. Displays a user-friendly error page with options
+ * to reload or navigate to the dashboard, plus expandable technical details.
+ */
 import React from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { createPageUrl } from '@/utils';

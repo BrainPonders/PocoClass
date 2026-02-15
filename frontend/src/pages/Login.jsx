@@ -1,3 +1,9 @@
+/**
+ * @file Login.jsx
+ * @description Login page for authenticating with Paperless-ngx credentials.
+ * Stores session token and user data in localStorage on successful login
+ * and redirects to the main application.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, LogIn } from 'lucide-react';
@@ -22,6 +28,7 @@ export default function Login() {
     });
   };
 
+  // Authenticate against the backend and persist session
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);

@@ -1,3 +1,10 @@
+/**
+ * @file SummaryStep.jsx
+ * @description Final summary step of the rule builder wizard. Displays a read-only
+ * overview of all configured rule data, weight calculations, example POCO score,
+ * and allows setting the rule status (new/active/inactive) before saving.
+ */
+
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';

@@ -1,3 +1,10 @@
+/**
+ * @file BankStatementPdf.jsx
+ * @description Renders a mock bank statement PDF used in the interactive tutorial.
+ * Accepts a highlights array to visually emphasize specific text segments
+ * that match OCR pattern examples during the guided walkthrough.
+ */
+
 import React from 'react';
 
 export default function BankStatementPdf({ highlights = [] }) {

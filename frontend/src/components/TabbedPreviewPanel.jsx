@@ -1,3 +1,11 @@
+/**
+ * @file TabbedPreviewPanel.jsx
+ * @description Tabbed preview panel used in the rule editor to display three views:
+ * - YAML Preview: live-rendered YAML output of the current rule configuration
+ * - OCR Content: raw OCR text with line numbers and optional highlight matching
+ * - PDF Preview: embedded PDF viewer via iframe or custom content
+ * Supports copy-to-clipboard and file download for YAML and OCR tabs.
+ */
 import React, { useState, useEffect } from 'react';
 import { FileText, Eye, FileImage, Copy, Download } from 'lucide-react';
 import YamlPreview from './wizard/YamlPreview';
@@ -13,7 +21,7 @@ export default function TabbedPreviewPanel({
 }) {
   const [activeTab, setActiveTab] = useState('yaml');
   
-  // Use externalActiveTab if provided, otherwise use internal state
+  // Allow parent to control active tab externally or fall back to local state
   const displayedActiveTab = externalActiveTab !== undefined ? externalActiveTab : activeTab;
   const [yamlGenerator, setYamlGenerator] = useState(null);
 
@@ -203,6 +211,7 @@ export default function TabbedPreviewPanel({
                       <span className="select-none text-right pr-4 shrink-0" style={{ color: 'var(--app-text-muted)', minWidth: '3ch', borderRight: '1px solid var(--app-border)', marginRight: '16px' }}>
                         {i + 1}
                       </span>
+                      {/* Highlight OCR lines containing any of the highlight strings */}
                       <span
                         className="whitespace-pre-wrap break-words"
                         style={ocrHighlights.length > 0 && ocrHighlights.some(h => line.includes(h)) ? {

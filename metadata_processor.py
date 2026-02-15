@@ -1,11 +1,23 @@
 """
 PocoClass - Metadata Processor
-Handles extraction and processing of metadata from various sources including content, filename, and API data
 
-V2 Format:
-- Uses beforeAnchor/afterAnchor for dynamic metadata extraction
-- Uses extraction_type field for type filtering (date, text, etc.)
-- Modern date parsing with UI-friendly format strings (DD-MM-YYYY, etc.)
+Extracts and processes document metadata from multiple sources:
+- Static metadata: Fixed values defined in rule config (correspondent, tags, etc.)
+- Dynamic metadata: Values extracted from OCR text using anchor-based patterns
+- Filename metadata: Values extracted from document filenames via regex patterns
+
+V2 Format Features:
+- beforeAnchor/afterAnchor: Define text extraction windows in OCR content
+- extraction_type: Filter extracted values by type (date, text, dateFormat)
+- UI-friendly date formats: DD-MM-YYYY, MM/DD/YYYY, etc. (converted to Python strptime)
+
+Also provides utility methods for:
+- Normalizing metadata across different source formats for comparison
+- Preparing Paperless API update payloads with proper ID resolution
+- Validating and sanitizing extracted values by target field datatype
+
+Key class:
+    MetadataProcessor - Stateless processor for metadata extraction and transformation
 """
 
 import re
@@ -557,7 +569,19 @@ class MetadataProcessor:
             return None
     
     def process_paperless_metadata(self, raw_doc: Dict[str, Any], api_client=None) -> Dict[str, Any]:
-        """Process raw Paperless metadata into structured format"""
+        """Convert raw Paperless document data into a structured metadata dict.
+        
+        Resolves numeric IDs (correspondent, document_type, tags, custom_fields)
+        to human-readable names using the API client when available.
+        
+        Args:
+            raw_doc: Raw document dict from Paperless API (contains numeric IDs)
+            api_client: Optional PaperlessAPIClient for resolving IDs to names
+            
+        Returns:
+            Structured dict with resolved names for correspondent, document_type,
+            tags (as name list), and custom_fields (as name/value dicts)
+        """
         processed = {
             'date_created': {
                 'raw': raw_doc.get('created'),
@@ -655,7 +679,20 @@ class MetadataProcessor:
             return None
     
     def normalize_metadata_for_comparison(self, metadata: Dict[str, Any], source: str) -> Dict[str, Any]:
-        """Normalize metadata for comparison across sources"""
+        """Normalize metadata into a consistent format for cross-source comparison.
+        
+        Different sources (static rules, dynamic extraction, Paperless API) return
+        metadata in varying formats (e.g., tags as objects vs strings, dates as
+        dicts vs strings). This method flattens everything to simple types.
+        
+        Args:
+            metadata: Raw metadata dict from any source
+            source: Source identifier (for future source-specific normalization)
+            
+        Returns:
+            Normalized dict with string values for scalar fields,
+            list of strings for tags, and dict for custom_fields
+        """
         normalized = {}
         
         # Normalize correspondent
@@ -709,7 +746,20 @@ class MetadataProcessor:
     
     def prepare_update_payload(self, document_id: int, metadata: Dict[str, Any], 
                               api_mappings: Dict[str, Dict[str, int]]) -> Dict[str, Any]:
-        """Prepare metadata update payload for Paperless API"""
+        """Build a Paperless API-compatible update payload from extracted metadata.
+        
+        Converts human-readable names (correspondent, tag names, custom field names)
+        to their numeric Paperless IDs using the provided api_mappings lookup tables.
+        
+        Args:
+            document_id: The Paperless document ID (for context/logging)
+            metadata: Extracted metadata with human-readable names
+            api_mappings: Dict of entity type -> {name: id} mappings, e.g.:
+                {'correspondents': {'Acme': 5}, 'tags': {'Invoice': 12}, ...}
+                
+        Returns:
+            Dict ready to PATCH to /api/documents/{id}/ with numeric IDs
+        """
         payload = {}
         
         # Handle correspondent

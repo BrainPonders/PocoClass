@@ -1,3 +1,10 @@
+/**
+ * @file Settings.jsx
+ * @description Main settings page with tabbed navigation for system configuration,
+ * appearance, date formats, field visibility, validation, maintenance, and background
+ * processing. Delegates rendering to individual tab components and manages shared
+ * state (users, sync status, Paperless config, custom fields, etc.).
+ */
 import React, { useState, useEffect } from 'react';
 import { RefreshCw, Users, Settings as SettingsIcon, Database, Globe, Palette, Calendar, FileText, CheckCircle, XCircle, AlertCircle, Lock, AlertTriangle, Activity, Sliders, Info, Key, Copy, Trash2, Terminal } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,17 +17,24 @@ import { useTheme } from '@/components/ThemeProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CreatePocoFieldDialog from '@/components/CreatePocoFieldDialog';
 import { QuickTooltip } from '@/components/ui/QuickTooltip';
+import SystemTab from '@/components/settings/SystemTab';
+import AppearanceTab from '@/components/settings/AppearanceTab';
+import DateFormatsTab from '@/components/settings/DateFormatsTab';
+import FieldVisibilityTab from '@/components/settings/FieldVisibilityTab';
+import MaintenanceTab from '@/components/settings/MaintenanceTab';
+import ValidationTab from '@/components/settings/ValidationTab';
+import BackgroundProcessingTab from '@/components/settings/BackgroundProcessingTab';
 
 export default function Settings() {
   const { toast } = useToast();
   const { theme, updateTheme, colorBlindMode, updateColorBlindMode } = useTheme();
   const { language, updateLanguage, t } = useLanguage();
   
-  // Check if we should auto-select validation tab
+  // Restore previously selected tab (e.g. navigated from ValidationBanner)
   const defaultTab = sessionStorage.getItem('settings_active_tab') || 'system';
   const [activeTab, setActiveTab] = useState(defaultTab);
   
-  // Clear sessionStorage after reading
+  // Clean up one-time tab override from sessionStorage after reading
   useEffect(() => {
     if (sessionStorage.getItem('settings_active_tab')) {
       sessionStorage.removeItem('settings_active_tab');
@@ -44,6 +58,7 @@ export default function Settings() {
   const [fieldToCreate, setFieldToCreate] = useState(null);
   const [isCreatingField, setIsCreatingField] = useState(false);
   
+  // Default background processing configuration
   const [backgroundSettings, setBackgroundSettings] = useState({
     bg_enabled: false,
     bg_debounce_seconds: 30,
@@ -61,7 +76,8 @@ export default function Settings() {
   const [loadingPocoOcr, setLoadingPocoOcr] = useState(false);
   const [syncing, setSyncing] = useState(false);
   
-  const [resetStage, setResetStage] = useState(0); // 0: none, 1: first confirmation, 2: second confirmation, 3: final confirmation
+  // Multi-step reset confirmation: 0=none, 1=first, 2=second, 3=final
+  const [resetStage, setResetStage] = useState(0);
   const [isResetting, setIsResetting] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
 
@@ -73,12 +89,14 @@ export default function Settings() {
   const [showTokenConfirm, setShowTokenConfirm] = useState(false);
   const [showRevokeConfirm, setShowRevokeConfirm] = useState(false);
 
+  // Load all settings, custom fields, and background config on mount
   useEffect(() => {
     loadAllSettings();
     loadCustomFieldsData();
     loadBackgroundSettings();
   }, []);
 
+  // Lazy-load tab-specific data when switching tabs
   useEffect(() => {
     if (activeTab === 'validation') {
       loadValidationData();
@@ -94,7 +112,7 @@ export default function Settings() {
     }
   }, [activeTab]);
 
-  // Listen for custom event from ValidationBanner to switch tabs
+  // Listen for custom event from ValidationBanner to programmatically switch tabs
   useEffect(() => {
     const handleSwitchTab = (event) => {
       setActiveTab(event.detail.tab);
@@ -382,9 +400,9 @@ export default function Settings() {
     }
   };
 
+  // Persist app setting and immediately apply theme/language changes to context
   const handleAppSettingChange = async (key, value) => {
     try {
-      // Update theme and language contexts immediately
       if (key === 'theme') {
         updateTheme(value);
       } else if (key === 'language') {
@@ -422,9 +440,9 @@ export default function Settings() {
     }
   };
 
+  // Toggle a date format on/off, enforcing at least one must remain selected
   const handleDateFormatToggle = async (formatPattern, isSelected) => {
     try {
-      // Prevent deselecting the last date format
       if (!isSelected) {
         const selectedCount = dateFormats.filter(fmt => fmt.is_selected === 1).length;
         if (selectedCount <= 1) {
@@ -1210,1470 +1228,109 @@ export default function Settings() {
 
             <div className="flex-1 p-6" style={{ color: 'var(--app-text)' }}>
               {activeTab === 'system' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.title')}</h2>
-                    <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.system.subtitle')}
-                    </p>
-                  </div>
-
-                  {/* Global Loading Indicator (initial load) or Syncing Indicator (manual sync) */}
-                  {(loading || syncing) && (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>
-                          {syncing ? t('settings.system.syncingData') : t('settings.appearance.loadingSettings')}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 1. Paperless Connection */}
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--app-text)' }}>
-                      <Database className="w-5 h-5" style={{ color: 'var(--info-text)' }} />
-                      {t('settings.system.paperlessConnection')}
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                          {t('settings.system.paperlessUrl')}
-                        </label>
-                        <div className="flex gap-3">
-                          <input
-                            type="url"
-                            value={paperlessConfig.paperless_url || ''}
-                            onChange={(e) => setPaperlessConfig({ ...paperlessConfig, paperless_url: e.target.value })}
-                            placeholder="https://paperless.example.com"
-                            className="flex-1 border rounded-md px-3 py-2 text-sm focus:outline-none"
-                            style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
-                            onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-                            onBlur={(e) => e.target.style.boxShadow = 'none'}
-                            disabled={!isAdmin}
-                          />
-                          <Button
-                            onClick={testPaperlessConnection}
-                            disabled={testingConnection || !paperlessConfig.paperless_url}
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-2"
-                          >
-                            <Globe className={`w-4 h-4 ${testingConnection ? 'animate-spin' : ''}`} />
-                            {testingConnection ? t('settings.system.testing') : t('settings.system.testConnection')}
-                          </Button>
-                          <Button
-                            onClick={handlePaperlessUrlUpdate}
-                            disabled={!isAdmin}
-                            size="sm"
-                          >
-                            {t('settings.system.update')}
-                          </Button>
-                        </div>
-                        {!isAdmin && (
-                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            {t('settings.system.onlyAdminCanUpdate')}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 2. Session Settings */}
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.sessionSettings')}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.system.sessionSettingsSubtitle')}
-                    </p>
-                    
-                    <div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <input
-                          id="session-timeout"
-                          type="number"
-                          min="1"
-                          max="168"
-                          value={appSettings.session_timeout_hours || ''}
-                          onChange={(e) => handleAppSettingChange('session_timeout_hours', e.target.value)}
-                          disabled={loading}
-                          className="w-32 border rounded-md px-3 py-2 text-sm focus:outline-none"
-                          style={{ 
-                            borderColor: 'var(--app-border)', 
-                            backgroundColor: loading ? 'var(--app-bg-secondary)' : 'var(--app-surface)', 
-                            color: 'var(--app-text)',
-                            cursor: loading ? 'not-allowed' : 'default'
-                          }}
-                          onFocus={(e) => !loading && (e.target.style.boxShadow = '0 0 0 2px var(--app-primary)')}
-                          onBlur={(e) => e.target.style.boxShadow = 'none'}
-                        />
-                        <label htmlFor="session-timeout" className="text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.system.sessionTimeout')}</label>
-                      </div>
-                      <div className="p-3 rounded text-sm" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-                        <strong>{t('settings.system.bgProtectionTitle')}</strong> {t('settings.system.bgProtectionDesc')}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 3. Paperless Datafield Synchronisation */}
-                  <div className="border-t pt-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.paperlessSync')}</h3>
-                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          {t('settings.system.syncSubtitle')}
-                        </p>
-                      </div>
-                      <Button
-                        onClick={handleSync}
-                        disabled={syncing}
-                        size="sm"
-                        className="flex items-center gap-2"
-                      >
-                        <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                        {syncing ? t('settings.system.syncing') : t('settings.system.sync')}
-                      </Button>
-                    </div>
-                    
-                    {syncStatus && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)' }}>
-                          <div className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.system.correspondents')}</div>
-                          <div className="text-2xl font-bold" style={{ color: 'var(--app-text)' }}>{syncStatus.correspondents?.count || 0}</div>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <div className="text-sm text-green-600 font-medium">{t('settings.system.tags')}</div>
-                          <div className="text-2xl font-bold text-green-900">{syncStatus.tags?.count || 0}</div>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                          <div className="text-sm text-purple-600 font-medium">{t('settings.system.documentTypes')}</div>
-                          <div className="text-2xl font-bold text-purple-900">{syncStatus.document_types?.count || 0}</div>
-                        </div>
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                          <div className="text-sm text-orange-600 font-medium">{t('settings.system.customFields')}</div>
-                          <div className="text-2xl font-bold text-orange-900">{syncStatus.custom_fields?.count || 0}</div>
-                        </div>
-                        <div className="bg-cyan-50 p-4 rounded-lg">
-                          <div className="text-sm text-cyan-600 font-medium">{t('settings.system.users')}</div>
-                          <div className="text-2xl font-bold text-cyan-900">{syncStatus.users?.count || 0}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 4. User Management */}
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.userManagement')}</h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.system.userManagementSubtitle')}
-                    </p>
-                    
-                    {users.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y" style={{ borderColor: 'var(--app-border)' }}>
-                          <thead style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.username')}
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.groups')}
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.paperlessStatus')}
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.pococlassStatus')}
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.role')}
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.system.actions')}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y" style={{ backgroundColor: 'var(--app-surface)', borderColor: 'var(--app-border)' }}>
-                            {users.map(user => {
-                              const isCurrentUser = user.pococlass_id === currentUser?.id;
-                              const canManage = user.is_registered && !isCurrentUser;
-                              
-                              return (
-                                <tr key={user.paperless_id} style={!user.is_enabled && user.is_registered ? { backgroundColor: 'var(--app-bg-secondary)', opacity: 0.6 } : undefined}>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                    {user.paperless_username}
-                                    {isCurrentUser && (
-                                      <span className="ml-2 text-xs" style={{ color: 'var(--info-text)' }}>(You)</span>
-                                    )}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
-                                    {user.paperless_groups?.join(', ') || '-'}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      user.is_active ? 'bg-green-100 text-green-800' : ''
-                                    }`}
-                                    style={!user.is_active ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' } : undefined}>
-                                      {user.is_active ? t('settings.system.active') : t('settings.system.inactive')}
-                                    </span>
-                                    {user.is_superuser && (
-                                      <span className="ml-2 px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                        {t('settings.system.superuser')}
-                                      </span>
-                                    )}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
-                                    {user.is_registered ? (
-                                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                        user.is_enabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                      }`}>
-                                        {user.is_enabled ? t('settings.system.active') : t('settings.system.disabled')}
-                                      </span>
-                                    ) : (
-                                      <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
-                                        {t('settings.system.notRegistered')}
-                                      </span>
-                                    )}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
-                                    {user.is_registered ? (
-                                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                        user.pococlass_role === 'admin' ? 'bg-purple-100 text-purple-800' : ''
-                                      }`}
-                                      style={user.pococlass_role !== 'admin' ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' } : undefined}>
-                                        {user.pococlass_role === 'admin' ? t('settings.system.admin') : t('settings.system.user')}
-                                      </span>
-                                    ) : (
-                                      <span style={{ color: 'var(--app-text-muted)' }}>-</span>
-                                    )}
-                                  </td>
-                                  <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: 'var(--app-text-muted)' }}>
-                                    {canManage ? (
-                                      <div className="flex gap-2">
-                                        <select
-                                          value={user.pococlass_role || 'user'}
-                                          onChange={(e) => handleRoleChange(user.pococlass_id, e.target.value)}
-                                          className="border rounded-md px-2 py-1 text-sm"
-                                          style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}
-                                          disabled={!user.is_enabled}
-                                        >
-                                          <option value="user">{t('settings.system.user')}</option>
-                                          <option value="admin">{t('settings.system.admin')}</option>
-                                        </select>
-                                        <button
-                                          onClick={() => handleToggleUserStatus(user.pococlass_id, user.is_enabled)}
-                                          className={`px-3 py-1 text-xs font-medium rounded ${
-                                            user.is_enabled
-                                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                                              : 'bg-green-100 text-green-700 hover:bg-green-200'
-                                          }`}
-                                        >
-                                          {user.is_enabled ? t('settings.system.disable') : t('settings.system.enable')}
-                                        </button>
-                                      </div>
-                                    ) : (
-                                      <span style={{ color: 'var(--app-text-muted)' }}>-</span>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8" style={{ color: 'var(--app-text-muted)' }}>
-                        {t('settings.system.noUsers')}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 5. Sync History */}
-                  {syncHistory.length > 0 && (
-                    <div className="border-t pt-6">
-                      <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.system.syncHistory')}</h3>
-                      <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                        {t('settings.system.syncHistorySubtitle')}
-                      </p>
-                      <div className="space-y-2">
-                        {syncHistory.map((entry, idx) => (
-                          <div key={idx} className="flex items-center gap-3 text-sm p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)' }}>
-                            {entry.status === 'success' ? (
-                              <CheckCircle className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <XCircle className="w-4 h-4 text-red-600" />
-                            )}
-                            <span className="font-medium" style={{ color: 'var(--app-text-secondary)' }}>{t(`settings.system.${entry.entity_type}`)}</span>
-                            <span style={{ color: 'var(--app-text-muted)' }}>{entry.items_synced} {t('settings.system.items')}</span>
-                            <span className="ml-auto" style={{ color: 'var(--app-text-muted)' }}>
-                              {new Date(entry.synced_at).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <SystemTab
+                  loading={loading}
+                  syncing={syncing}
+                  t={t}
+                  isAdmin={isAdmin}
+                  paperlessConfig={paperlessConfig}
+                  setPaperlessConfig={setPaperlessConfig}
+                  testPaperlessConnection={testPaperlessConnection}
+                  testingConnection={testingConnection}
+                  handlePaperlessUrlUpdate={handlePaperlessUrlUpdate}
+                  appSettings={appSettings}
+                  handleAppSettingChange={handleAppSettingChange}
+                  syncStatus={syncStatus}
+                  handleSync={handleSync}
+                  users={users}
+                  currentUser={currentUser}
+                  handleRoleChange={handleRoleChange}
+                  handleToggleUserStatus={handleToggleUserStatus}
+                  syncHistory={syncHistory}
+                />
               )}
 
               {activeTab === 'appearance' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.appearance.title')}</h2>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.appearance.subtitle')}
-                    </p>
-                  </div>
-
-                  {/* Global Loading Indicator */}
-                  {loading && (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.appearance.loadingSettings')}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
-                      {t('settings.appearance.language')}
-                    </label>
-                    <select
-                      value={language}
-                      onChange={(e) => handleAppSettingChange('language', e.target.value)}
-                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none"
-                      style={{ 
-                        border: '1px solid var(--app-border)', 
-                        backgroundColor: 'var(--app-surface)',
-                        color: 'var(--app-text)'
-                      }}
-                      onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-                      onBlur={(e) => e.target.style.boxShadow = 'none'}
-                    >
-                      <option value="en">English (British)</option>
-                      <option value="es">Español (Spanish)</option>
-                      <option value="fr">Français (French)</option>
-                      <option value="de">Deutsch (German)</option>
-                      <option value="nl">Nederlands (Dutch)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text)' }}>
-                      {t('settings.appearance.theme')}
-                    </label>
-                    <select
-                      value={theme}
-                      onChange={(e) => handleAppSettingChange('theme', e.target.value)}
-                      className="w-full md:w-64 rounded-md px-3 py-2 text-sm focus:outline-none"
-                      style={{ 
-                        border: '1px solid var(--app-border)', 
-                        backgroundColor: 'var(--app-surface)',
-                        color: 'var(--app-text)'
-                      }}
-                      onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-                      onBlur={(e) => e.target.style.boxShadow = 'none'}
-                    >
-                      <option value="light">{t('settings.appearance.themeLight')}</option>
-                      <option value="dark">{t('settings.appearance.themeDark')}</option>
-                      <option value="auto">{t('settings.appearance.themeAuto')}</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={colorBlindMode !== 'none'}
-                        onChange={(e) => handleAppSettingChange('colorblind_mode', e.target.checked ? 'true' : 'false')}
-                        className="w-4 h-4 border-gray-300 rounded"
-                        style={{ accentColor: 'var(--app-primary)' }}
-                        onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-                        onBlur={(e) => e.target.style.boxShadow = 'none'}
-                      />
-                      <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                        {t('settings.appearance.colorblindMode')}
-                      </span>
-                    </label>
-                    <p className="mt-1 ml-7 text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.appearance.colorblindModeDesc')}
-                    </p>
-                  </div>
-                </div>
+                <AppearanceTab
+                  loading={loading}
+                  t={t}
+                  language={language}
+                  handleAppSettingChange={handleAppSettingChange}
+                  theme={theme}
+                  colorBlindMode={colorBlindMode}
+                />
               )}
 
               {activeTab === 'dateFormats' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.dateFormats.title')}</h2>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.dateFormats.subtitle')}
-                    </p>
-                  </div>
-
-                  {/* Global Loading Indicator */}
-                  {loading && (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.appearance.loadingSettings')}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {Object.entries(
-                      dateFormats.reduce((acc, fmt) => {
-                        if (!acc[fmt.format_category]) acc[fmt.format_category] = [];
-                        acc[fmt.format_category].push(fmt);
-                        return acc;
-                      }, {})
-                    ).map(([category, formats]) => {
-                      const getCategoryTranslation = (cat) => {
-                        const categoryMap = {
-                          'Dash (-)': t('settings.dateFormats.dash'),
-                          'Slash (/)': t('settings.dateFormats.slash'),
-                          'Dot (.)': t('settings.dateFormats.dot'),
-                          'Space / Text': t('settings.dateFormats.spaceText')
-                        };
-                        return categoryMap[cat] || cat;
-                      };
-                      
-                      return (
-                      <div key={category}>
-                        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text-secondary)' }}>{getCategoryTranslation(category)}</h3>
-                        <div className="space-y-2">
-                          {formats.map(fmt => (
-                            <label key={fmt.id} className="flex items-start gap-2 p-2 rounded cursor-pointer" 
-                              style={{ 
-                                border: '1px solid var(--app-border)',
-                                backgroundColor: 'var(--app-surface)'
-                              }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)'}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--app-surface)'}>
-                              <input
-                                type="checkbox"
-                                checked={fmt.is_selected === 1}
-                                onChange={(e) => handleDateFormatToggle(fmt.format_pattern, e.target.checked)}
-                                className="mt-0.5 w-4 h-4 border-gray-300 rounded"
-                                style={{ accentColor: 'var(--app-primary)' }}
-                                onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-                                onBlur={(e) => e.target.style.boxShadow = 'none'}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="text-xs font-medium" style={{ color: 'var(--app-text)' }}>{fmt.format_pattern}</div>
-                                <div className="text-xs truncate" style={{ color: 'var(--app-text-muted)' }}>{fmt.example}</div>
-                              </div>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    )})}
-                  </div>
-                </div>
+                <DateFormatsTab
+                  loading={loading}
+                  t={t}
+                  dateFormats={dateFormats}
+                  handleDateFormatToggle={handleDateFormatToggle}
+                />
               )}
 
               {activeTab === 'fieldVisibility' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>
-                      {t('settings.fieldVisibility.title')}
-                    </h2>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.fieldVisibility.subtitle')}
-                    </p>
-                  </div>
-
-                  {/* Global Loading Indicator */}
-                  {loading && (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.appearance.loadingSettings')}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="rounded-lg p-4 mb-6" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                    <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--info-text)' }}>{t('settings.fieldVisibility.visibilityModes')}</h3>
-                    <ul className="text-xs space-y-1" style={{ color: 'var(--info-text)' }}>
-                      <li><strong>{t('settings.fieldVisibility.modeDisabled')}</strong> {t('settings.fieldVisibility.modeDisabledDesc')}</li>
-                      <li><strong>{t('settings.fieldVisibility.modePredefined')}</strong> {t('settings.fieldVisibility.modePredefinedDesc')}</li>
-                      <li><strong>{t('settings.fieldVisibility.modeDynamic')}</strong> {t('settings.fieldVisibility.modeDynamicDesc')}</li>
-                      <li><strong>{t('settings.fieldVisibility.modeBothEnabled')}</strong> {t('settings.fieldVisibility.modeBothEnabledDesc')}</li>
-                    </ul>
-                    <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--info-border)' }}>
-                      <p className="text-xs" style={{ color: 'var(--info-text)' }}>
-                        <strong>{t('settings.fieldVisibility.noteVerification')}</strong> {t('settings.fieldVisibility.noteVerificationDesc')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {placeholders.filter(p => !p.is_internal || (p.is_internal && p.is_custom_field)).map(placeholder => {
-                      const isMissingPoco = (placeholder.placeholder_name === 'POCO Score' && !pocoScoreExists) || 
-                                           (placeholder.placeholder_name === 'POCO OCR' && !pocoOcrExists);
-                      const dataType = getCustomFieldDataType(placeholder.placeholder_name);
-                      const canExtractDynamic = isDynamicExtractable(placeholder.placeholder_name, placeholder.is_custom_field);
-                      const disabledReason = getDynamicDisabledReason(placeholder.placeholder_name, placeholder.is_custom_field);
-                      
-                      return (
-                      <div key={placeholder.id} className="p-3 border rounded-lg" style={{
-                        borderColor: isMissingPoco ? '#991b1b' : placeholder.is_locked ? 'var(--app-border)' : placeholder.is_custom_field ? '#7c3aed' : 'var(--app-border)',
-                        backgroundColor: isMissingPoco ? '#fef2f2' : placeholder.is_locked ? 'var(--app-bg-secondary)' : placeholder.is_custom_field ? '#f5f3ff' : 'var(--app-surface)'
-                      }}>
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              {!!placeholder.is_locked && <Lock className="w-4 h-4" style={{ color: 'var(--app-text-muted)' }} />}
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                {placeholder.placeholder_name}
-                              </div>
-                              {!!placeholder.is_custom_field && dataType && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}>
-                                  {dataType}
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs mt-0.5" style={{ color: 'var(--app-text-muted)' }}>
-                              {placeholder.is_locked ? (
-                                <span className="italic" style={{ color: 'var(--app-text-muted)' }}>{t('settings.fieldVisibility.notAvailable')}</span>
-                              ) : placeholder.is_custom_field ? (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                  {t('settings.fieldVisibility.customField')}
-                                </span>
-                              ) : (
-                                <span style={{ color: 'var(--app-text-muted)' }}>{t('settings.fieldVisibility.builtInField')}</span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {!placeholder.is_locked && !placeholder.is_internal ? (
-                            <div className="flex gap-1">
-                              <button
-                                onClick={() => handlePlaceholderVisibilityChange(placeholder.placeholder_name, 'disabled')}
-                                className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                  placeholder.visibility_mode === 'disabled'
-                                    ? 'bg-gray-600 text-white'
-                                    : ''
-                                }`}
-                                style={placeholder.visibility_mode !== 'disabled' ? {
-                                  backgroundColor: 'var(--app-bg-secondary)',
-                                  color: 'var(--app-text-secondary)'
-                                } : undefined}
-                                onMouseEnter={(e) => {
-                                  if (placeholder.visibility_mode !== 'disabled') {
-                                    e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (placeholder.visibility_mode !== 'disabled') {
-                                    e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
-                                  }
-                                }}
-                              >
-                                Disabled
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const currentMode = placeholder.visibility_mode;
-                                  let newMode;
-                                  if (currentMode === 'disabled' || currentMode === 'dynamic') {
-                                    newMode = currentMode === 'disabled' ? 'predefined' : 'both';
-                                  } else if (currentMode === 'predefined') {
-                                    newMode = 'disabled';
-                                  } else {
-                                    newMode = 'dynamic';
-                                  }
-                                  handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
-                                }}
-                                className="px-2.5 py-1 text-xs font-medium rounded transition-colors"
-                                style={
-                                  placeholder.visibility_mode === 'predefined' || placeholder.visibility_mode === 'both'
-                                    ? { backgroundColor: 'var(--app-primary)', color: 'white' }
-                                    : {
-                                        backgroundColor: 'var(--app-bg-secondary)',
-                                        color: 'var(--app-text-secondary)'
-                                      }
-                                }
-                                onMouseEnter={(e) => {
-                                  if (placeholder.visibility_mode !== 'predefined' && placeholder.visibility_mode !== 'both') {
-                                    e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (placeholder.visibility_mode !== 'predefined' && placeholder.visibility_mode !== 'both') {
-                                    e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
-                                  }
-                                }}
-                              >
-                                Predefined
-                              </button>
-                              <QuickTooltip content={disabledReason} disabled={canExtractDynamic}>
-                                <button
-                                  onClick={() => {
-                                    if (!canExtractDynamic) return;
-                                    const currentMode = placeholder.visibility_mode;
-                                    let newMode;
-                                    if (currentMode === 'disabled' || currentMode === 'predefined') {
-                                      newMode = currentMode === 'disabled' ? 'dynamic' : 'both';
-                                    } else if (currentMode === 'dynamic') {
-                                      newMode = 'disabled';
-                                    } else {
-                                      newMode = 'predefined';
-                                    }
-                                    handlePlaceholderVisibilityChange(placeholder.placeholder_name, newMode);
-                                  }}
-                                  disabled={!canExtractDynamic}
-                                  className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
-                                    !canExtractDynamic
-                                      ? 'cursor-not-allowed opacity-60'
-                                      : placeholder.visibility_mode === 'dynamic' || placeholder.visibility_mode === 'both'
-                                      ? 'bg-green-600 text-white'
-                                      : ''
-                                  }`}
-                                  style={!canExtractDynamic ? {
-                                    backgroundColor: 'var(--app-bg-secondary)',
-                                    color: 'var(--app-text-muted)'
-                                  } : (placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') ? {
-                                    backgroundColor: 'var(--app-bg-secondary)',
-                                    color: 'var(--app-text-secondary)'
-                                  } : undefined}
-                                  onMouseEnter={(e) => {
-                                    if (canExtractDynamic && placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') {
-                                      e.currentTarget.style.backgroundColor = 'var(--app-surface-hover)';
-                                    }
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    if (canExtractDynamic && placeholder.visibility_mode !== 'dynamic' && placeholder.visibility_mode !== 'both') {
-                                      e.currentTarget.style.backgroundColor = 'var(--app-bg-secondary)';
-                                    }
-                                  }}
-                                >
-                                  Dynamic
-                                </button>
-                              </QuickTooltip>
-                            </div>
-                          ) : placeholder.is_internal ? (
-                            placeholder.placeholder_name === 'POCO Score' ? (
-                              <button
-                                onClick={() => !pocoScoreExists && handleCreateFieldClick('POCO Score')}
-                                disabled={pocoScoreExists}
-                                className="px-3 py-1 text-xs font-medium rounded transition-colors cursor-pointer"
-                                style={
-                                  pocoScoreExists
-                                    ? { backgroundColor: '#dcfce7', color: '#15803d', cursor: 'default' }
-                                    : { backgroundColor: 'var(--app-primary)', color: 'white' }
-                                }
-                                onMouseEnter={(e) => {
-                                  if (!pocoScoreExists) {
-                                    e.currentTarget.style.opacity = '0.9';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (!pocoScoreExists) {
-                                    e.currentTarget.style.opacity = '1';
-                                  }
-                                }}
-                              >
-                                {pocoScoreExists ? 'Existing' : 'Create'}
-                              </button>
-                            ) : placeholder.placeholder_name === 'POCO OCR' ? (
-                              <button
-                                onClick={() => !pocoOcrExists && handleCreateFieldClick('POCO OCR')}
-                                disabled={pocoOcrExists}
-                                className="px-3 py-1 text-xs font-medium rounded transition-colors cursor-pointer"
-                                style={
-                                  pocoOcrExists
-                                    ? { backgroundColor: '#dcfce7', color: '#15803d', cursor: 'default' }
-                                    : { backgroundColor: 'var(--app-primary)', color: 'white' }
-                                }
-                                onMouseEnter={(e) => {
-                                  if (!pocoOcrExists) {
-                                    e.currentTarget.style.opacity = '0.9';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (!pocoOcrExists) {
-                                    e.currentTarget.style.opacity = '1';
-                                  }
-                                }}
-                              >
-                                {pocoOcrExists ? 'Existing' : 'Create'}
-                              </button>
-                            ) : (
-                              <div className="text-xs font-medium px-3 py-1 rounded" style={{ color: 'var(--info-text)', backgroundColor: 'var(--info-bg)' }}>
-                                Mandatory
-                              </div>
-                            )
-                          ) : null}
-                        </div>
-                      </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                <FieldVisibilityTab
+                  loading={loading}
+                  t={t}
+                  placeholders={placeholders}
+                  pocoScoreExists={pocoScoreExists}
+                  pocoOcrExists={pocoOcrExists}
+                  handlePlaceholderVisibilityChange={handlePlaceholderVisibilityChange}
+                  handleCreateFieldClick={handleCreateFieldClick}
+                  getCustomFieldDataType={getCustomFieldDataType}
+                  isDynamicExtractable={isDynamicExtractable}
+                  getDynamicDisabledReason={getDynamicDisabledReason}
+                />
               )}
 
               {activeTab === 'maintenance' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Maintenance</h2>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      Administrative tools for maintaining your PocoClass installation.
-                    </p>
-                  </div>
-
-                  {/* Application Reset */}
-                  <div className="border rounded-lg p-6" style={{ borderColor: 'var(--app-border)', backgroundColor: 'var(--app-bg-secondary)' }}>
-                    <div className="flex items-start gap-3 mb-4">
-                      <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <h3 className="text-md font-semibold mb-2" style={{ color: 'var(--app-text)' }}>Application Reset</h3>
-                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          Reset the application to its initial installation state. This will permanently delete all rules, settings, and configurations, and return you to the setup wizard. Your Paperless-ngx URL will be preserved.
-                        </p>
-                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          After reset, you will need to:
-                        </p>
-                        <ul className="text-sm mb-4 ml-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          <li>• Reconfigure your Paperless-ngx connection</li>
-                          <li>• Recreate all rules and settings</li>
-                          <li>• This action cannot be undone</li>
-                        </ul>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => setResetStage(1)}
-                      disabled={!isAdmin || isResetting}
-                      style={{
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        cursor: isAdmin ? 'pointer' : 'not-allowed',
-                        padding: '8px 16px'
-                      }}
-                    >
-                      {isResetting ? 'Resetting...' : 'Reset Application'}
-                    </Button>
-                    {!isAdmin && (
-                      <p className="mt-3 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                        Only administrators can reset the application
-                      </p>
-                    )}
-                  </div>
-                </div>
+                <MaintenanceTab
+                  isAdmin={isAdmin}
+                  isResetting={isResetting}
+                  setResetStage={setResetStage}
+                />
               )}
 
               {activeTab === 'validation' && (
-                <div className="space-y-6">
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-lg font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.validation.title')}</h2>
-                      <Button
-                        onClick={loadValidationData}
-                        disabled={loadingValidation}
-                        className="text-white gap-2"
-                        style={{ backgroundColor: '#1e40af' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1e3a8a'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1e40af'}
-                      >
-                        <RefreshCw className={`w-4 h-4 ${loadingValidation ? 'animate-spin' : ''}`} />
-                        {loadingValidation ? t('settings.validation.verifying') : t('common.search')}
-                      </Button>
-                    </div>
-                    <p className="text-sm mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.ensureAllRequired')}
-                    </p>
-                  </div>
-
-                  {loadingValidation ? (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>Checking mandatory data...</span>
-                      </div>
-                    </div>
-                  ) : validationData && !validationData.valid ? (
-                    <div className="border rounded-lg p-4 mb-6" style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca' }}>
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold mb-2" style={{ color: '#7f1d1d' }}>Missing Required Data</h3>
-                          <p className="text-sm mb-3" style={{ color: '#991b1b' }}>
-                            PocoClass requires specific custom fields and tags to function. The following items are missing from your Paperless-ngx instance:
-                          </p>
-                          {validationData.missing_fields.length > 0 && (
-                            <div className="mb-3">
-                              <p className="text-xs font-semibold mb-1" style={{ color: '#7f1d1d' }}>Missing Custom Fields:</p>
-                              <ul className="list-disc list-inside text-sm ml-2" style={{ color: '#991b1b' }}>
-                                {validationData.missing_fields.map(field => (
-                                  <li key={field}>{field}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {validationData.missing_tags.length > 0 && (
-                            <div>
-                              <p className="text-xs font-semibold mb-1" style={{ color: '#7f1d1d' }}>Missing Tags:</p>
-                              <ul className="list-disc list-inside text-sm ml-2" style={{ color: '#991b1b' }}>
-                                {validationData.missing_tags.map(tag => (
-                                  <li key={tag}>{tag}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-4">
-                        <Button
-                          onClick={handleFixMandatoryData}
-                          disabled={fixingMandatoryData || !isAdmin}
-                          className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                          {fixingMandatoryData ? 'Creating...' : t('settings.validation.fixMissingData')}
-                        </Button>
-                        {!isAdmin && (
-                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            Only administrators can create missing custom fields and tags
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ) : validationData && validationData.valid ? (
-                    <div className="border rounded-lg p-4 mb-6" style={{ backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                        <div>
-                          <h3 className="text-sm font-semibold mb-1" style={{ color: '#14532d' }}>{t('settings.allRequiredDataPresent')}</h3>
-                          <p className="text-sm" style={{ color: '#15803d' }}>
-                            {t('settings.allMandatoryConfigured')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.requiredTags')}</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
-                        {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : validationData?.tags?.poco_plus ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <div className="flex-1">
-                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO+</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoPlus')}</div>
-                        </div>
-                        <div 
-                          className="text-xs font-medium px-3 py-1 rounded"
-                          style={
-                            loadingValidation 
-                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
-                              : validationData?.tags?.poco_plus 
-                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
-                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
-                          }
-                        >
-                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.poco_plus ? t('settings.present') : t('settings.missing')}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
-                        {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : validationData?.tags?.poco_minus ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <div className="flex-1">
-                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO-</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoMinus')}</div>
-                        </div>
-                        <div 
-                          className="text-xs font-medium px-3 py-1 rounded"
-                          style={
-                            loadingValidation 
-                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
-                              : validationData?.tags?.poco_minus 
-                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
-                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
-                          }
-                        >
-                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.poco_minus ? t('settings.present') : t('settings.missing')}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
-                        {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : validationData?.tags?.new ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <div className="flex-1">
-                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>NEW</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.newTag')}</div>
-                        </div>
-                        <div 
-                          className="text-xs font-medium px-3 py-1 rounded"
-                          style={
-                            loadingValidation 
-                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
-                              : validationData?.tags?.new 
-                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
-                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
-                          }
-                        >
-                          {loadingValidation ? t('settings.verifying') : validationData?.tags?.new ? t('settings.present') : t('settings.missing')}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.requiredCustomFields')}</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
-                        {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : validationData?.fields?.poco_score ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <div className="flex-1">
-                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO Score</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoScoreDesc')}</div>
-                        </div>
-                        <div 
-                          className="text-xs font-medium px-3 py-1 rounded"
-                          style={
-                            loadingValidation 
-                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' } 
-                              : validationData?.fields?.poco_score 
-                                ? { backgroundColor: '#dcfce7', color: '#15803d' } 
-                                : { backgroundColor: '#fee2e2', color: '#991b1b' }
-                          }
-                        >
-                          {loadingValidation ? t('settings.verifying') : validationData?.fields?.poco_score ? t('settings.present') : t('settings.missing')}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.optionalCustomFields')}</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--app-bg-secondary)', border: '1px solid var(--app-border)' }}>
-                        {loadingValidation ? (
-                          <svg className="animate-spin h-5 w-5" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        ) : validationData?.fields?.poco_ocr ? (
-                          <CheckCircle className="w-5 h-5" style={{ color: '#1e40af' }} />
-                        ) : (
-                          <Info className="w-5 h-5" style={{ color: 'var(--app-text-muted)' }} />
-                        )}
-                        <div className="flex-1">
-                          <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>POCO OCR</div>
-                          <div className="text-xs" style={{ color: 'var(--app-text-muted)' }}>{t('settings.pocoOcrDesc')}</div>
-                        </div>
-                        <div 
-                          className="text-xs font-medium px-3 py-1 rounded"
-                          style={
-                            loadingValidation || validationData?.fields?.poco_ocr
-                              ? { backgroundColor: '#1e3a8a', color: '#dbeafe' }
-                              : { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }
-                          }>
-                          {loadingValidation ? t('settings.verifying') : validationData?.fields?.poco_ocr ? t('settings.present') : t('settings.optional')}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-6">
-                    <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.optionalFeatures')}</h3>
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--app-text)' }}>
-                            {t('settings.pocoOcrTransparencyField')}
-                          </label>
-                          <p className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                            {t('settings.pocoOcrTransparencyDesc')}
-                          </p>
-                        </div>
-                        <Switch
-                          checked={pocoOcrEnabled}
-                          onCheckedChange={handlePocoOcrEnabledToggle}
-                          disabled={!isAdmin || loadingPocoOcr}
-                        />
-                      </div>
-
-                      {!isAdmin && (
-                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                          Only administrators can modify optional feature settings
-                        </p>
-                      )}
-
-                      {pocoOcrEnabled && (
-                        <div className="rounded-lg px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                          <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--info-text)' }} />
-                            <div>
-                              <p className="text-sm" style={{ color: 'var(--info-text)' }}>
-                                POCO OCR field will be created during next sync or when you click "Fix Missing Data" above
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <ValidationTab
+                  t={t}
+                  loadValidationData={loadValidationData}
+                  loadingValidation={loadingValidation}
+                  validationData={validationData}
+                  isAdmin={isAdmin}
+                  handleFixMandatoryData={handleFixMandatoryData}
+                  fixingMandatoryData={fixingMandatoryData}
+                  pocoOcrEnabled={pocoOcrEnabled}
+                  handlePocoOcrEnabledToggle={handlePocoOcrEnabledToggle}
+                  loadingPocoOcr={loadingPocoOcr}
+                />
               )}
 
               {activeTab === 'backgroundProcessing' && (
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.title')}</h2>
-                    <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                      {t('settings.backgroundProcessing.subtitle')}
-                    </p>
-                  </div>
-
-                  {/* Global Loading Indicator */}
-                  {loading && (
-                    <div className="rounded-md px-4 py-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                      <div className="flex items-center gap-3">
-                        <svg className="animate-spin h-4 w-4" style={{ color: 'var(--info-text)' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>{t('settings.appearance.loadingSettings')}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="border-t pt-6">
-                    <div className="space-y-6">
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="block text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>
-                            {t('settings.backgroundProcessing.enableProcessing')}
-                          </label>
-                          <Switch
-                            checked={backgroundSettings.bg_enabled}
-                            onCheckedChange={(checked) => setBackgroundSettings({ ...backgroundSettings, bg_enabled: checked })}
-                            disabled={!isAdmin}
-                          />
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                          {t('settings.backgroundProcessing.enableProcessingDesc')}
-                        </p>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                          {t('settings.backgroundProcessing.debounceTime')}
-                        </label>
-                        <div className="flex gap-3 mb-2">
-                          <input
-                            type="number"
-                            min="5"
-                            max="300"
-                            value={backgroundSettings.bg_debounce_seconds}
-                            onChange={(e) => setBackgroundSettings({ ...backgroundSettings, bg_debounce_seconds: parseInt(e.target.value) || 30 })}
-                            disabled={!isAdmin}
-                            className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
-                            style={{ 
-                              border: '1px solid var(--app-border)', 
-                              backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
-                              color: 'var(--app-text)' 
-                            }}
-                          />
-                          <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>{t('settings.backgroundProcessing.seconds')}</span>
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                          {t('settings.backgroundProcessing.debounceDesc')}
-                        </p>
-                      </div>
-
-                      {/* System API Token & Post Consumption Script Section */}
-                      <div className="border-t pt-6">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Key className="w-5 h-5" style={{ color: 'var(--app-text)' }} />
-                          <h3 className="text-md font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.systemToken.title')}</h3>
-                        </div>
-                        <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-                          {t('settings.systemToken.description')}
-                        </p>
-
-                        {/* Post Consumption Script Info */}
-                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                          <div className="flex items-start gap-3">
-                            <Terminal className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--info-text)' }} />
-                            <div>
-                              <p className="text-sm font-medium mb-1" style={{ color: 'var(--info-text)' }}>
-                                {t('settings.systemToken.scriptSetupRequired')}
-                              </p>
-                              <p className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.systemToken.scriptSetupDesc')}
-                              </p>
-                              <p className="text-xs mt-2 font-mono" style={{ color: 'var(--app-text-muted)' }}>
-                                PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Token Status */}
-                        <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--app-surface-hover)', border: '1px solid var(--app-border)' }}>
-                          {systemTokenInfo.exists ? (
-                            <div className="space-y-3">
-                              <div className="flex items-center gap-2">
-                                <CheckCircle className="w-4 h-4 text-green-500" />
-                                <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                  {t('settings.systemToken.active')}
-                                </span>
-                              </div>
-                              {systemTokenInfo.created_at && (
-                                <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                                  {t('settings.systemToken.createdAt')}: {new Date(systemTokenInfo.created_at).toLocaleString()}
-                                </p>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <XCircle className="w-4 h-4 text-amber-500" />
-                              <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
-                                {t('settings.systemToken.notConfigured')}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Show newly generated token */}
-                        {newSystemToken && (
-                          <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                            <div className="flex items-start gap-2 mb-2">
-                              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                              <span className="text-sm font-medium" style={{ color: 'var(--warning-text)' }}>
-                                {t('settings.systemToken.saveWarning')}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mt-3">
-                              <input
-                                type="text"
-                                value={newSystemToken}
-                                readOnly
-                                className="flex-1 font-mono text-sm px-3 py-2 rounded-md"
-                                style={{ 
-                                  backgroundColor: 'var(--app-surface)', 
-                                  border: '1px solid var(--app-border)',
-                                  color: 'var(--app-text)'
-                                }}
-                              />
-                              <Button
-                                onClick={copyTokenToClipboard}
-                                variant="outline"
-                                size="sm"
-                                className="flex items-center gap-1"
-                              >
-                                <Copy className="w-4 h-4" />
-                                {t('settings.systemToken.copy')}
-                              </Button>
-                            </div>
-                            <p className="text-xs mt-2" style={{ color: 'var(--app-text-muted)' }}>
-                              {t('settings.systemToken.usageHint')}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-3">
-                          {!showTokenConfirm ? (
-                            <Button
-                              onClick={() => setShowTokenConfirm(true)}
-                              disabled={!isAdmin || generatingToken}
-                              className="flex items-center gap-2"
-                            >
-                              <Key className="w-4 h-4" />
-                              {systemTokenInfo.exists ? t('settings.systemToken.regenerate') : t('settings.systemToken.generate')}
-                            </Button>
-                          ) : (
-                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                              <span className="text-sm" style={{ color: 'var(--warning-text)' }}>
-                                {systemTokenInfo.exists ? t('settings.systemToken.confirmRegenerate') : t('settings.systemToken.confirmGenerate')}
-                              </span>
-                              <Button
-                                onClick={handleGenerateSystemToken}
-                                disabled={generatingToken}
-                                size="sm"
-                                className="bg-amber-600 hover:bg-amber-700 text-white"
-                              >
-                                {generatingToken ? t('settings.systemToken.generating') : t('settings.systemToken.confirm')}
-                              </Button>
-                              <Button
-                                onClick={() => setShowTokenConfirm(false)}
-                                variant="outline"
-                                size="sm"
-                              >
-                                {t('settings.systemToken.cancel')}
-                              </Button>
-                            </div>
-                          )}
-
-                          {systemTokenInfo.exists && !showRevokeConfirm && (
-                            <Button
-                              onClick={() => setShowRevokeConfirm(true)}
-                              disabled={!isAdmin || revokingToken}
-                              variant="outline"
-                              className="flex items-center gap-2 text-red-600 border-red-300 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                              {t('settings.systemToken.revoke')}
-                            </Button>
-                          )}
-
-                          {showRevokeConfirm && (
-                            <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ backgroundColor: 'var(--danger-bg)', border: '1px solid var(--danger-border)' }}>
-                              <span className="text-sm" style={{ color: 'var(--danger-text)' }}>
-                                {t('settings.systemToken.confirmRevoke')}
-                              </span>
-                              <Button
-                                onClick={handleRevokeSystemToken}
-                                disabled={revokingToken}
-                                size="sm"
-                                className="bg-red-600 hover:bg-red-700 text-white"
-                              >
-                                {revokingToken ? t('settings.systemToken.revoking') : t('settings.systemToken.confirm')}
-                              </Button>
-                              <Button
-                                onClick={() => setShowRevokeConfirm(false)}
-                                variant="outline"
-                                size="sm"
-                              >
-                                {t('settings.systemToken.cancel')}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-
-                        {!isAdmin && (
-                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            {t('settings.systemToken.adminOnly')}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagConfiguration')}</h3>
-                        <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
-                          {t('settings.backgroundProcessing.tagConfigurationDesc')}
-                        </p>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-                            <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--info-text)' }}></div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagNew')}</div>
-                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.backgroundProcessing.tagNewDesc')}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                            <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagPocoPlus')}</div>
-                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.backgroundProcessing.tagPocoPlusDesc')}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
-                            <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.tagPocoMinus')}</div>
-                              <div className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.backgroundProcessing.tagPocoMinusDesc')}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--app-border)' }}>
-                          <div className="flex items-center justify-between mb-2">
-                            <label className="block text-sm font-medium" style={{ color: 'var(--app-text-secondary)' }}>
-                              {t('settings.backgroundProcessing.removeNewTag')}
-                            </label>
-                            <Switch
-                              checked={backgroundSettings.bg_remove_new_tag}
-                              onCheckedChange={(checked) => setBackgroundSettings({ ...backgroundSettings, bg_remove_new_tag: checked })}
-                              disabled={!isAdmin}
-                            />
-                          </div>
-                          <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            {t('settings.backgroundProcessing.removeNewTagDesc')}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-6">
-                        <h3 className="text-md font-semibold mb-4" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundProcessing.retentionPolicy')}</h3>
-                        <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
-                          {t('settings.backgroundProcessing.retentionPolicyDesc')}
-                        </p>
-
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium mb-3" style={{ color: 'var(--app-text-secondary)' }}>
-                              {t('settings.backgroundProcessing.retentionType')}
-                            </label>
-                            <div className="flex gap-4">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="retention_type"
-                                  value="days"
-                                  checked={backgroundSettings.history_retention_type === 'days'}
-                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_type: e.target.value })}
-                                  disabled={!isAdmin}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
-                                />
-                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.backgroundProcessing.byDays')}</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="radio"
-                                  name="retention_type"
-                                  value="count"
-                                  checked={backgroundSettings.history_retention_type === 'count'}
-                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_type: e.target.value })}
-                                  disabled={!isAdmin}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 disabled:cursor-not-allowed"
-                                />
-                                <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>{t('settings.backgroundProcessing.byRuns')}</span>
-                              </label>
-                            </div>
-                          </div>
-
-                          {backgroundSettings.history_retention_type === 'days' && (
-                            <div>
-                              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.backgroundProcessing.daysToKeep')}
-                              </label>
-                              <div className="flex gap-3 mb-2">
-                                <input
-                                  type="number"
-                                  min="1"
-                                  value={backgroundSettings.history_retention_days}
-                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_days: parseInt(e.target.value) || 365 })}
-                                  disabled={!isAdmin}
-                                  className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
-                                  style={{ 
-                                    border: '1px solid var(--app-border)', 
-                                    backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
-                                    color: 'var(--app-text)' 
-                                  }}
-                                />
-                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>{t('settings.backgroundProcessing.days')}</span>
-                              </div>
-                              <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                                {t('settings.backgroundProcessing.daysToKeepDesc')}
-                              </p>
-                            </div>
-                          )}
-
-                          {backgroundSettings.history_retention_type === 'count' && (
-                            <div>
-                              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
-                                {t('settings.backgroundProcessing.runsToKeep')}
-                              </label>
-                              <div className="flex gap-3 mb-2">
-                                <input
-                                  type="number"
-                                  min="1"
-                                  value={backgroundSettings.history_retention_count}
-                                  onChange={(e) => setBackgroundSettings({ ...backgroundSettings, history_retention_count: parseInt(e.target.value) || 100 })}
-                                  disabled={!isAdmin}
-                                  className="w-32 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
-                                  style={{ 
-                                    border: '1px solid var(--app-border)', 
-                                    backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
-                                    color: 'var(--app-text)' 
-                                  }}
-                                />
-                                <span className="text-sm self-center" style={{ color: 'var(--app-text-muted)' }}>runs</span>
-                              </div>
-                              <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                                Keep only the most recent N processing runs (default: 100 runs)
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <Button
-                          onClick={handleBackgroundSettingsSave}
-                          disabled={!isAdmin}
-                          className="flex items-center gap-2"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                          {t('settings.backgroundProcessing.saveSettings')}
-                        </Button>
-                        {!isAdmin && (
-                          <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
-                            Only administrators can update background processing settings
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <BackgroundProcessingTab
+                  loading={loading}
+                  t={t}
+                  isAdmin={isAdmin}
+                  backgroundSettings={backgroundSettings}
+                  setBackgroundSettings={setBackgroundSettings}
+                  handleBackgroundSettingsSave={handleBackgroundSettingsSave}
+                  systemTokenInfo={systemTokenInfo}
+                  newSystemToken={newSystemToken}
+                  generatingToken={generatingToken}
+                  revokingToken={revokingToken}
+                  showTokenConfirm={showTokenConfirm}
+                  setShowTokenConfirm={setShowTokenConfirm}
+                  showRevokeConfirm={showRevokeConfirm}
+                  setShowRevokeConfirm={setShowRevokeConfirm}
+                  handleGenerateSystemToken={handleGenerateSystemToken}
+                  handleRevokeSystemToken={handleRevokeSystemToken}
+                  copyTokenToClipboard={copyTokenToClipboard}
+                />
               )}
             </div>
+
           </div>
         </div>
       </div>

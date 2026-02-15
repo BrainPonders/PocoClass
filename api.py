@@ -1,6 +1,29 @@
 """
-PocoClass REST API
-Provides API endpoints for the PocoClass frontend
+PocoClass REST API — Flask Backend
+
+Central REST API server for the PocoClass document classification system.
+Connects a React frontend to a Paperless-ngx instance, providing endpoints for:
+
+Route Groups:
+  - Authentication & Setup    (/api/auth/*)           — Login, logout, initial setup wizard
+  - User Management            (/api/users/*)          — Admin CRUD for PocoClass users
+  - Settings & Configuration   (/api/settings/*)       — App settings, date formats, placeholders
+  - Data Validation            (/api/validation/*)     — Mandatory field/tag checks in Paperless
+  - Sync                       (/api/sync/*)           — Paperless entity cache synchronisation
+  - Paperless Entity Cache     (/api/paperless/*)      — Cached correspondents, tags, doc types, custom fields
+  - Rule Management            (/api/rules/*)          — CRUD + YAML generation for classification rules
+  - Documents                  (/api/documents/*)      — Paperless document listing, preview proxy, OCR
+  - Test & Execute             (/api/rules/test, */execute) — Rule testing and execution
+  - Background Processing      (/api/background/*)     — Automated batch classification
+  - System Token               (/api/system-token)     — API token management for external triggers
+  - Logs                       (/api/logs)             — Application log retrieval
+  - System Maintenance         (/api/system/*)         — App reset
+
+Middleware:
+  - require_auth               — Session-based authentication via Bearer token
+  - require_admin              — Admin-only access guard
+  - require_system_token_or_admin — Dual-auth for automation endpoints
+  - proxy_to_vite              — Dev-mode request proxy to Vite frontend
 """
 
 from flask import Flask, request, jsonify, send_from_directory
@@ -55,7 +78,8 @@ paperless_api = PaperlessAPIClient(config, db)
 test_engine = TestEngine()
 sync_service = SyncService(db)
 
-# Helper function to check if sync is needed
+# ---- Sync Freshness Helper ----
+
 def should_sync(entity_type='all', max_age_minutes=60):
     """Check if sync is needed based on last sync time"""
     try:
@@ -84,8 +108,10 @@ def should_sync(entity_type='all', max_age_minutes=60):
         logger.error(f"Error checking sync status: {e}")
         return True  # Sync if uncertain
 
-# Authentication decorator
+# ---- Authentication Decorators ----
+
 def require_auth(f):
+    """Verify a valid Bearer session token and attach user to request."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
@@ -106,6 +132,7 @@ def require_auth(f):
     return decorated_function
 
 def require_admin(f):
+    """Require a valid session with admin role."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
@@ -287,7 +314,8 @@ def fetch_all_users_paginated(paperless_url, token, username):
     # User not found in Paperless
     return None, None, None
 
-# Authentication Endpoints
+# ---- Authentication & Setup Routes ----
+
 @app.route('/api/auth/status', methods=['GET'])
 def auth_status():
     """Check if setup is completed and get system status"""
@@ -553,6 +581,8 @@ def get_current_user():
         logger.error(f"Error getting current user: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ---- User Management Routes ----
+
 @app.route('/api/users', methods=['GET'])
 @require_admin
 def list_all_users():
@@ -756,7 +786,8 @@ def get_all_paperless_users():
         logger.error(f"Error fetching Paperless users: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Settings Batch Endpoint
+# ---- Settings Batch Route ----
+
 @app.route('/api/settings/batch', methods=['GET'])
 @require_auth
 def get_settings_batch():
@@ -831,7 +862,8 @@ def get_settings_batch():
         logger.error(f"Error in settings batch: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Sync Endpoints
+# ---- Sync Routes ----
+
 @app.route('/api/sync', methods=['POST'])
 @require_admin
 def trigger_sync():
@@ -872,6 +904,8 @@ def get_sync_history():
     except Exception as e:
         logger.error(f"Error getting sync history: {e}")
         return jsonify({'error': str(e)}), 500
+
+# ---- Paperless Entity Cache Routes ----
 
 @app.route('/api/paperless/correspondents', methods=['GET'])
 @require_auth
@@ -975,7 +1009,8 @@ def create_custom_field():
         logger.error(f"Error creating custom field: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Settings Endpoints
+# ---- Settings Routes ----
+
 @app.route('/api/settings', methods=['GET'])
 @require_auth
 def get_settings():
@@ -1004,7 +1039,8 @@ def update_setting(key):
         logger.error(f"Error updating setting: {e}")
         return jsonify({'error': str(e)}), 500
 
-# App Settings Endpoints
+# ---- App Settings Routes ----
+
 @app.route('/api/settings/app', methods=['GET'])
 @require_auth
 def get_app_settings():
@@ -1029,7 +1065,8 @@ def update_app_settings():
         logger.error(f"Error updating app settings: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Date Formats Endpoints
+# ---- Date Format Settings Routes ----
+
 @app.route('/api/settings/date-formats', methods=['GET'])
 @require_auth
 def get_date_formats():
@@ -1069,7 +1106,8 @@ def update_date_format_selection(format_pattern):
         logger.error(f"Error updating date format selection: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Placeholder Settings Endpoints
+# ---- Placeholder Settings Routes ----
+
 @app.route('/api/settings/placeholders', methods=['GET'])
 @require_auth
 def get_placeholder_settings():
@@ -1099,7 +1137,8 @@ def update_placeholder_visibility(placeholder_name):
         logger.error(f"Error updating placeholder visibility: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Paperless Configuration Endpoint
+# ---- Paperless Configuration Routes ----
+
 @app.route('/api/settings/paperless-config', methods=['GET'])
 @require_auth
 def get_paperless_config():
@@ -1131,7 +1170,8 @@ def update_paperless_config():
         logger.error(f"Error updating Paperless config: {e}")
         return jsonify({'error': str(e)}), 500
 
-# POCO OCR Field Configuration
+# ---- POCO OCR Field Configuration Routes ----
+
 @app.route('/api/settings/poco-ocr-enabled', methods=['GET'])
 @require_auth
 def get_poco_ocr_enabled():
@@ -1197,7 +1237,8 @@ def update_poco_ocr_enabled():
         logger.error(f"Error updating POCO OCR enabled status: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Mandatory Data Validation
+# ---- Data Validation Routes ----
+
 @app.route('/api/validation/mandatory-data', methods=['GET'])
 @require_auth
 def check_mandatory_data():
@@ -1343,9 +1384,11 @@ def fix_mandatory_data():
         logger.error(f"Error fixing mandatory data: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Proxy to Vite dev server in development mode
+# ---- Middleware & Static Serving ----
+
 @app.before_request
 def proxy_to_vite():
+    """Proxy non-API requests to the Vite dev server in development mode."""
     # Only proxy non-API requests in development mode
     if request.path.startswith('/api/'):
         return None
@@ -1375,16 +1418,17 @@ def proxy_to_vite():
     
     return None
 
-# Serve React App (fallback for production)
 @app.route('/')
 @app.route('/<path:path>')
 def serve_react_app(path=''):
+    """Serve the React SPA; falls back to index.html for client-side routing."""
     static_folder = app.static_folder or 'frontend/dist'
     if path and os.path.exists(os.path.join(static_folder, path)):
         return send_from_directory(static_folder, path)
     return send_from_directory(static_folder, 'index.html')
 
-# Rule Endpoints
+# ---- Rule Management Routes ----
+
 @app.route('/api/rules', methods=['GET'])
 def list_rules():
     """List all rules"""
@@ -1838,6 +1882,8 @@ def delete_rule(rule_id):
         logger.error(f"Error deleting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ---- Deleted Rules (Trash Can) Routes ----
+
 @app.route('/api/deleted-rules', methods=['GET'])
 def list_deleted_rules():
     """List all deleted rules from the deleted folder"""
@@ -1889,9 +1935,11 @@ def permanently_delete_rule(rule_id):
         logger.error(f"Error permanently deleting rule {rule_id}: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ---- Log Routes ----
+
 @app.route('/api/logs', methods=['GET'])
 def list_logs():
-    """List logs"""
+    """List logs with optional filtering by type, level, date range, and search term."""
     try:
         # Get filter parameters
         limit = request.args.get('limit', 500, type=int)
@@ -1918,10 +1966,12 @@ def list_logs():
         logger.error(f"Error listing logs: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ---- Document Routes ----
+
 @app.route('/api/documents', methods=['GET'])
 @require_auth
 def list_documents():
-    """List documents from Paperless-ngx"""
+    """List documents from Paperless-ngx with optional filters, enriched with cached entity names."""
     try:
         limit = request.args.get('limit', type=int)
         
@@ -1939,13 +1989,13 @@ def list_documents():
         
         # Determine if we should ignore legacy tag filtering:
         # - If user explicitly sets ignore_tags parameter, use that
-        # - Otherwise, automatically ignore legacy tags when NO tag filters are active
+        # - If user has selected any tag filters, skip legacy filtering so it doesn't interfere
+        # - Otherwise, automatically ignore legacy tags when viewing the full document list
         explicit_ignore_tags = request.args.get('ignore_tags')
         if explicit_ignore_tags is not None:
             ignore_tags = explicit_ignore_tags.lower() == 'true'
         else:
-            # Auto-ignore legacy tags when no tag filters are provided
-            ignore_tags = (tags is None and exclude_tags is None)
+            ignore_tags = True
         
         logger.info(f"Document list request - tags={tags}, exclude_tags={exclude_tags}, ignore_tags={ignore_tags}")
         
@@ -2171,6 +2221,8 @@ def get_document_ocr_content(doc_id):
     except Exception as e:
         logger.error(f"Error getting document content: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
+
+# ---- Rule Format Conversion Helpers ----
 
 def convert_frontend_to_backend(frontend_data):
     """Convert frontend rule format to backend YAML format"""
@@ -2428,7 +2480,8 @@ def convert_backend_to_frontend(backend_data, rule_id):
     
     return frontend
 
-# Test/Execute Endpoints
+# ---- Rule Test & Execution Routes ----
+
 @app.route('/api/rules/test', methods=['POST'])
 def test_rule_endpoint():
     """Test a rule against document content"""
@@ -2598,7 +2651,8 @@ def execute_rule_endpoint(rule_id):
         logger.error(f"Error executing rule: {e}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# Initialize singleton background processor at module level
+# ---- Background Processing Routes ----
+
 from background_processor import BackgroundProcessor
 background_processor = BackgroundProcessor(db)
 
@@ -2825,7 +2879,8 @@ def update_background_settings():
         logger.error(f"Error updating background settings: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
-# System API Token Management Endpoints
+# ---- System API Token Management Routes ----
+
 @app.route('/api/system-token', methods=['GET'])
 @require_admin
 def get_system_token_info():
@@ -2894,10 +2949,12 @@ def revoke_system_token():
         logger.error(f"Error revoking system token: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
+# ---- Sync Count Comparison Route ----
+
 @app.route('/api/sync/counts', methods=['GET'])
 @require_auth
 def get_sync_counts():
-    """Get entity counts from Paperless vs local cache (for auto-sync checking)"""
+    """Compare entity counts between Paperless and local cache to detect sync drift."""
     try:
         session = request.current_user
         paperless_url = db.get_config('paperless_url')
@@ -2965,7 +3022,8 @@ def get_sync_counts():
         logger.error(f"Error getting sync counts: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
-# Run cleanup on app startup
+# ---- Startup Cleanup & System Maintenance ----
+
 try:
     logger.info("Running processing history cleanup on startup...")
     deleted_count = db.cleanup_old_processing_history()
@@ -3032,7 +3090,7 @@ def reset_application():
         logger.error(f"Error resetting application: {e}")
         return jsonify({'error': str(e)}), 500
 
+# ---- Development Server Entry Point ----
+
 if __name__ == '__main__':
-    # In development, run with debug mode on port 8000
-    # Frontend Vite runs on port 5000 and proxies API requests to 8000
     app.run(host='0.0.0.0', port=8000, debug=True)

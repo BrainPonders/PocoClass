@@ -1,3 +1,10 @@
+/**
+ * @file StaticDataStep.jsx
+ * @description Step 3 of the rule builder wizard (legacy) - Static classification data.
+ * Provides dropdowns for correspondent, document type, and tag assignment
+ * by fetching available values from the Paperless-ngx cache.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { HelpCircle, Plus } from 'lucide-react';
 import InfoBox from '../InfoBox';

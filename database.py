@@ -1,6 +1,23 @@
 """
-PocoClass Database
-Simple SQLite database for user management and configuration
+PocoClass Database Layer
+
+SQLite-backed persistence for all PocoClass application state, including:
+- User management: PocoClass users mapped to Paperless-ngx accounts with role-based access
+- Session management: Encrypted token storage with sliding-window + absolute expiry
+- Configuration: Key-value config store for app settings, background processing params
+- Paperless entity cache: Local copies of correspondents, tags, document types,
+  custom fields, and users synced from the Paperless API for fast ID/name resolution
+- Processing history: Audit trail of background processing runs with per-document details
+- UI settings: Date format presets, placeholder visibility, and app preferences
+
+Security features:
+- API tokens encrypted at rest using Fernet symmetric encryption
+- System API tokens stored as SHA-256 hashes (raw token shown once to admin)
+- Session tokens use cryptographically secure random generation
+
+Key classes:
+    TokenEncryption - Handles Fernet encryption/decryption of Paperless API tokens
+    Database - Main data access layer with methods organized by domain concern
 """
 
 import sqlite3
@@ -106,6 +123,13 @@ class TokenEncryption:
             raise
 
 class Database:
+    """Main data access layer for PocoClass.
+    
+    Provides CRUD operations for all application entities. Each method opens
+    and closes its own SQLite connection (no connection pooling) for simplicity
+    and thread safety. Uses INSERT OR REPLACE for upsert-style operations.
+    """
+    
     def __init__(self, db_path: str = None):
         if db_path is None:
             db_path = os.getenv('POCOCLASS_DB_PATH', 'pococlass.db')
@@ -120,7 +144,17 @@ class Database:
         return conn
     
     def init_database(self):
-        """Initialize database tables"""
+        """Create all database tables if they don't exist, and run migrations.
+        
+        Tables are organized into groups:
+        - Core: config, users, sessions, settings
+        - Paperless cache: correspondents, tags, document_types, custom_fields, users
+        - History: sync_history, processing_history, processing_history_details, logs
+        - UI: app_settings, date_formats, placeholder_settings
+        
+        Migrations are handled inline with ALTER TABLE wrapped in try/except
+        to safely skip if the column already exists.
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         
@@ -504,7 +538,11 @@ class Database:
         logger.info("Revoked system API token")
     
     def create_user(self, paperless_username: str, paperless_user_id: int, role: str = 'user') -> Optional[int]:
-        """Create a new user"""
+        """Create a new PocoClass user linked to a Paperless account.
+        
+        Uses get-or-create pattern: if a user with the same username already exists
+        (IntegrityError on UNIQUE constraint), returns the existing user's ID instead.
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         
@@ -617,7 +655,15 @@ class Database:
         return users
     
     def create_session(self, user_id: int, paperless_token: str, duration_hours: Optional[int] = None) -> str:
-        """Create a new session for a user"""
+        """Create a new authenticated session with encrypted token storage.
+        
+        Generates a cryptographically secure session token and encrypts the
+        Paperless API token before storing. Session duration defaults to the
+        configured session_timeout_hours app setting.
+        
+        Returns:
+            The session token string (to be sent as a cookie/header to the client)
+        """
         # Get session timeout from settings, default to 24 hours
         if duration_hours is None:
             duration_hours = int(self.get_app_setting('session_timeout_hours', '24'))
@@ -641,7 +687,18 @@ class Database:
         return session_token
     
     def get_session(self, session_token: str) -> Optional[Dict]:
-        """Get session by token and refresh expiry on activity"""
+        """Validate and retrieve a session, applying dual-expiry checks.
+        
+        Implements two expiry mechanisms:
+        1. Sliding window: Session extends on each activity (configurable hours)
+        2. Absolute max: Hard cap on total session lifetime (prevents indefinite extension)
+        
+        If valid, decrypts the stored Paperless API token and refreshes the
+        sliding window expiry. Automatically deletes expired or corrupted sessions.
+        
+        Returns:
+            Session dict with decrypted 'paperless_token' and user info, or None
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -767,7 +824,11 @@ class Database:
         return [dict(row) for row in rows]
     
     def sync_correspondents(self, correspondents: List[Dict]) -> int:
-        """Sync correspondents from Paperless"""
+        """Upsert correspondents from Paperless API into local cache.
+        
+        Uses INSERT OR REPLACE to create or update cached correspondents.
+        Also records the sync event in sync_history for audit.
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         now = datetime.now().isoformat()
@@ -809,7 +870,11 @@ class Database:
         return [dict(row) for row in rows]
     
     def sync_tags(self, tags: List[Dict]) -> int:
-        """Sync tags from Paperless"""
+        """Upsert tags from Paperless API into local cache.
+        
+        Unlike correspondents, tags also perform a cleanup step: any cached tags
+        not present in the incoming list are deleted (handles tag removal in Paperless).
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         now = datetime.now().isoformat()
@@ -925,7 +990,11 @@ class Database:
         logger.debug(f"Cached custom field '{custom_field['name']}' (ID: {custom_field['id']})")
     
     def sync_custom_fields(self, custom_fields: List[Dict]) -> int:
-        """Sync custom fields from Paperless"""
+        """Upsert custom fields from Paperless API into local cache.
+        
+        Like tags, performs cleanup of deleted fields. Also stores extra_data
+        as JSON (contains select option definitions for dropdown-type fields).
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         now = datetime.now().isoformat()
@@ -1258,7 +1327,13 @@ class Database:
         conn.close()
     
     def sync_custom_field_placeholders(self):
-        """Sync custom fields from cache into placeholder settings"""
+        """Sync custom fields from cache into placeholder settings for the rule wizard.
+        
+        Ensures placeholder_settings reflects the current set of Paperless custom fields:
+        - Removes placeholder entries for fields that no longer exist
+        - Adds new fields with default visibility ('both') and sequential ordering
+        - Custom fields are ordered after built-in fields (indices 8+) but before internals (100+)
+        """
         custom_fields = self.get_all_custom_fields()
         conn = self.get_connection()
         cursor = conn.cursor()
@@ -1297,7 +1372,25 @@ class Database:
                 document_id: int = None, document_name: str = None,
                 poco_score: float = None, poco_ocr: float = None,
                 user_id: int = None, source: str = None, details: str = None):
-        """Add a log entry"""
+        """Record a classification or processing event in the logs table.
+        
+        Args:
+            log_type: Event category (e.g., 'classification', 'processing', 'sync')
+            level: Severity level ('info', 'warning', 'error')
+            message: Human-readable event description
+            rule_name: Name of the rule involved (if applicable)
+            rule_id: ID of the rule involved (if applicable)
+            document_id: Paperless document ID (if applicable)
+            document_name: Document title for display
+            poco_score: POCO classification score (0-100)
+            poco_ocr: POCO OCR match score (0-100)
+            user_id: PocoClass user who triggered the action
+            source: Component that generated the log (e.g., 'background_processor')
+            details: Additional JSON-serializable details
+            
+        Returns:
+            The auto-generated log entry ID
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -1315,7 +1408,12 @@ class Database:
                  log_type: str = None, level: str = None,
                  date_from: str = None, date_to: str = None,
                  search: str = None) -> List[Dict]:
-        """Get logs with optional filtering"""
+        """Query logs with dynamic filtering and safe sorting.
+        
+        Builds a parameterized SQL query based on provided filters.
+        Sort field is validated against a whitelist to prevent SQL injection
+        (since column names can't be parameterized in SQLite).
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         
@@ -1409,7 +1507,11 @@ class Database:
                             rules_applied: int = None,
                             error_message: str = None,
                             details: str = None):
-        """Update a processing run record"""
+        """Update a processing run with final results.
+        
+        Dynamically builds the UPDATE query to only set fields that were provided,
+        avoiding overwriting existing values with NULL.
+        """
         conn = self.get_connection()
         cursor = conn.cursor()
         
@@ -1603,6 +1705,7 @@ class Database:
                     return deleted_count
                 
             elif retention_type == 'count':
+                # Keep only the N most recent runs; LIMIT -1 OFFSET N selects everything after the Nth row
                 retention_count = int(self.get_config('history_retention_count') or '100')
                 
                 cursor.execute("""

@@ -1,3 +1,9 @@
+/**
+ * @file GuardedLink.jsx
+ * @description Navigation link that intercepts clicks when there are unsaved changes
+ * in the rule editor. Shows a confirmation dialog before allowing navigation,
+ * preventing accidental data loss.
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';

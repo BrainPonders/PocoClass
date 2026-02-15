@@ -1,4 +1,10 @@
-
+/**
+ * @file translations.jsx
+ * @description Legacy translation strings for en, fr, and it locales used by the
+ * old useTranslation hook. These cover navigation, common actions, dashboard,
+ * rules, rule editor steps, OCR identifiers, and dynamic extraction UI labels.
+ * Note: The primary i18n system now uses JSON locale files under src/i18n/locales/.
+ */
 import React, { useState, useEffect } from 'react';
 
 export const translations = {
@@ -505,6 +511,8 @@ export const translations = {
   }
 };
 
+// Legacy translation hook. Reads language preference from localStorage and
+// looks up keys from the translations object, falling back to English.
 export function useTranslation() {
   const [language, setLanguage] = useState('en');
 
@@ -520,10 +528,10 @@ export function useTranslation() {
     }
   }, []);
 
+  // Translate a key with optional placeholder replacement (e.g., {count} -> 5)
   const t = (key, replacements = {}) => {
     let text = translations[language]?.[key] || translations['en'][key] || key;
     
-    // Replace placeholders like {count} with actual values
     Object.keys(replacements).forEach(replKey => {
       text = text.replace(`{${replKey}}`, replacements[replKey]);
     });

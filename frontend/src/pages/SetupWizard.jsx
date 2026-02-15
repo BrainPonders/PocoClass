@@ -1,3 +1,9 @@
+/**
+ * @file SetupWizard.jsx
+ * @description Initial 3-step setup wizard shown on first launch. Step 1: Welcome
+ * overview. Step 2: Connect to Paperless-ngx with admin credentials. Step 3: Validate
+ * system requirements (custom fields and tags) and optionally auto-create missing ones.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Server, Check, AlertCircle, XCircle, CheckCircle, Database, Info, Shield, Lightbulb } from 'lucide-react';
@@ -33,6 +39,7 @@ export default function SetupWizard() {
     });
   };
 
+  // Authenticate with Paperless-ngx and store session token
   const handleSetup = async () => {
     setLoading(true);
     
@@ -70,7 +77,7 @@ export default function SetupWizard() {
     }
   };
 
-  // Load validation data when reaching step 3
+  // Load system requirement validation when reaching the final step
   useEffect(() => {
     if (step === 3) {
       loadValidationData();
@@ -103,6 +110,7 @@ export default function SetupWizard() {
     }
   };
 
+  // Auto-create missing custom fields and tags in Paperless-ngx
   const handleFixMandatoryData = async () => {
     try {
       setFixingMandatoryData(true);
@@ -147,6 +155,7 @@ export default function SetupWizard() {
     }
   };
 
+  // Mark setup as complete and show NEW tag confirmation before navigating to app
   const handleContinueToDashboard = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
