@@ -156,14 +156,11 @@ export default function Rules() {
       if (filters.dateTo) params.append('date_to', filters.dateTo);
       if (filters.limit) params.append('limit', filters.limit);
       
-      const sessionToken = localStorage.getItem('pococlass_session');
       const apiUrl = `${API_BASE_URL}/api/documents?${params.toString()}`;
       console.log('[Documents] Fetching from:', apiUrl);
       
       const response = await fetch(apiUrl, {
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`
-        }
+        credentials: 'include'
       });
       
       console.log('[Documents] API Response status:', response.status, response.statusText);
@@ -236,9 +233,7 @@ export default function Rules() {
   };
 
   const handleViewPDF = (doc) => {
-    // Get session token and pass it as query parameter for new tab
-    const sessionToken = localStorage.getItem('pococlass_session');
-    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    const url = `/api/documents/${doc.id}/preview`;
     window.open(url, '_blank');
   };
 
