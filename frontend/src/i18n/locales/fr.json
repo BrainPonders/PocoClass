@@ -1250,5 +1250,259 @@
       "step5Desc": "Allez dans Paramètres → Traitement en arrière-plan et activez le mode automatique. PocoClass classera désormais automatiquement les nouveaux documents."
     },
     "fullGuide": "Guide complet"
+  },
+  "tutorial": {
+    "pageTitle": "Tutoriel guidé",
+    "pageSubtitle": "Apprenez à créer des règles de classification avec un exemple réel de relevé bancaire",
+    "backToRules": "Retour aux règles",
+    "readOnlyBanner": "MODE TUTORIEL — Les champs sont en lecture seule",
+    "nav": {
+      "back": "Retour",
+      "next": "Suivant",
+      "finish": "Terminer",
+      "step": "Étape"
+    },
+    "steps": {
+      "0_1": {
+        "title": "Bienvenue dans le tutoriel du constructeur de règles !",
+        "text": "C'est ici que vous créez des règles de classification. Chaque règle apprend à PocoClass comment reconnaître un type spécifique de document. Parcourons ensemble la création d'une règle pour les relevés bancaires."
+      },
+      "0_2": {
+        "title": "6 étapes pour créer une règle",
+        "text": "Chaque règle de classification est construite en 6 étapes, affichées dans cette barre de progression. Chaque étape se concentre sur un aspect différent — du nom de votre règle, à la définition de motifs, à l'attribution de métadonnées. Vous les complèterez de gauche à droite."
+      },
+      "0_3": {
+        "title": "La zone de saisie",
+        "text": "C'est ici que vous remplirez les données de votre règle. Chaque étape affiche différents champs de saisie de ce côté. Les champs changent au fur et à mesure que vous avancez dans les 6 étapes."
+      },
+      "0_4": {
+        "title": "Résumé de la configuration",
+        "text": "En bas de chaque étape, vous trouverez un résumé de la configuration. Celui-ci montre un aperçu de vos paramètres actuels et met en évidence tout ce qui pourrait nécessiter une attention avec des avertissements."
+      },
+      "0_5": {
+        "title": "Aperçu PDF",
+        "text": "Ce panneau affiche un aperçu du document pour lequel vous créez une règle. Utilisez-le pour identifier les motifs de texte et les éléments visuels uniques à ce type de document."
+      },
+      "0_6": {
+        "title": "Contenu OCR",
+        "textParts": [
+          { "text": "Cet onglet montre le texte brut que PocoClass extrait du document en utilisant l'OCR (Reconnaissance Optique de Caractères). C'est ce que PocoClass « lit » réellement — " },
+          { "text": "remarquez que l'ordre du texte peut différer de la mise en page visuelle du PDF.", "bold": true },
+          { "text": " Vos motifs doivent correspondre à ce texte, pas à la mise en page du PDF." }
+        ]
+      },
+      "0_7": {
+        "title": "Aperçu YAML",
+        "text": "L'onglet YAML montre votre règle sous forme de données structurées — c'est ce qui est enregistré. La plupart des utilisateurs n'auront pas besoin de modifier le YAML directement, mais c'est utile pour les utilisateurs avancés qui souhaitent affiner ou copier des règles."
+      },
+      "1_0": {
+        "title": "Étape 1 : Informations de base",
+        "text": "Commençons par les bases. Dans cette première étape, vous donnez à votre règle un nom, un ID et une description. Vous définissez également le seuil POCO Score — le niveau de confiance minimum nécessaire pour classer un document."
+      },
+      "1_1": {
+        "title": "Nom et ID de la règle",
+        "text": "Donnez à votre règle un nom clair — comme « Bank Statement ». L'ID de la règle est généré automatiquement et est utilisé en interne. La description vous aide à vous souvenir de ce que fait cette règle."
+      },
+      "1_2": {
+        "title": "Seuil POCO Score",
+        "text": "Le seuil POCO Score détermine le niveau de confiance que le système doit atteindre avant de classer un document. La valeur par défaut est 75% — cela signifie qu'au moins 75% des motifs pondérés doivent correspondre. Trop bas = faux positifs, trop élevé = documents manqués."
+      },
+      "2_0": {
+        "title": "Étape 2 : Motifs d'identification OCR",
+        "textParts": [
+          { "text": "C'est l'étape la plus importante. Ici, vous définissez des motifs de texte qui identifient de manière unique votre type de document. Un motif de texte peut être aussi simple qu'un mot ou une phrase — comme « Royal Bank of Scotland » ou « Invoice Number »." },
+          { "text": "\n\n" },
+          { "text": "Pour plus de flexibilité, vous pouvez utiliser des expressions régulières (regex) — une façon de décrire des motifs de texte qui gère les variations comme les espaces supplémentaires ou les différents formatages. Le bouton Assistant de motif rend la création de regex facile, même sans expérience. Pour plus de détails, voir " },
+          { "text": "Support Regex dans le Guide", "action": "openGuide" },
+          { "text": "." }
+        ]
+      },
+      "2_1": {
+        "title": "PDF vs OCR — Ce que PocoClass voit",
+        "textParts": [
+          { "text": "Avant de définir des motifs, observez la différence entre le PDF (comment vous voyez le document) et le texte OCR (comment PocoClass le voit). " },
+          { "text": "Basculez", "action": "togglePreview" },
+          { "text": " entre les onglets PDF et OCR sur la droite — remarquez comment l'ordre du texte est différent ! PocoClass travaille avec le texte OCR, pas la mise en page visuelle." }
+        ]
+      },
+      "2_2": {
+        "title": "Groupe logique 1 — Identification de la banque",
+        "textParts": [
+          { "text": "Notre premier motif recherche " },
+          { "text": "\"Royal Bank of Scotland\"", "bold": true },
+          { "text": " en texte brut — il apparaît en bas de chaque relevé RBS. La zone de recherche est définie sur les 10 dernières lignes, rendant la correspondance plus rapide et plus précise. Ce groupe est optionnel — il renforce la confiance mais ne rejettera pas les documents s'il est absent." },
+          { "text": "\n\n" },
+          { "text": "Avec l'aide du constructeur de regex, ce même motif pourrait être écrit comme " },
+          { "text": "Royal\\s*Bank\\s*of\\s*Scotland", "bold": true },
+          { "text": " — ce qui correspondrait également à des variations comme « RoyalBank of Scotland » ou « Royal   Bank of Scotland » avec un espacement inhabituel. Le texte simple fonctionne pour la plupart des cas ; le regex ajoute de la flexibilité si nécessaire." }
+        ]
+      },
+      "2_3": {
+        "title": "Groupe logique 2 — Identification du compte",
+        "textParts": [
+          { "text": "Ce motif recherche votre IBAN complet " },
+          { "text": "\"GB11RBOS 1610 0011 1111 11\"", "bold": true },
+          { "text": " dans les 10 premières lignes du document — là où les relevés bancaires affichent généralement les détails du compte." },
+          { "text": "\n\n" },
+          { "text": "Ce groupe a été rendu obligatoire", "bold": true },
+          { "text": ", ce qui signifie que la règle ne passera que si ce motif est trouvé. C'est important lorsque vous avez plusieurs comptes chez Royal Bank — cela garantit que vous identifiez le relevé du bon compte, pas n'importe quel document RBS." }
+        ]
+      },
+      "2_4": {
+        "title": "Autres groupes logiques",
+        "textParts": [
+          { "text": "Vous pouvez ajouter d'autres groupes logiques pour améliorer la précision. Chaque règle nécessite un minimum de 3 et peut avoir jusqu'à 10 groupes. Les groupes peuvent utiliser la logique AND (toutes les conditions doivent correspondre) ou la logique OR (n'importe quelle condition peut correspondre). Dans notre exemple, les groupes 3-5 recherchent " },
+          { "text": "\"Account Number\"", "bold": true },
+          { "text": ", " },
+          { "text": "\"Statement\"", "bold": true },
+          { "text": ", et " },
+          { "text": "\"Balance\"", "bold": true },
+          { "text": "." },
+          { "text": "\n\n" },
+          { "text": "Le bouton Assistant de motif (cherchez l'icône baguette) vous aide à construire des motifs regex sans avoir besoin de connaître la syntaxe regex. Pour plus de détails, voir " },
+          { "text": "Support Regex dans le Guide", "action": "openGuide" },
+          { "text": "." }
+        ]
+      },
+      "2_5": {
+        "title": "Seuil OCR et multiplicateur de poids",
+        "textParts": [
+          { "text": "Le seuil OCR (75%) définit le pourcentage minimum de motifs OCR qui doivent correspondre avant que le document puisse être classé. Cela garantit un niveau de base de confiance basée sur le texte." },
+          { "text": "\n\n" },
+          { "text": "Le multiplicateur de poids (x3) contrôle le poids des motifs OCR dans le POCO Score final. Une règle peut utiliser trois sources pour identifier les documents : les motifs de texte OCR (la source principale), les motifs de nom de fichier et les classifications Paperless-ngx. Le multiplicateur vous permet de prioriser l'OCR par rapport aux autres sources. Pour plus de détails, voir " },
+          { "text": "Système de notation dans le Guide", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "3_0": {
+        "title": "Étape 3 : Motifs de nom de fichier",
+        "text": "En plus du texte OCR, le nom de fichier lui-même peut aider à identifier les documents. Par exemple, votre banque pourrait fournir des relevés numériques automatisés avec des noms de fichiers cohérents comme « RBS_Statement_2014-12-21.pdf ». Les motifs de nom de fichier vous permettent d'en tirer parti."
+      },
+      "3_1": {
+        "title": "Motifs de nom de fichier",
+        "textParts": [
+          { "text": "Motif 1 : " },
+          { "text": "\"RBS.*statement\"", "bold": true },
+          { "text": " correspond à tout nom de fichier contenant « RBS » suivi de n'importe quels caractères puis « statement ». Le .* signifie que n'importe quel nombre de caractères peut apparaître entre eux — correspondant à « RBS_Statement_2014-12-21.pdf » ou « RBS-Monthly-Statement.pdf »." },
+          { "text": "\n\n" },
+          { "text": "Motif 2 : " },
+          { "text": "\"\\d{4}-\\d{2}-\\d{2}\"", "bold": true },
+          { "text": " recherche un motif de date complet dans le nom de fichier — quatre chiffres, un tiret, deux chiffres, un tiret et deux chiffres. Cela correspond à la partie « 2014-12-21 » dans « RBS_Statement_2014-12-21.pdf », aidant à identifier les documents par leur horodatage." }
+        ]
+      },
+      "3_2": {
+        "title": "Multiplicateur de poids du nom de fichier",
+        "textParts": [
+          { "text": "Le multiplicateur de poids du nom de fichier (x1) contrôle la contribution des correspondances de nom de fichier au POCO Score final — similaire au multiplicateur OCR que vous avez vu précédemment. La valeur par défaut de x1 signifie que les motifs de nom de fichier comptent moins que les motifs OCR (qui utilisent x3)." },
+          { "text": "\n\n" },
+          { "text": "C'est logique car les noms de fichiers sont moins fiables que le contenu du document — ils peuvent être renommés ou incohérents. Pour plus de détails sur la façon dont tous les multiplicateurs fonctionnent ensemble, voir " },
+          { "text": "Système de notation dans le Guide", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "4_0": {
+        "title": "Étape 4 : Vérification des données",
+        "text": "La vérification des données ajoute une couche de confiance supplémentaire en croisant les données extraites avec les métadonnées existantes de Paperless-ngx. Cette étape est optionnelle et principalement utile pour les configurations avancées où vous souhaitez valider les données du document par rapport à des valeurs connues."
+      },
+      "4_1": {
+        "title": "Espaces réservés de vérification",
+        "text": "Ici, vous sélectionnez les champs Paperless-ngx à utiliser pour la vérification. Lorsqu'elle est activée, PocoClass vérifie si la valeur assignée à l'étape 5 correspond à ce qui existe déjà dans Paperless-ngx — ajoutant un multiplicateur de confiance au score final. Dans notre exemple, le Correspondant et le Type de document sont activés pour la vérification."
+      },
+      "4_2": {
+        "title": "Multiplicateur de vérification",
+        "textParts": [
+          { "text": "Le multiplicateur de vérification contrôle le poids que les correspondances de champs Paperless-ngx ajoutent au POCO Score final. Par défaut, le mode est réglé sur « Auto » ce qui neutralise le poids de cette source — gardant la vérification comme un léger renforcement de confiance plutôt qu'un facteur dominant." },
+          { "text": "\n\n" },
+          { "text": "Sans le mode Auto, le calcul de notation pourrait donner aux classifications Paperless un poids très élevé (jusqu'à x5), éclipsant potentiellement vos motifs OCR. Le mode Auto empêche cela en ajustant dynamiquement le multiplicateur. Pour plus de détails, voir " },
+          { "text": "Système de notation dans le Guide", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "5_0": {
+        "title": "Étape 5 : Classifications de documents",
+        "text": "Maintenant que PocoClass sait comment identifier vos documents, il est temps de lui dire quoi faire lorsqu'une correspondance est trouvée. Dans cette étape, vous définissez quelles données de classification assigner — le correspondant, le type de document et les étiquettes pour l'organisation. Vous pouvez également configurer l'extraction dynamique de données, qui extrait des valeurs spécifiques directement du texte du document — comme les numéros de compte, les totaux de facture ou les dates — et les stocke automatiquement dans les champs Paperless-ngx."
+      },
+      "5_1": {
+        "title": "Champs Paperless prédéfinis",
+        "textParts": [
+          { "text": "Ces champs proviennent directement de votre instance Paperless-ngx — Correspondant, Type de document et Étiquettes sont des sélections déroulantes à partir de valeurs qui existent déjà dans Paperless-ngx. Date de création est différent — c'est un champ de saisie de date libre qui vous permet de définir une date spécifique. Dans notre exemple, nous assignons " },
+          { "text": "\"Royal Bank of Scotland\"", "bold": true },
+          { "text": " comme correspondant, " },
+          { "text": "\"Bank Statement\"", "bold": true },
+          { "text": " comme type de document, et ajoutons les étiquettes " },
+          { "text": "\"Financial\"", "bold": true },
+          { "text": " et " },
+          { "text": "\"Bank\"", "bold": true },
+          { "text": "." },
+          { "text": "\n\n" },
+          { "text": "Remarquez que la Date de création a été laissée vide intentionnellement ici. Définir une date fixe ici appliquerait la même date à chaque document correspondant à cette règle — ce qui a rarement du sens. C'est là que l'extraction dynamique brille vraiment. Paperless-ngx possède sa propre détection de date intégrée, mais vous n'avez aucun contrôle sur la date qu'il choisit. Dans notre relevé bancaire, Paperless pourrait choisir le 22 octobre 2014 au lieu de la bonne date de fin de relevé du 21 décembre 2014. Avec l'extraction dynamique, vous dites à PocoClass exactement où trouver la bonne date." }
+        ]
+      },
+      "5_2": {
+        "title": "Champs personnalisés",
+        "textParts": [
+          { "text": "Les champs personnalisés vous permettent de stocker des données supplémentaires spécifiques à votre flux de travail. Les champs affichés ici dépendent de vos paramètres de visibilité des champs — vous pourriez voir plus ou moins de champs selon votre configuration." },
+          { "text": "\n\n" },
+          { "text": "Chaque champ personnalisé peut être défini à une valeur fixe ici dans la section prédéfinie, ou extrait dynamiquement du texte du document (configuré dans la section suivante). Pour plus de détails sur la configuration des champs, voir " },
+          { "text": "Métadonnées dans le Guide", "action": "openGuideMetadata" },
+          { "text": "." }
+        ]
+      },
+      "5_3": {
+        "title": "Extraction dynamique de données",
+        "textParts": [
+          { "text": "L'extraction dynamique utilise des motifs d'ancrage pour localiser et extraire des valeurs spécifiques du texte du document. Chaque règle d'extraction définit une « ancre avant » (texte qui apparaît juste avant la valeur souhaitée) et optionnellement une « ancre après » (texte qui apparaît juste après). Le texte extrait entre ces ancres est ensuite stocké dans un champ Paperless-ngx." },
+          { "text": "\n\n" },
+          { "text": "C'est l'une des fonctionnalités les plus puissantes de PocoClass. Combinée aux champs personnalisés, vous pouvez extraire pratiquement n'importe quelle information de vos documents — un numéro de compte d'un relevé bancaire, le montant total d'une facture, les kWh consommés d'une facture d'électricité, ou un numéro de police d'un document d'assurance. Chaque champ cible ne peut être utilisé qu'une seule fois — soit comme valeur prédéfinie, soit comme extraction dynamique, jamais les deux." }
+        ]
+      },
+      "5_4": {
+        "title": "Trouver la date dans le texte OCR",
+        "textParts": [
+          { "text": "Voyons comment l'extraction dynamique résout le problème de date de l'étape 5.1. Regardez le texte OCR — trouvez la ligne surlignée " },
+          { "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"", "bold": true },
+          { "text": ". Nous voulons extraire la date de fin " },
+          { "text": "\"21 Dec 2014\"", "bold": true },
+          { "text": " — la date réelle du relevé." },
+          { "text": "\n\n" },
+          { "text": "Pour construire l'ancre avant, commencez par le texte lisible que vous pouvez voir : " },
+          { "text": "\"22 Oct 2014 to\"", "bold": true },
+          { "text": ". Cela se traduit par le motif regex " },
+          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
+          { "text": " — qui correspond à n'importe quelle date suivie de « to ». L'assistant Regex (icône baguette) est vraiment utile ici pour construire ces motifs étape par étape sans avoir besoin de connaître la syntaxe regex." }
+        ]
+      },
+      "5_5": {
+        "title": "Configuration de la règle d'extraction",
+        "textParts": [
+          { "text": "De l'étape précédente, nous avons identifié l'ancre avant " },
+          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
+          { "text": " et le format de date " },
+          { "text": "\"DD MMM YYYY\"", "bold": true },
+          { "text": " pour extraire la date de fin du relevé. Vous pouvez voir ces valeurs remplies sur la gauche — le champ cible est défini sur " },
+          { "text": "\"Date Created\"", "bold": true },
+          { "text": ", donc « 21 Dec 2014 » sera écrit directement dans le champ Date de création du document dans Paperless-ngx." },
+          { "text": "\n\n" },
+          { "text": "L'ancre après est optionnelle mais recommandée", "bold": true },
+          { "text": " — elle limite la zone de recherche pour que PocoClass arrête de chercher une fois qu'il atteint cette limite. Cela aide à prévenir les fausses correspondances lorsqu'un document contient de nombreuses valeurs similaires, et détecte les erreurs tôt. Dans cet exemple, une ancre après n'est pas strictement nécessaire car l'ancre avant est suffisamment précise, mais pour des documents plus complexes, c'est une bonne pratique de contraindre la recherche." }
+        ]
+      },
+      "6_0": {
+        "title": "Étape 6 : Révision et résumé",
+        "text": "L'étape finale rassemble le tout. Ici, vous pouvez revoir la configuration complète de votre règle, voir comment le calcul du POCO Score fonctionne avec vos paramètres, et prévisualiser le YAML généré qui définit votre règle."
+      },
+      "6_1": {
+        "title": "Révision de la configuration de la règle",
+        "text": "Cet aperçu montre tous les paramètres de votre règle en un coup d'œil — informations de base, motifs et seuils OCR, motifs de nom de fichier, champs de vérification et classifications de documents. Utilisez-le pour tout vérifier avant d'enregistrer."
+      },
+      "6_2": {
+        "title": "Calcul du POCO Score",
+        "text": "Cette section montre exactement comment le POCO Score est calculé pour votre règle. Elle détaille les poids maximaux possibles de chaque source (OCR, nom de fichier, vérification), montre un exemple de calcul à un taux de correspondance de 80%, et affiche les deux seuils de score qui doivent être atteints pour la classification."
+      },
+      "6_3": {
+        "title": "C'est terminé !",
+        "text": "Sur la droite, vous pouvez voir le YAML généré — le fichier de règle réel que PocoClass utilise. Vous venez de voir comment une règle est construite du début à la fin. L'idée clé : trouvez des motifs qui identifient de manière unique votre type de document, définissez des seuils raisonnables, et laissez PocoClass faire le reste. Commencez simplement avec quelques motifs OCR obligatoires — vous pourrez toujours affiner plus tard."
+      }
+    }
   }
 }
