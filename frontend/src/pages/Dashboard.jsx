@@ -80,12 +80,6 @@ export default function Dashboard() {
     <PageLayout 
       title={t('dashboard.title')}
       subtitle={t('dashboard.subtitle')}
-      actions={
-        <Link to={createPageUrl("RuleEditor")} className="btn btn-primary">
-          <Plus className="w-5 h-5" />
-          {t('rules.createNew')}
-        </Link>
-      }
     >
 
       {/* PocoClass Status Section */}

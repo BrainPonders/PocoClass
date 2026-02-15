@@ -85,7 +85,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Dashboard subtitle",
+    "subtitle": "System overview and statistics",
     "welcome": "Welcome to PocoClass",
     "systemStatus": "System Status",
     "backgroundProcessing": "Background Processing",
