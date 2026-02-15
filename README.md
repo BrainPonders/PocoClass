@@ -1,10 +1,22 @@
 # PocoClass
 
-PocoClass helps you teach [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) how to handle your documents. When you scan or import documents into Paperless, PocoClass reads the text content, checks the filename, and uses what Paperless already knows to automatically assign the right tags, correspondents, document types, and custom fields — so you don't have to do it by hand, one document at a time.
+PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification.
 
-You build classification rules through a simple step-by-step wizard, and PocoClass takes care of the rest in the background. It's especially useful when importing large batches of unsorted documents.
+### The problem
 
-POCO stands for **Post Consumption** — it started as a simple script triggered by Paperless's post-consumption hook and grew from there.
+Paperless-ngx is great at storing and searching your documents, but classifying them — assigning the right tags, correspondents, document types, and custom fields — is still largely a manual process. This is manageable when you add a few documents at a time, but it quickly becomes tedious when you're importing hundreds or thousands of unsorted documents from a scanner, email, or archive.
+
+Paperless has built-in matching, but it works best once you've already manually classified enough documents for it to learn from. Getting to that point takes time and repetitive effort.
+
+### How PocoClass helps
+
+PocoClass sits alongside Paperless-ngx and connects to it through its API. You create classification rules using a step-by-step wizard — no coding required. Each rule tells PocoClass what to look for in a document's OCR text, filename, or existing Paperless metadata, and what to do when it finds a match (assign tags, set a correspondent, fill in custom fields, and so on).
+
+Once your rules are in place, PocoClass runs in the background. It picks up new or unclassified documents automatically, evaluates them against your rules, and applies the matching classifications directly in Paperless-ngx. This helps you train Paperless faster and makes bulk imports practical — you define the rules once, and PocoClass handles the rest.
+
+### Where does the name POCO come from?
+
+POCO stands for **Post Consumption**. It started as a simple script triggered by Paperless's post-consumption hook — the mechanism Paperless uses to run actions after importing a document. Over time it grew into the full application you see today, but the name stuck.
 
 ## Architecture
 
