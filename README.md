@@ -1,8 +1,10 @@
 # PocoClass
 
-Document classification for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx). Build rules that automatically classify, tag, and enrich your documents using OCR content, filename patterns, and metadata extraction.
+PocoClass helps you teach [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) how to handle your documents. When you scan or import documents into Paperless, PocoClass reads the text content, checks the filename, and uses what Paperless already knows to automatically assign the right tags, correspondents, document types, and custom fields — so you don't have to do it by hand, one document at a time.
 
-POCO stands for **Post Consumption** — it started as a simple script triggered by Paperless's post-consumption hook.
+You build classification rules through a simple step-by-step wizard, and PocoClass takes care of the rest in the background. It's especially useful when importing large batches of unsorted documents.
+
+POCO stands for **Post Consumption** — it started as a simple script triggered by Paperless's post-consumption hook and grew from there.
 
 ## Architecture
 
