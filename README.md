@@ -2,7 +2,7 @@
 
 PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with a focus on control and transparency.
 
-### The Problem: Statistical Uncertainty
+### The Problem: Learning Has Limits
 
 Paperless-ngx is an excellent tool for document indexing. While its built-in classifier uses OCR and statistical learning to suggest metadata, this approach has inherent limitations:
 
@@ -21,13 +21,15 @@ PocoClass addresses these gaps by introducing deterministic, rule-based classifi
 - **Transparent Scoring:** When a document matches a rule, PocoClass provides clear reasoning for the match.
 - **Direct Integration:** Applied classifications are pushed directly to your Paperless-ngx instance.
 
-### Origin Story: Why "POCO"?
+When a document matches, it matches for a defined reason.
 
-The name stands for **Post Consumption**.
+### Origin Story: Why “POCO”?
 
-The project originated as a small script triggered by the Paperless-ngx post-consumption hook, a mechanism that runs immediately after a document is imported. What began as a tool for bulk imports evolved into a structured YAML-based rule engine.
+The name stands for Post Consumption.
 
-With the release of PocoClass v2.0, the project was completely reimagined. The original backend logic was expanded into a full web-based application featuring a visual rule builder and a transparent scoring system. While the name remains a nod to its humble origins as a post-consumption script, the project has grown into a comprehensive automation suite.
+The project originated as a small script triggered by the Paperless-ngx post-consumption hook, a mechanism that runs immediately after a document is imported. It began as a simple tool designed to support bulk imports and gradually evolved into a structured YAML-based rule engine.
+
+PocoClass v2.0 emerged from what initially started as an experiment to build a web-based frontend using Replit. What was meant to be a lightweight interface quickly turned into a complete redesign. The result was a fully reimagined application with a visual rule builder, background processing, and a transparent scoring system.
 
 ## Architecture
 
