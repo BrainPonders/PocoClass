@@ -25,7 +25,7 @@ ENV POCOCLASS_DATA_DIR=/app/data
 USER root
 
 RUN set -ex; \
-    apk add --no-cache curl bash;
+    apk add --no-cache curl bash libgcc libstdc++;
 
 WORKDIR /app
 
