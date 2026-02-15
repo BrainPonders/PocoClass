@@ -151,12 +151,20 @@ EOF
     mkdir -p "$DEPLOY_DIR/data"
     print_step "Created data/ directory (runtime database and settings)"
 
-    cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
-    print_step "Copied docker-compose.yml"
+    if [ ! -f "$DEPLOY_DIR/docker-compose.yml" ]; then
+        cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
+        print_step "Copied docker-compose.yml"
+    else
+        print_warning "docker-compose.yml already exists, keeping your configuration"
+    fi
 
-    cp "$SOURCE_DIR/scripts/pococlass_trigger.sh" "$DEPLOY_DIR/pococlass_trigger.sh"
-    chmod +x "$DEPLOY_DIR/pococlass_trigger.sh"
-    print_step "Copied pococlass_trigger.sh (Paperless post-consumption script)"
+    if [ ! -f "$DEPLOY_DIR/pococlass_trigger.sh" ]; then
+        cp "$SOURCE_DIR/scripts/pococlass_trigger.sh" "$DEPLOY_DIR/pococlass_trigger.sh"
+        chmod +x "$DEPLOY_DIR/pococlass_trigger.sh"
+        print_step "Copied pococlass_trigger.sh (Paperless post-consumption script)"
+    else
+        print_warning "pococlass_trigger.sh already exists, keeping your configuration"
+    fi
 }
 
 # ---- Print final instructions ----
