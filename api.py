@@ -1430,6 +1430,7 @@ def serve_react_app(path=''):
 # ---- Rule Management Routes ----
 
 @app.route('/api/rules', methods=['GET'])
+@require_auth
 def list_rules():
     """List all rules"""
     try:
@@ -1466,6 +1467,7 @@ def list_rules():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/errors', methods=['GET'])
+@require_auth
 def get_rule_errors():
     """Get rule loading errors"""
     try:
@@ -1482,6 +1484,7 @@ def get_rule_errors():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['GET'])
+@require_auth
 def get_rule(rule_id):
     """Get a single rule"""
     try:
@@ -1785,6 +1788,7 @@ status: {status}
     return yaml_content
 
 @app.route('/api/rules', methods=['POST'])
+@require_auth
 def create_rule():
     """Create a new rule"""
     try:
@@ -1823,6 +1827,7 @@ def create_rule():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['PUT'])
+@require_auth
 def update_rule(rule_id):
     """Update an existing rule"""
     try:
@@ -1867,6 +1872,7 @@ def update_rule(rule_id):
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['DELETE'])
+@require_auth
 def delete_rule(rule_id):
     """Delete a rule"""
     try:
@@ -1885,6 +1891,7 @@ def delete_rule(rule_id):
 # ---- Deleted Rules (Trash Can) Routes ----
 
 @app.route('/api/deleted-rules', methods=['GET'])
+@require_auth
 def list_deleted_rules():
     """List all deleted rules from the deleted folder"""
     try:
@@ -1923,6 +1930,7 @@ def list_deleted_rules():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/deleted-rules/<rule_id>', methods=['DELETE'])
+@require_admin
 def permanently_delete_rule(rule_id):
     """Permanently delete a rule from the deleted folder"""
     try:
@@ -1938,6 +1946,7 @@ def permanently_delete_rule(rule_id):
 # ---- Log Routes ----
 
 @app.route('/api/logs', methods=['GET'])
+@require_auth
 def list_logs():
     """List logs with optional filtering by type, level, date range, and search term."""
     try:
@@ -2142,10 +2151,7 @@ def list_documents():
 def proxy_document_preview(doc_id):
     """Proxy document PDF preview with authentication"""
     try:
-        # Get token from header or query parameter (for new tab opens)
         session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        if not session_token:
-            session_token = request.args.get('token')
         
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
@@ -2483,6 +2489,7 @@ def convert_backend_to_frontend(backend_data, rule_id):
 # ---- Rule Test & Execution Routes ----
 
 @app.route('/api/rules/test', methods=['POST'])
+@require_auth
 def test_rule_endpoint():
     """Test a rule against document content"""
     try:
@@ -3093,4 +3100,4 @@ def reset_application():
 # ---- Development Server Entry Point ----
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')
