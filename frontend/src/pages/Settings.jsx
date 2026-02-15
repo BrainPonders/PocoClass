@@ -125,15 +125,13 @@ export default function Settings() {
   const loadAllSettings = async () => {
     try {
       setLoading(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
-      
       // Load user first (needed for admin check)
       const user = await User.me();
       setCurrentUser(user);
       
       // Load all settings in one batch request
       const response = await fetch(`${API_BASE_URL}/api/settings/batch?history_limit=5`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -166,9 +164,8 @@ export default function Settings() {
 
   const loadSyncStatus = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync/status`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       const data = await response.json();
       setSyncStatus(data);
@@ -179,9 +176,8 @@ export default function Settings() {
 
   const loadSyncHistory = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync/history?limit=5`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       const data = await response.json();
       setSyncHistory(data);
@@ -192,9 +188,8 @@ export default function Settings() {
 
   const loadUsers = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/users/all-paperless`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -207,9 +202,8 @@ export default function Settings() {
 
   const loadDateFormats = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/date-formats`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -222,9 +216,8 @@ export default function Settings() {
 
   const loadPlaceholders = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/placeholders`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -237,9 +230,8 @@ export default function Settings() {
 
   const loadPaperlessConfig = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/paperless-config`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();
@@ -253,10 +245,9 @@ export default function Settings() {
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Sync failed');
@@ -291,10 +282,9 @@ export default function Settings() {
   const handleApplicationReset = async () => {
     try {
       setIsResetting(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/system/reset-app`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -333,12 +323,11 @@ export default function Settings() {
     }
     
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/users/${userId}/role`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ role: newRole })
       });
@@ -369,13 +358,10 @@ export default function Settings() {
     }
     
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const action = isEnabled ? 'disable' : 'enable';
       const response = await fetch(`${API_BASE_URL}/api/users/${userId}/${action}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`
-        }
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -411,12 +397,11 @@ export default function Settings() {
         updateColorBlindMode(value === 'true' ? 'protanopia' : 'none');
       }
 
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/app`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ [key]: value })
       });
@@ -456,12 +441,11 @@ export default function Settings() {
         }
       }
 
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/date-formats/${encodeURIComponent(formatPattern)}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ is_selected: isSelected })
       });
@@ -486,9 +470,8 @@ export default function Settings() {
   const loadValidationData = async () => {
     try {
       setLoadingValidation(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -510,10 +493,9 @@ export default function Settings() {
 
     try {
       setFixingMandatoryData(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/validation/fix-mandatory-data`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -561,12 +543,11 @@ export default function Settings() {
 
   const handlePlaceholderVisibilityChange = async (placeholderName, visibilityMode) => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/placeholders/${encodeURIComponent(placeholderName)}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ visibility_mode: visibilityMode })
       });
@@ -599,9 +580,8 @@ export default function Settings() {
 
   const loadCustomFieldsData = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/paperless/custom-fields`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -615,9 +595,8 @@ export default function Settings() {
 
   const loadBackgroundSettings = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -638,9 +617,8 @@ export default function Settings() {
 
   const loadSystemTokenInfo = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/system-token`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -659,10 +637,9 @@ export default function Settings() {
     setGeneratingToken(true);
     setShowTokenConfirm(false);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/system-token`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -697,10 +674,9 @@ export default function Settings() {
     setRevokingToken(true);
     setShowRevokeConfirm(false);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/system-token`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -750,12 +726,11 @@ export default function Settings() {
     }
 
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(backgroundSettings)
       });
@@ -782,9 +757,8 @@ export default function Settings() {
   const loadPocoOcrEnabled = async () => {
     try {
       setLoadingPocoOcr(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/poco-ocr-enabled`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -818,12 +792,11 @@ export default function Settings() {
 
     try {
       setLoadingPocoOcr(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/poco-ocr-enabled`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ enabled })
       });
@@ -1049,12 +1022,11 @@ export default function Settings() {
   const handleCreateFieldConfirm = async () => {
     setIsCreatingField(true);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/paperless/custom-fields`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ 
           name: fieldToCreate,
@@ -1102,12 +1074,11 @@ export default function Settings() {
     }
 
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/paperless-config`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ paperless_url: paperlessConfig.paperless_url })
       });
@@ -1132,9 +1103,8 @@ export default function Settings() {
   const testPaperlessConnection = async () => {
     setTestingConnection(true);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync/status`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (response.ok) {

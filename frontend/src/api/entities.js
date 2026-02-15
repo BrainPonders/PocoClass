@@ -1,10 +1,3 @@
-/**
- * @file entities.js
- * @description API entity modules for all backend resources. Provides CRUD operations
- * for Rules, Logs, DeletedRules, Documents, Paperless cache (tags, correspondents,
- * document types, custom fields), and User authentication via the apiClient.
- */
-
 import { apiClient } from './apiClient';
 import API_BASE_URL from '../config/api';
 export const Rule = {
@@ -42,7 +35,6 @@ export const Rule = {
   }
 };
 
-// Log Entity
 export const Log = {
   async list(filters = {}) {
     const queryParams = new URLSearchParams(filters).toString();
@@ -58,7 +50,6 @@ export const Log = {
   }
 };
 
-// DeletedRule Entity
 export const DeletedRule = {
   async list() {
     return await apiClient.get('/deleted-rules');
@@ -73,7 +64,6 @@ export const DeletedRule = {
   }
 };
 
-// Document Entity
 export const Document = {
   async list(options = {}) {
     const params = new URLSearchParams();
@@ -89,7 +79,6 @@ export const Document = {
   }
 };
 
-// Paperless Cache Entity
 export const Paperless = {
   async getTags() {
     return await apiClient.get('/paperless/tags');
@@ -108,18 +97,10 @@ export const Paperless = {
   }
 };
 
-// User/Auth Entity
 export const User = {
   async me() {
-    const sessionToken = localStorage.getItem('pococlass_session');
-    if (!sessionToken) {
-      throw new Error('Not authenticated');
-    }
-
     const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-      headers: {
-        'Authorization': `Bearer ${sessionToken}`
-      }
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -140,18 +121,13 @@ export const User = {
   },
   
   async logout() {
-    const sessionToken = localStorage.getItem('pococlass_session');
-    if (sessionToken) {
-      try {
-        await fetch(`${API_BASE_URL}/api/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${sessionToken}`
-          }
-        });
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
+    try {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
     }
     
     localStorage.removeItem('pococlass_session');
