@@ -252,6 +252,7 @@
       "themeAuto": "Auto",
       "colorblindMode": "Habilitar modo daltónico",
       "colorblindModeDesc": "Ajusta los colores para una mejor accesibilidad",
+      "colorblindNotImplemented": "Esta función aún no está implementada en esta versión de PocoClass.",
       "availableLanguages": "Idiomas disponibles",
       "loadingSettings": "Cargando configuración..."
     },

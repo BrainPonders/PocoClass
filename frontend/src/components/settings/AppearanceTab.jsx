@@ -52,9 +52,10 @@ export default function AppearanceTab({
           onBlur={(e) => e.target.style.boxShadow = 'none'}
         >
           <option value="en">English (British)</option>
+          <option value="de">Deutsch (German)</option>
           <option value="es">Español (Spanish)</option>
           <option value="fr">Français (French)</option>
-          <option value="de">Deutsch (German)</option>
+          <option value="it">Italiano (Italian)</option>
           <option value="nl">Nederlands (Dutch)</option>
         </select>
       </div>
@@ -81,23 +82,21 @@ export default function AppearanceTab({
         </select>
       </div>
 
-      <div>
-        <label className="flex items-center gap-3">
+      <div style={{ opacity: 0.5 }}>
+        <label className="flex items-center gap-3" style={{ cursor: 'not-allowed' }}>
           <input
             type="checkbox"
-            checked={colorBlindMode !== 'none'}
-            onChange={(e) => handleAppSettingChange('colorblind_mode', e.target.checked ? 'true' : 'false')}
+            checked={false}
+            disabled
             className="w-4 h-4 border-gray-300 rounded"
-            style={{ accentColor: 'var(--app-primary)' }}
-            onFocus={(e) => e.target.style.boxShadow = '0 0 0 2px var(--app-primary)'}
-            onBlur={(e) => e.target.style.boxShadow = 'none'}
+            style={{ cursor: 'not-allowed' }}
           />
           <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
             {t('settings.appearance.colorblindMode')}
           </span>
         </label>
         <p className="mt-1 ml-7 text-xs" style={{ color: 'var(--app-text-secondary)' }}>
-          {t('settings.appearance.colorblindModeDesc')}
+          {t('settings.appearance.colorblindNotImplemented')}
         </p>
       </div>
     </div>

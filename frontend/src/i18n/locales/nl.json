@@ -250,6 +250,7 @@
       "themeAuto": "Automatisch",
       "colorblindMode": "Kleurenblindenmodus inschakelen",
       "colorblindModeDesc": "Past kleuren aan voor betere toegankelijkheid",
+      "colorblindNotImplemented": "Deze functie is nog niet beschikbaar in deze versie van PocoClass.",
       "availableLanguages": "Beschikbare talen",
       "loadingSettings": "Instellingen laden..."
     },

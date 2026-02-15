@@ -250,6 +250,7 @@
       "themeAuto": "Automatisch",
       "colorblindMode": "Farbblindenmodus aktivieren",
       "colorblindModeDesc": "Passt Farben für bessere Barrierefreiheit an",
+      "colorblindNotImplemented": "Diese Funktion ist in dieser Version von PocoClass noch nicht verfügbar.",
       "availableLanguages": "Verfügbare Sprachen",
       "loadingSettings": "Einstellungen werden geladen..."
     },
