@@ -2,17 +2,22 @@
 
 PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification.
 
-### The problem
+### Why PocoClass?
 
-Paperless-ngx is great at storing and searching your documents, but classifying them — assigning the right tags, correspondents, document types, and custom fields — is still largely a manual process. This is manageable when you add a few documents at a time, but it quickly becomes tedious when you're importing hundreds or thousands of unsorted documents from a scanner, email, or archive.
+Paperless-ngx is excellent at storing and indexing documents. It can extract text through OCR and even attempt automatic classification based on learned patterns. However, its built-in classifier relies on historical data and statistical learning — and that comes with limitations.
 
-Paperless has built-in matching, but it works best once you've already manually classified enough documents for it to learn from. Getting to that point takes time and repetitive effort.
+To perform well, Paperless needs a large number of manually classified documents. Until that training base exists, results can be inconsistent. Even after learning, subtle nuances may still cause misclassification. For example:
 
-### How PocoClass helps
+- A document may contain multiple dates, and the classifier may select the wrong one as the creation date.
+- Two documents from the same organization may look nearly identical but represent different types (e.g., an account summary vs. a contract update).
+- Slight format changes from year to year can confuse pattern-based recognition.
+- Similar invoices from different subsidiaries may be misassigned to the wrong correspondent.
 
-PocoClass sits alongside Paperless-ngx and connects to it through its API. You create classification rules using a step-by-step wizard — no coding required. Each rule tells PocoClass what to look for in a document's OCR text, filename, or existing Paperless metadata, and what to do when it finds a match (assign tags, set a correspondent, fill in custom fields, and so on).
+Each of these errors seems small. But when processing hundreds or thousands of documents — especially during bulk imports — manual corrections become repetitive and time-consuming. Over time, users tend to correct fewer mistakes. Misclassified documents accumulate, metadata becomes inconsistent, and the quality of the archive slowly degrades.
 
-Once your rules are in place, PocoClass runs in the background. It picks up new or unclassified documents automatically, evaluates them against your rules, and applies the matching classifications directly in Paperless-ngx. This helps you train Paperless faster and makes bulk imports practical — you define the rules once, and PocoClass handles the rest.
+PocoClass addresses this by introducing deterministic, rule-based classification. Instead of relying purely on learning behaviour, it uses explicitly defined identification logic — including flexible pattern matching and dynamic data extraction — to classify documents with a high degree of precision. You create rules through a step-by-step wizard, and PocoClass runs them in the background, picking up new or unclassified documents automatically and applying the matching classifications directly in Paperless-ngx.
+
+When a document matches a rule, it matches for a clear reason.
 
 ### Where does the name POCO come from?
 
