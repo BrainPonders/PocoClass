@@ -1,8 +1,17 @@
+/**
+ * @file RuleReviewer.jsx
+ * @description Rule testing and evaluation page. Users select a rule and one or more
+ * Paperless documents, run the rule engine in dry-run mode, and review per-document
+ * scoring breakdowns (OCR, filename, verification, dynamic data) with a bar chart
+ * visualization. Results are cached in sessionStorage for persistence across navigation.
+ */
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { Rule, Document, Paperless } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
-import { FileText, Play, CheckSquare, Square, Info, Eye, X } from "lucide-react"; // Added Eye and X icons
+import { createPageUrl } from "@/utils";
+import { FileText, Play, CheckSquare, Square, Info, Eye, X, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
@@ -12,17 +21,30 @@ import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const truncatePattern = (pattern, maxLen = 40) => {
+  if (!pattern || pattern.length <= maxLen) return pattern;
+  return pattern.substring(0, maxLen) + '...';
+};
+
 export default function RuleReviewer() {
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const [rules, setRules] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(true);
-  const [selectedRule, setSelectedRule] = useState('');
-  const [selectedDocuments, setSelectedDocuments] = useState([]);
+  // Restore previous session state (selected rule, docs, results) from sessionStorage
+  const cachedSession = (() => {
+    try {
+      const raw = sessionStorage.getItem('ruleReviewerCache');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+  const [selectedRule, setSelectedRule] = useState(cachedSession?.selectedRule || '');
+  const [selectedDocuments, setSelectedDocuments] = useState(cachedSession?.selectedDocuments || []);
   const [allSelected, setAllSelected] = useState(false);
-  const [hasRun, setHasRun] = useState(false);
-  const [showQuickGuide, setShowQuickGuide] = useState(false); // New state for quick guide
-  const [testResults, setTestResults] = useState({}); // Store results by document ID
+  const [hasRun, setHasRun] = useState(!!cachedSession?.testResults);
+  const [showQuickGuide, setShowQuickGuide] = useState(false);
+  const [testResults, setTestResults] = useState(cachedSession?.testResults || {});
   const [isRunning, setIsRunning] = useState(false);
   const [ocrModalOpen, setOcrModalOpen] = useState(false);
   const [ocrContent, setOcrContent] = useState('');
@@ -62,17 +84,28 @@ export default function RuleReviewer() {
 
   useEffect(() => {
     loadRules();
-    loadDocuments();
     loadCacheData();
   }, []);
   
-  // Reload documents when filters change
+  // Track whether filters were changed by user (vs initial load) to clear selection
+  const userChangedFiltersRef = React.useRef(false);
+  const prevFiltersRef = React.useRef(filters);
+  // Reload documents whenever filters change
   useEffect(() => {
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters);
+    prevFiltersRef.current = filters;
+    if (filtersChanged) {
+      userChangedFiltersRef.current = true;
+    }
     loadDocuments();
   }, [filters]);
 
-  // Clear selection when documents change
+  // Reset document selections when documents list changes due to user filter change
   useEffect(() => {
+    if (!userChangedFiltersRef.current) {
+      return;
+    }
+    userChangedFiltersRef.current = false;
     setSelectedDocuments([]);
     setAllSelected(false);
   }, [documents]);
@@ -197,6 +230,13 @@ export default function RuleReviewer() {
     setTestResults(results);
     setHasRun(true);
     setIsRunning(false);
+    try {
+      sessionStorage.setItem('ruleReviewerCache', JSON.stringify({
+        selectedRule,
+        selectedDocuments,
+        testResults: results
+      }));
+    } catch (e) { /* ignore storage errors */ }
   };
 
   const handleViewOCR = async (doc) => {
@@ -240,7 +280,7 @@ export default function RuleReviewer() {
     });
   };
 
-  // Get performance data from real test results
+  // Transform raw test results into a normalized performance dataset for rendering
   const getPerformanceData = () => {
     return selectedDocuments.map(docId => {
       const doc = documents.find(d => d.id === docId);
@@ -288,6 +328,7 @@ export default function RuleReviewer() {
         name: group.name || `Logic Group ${idx + 1}`,
         matched: group.matched || false,
         score: group.score || 0,
+        group_type: group.group_type || 'match',
         conditions: group.conditions || []
       }));
       
@@ -435,11 +476,11 @@ export default function RuleReviewer() {
       {/* Rule Selector and Run Button */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="flex justify-end items-center gap-3">
+          <div className="flex items-center gap-2">
             <select
               value={selectedRule}
               onChange={(e) => setSelectedRule(e.target.value)}
-              className="pc-select w-64 h-10"
+              className="pc-select w-96 text-sm py-1.5"
             >
               <option value="">{t('ruleEvaluation.selectRule')}</option>
               {rules.map(rule => (
@@ -449,20 +490,29 @@ export default function RuleReviewer() {
             <button
               onClick={handleRun}
               disabled={!selectedRule || selectedDocuments.length === 0 || isRunning}
-              className="btn btn-primary h-10"
+              className="btn btn-primary text-sm px-3 h-[34px]"
             >
               {isRunning ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1.5"></div>
                   Running...
                 </>
               ) : (
                 <>
-                  <Play className="w-5 h-5 mr-2" />
+                  <Play className="w-4 h-4 mr-1.5" />
                   RUN
                 </>
               )}
             </button>
+            {selectedRule && (
+              <button
+                onClick={() => navigate(createPageUrl('RuleEditor') + `?id=${selectedRule}`)}
+                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-gray-300 flex items-center justify-center"
+                title="Edit this rule"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -639,23 +689,48 @@ export default function RuleReviewer() {
                         {data.ocrGroupResults.map((group, idx) => (
                           <div key={idx}>
                             {group.conditions && group.conditions.length > 0 ? (
-                              group.conditions.map((cond, condIdx) => (
-                                <div key={condIdx} className="text-xs">
-                                  <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
-                                    {cond.matched ? '✓' : '✗'} {cond.pattern}
-                                  </span>
-                                  {cond.matched && cond.matched_text && (
-                                    <span className="text-gray-500 text-[10px] ml-1">
-                                      ("{cond.matched_text}")
+                              group.group_type === 'match' && group.conditions.length > 1 ? (
+                                <div className={`text-xs border-l-2 pl-2 ${group.matched ? 'border-green-400' : 'border-red-400'}`}>
+                                  <div className="mb-0.5">
+                                    <span className={`font-semibold ${group.matched ? 'text-green-600' : 'text-red-600'}`}>
+                                      {group.matched ? '✓' : '✗'} OR Group
                                     </span>
-                                  )}
-                                  {!cond.matched && (
-                                    <span className="text-gray-500 text-[10px] ml-1">
-                                      (Not matched)
+                                    <span className="text-gray-400 text-[10px] ml-1">
+                                      (any match = pass)
                                     </span>
-                                  )}
+                                  </div>
+                                  {group.conditions.map((cond, condIdx) => (
+                                    <div key={condIdx} className="ml-2 text-xs truncate">
+                                      <span className={cond.matched ? 'text-green-600' : 'text-gray-400'}>
+                                        {cond.matched ? '✓' : '○'} {truncatePattern(cond.pattern)}
+                                      </span>
+                                      {cond.matched && cond.matched_text && (
+                                        <span className="text-gray-500 text-[10px] ml-1">
+                                          ("{cond.matched_text}")
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
-                              ))
+                              ) : (
+                                group.conditions.map((cond, condIdx) => (
+                                  <div key={condIdx} className="text-xs truncate">
+                                    <span className={cond.matched ? 'text-green-600' : 'text-red-600'}>
+                                      {cond.matched ? '✓' : '✗'} {truncatePattern(cond.pattern)}
+                                    </span>
+                                    {cond.matched && cond.matched_text && (
+                                      <span className="text-gray-500 text-[10px] ml-1">
+                                        ("{cond.matched_text}")
+                                      </span>
+                                    )}
+                                    {!cond.matched && (
+                                      <span className="text-gray-500 text-[10px] ml-1">
+                                        (Not matched)
+                                      </span>
+                                    )}
+                                  </div>
+                                ))
+                              )
                             ) : (
                               <div className="text-xs">
                                 <span className={group.matched ? 'text-green-600' : 'text-red-600'}>

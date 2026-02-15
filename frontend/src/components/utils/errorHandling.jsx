@@ -1,3 +1,11 @@
+/**
+ * @file errorHandling.jsx
+ * @description Centralized error handling utilities for the application.
+ * Provides functions to parse error messages into user-friendly text,
+ * determine error severity levels, create structured log entries,
+ * and handle API errors with toast notifications.
+ */
+
 import { LOG_TYPES, LOG_LEVELS } from '../constants';
 
 /**

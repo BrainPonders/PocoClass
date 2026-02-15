@@ -1,3 +1,10 @@
+/**
+ * @file UnsavedChangesContext.jsx
+ * @description Context provider for tracking unsaved changes and guarding navigation.
+ * When unsaved changes exist, navigation triggers a confirmation promise that
+ * resolves based on user action (confirm/cancel), preventing accidental data loss.
+ */
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const UnsavedChangesContext = createContext();

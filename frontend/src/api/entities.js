@@ -1,7 +1,12 @@
+/**
+ * @file entities.js
+ * @description API entity modules for all backend resources. Provides CRUD operations
+ * for Rules, Logs, DeletedRules, Documents, Paperless cache (tags, correspondents,
+ * document types, custom fields), and User authentication via the apiClient.
+ */
+
 import { apiClient } from './apiClient';
 import API_BASE_URL from '../config/api';
-
-// Rule Entity
 export const Rule = {
   async list(orderBy = '-created_date') {
     const rules = await apiClient.get(`/rules?order_by=${orderBy}`);

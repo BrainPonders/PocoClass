@@ -1,10 +1,17 @@
+/**
+ * @file RuleEditor.jsx
+ * @description 6-step wizard for creating and editing document classification rules.
+ * Steps: Basic Info → OCR Identifiers → Filename Patterns → Data Verification →
+ * Document Classifications → Summary. Includes YAML live preview, OCR/PDF viewer,
+ * unsaved-changes guard, and step validation with status tracking.
+ */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Rule } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Eye, FileText, X, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Eye, FileText, X, Lightbulb, Pencil, Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/components/ToastContainer';
 import { useUnsavedChanges } from '@/contexts/UnsavedChangesContext';
@@ -62,6 +69,8 @@ export default function RuleEditor() {
   const [pendingNavigation, setPendingNavigation] = useState(null);
   const [selectedDocId, setSelectedDocId] = useState(null);
   const [sourceDocumentFilename, setSourceDocumentFilename] = useState('');
+  const [isEditingDocId, setIsEditingDocId] = useState(false);
+  const [editDocIdValue, setEditDocIdValue] = useState('');
   
   const [ruleData, setRuleData] = useState({
     ruleName: '',
@@ -211,6 +220,7 @@ export default function RuleEditor() {
     };
   }, [ruleId]); // Only depend on ruleId to prevent infinite loops
 
+  // Update rule data; tracks user changes to mark unsaved state and auto-revert status
   const updateRuleData = useCallback((section, data, isUserChange = true) => {
     setRuleData(prev => {
         const newData = section === '' 
@@ -249,6 +259,7 @@ export default function RuleEditor() {
     }
   }, [currentStep]);
 
+  // Check if a given wizard step has any user-entered data
   const hasStepData = useCallback((step) => {
     switch(step) {
       case 1:
@@ -279,6 +290,7 @@ export default function RuleEditor() {
     }
   }, [ruleData]);
 
+  // Validate a wizard step; steps 3 and 4 are optional and always pass
   const validateStep = useCallback((step) => {
     switch(step) {
       case 1:
@@ -391,6 +403,7 @@ export default function RuleEditor() {
     setPendingNavigation(null); // Clear the pending navigation
   };
 
+  // Navigate to a wizard step, validating and recording status of the previous step
   const goToStep = useCallback((step) => {
     const prevStep = currentStep;
     
@@ -468,6 +481,7 @@ export default function RuleEditor() {
     }
   }, [currentStep, stepEdited, validateStep, hasStepData, stepStatus]);
 
+  // Recalculate all step statuses when an existing rule finishes loading
   useEffect(() => {
     if (ruleId && ruleData.ruleName) {
       const newStatus = {};
@@ -521,7 +535,7 @@ export default function RuleEditor() {
       title={ruleId && ruleData.ruleName ? ruleData.ruleName : t(ruleId ? 'rules.editRule' : 'rules.createNew')}
       subtitle={
         <div className="space-y-1">
-          {ruleData.sourceDocumentId && (
+          {ruleData.sourceDocumentId && !isEditingDocId && (
             <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
               <FileText className="w-4 h-4 text-blue-600" />
               <span className="text-blue-900 font-medium">Based on Paperless Document ID:</span>
@@ -529,7 +543,100 @@ export default function RuleEditor() {
               {sourceDocumentFilename && (
                 <span className="text-blue-700">— {sourceDocumentFilename}</span>
               )}
+              <button
+                onClick={() => { setEditDocIdValue(String(ruleData.sourceDocumentId)); setIsEditingDocId(true); }}
+                className="ml-1 p-0.5 rounded hover:bg-blue-200 text-blue-600 hover:text-blue-800 transition-colors"
+                title="Change linked document"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
             </span>
+          )}
+          {isEditingDocId && (
+            <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 border border-blue-300 rounded-lg text-sm">
+              <FileText className="w-4 h-4 text-blue-600" />
+              <span className="text-blue-900 font-medium">Document ID:</span>
+              <input
+                type="number"
+                value={editDocIdValue}
+                onChange={(e) => setEditDocIdValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const newId = editDocIdValue.trim();
+                    if (newId && !isNaN(newId) && Number(newId) > 0) {
+                      apiClient.get(`/documents/${newId}/content`).then(response => {
+                        setRuleData(prev => ({ ...prev, sourceDocumentId: Number(newId) }));
+                        setSourceDocumentFilename(response.originalFileName || '');
+                        setOcrContent(response.content || '');
+                        setHasUnsavedChanges(true);
+                        setIsEditingDocId(false);
+                      }).catch(() => {
+                        showToast(`Document ID ${newId} not found in Paperless`, 'error');
+                      });
+                    } else if (!newId) {
+                      setRuleData(prev => ({ ...prev, sourceDocumentId: null }));
+                      setSourceDocumentFilename('');
+                      setOcrContent('');
+                      setHasUnsavedChanges(true);
+                      setIsEditingDocId(false);
+                    } else {
+                      showToast('Please enter a valid document ID', 'error');
+                    }
+                  } else if (e.key === 'Escape') {
+                    setIsEditingDocId(false);
+                  }
+                }}
+                className="w-24 px-2 py-0.5 rounded border border-blue-400 bg-white font-mono text-blue-800 font-semibold text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                autoFocus
+                min="1"
+                placeholder="e.g. 42"
+              />
+              <button
+                onClick={() => {
+                  const newId = editDocIdValue.trim();
+                  if (newId && !isNaN(newId) && Number(newId) > 0) {
+                    apiClient.get(`/documents/${newId}/content`).then(response => {
+                      setRuleData(prev => ({ ...prev, sourceDocumentId: Number(newId) }));
+                      setSourceDocumentFilename(response.originalFileName || '');
+                      setOcrContent(response.content || '');
+                      setHasUnsavedChanges(true);
+                      setIsEditingDocId(false);
+                    }).catch(() => {
+                      showToast(`Document ID ${newId} not found in Paperless`, 'error');
+                    });
+                  } else if (!newId) {
+                    setRuleData(prev => ({ ...prev, sourceDocumentId: null }));
+                    setSourceDocumentFilename('');
+                    setOcrContent('');
+                    setHasUnsavedChanges(true);
+                    setIsEditingDocId(false);
+                  } else {
+                    showToast('Please enter a valid document ID', 'error');
+                  }
+                }}
+                className="p-0.5 rounded hover:bg-green-200 text-green-600 hover:text-green-800 transition-colors"
+                title="Confirm"
+              >
+                <Check className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsEditingDocId(false)}
+                className="p-0.5 rounded hover:bg-red-200 text-red-500 hover:text-red-700 transition-colors"
+                title="Cancel"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </span>
+          )}
+          {!ruleData.sourceDocumentId && !isEditingDocId && (
+            <button
+              onClick={() => { setEditDocIdValue(''); setIsEditingDocId(true); }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              <span>Link a Paperless Document</span>
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
           )}
           {selectedFile && (
             <p className="text-sm text-gray-600">
@@ -646,7 +753,7 @@ export default function RuleEditor() {
         isOpen={showPdfViewer}
         onClose={() => setShowPdfViewer(false)}
         documentUrl={(ruleData.sourceDocumentId || selectedDocumentId) ? `/api/documents/${ruleData.sourceDocumentId || selectedDocumentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}` : ''}
-        documentName={selectedFile}
+        documentName={sourceDocumentFilename || selectedFile}
       />
 
       {/* OCR Content Modal */}
@@ -659,7 +766,7 @@ export default function RuleEditor() {
             <div className="modal-header">
               <div>
                 <h2 className="text-xl font-bold text-gray-900">OCR Content</h2>
-                <p className="text-sm text-gray-500">{selectedFile || 'Document'}</p>
+                <p className="text-sm text-gray-500">{sourceDocumentFilename || selectedFile || 'Document'}</p>
               </div>
               <button 
                 onClick={() => setShowOcrModal(false)}

@@ -1,4 +1,10 @@
-
+/**
+ * @file FieldSelector.jsx
+ * @description Searchable dropdown selector for Paperless-ngx entity fields
+ * (correspondents, document types, date formats). Loads options dynamically from
+ * the API, supports keyboard navigation, and optionally allows custom values
+ * to be entered when no matching option exists.
+ */
 import React, { useState, useEffect } from 'react';
 import { X, Plus } from 'lucide-react';
 import API_BASE_URL from '@/config/api';
@@ -103,6 +109,8 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
     setHighlightedIndex(0);
   };
 
+  // Keyboard navigation handler: arrow keys to move highlight, Enter to select,
+  // Escape to close. Accounts for the extra "Add custom" option at index 0.
   const handleKeyDown = (e) => {
     if (!showDropdown) {
       if (e.key === 'ArrowDown' || e.key === 'Enter') {
@@ -113,11 +121,11 @@ export default function FieldSelector({ type, value, onChange, placeholder = "Se
       return;
     }
 
+    // Include the "Add custom" option in the count if applicable
     const totalOptions = filteredOptions.length + (allowCustom && searchTerm && !availableOptions.some(opt => 
       typeof opt === 'object' ? opt.value === searchTerm : opt === searchTerm
     ) ? 1 : 0);
 
-    // Guard against empty options
     if (totalOptions === 0) {
       if (e.key === 'Escape') {
         e.preventDefault();

@@ -1,3 +1,10 @@
+/**
+ * @file useTabVisibility.jsx
+ * @description Custom React hook that tracks browser tab visibility using the
+ * Page Visibility API. Triggers an optional callback when the tab becomes
+ * visible again, useful for refreshing stale data on tab focus.
+ */
+
 import { useState, useEffect } from 'react';
 
 export function useTabVisibility(onVisibilityChange) {

@@ -1,3 +1,9 @@
+/**
+ * @file AuthGuard.jsx
+ * @description Route protection wrapper that verifies authentication state on mount.
+ * Redirects unauthenticated users to /login, unconfigured instances to /setup,
+ * and already-authenticated users away from login/setup pages.
+ */
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { auth } from '@/api/auth';
@@ -12,6 +18,7 @@ export default function AuthGuard({ children }) {
     checkAuth();
   }, []);
 
+  // Cascading auth checks: setup status -> token existence -> session validity
   const checkAuth = async () => {
     try {
       const setupStatus = await auth.checkSetupStatus();

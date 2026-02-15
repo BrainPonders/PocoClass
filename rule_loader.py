@@ -1,6 +1,18 @@
 """
 PocoClass - YAML Rule Loader
-Handles loading and validation of YAML rule files for document classification
+
+Loads, parses, and validates YAML rule files used for document classification.
+Each rule file defines identifiers, patterns, thresholds, and metadata
+extraction instructions that the scoring engine evaluates against documents.
+
+Key responsibilities:
+    - Discover .yaml/.yml files in the configured rules directory
+    - Parse YAML safely and validate required fields and structure
+    - Track and expose loading/validation errors for the frontend
+    - Provide lookup methods for individual rules and summaries
+
+Key class:
+    RuleLoader: Manages the lifecycle of rule files from disk to in-memory dicts.
 """
 
 import yaml
@@ -9,17 +21,35 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 class RuleLoader:
-    """Loads and validates YAML rule files"""
+    """Loads, validates, and caches YAML rule files from a directory.
+
+    Rules are keyed by their rule_id and can be retrieved individually or
+    as a complete dictionary.  Any errors encountered during loading are
+    recorded and can be queried via get_load_errors().
+    """
     
     def __init__(self, rules_directory: str):
+        """Initialize the loader with a path to the rules directory.
+
+        Args:
+            rules_directory: Filesystem path containing YAML rule files.
+        """
         self.rules_directory = Path(rules_directory)
         self.logger = logging.getLogger(__name__)
         self.rules = {}
-        self.load_errors = []  # Track errors during rule loading
+        self.load_errors = []
     
     def load_all_rules(self) -> Dict[str, Dict[str, Any]]:
-        """Load all YAML rule files from the rules directory"""
-        # Clear the rules dictionary and errors to avoid stale data
+        """Load all YAML rule files from the rules directory.
+
+        Clears any previously loaded rules and errors, then scans the
+        directory for .yaml and .yml files.  Each file is parsed and
+        validated; valid rules are stored keyed by rule_id.
+
+        Returns:
+            Dictionary mapping rule_id to parsed rule data.
+        """
+        # Reset state to avoid stale data from previous loads
         self.rules = {}
         self.load_errors = []
         
@@ -33,12 +63,12 @@ class RuleLoader:
             })
             return {}
         
+        # Support both .yaml and .yml extensions
         rule_files = list(self.rules_directory.glob("*.yaml")) + list(self.rules_directory.glob("*.yml"))
         
         if not rule_files:
             warning_msg = f"No YAML rule files found in: {self.rules_directory}"
             self.logger.warning(warning_msg)
-            # This is just a warning, not an error
             return {}
         
         self.logger.info(f"Loading {len(rule_files)} rule files from {self.rules_directory}")
@@ -60,7 +90,6 @@ class RuleLoader:
                             'type': 'missing_rule_id'
                         })
                 elif error:
-                    # Error already tracked by load_rule_file_with_error
                     pass
             except Exception as e:
                 error_msg = f"Failed to load rule file {rule_file.name}: {e}"
@@ -79,14 +108,28 @@ class RuleLoader:
         return self.rules
     
     def load_rule_file(self, rule_file: Path) -> Optional[Dict[str, Any]]:
-        """Load and validate a single YAML rule file (backwards compatible)"""
+        """Load and validate a single YAML rule file.
+
+        Backwards-compatible wrapper that discards the error string.
+
+        Args:
+            rule_file: Path to the YAML file.
+
+        Returns:
+            Parsed rule dict, or None on failure.
+        """
         rule, _ = self.load_rule_file_with_error(rule_file)
         return rule
     
     def load_rule_file_with_error(self, rule_file: Path) -> tuple[Optional[Dict[str, Any]], Optional[str]]:
-        """
-        Load and validate a single YAML rule file with error tracking
-        Returns: (rule_data, error_message) tuple
+        """Load and validate a single YAML rule file with error reporting.
+
+        Args:
+            rule_file: Path to the YAML file.
+
+        Returns:
+            Tuple of (rule_data, error_message).  On success error_message
+            is None; on failure rule_data is None.
         """
         try:
             with open(rule_file, 'r', encoding='utf-8') as f:
@@ -126,19 +169,36 @@ class RuleLoader:
             return None, str(e)
     
     def validate_rule(self, rule: Dict[str, Any], filename: str) -> bool:
-        """Validate rule structure and required fields (backwards compatible)"""
+        """Validate rule structure (backwards-compatible, discards error details).
+
+        Args:
+            rule: Parsed rule dictionary.
+            filename: Filename for error messages.
+
+        Returns:
+            True if the rule is structurally valid.
+        """
         errors = []
         return self.validate_rule_with_errors(rule, filename, errors)
     
     def validate_rule_with_errors(self, rule: Dict[str, Any], filename: str, errors: List[str]) -> bool:
         """
-        Validate rule structure and required fields, collecting errors
+        Validate rule structure and required fields, collecting error messages.
+
+        Checks performed:
+            1. Required top-level fields: rule_name, rule_id, threshold
+            2. Threshold is an integer between 0 and 100
+            3. core_identifiers and optional bonus_identifiers structure
+            4. Optional sections: static_metadata, dynamic_metadata,
+               filename_metadata, poco_weights
+
         Args:
-            rule: Rule data to validate
-            filename: Name of the rule file
-            errors: List to append error messages to
+            rule: Parsed rule dictionary to validate.
+            filename: Source filename (used in error messages).
+            errors: List that validation errors are appended to.
+
         Returns:
-            True if valid, False otherwise
+            True if valid, False on the first structural violation found.
         """
         required_fields = ['rule_name', 'rule_id', 'threshold']
         
@@ -149,11 +209,11 @@ class RuleLoader:
                 errors.append(error_msg)
                 return False
         
-        # core_identifiers is optional - initialize if missing
+        # Initialise core_identifiers with an empty structure if absent
         if 'core_identifiers' not in rule:
             rule['core_identifiers'] = {'logic_groups': []}
         
-        # Validate threshold
+        # Threshold must be an integer percentage
         threshold = rule.get('threshold')
         if not isinstance(threshold, int) or threshold < 0 or threshold > 100:
             error_msg = f"Invalid threshold: {threshold} (must be integer 0-100)"
@@ -161,40 +221,24 @@ class RuleLoader:
             errors.append(error_msg)
             return False
         
-        # Validate core_identifiers structure
+        # Validate the logic-group structure inside core_identifiers
         if not self.validate_identifiers_with_errors(rule.get('core_identifiers', {}), 'core_identifiers', filename, errors):
             return False
         
-        # Validate bonus_identifiers if present
         if 'bonus_identifiers' in rule:
             if not self.validate_identifiers_with_errors(rule['bonus_identifiers'], 'bonus_identifiers', filename, errors):
                 return False
         
-        # Validate static_metadata if present
-        if 'static_metadata' in rule:
-            if not isinstance(rule['static_metadata'], dict):
-                error_msg = "static_metadata must be a dictionary"
-                self.logger.error(f"Rule {filename} {error_msg}")
-                errors.append(error_msg)
-                return False
+        # Optional metadata sections must be dicts if present
+        for section in ['static_metadata', 'dynamic_metadata', 'filename_metadata']:
+            if section in rule:
+                if not isinstance(rule[section], dict):
+                    error_msg = f"{section} must be a dictionary"
+                    self.logger.error(f"Rule {filename} {error_msg}")
+                    errors.append(error_msg)
+                    return False
         
-        # Validate dynamic_metadata if present
-        if 'dynamic_metadata' in rule:
-            if not isinstance(rule['dynamic_metadata'], dict):
-                error_msg = "dynamic_metadata must be a dictionary"
-                self.logger.error(f"Rule {filename} {error_msg}")
-                errors.append(error_msg)
-                return False
-        
-        # Validate filename_metadata if present
-        if 'filename_metadata' in rule:
-            if not isinstance(rule['filename_metadata'], dict):
-                error_msg = "filename_metadata must be a dictionary"
-                self.logger.error(f"Rule {filename} {error_msg}")
-                errors.append(error_msg)
-                return False
-        
-        # Validate poco_weights if present
+        # Validate POCO weight overrides if present
         if 'poco_weights' in rule:
             weights = rule['poco_weights']
             if not isinstance(weights, dict):
@@ -213,20 +257,40 @@ class RuleLoader:
         return True
     
     def validate_identifiers(self, identifiers: Dict[str, Any], section_name: str, filename: str) -> bool:
-        """Validate identifiers section structure (backwards compatible)"""
+        """Validate identifiers section (backwards-compatible wrapper).
+
+        Args:
+            identifiers: Identifiers dict (must contain 'logic_groups').
+            section_name: Section label for error messages.
+            filename: Rule filename for error messages.
+
+        Returns:
+            True if structurally valid.
+        """
         errors = []
         return self.validate_identifiers_with_errors(identifiers, section_name, filename, errors)
     
     def validate_identifiers_with_errors(self, identifiers: Dict[str, Any], section_name: str, filename: str, errors: List[str]) -> bool:
         """
-        Validate identifiers section structure with error collection
+        Deep-validate the logic_groups array inside an identifiers section.
+
+        For each logic group validates:
+            - Required keys: type, score, conditions
+            - type is 'match' or 'or'
+            - score is a non-negative number
+            - Each condition has 'pattern' and 'source' with valid values
+
+        For core_identifiers, warns (but does not fail) if group scores
+        don't sum to 100.
+
         Args:
-            identifiers: Identifiers data to validate
-            section_name: Name of the section (e.g., 'core_identifiers')
-            filename: Name of the rule file
-            errors: List to append error messages to
+            identifiers: The identifiers dict to validate.
+            section_name: 'core_identifiers' or 'bonus_identifiers'.
+            filename: Rule filename for error messages.
+            errors: List that error messages are appended to.
+
         Returns:
-            True if valid, False otherwise
+            True if valid, False otherwise.
         """
         if not isinstance(identifiers, dict):
             error_msg = f"{section_name} must be a dictionary"
@@ -255,7 +319,7 @@ class RuleLoader:
                 errors.append(error_msg)
                 return False
             
-            # Validate required fields
+            # Each group must declare its type, score, and conditions
             if 'type' not in group:
                 error_msg = f"{section_name}.logic_groups[{i}] missing 'type'"
                 self.logger.error(f"Rule {filename} {error_msg}")
@@ -274,14 +338,12 @@ class RuleLoader:
                 errors.append(error_msg)
                 return False
             
-            # Validate type
             if group['type'] not in ['match', 'or']:
                 error_msg = f"{section_name}.logic_groups[{i}] type must be 'match' or 'or'"
                 self.logger.error(f"Rule {filename} {error_msg}")
                 errors.append(error_msg)
                 return False
             
-            # Validate score
             score = group['score']
             if not isinstance(score, (int, float)) or score < 0:
                 error_msg = f"{section_name}.logic_groups[{i}] score must be a non-negative number"
@@ -291,7 +353,7 @@ class RuleLoader:
             
             total_score += score
             
-            # Validate conditions
+            # Validate individual conditions within the group
             conditions = group['conditions']
             if not isinstance(conditions, list):
                 error_msg = f"{section_name}.logic_groups[{i}] conditions must be a list"
@@ -324,24 +386,38 @@ class RuleLoader:
                     errors.append(error_msg)
                     return False
         
-        # Validate total score for core identifiers
+        # Warn if core identifier scores don't sum to 100 (not a hard error)
         if section_name == 'core_identifiers' and total_score != 100:
             warning_msg = f"{section_name} total score is {total_score}, should be 100"
             self.logger.warning(f"Rule {filename} {warning_msg}")
-            # This is just a warning, not an error - don't add to errors list
         
         return True
     
     def get_rule(self, rule_id: str) -> Optional[Dict[str, Any]]:
-        """Get a specific rule by ID"""
+        """Get a specific loaded rule by its ID.
+
+        Args:
+            rule_id: Unique identifier of the rule.
+
+        Returns:
+            Rule dictionary, or None if not loaded.
+        """
         return self.rules.get(rule_id)
     
     def get_all_rules(self) -> Dict[str, Dict[str, Any]]:
-        """Get all loaded rules"""
+        """Get all currently loaded rules.
+
+        Returns:
+            Dictionary mapping rule_id to rule data.
+        """
         return self.rules
     
     def get_rule_summary(self) -> Dict[str, str]:
-        """Get a summary of all loaded rules"""
+        """Get a lightweight summary mapping rule_id to rule_name.
+
+        Returns:
+            Dictionary of {rule_id: rule_name} for all loaded rules.
+        """
         summary = {}
         for rule_id, rule in self.rules.items():
             summary[rule_id] = rule.get('rule_name', 'Unknown')
@@ -349,12 +425,18 @@ class RuleLoader:
     
     def get_load_errors(self) -> List[Dict[str, Any]]:
         """
-        Get all errors encountered during rule loading
+        Get all errors encountered during the most recent rule loading pass.
+
         Returns:
-            List of error dictionaries with keys: file, error, type, and optionally details
+            List of error dicts, each with keys: file, error, type,
+            and optionally details.
         """
         return self.load_errors
     
     def has_load_errors(self) -> bool:
-        """Check if any errors occurred during rule loading"""
+        """Check whether the most recent load produced any errors.
+
+        Returns:
+            True if at least one error was recorded.
+        """
         return len(self.load_errors) > 0

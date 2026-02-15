@@ -1,5 +1,8 @@
-// Integration stubs - not needed for POCOclass
-// These files are not used in POCOclass
+/**
+ * @file integrations.js
+ * @description Integration stubs for external service APIs. These exports are
+ * placeholder stubs not used in POCOclass but kept for interface compatibility.
+ */
 
 export const Core = {
   InvokeLLM: null,

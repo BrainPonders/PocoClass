@@ -1,3 +1,9 @@
+/**
+ * @file ChangePassword.jsx
+ * @description Password change page allowing users to update their PocoClass
+ * account password. Validates current password, enforces minimum length,
+ * and confirms the new password matches before saving.
+ */
 import React, { useState, useEffect } from 'react';
 import { User } from '@/api/entities';
 import { useToast } from '@/components/ToastContainer';
@@ -14,6 +20,7 @@ export default function ChangePassword() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Load current user info on mount
   useEffect(() => {
     loadUser();
   }, []);
@@ -27,6 +34,7 @@ export default function ChangePassword() {
     }
   };
 
+  // Validate and update password in localStorage-based user store
   const handleChangePassword = async (e) => {
     e.preventDefault();
 

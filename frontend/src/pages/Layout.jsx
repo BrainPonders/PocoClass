@@ -1,4 +1,9 @@
-
+/**
+ * @file Layout.jsx
+ * @description Application shell layout providing sidebar navigation, header with
+ * user info/logout, theme CSS variables (light/dark/colorblind), validation banner,
+ * guide modal, and auto-sync on tab visibility. Wraps all authenticated page content.
+ */
 
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -73,6 +78,7 @@ function LayoutContent({ children }) {
     },
   ];
 
+  // Fetch current user on mount for role-based nav filtering
   useEffect(() => {
     loadUser();
   }, []);
@@ -87,6 +93,7 @@ function LayoutContent({ children }) {
     }
   };
 
+  // Auto-sync Paperless data when user returns to the browser tab
   const handleTabVisible = async () => {
     try {
       const sessionToken = localStorage.getItem('pococlass_session');
@@ -125,10 +132,9 @@ function LayoutContent({ children }) {
 
   useTabVisibility(handleTabVisible);
 
-  // Check if user is admin
   const isAdmin = currentUser?.role === 'admin';
 
-  // Redirect non-admin users away from admin-only pages
+  // Redirect non-admin users away from admin-only pages (e.g. BackgroundProcess)
   useEffect(() => {
     if (currentUser && !isAdmin) {
       const adminOnlyPaths = [

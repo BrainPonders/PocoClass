@@ -1,3 +1,9 @@
+/**
+ * @file TrashCanModal.jsx
+ * @description Modal for managing soft-deleted classification rules. Allows users
+ * to view, restore, permanently delete individual rules, or empty the entire trash.
+ * Restored rules are re-created via the Rule API and removed from the deleted store.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, Trash2, RotateCcw, AlertTriangle } from 'lucide-react';
 import { DeletedRule } from '@/api/entities';

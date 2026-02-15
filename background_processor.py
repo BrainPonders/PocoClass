@@ -1,6 +1,22 @@
 """
 Background Processing Engine for PocoClass
-Handles automatic document classification with debouncing, locking, and tag-based discovery
+
+Orchestrates automatic document classification by:
+1. Discovering unprocessed documents via tag-based filtering (e.g., documents tagged 'NEW')
+2. Evaluating all classification rules against each document using TestEngine
+3. Applying the best-matching rule's metadata (correspondent, tags, custom fields, etc.)
+4. Tagging documents with POCO+ (matched) or POCO- (no match) and recording POCO scores
+
+Key features:
+- Debounced processing: Multiple triggers within a window collapse into one execution
+- Processing lock: Prevents concurrent runs; queues re-runs via needs_rerun flag
+- Auto-pause: Skips background runs when Web UI has active sessions
+- Smart updates: Only writes metadata fields that differ from current Paperless values
+- Dry run mode: Simulates processing without modifying documents
+- Scoring notes: Appends a detailed scoring breakdown as a document note in Paperless
+
+Key class:
+    BackgroundProcessor - Main orchestrator for batch document classification
 """
 
 import logging
@@ -18,7 +34,12 @@ logger = logging.getLogger(__name__)
 
 
 class BackgroundProcessor:
-    """Manages background processing of documents"""
+    """Manages background document classification with debouncing and concurrency control.
+    
+    Uses a threading.Timer for debounced execution and a database-backed processing lock
+    to prevent concurrent runs. Supports both automatic (tag-triggered) and manual
+    (user-initiated with filters) processing modes.
+    """
     
     def __init__(self, db: Database = None):
         self.db = db or Database()
@@ -501,23 +522,59 @@ class BackgroundProcessor:
             if classified and best_result:
                 updates = self._build_metadata_updates(best_result, doc, api_client)
                 if updates:
-                    # Track what metadata will be applied
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
-                    
-                    success = api_client.update_document(doc_id, updates)
-                    if success:
+                else:
+                    updates = {}
+                    metadata_applied = self._build_metadata_applied_list({}, best_result, api_client)
+            else:
+                updates = {}
+            
+            # Merge POCO scores into the same custom_fields list to avoid a separate
+            # API call that would overwrite rule-extracted custom fields
+            poco_score_field_id = api_client.get_custom_field_id('POCO Score')
+            poco_ocr_field_id = api_client.get_custom_field_id('POCO OCR')
+            existing_cf = updates.get('custom_fields', [])
+            if poco_score_field_id:
+                existing_cf.append({'field': poco_score_field_id, 'value': str(round(poco_score, 1))})
+            if poco_ocr_field_id:
+                existing_cf.append({'field': poco_ocr_field_id, 'value': str(round(poco_ocr, 1))})
+            if existing_cf:
+                updates['custom_fields'] = existing_cf
+            
+            # Merge POCO tag into the same tags list (single API call avoids overwrites)
+            tag_name = 'POCO+' if classified else 'POCO-'
+            opposite_tag_name = 'POCO-' if classified else 'POCO+'
+            tag_id = api_client.get_tag_id(tag_name)
+            opposite_tag_id = api_client.get_tag_id(opposite_tag_name)
+            if tag_id:
+                current_tags = updates.get('tags', list(doc.get('tags', [])))
+                if tag_id not in current_tags:
+                    current_tags.append(tag_id)
+                # Remove the opposite tag (e.g., remove POCO- when adding POCO+)
+                if opposite_tag_id and opposite_tag_id in current_tags:
+                    current_tags.remove(opposite_tag_id)
+                # Optionally remove the 'NEW' trigger tag after processing
+                remove_new = self.db.get_config('bg_remove_new_tag') == 'true'
+                if remove_new:
+                    tag_new = self.db.get_config('bg_tag_new') or 'NEW'
+                    new_tag_id = api_client.get_tag_id(tag_new)
+                    if new_tag_id and new_tag_id in current_tags:
+                        current_tags.remove(new_tag_id)
+                        logger.info(f"Removing '{tag_new}' tag from document {doc_id}")
+                updates['tags'] = current_tags
+            
+            # Single consolidated update call
+            if updates:
+                success = api_client.update_document(doc_id, updates)
+                if success:
+                    if classified and best_result:
                         rules_applied = 1
-                    else:
-                        logger.error(f"Failed to update metadata for document {doc_id}")
-                        metadata_applied = []  # Clear if update failed
+                    logger.info(f"Successfully applied all updates to document {doc_id}")
+                else:
+                    logger.error(f"Failed to update document {doc_id}")
+                    metadata_applied = []
             
-            # ALWAYS add POCO scores to custom fields (even if 0)
-            self._add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
-            
-            # ALWAYS add POCO+ or POCO- tag
-            self._add_poco_tag(doc_id, doc, classified, api_client)
-            
-            # ALWAYS add scoring table to document notes
+            # Add scoring table to document notes (separate call - notes use different API)
             self._add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
         else:
             # In dry run mode, build what would be applied
@@ -653,11 +710,12 @@ class BackgroundProcessor:
                             current_value = current_custom_fields.get(field_id)
                             new_value = str(cf['value'])
                             if current_value != new_value:
+                                api_value = self._resolve_select_value(field_id, new_value, api_client)
                                 custom_fields.append({
                                     'field': field_id,
-                                    'value': new_value
+                                    'value': api_value
                                 })
-                                logger.info(f"Custom field '{cf['name']}' differs: current='{current_value}' vs extracted='{new_value}'")
+                                logger.info(f"Custom field '{cf['name']}' differs: current='{current_value}' vs extracted='{new_value}' (api_value='{api_value}')")
         
         # Handle flattened custom fields from dynamic extraction
         for field_name, value in extracted.items():
@@ -668,11 +726,12 @@ class BackgroundProcessor:
                     new_value = str(value)
                     logger.info(f"Smart update check - Field '{field_name}' (ID={field_id}): current='{current_value}' (type={type(current_value).__name__}), new='{new_value}' (type={type(new_value).__name__}), equal={current_value == new_value}")
                     if current_value != new_value:
+                        api_value = self._resolve_select_value(field_id, new_value, api_client)
                         custom_fields.append({
                             'field': field_id,
-                            'value': new_value
+                            'value': api_value
                         })
-                        logger.info(f"→ WILL UPDATE: Custom field '{field_name}' differs")
+                        logger.info(f"→ WILL UPDATE: Custom field '{field_name}' differs (api_value='{api_value}')")
                     else:
                         logger.info(f"→ SKIP: Custom field '{field_name}' already correct")
         
@@ -796,6 +855,19 @@ class BackgroundProcessor:
         
         return applied
     
+    def _resolve_select_value(self, field_id: int, label_value: str, api_client: PaperlessAPIClient) -> str:
+        """Resolve a select field label to its option ID for the Paperless API.
+        For non-select fields, returns the value unchanged."""
+        cf_def = api_client.get_custom_field_by_id(field_id)
+        if cf_def and cf_def.get('data_type') == 'select' and cf_def.get('extra_data'):
+            select_options = cf_def['extra_data'].get('select_options', [])
+            for option in select_options:
+                if option.get('label') == label_value:
+                    logger.info(f"Resolved select value '{label_value}' to option ID '{option['id']}' for field {field_id}")
+                    return option['id']
+            logger.warning(f"Select option '{label_value}' not found for field {field_id}, using label as-is")
+        return label_value
+
     def _add_poco_scores(self, doc_id: int, poco_score: float, poco_ocr: float, api_client: PaperlessAPIClient) -> None:
         """Add POCO Score and POCO OCR to document custom fields"""
         try:
@@ -852,7 +924,12 @@ class BackgroundProcessor:
     def _add_scoring_note(self, doc_id: int, result: Optional[Dict], rule: Optional[Dict], 
                          poco_score: float, poco_ocr: float, classified: bool, 
                          threshold: float, api_client: PaperlessAPIClient) -> None:
-        """Add or update scoring table in document notes"""
+        """Add or replace the PocoClass scoring report as a document note.
+        
+        Deletes any existing PocoClass notes first, then creates a new one
+        with the full scoring breakdown (OCR, filename, metadata percentages).
+        Uses the Paperless notes API directly (separate from document PATCH).
+        """
         try:
             from datetime import datetime
             import requests
@@ -898,9 +975,20 @@ class BackgroundProcessor:
             # Get OCR threshold
             ocr_threshold = rule.get('ocr_threshold', 75) if rule else 75
             
-            # Get breakdown scores if available
-            filename_score = result.get('filename_score', 0) if result else 0
-            metadata_score = result.get('metadata_score', 0) if result else 0
+            # Get breakdown counts and scores if available
+            breakdown = result.get('breakdown', {}) if result else {}
+            ocr_bd = breakdown.get('ocr', {})
+            filename_bd = breakdown.get('filename', {})
+            paperless_bd = breakdown.get('paperless', {})
+            
+            ocr_matched = ocr_bd.get('matched', 0)
+            ocr_total_count = ocr_bd.get('total', 0)
+            filename_matched = filename_bd.get('matched', 0)
+            filename_total_count = filename_bd.get('total', 0)
+            filename_pct = filename_bd.get('percentage', 0)
+            paperless_matched = paperless_bd.get('matched', 0)
+            paperless_total_count = paperless_bd.get('total', 0)
+            paperless_pct = paperless_bd.get('percentage', 0)
             
             note_text = f"""PocoClass Scoring Report
 ========================
@@ -911,9 +999,9 @@ POCO Score: {poco_score:.1f}%
 POCO OCR: {poco_ocr:.1f}% (Minimum {ocr_threshold}%, Multiplier: {ocr_multiplier}x)
 
 Score Breakdown:
-- OCR Patterns: {poco_ocr:.1f}% (Multiplier: {ocr_multiplier}x)
-- Filename Match: {filename_score:.1f}% (Multiplier: {filename_multiplier}x)
-- Metadata Verification: {metadata_score:.1f}% (Multiplier: {metadata_multiplier}x)
+- OCR Patterns: {ocr_matched}/{ocr_total_count} = {poco_ocr:.1f}% (Multiplier: {ocr_multiplier}x)
+- Filename Match: {filename_matched}/{filename_total_count} = {filename_pct:.1f}% (Multiplier: {filename_multiplier}x)
+- Metadata Verification: {paperless_matched}/{paperless_total_count} = {paperless_pct:.1f}% (Multiplier: {metadata_multiplier}x)
 
 Result: {'✓ MATCHED' if classified else '✗ NO MATCH'} (threshold: {threshold}%)
 Tag Applied: {'POCO+' if classified else 'POCO-'}
@@ -934,8 +1022,11 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
             logger.error(f"Error adding scoring note to document {doc_id}: {e}")
     
     def _is_web_ui_active(self) -> bool:
-        """Check if Web UI has active sessions (for auto-pause)"""
-        # Check for sessions in last 5 minutes
+        """Check if Web UI has active user sessions within the last 5 minutes.
+        
+        Used by auto-pause to avoid background processing while a user
+        is actively working in the web interface (prevents conflicting updates).
+        """
         from datetime import timedelta
         conn = self.db.get_connection()
         cursor = conn.cursor()
@@ -943,7 +1034,7 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         cutoff_time = (datetime.now() - timedelta(minutes=5)).isoformat()
         cursor.execute("""
             SELECT COUNT(*) as count FROM sessions 
-            WHERE last_activity > ?
+            WHERE expires_at > ?
         """, (cutoff_time,))
         
         row = cursor.fetchone()
@@ -953,7 +1044,14 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         return active_count > 0
     
     def _get_admin_session(self) -> Optional[Dict]:
-        """Get an active admin session for background processing"""
+        """Retrieve the most recent admin session for background API access.
+        
+        Background processing needs a Paperless API token but has no user context.
+        This fetches the latest admin user's session and decrypts its stored token.
+        
+        Returns:
+            Session dict with decrypted 'paperless_token', or None if no admin session exists
+        """
         conn = self.db.get_connection()
         cursor = conn.cursor()
         
@@ -963,7 +1061,7 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
             FROM sessions s
             JOIN users u ON s.user_id = u.id
             WHERE u.pococlass_role = 'admin'
-            ORDER BY s.last_activity DESC
+            ORDER BY s.created_at DESC
             LIMIT 1
         """)
         
@@ -979,7 +1077,12 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         return None
     
     def get_status(self) -> Dict[str, Any]:
-        """Get current background processing status"""
+        """Get current background processing status for the frontend dashboard.
+        
+        Returns:
+            Dict with enabled state, lock status, timer state, tag config,
+            and the most recent processing run summary
+        """
         enabled = self.db.get_config('bg_enabled') == 'true'
         locked = self.db.get_processing_lock()
         needs_rerun = self.db.get_needs_rerun()

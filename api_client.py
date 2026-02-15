@@ -1,6 +1,20 @@
 """
 PocoClass - Paperless-ngx API Client
-Handles all communication with the Paperless-ngx API for document retrieval and metadata updates
+
+Handles all communication with the Paperless-ngx REST API for document management.
+Provides methods for:
+- Testing API connectivity
+- CRUD operations on tags, correspondents, document types, and custom fields
+- Document retrieval with flexible filtering (tags, dates, correspondents, etc.)
+- Document content (OCR text) retrieval
+- Document metadata updates (PATCH)
+
+All entity lookups (tags, correspondents, etc.) use a local SQLite cache for
+performance, falling back to the Paperless API when cache misses occur.
+New entities are auto-created in Paperless if they don't exist (get-or-create pattern).
+
+Key class:
+    PaperlessAPIClient - Stateful client with session-based auth and caching
 """
 
 import requests
@@ -10,7 +24,11 @@ from config import Config
 from database import Database
 
 class PaperlessAPIClient:
-    """Client for interacting with Paperless-ngx API"""
+    """Client for interacting with the Paperless-ngx REST API.
+    
+    Uses a persistent requests.Session with token-based authentication.
+    All entity lookups are cached in the local Database for performance.
+    """
     
     # Default timeout for all API requests (30 seconds)
     REQUEST_TIMEOUT = 30
@@ -346,6 +364,23 @@ class PaperlessAPIClient:
             self.logger.error(f"Failed to get/create custom field '{field_name}': {e}")
             return None
     
+    def create_custom_field(self, field_name: str, data_type: str = 'string') -> int:
+        """Create a custom field in Paperless-ngx and return its ID"""
+        response = self.session.post(
+            f"{self.config.paperless_url}/api/custom_fields/",
+            json={
+                'name': field_name,
+                'data_type': data_type
+            },
+            timeout=self.REQUEST_TIMEOUT
+        )
+        response.raise_for_status()
+        cf_data = response.json()
+        field_id = cf_data['id']
+        self.logger.info(f"Created new custom field '{field_name}' with ID {field_id}")
+        self.db.cache_custom_field(cf_data)
+        return field_id
+
     def get_custom_field_by_id(self, field_id: int) -> Optional[Dict]:
         """Get custom field definition by ID (cached, includes select options)"""
         try:
@@ -369,7 +404,33 @@ class PaperlessAPIClient:
                      correspondents: Optional[List[str]] = None, correspondents_mode: str = 'include',
                      doc_types: Optional[List[str]] = None, doc_types_mode: str = 'include',
                      date_from: Optional[str] = None, date_to: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Get documents matching filter criteria"""
+        """Retrieve documents from Paperless with flexible filtering.
+        
+        Supports two modes:
+        1. Single document fetch (when document_id is provided)
+        2. Bulk fetch with pagination and query filters
+        
+        Filter parameters are translated to Paperless API query params
+        (e.g., tags__id__in, correspondent__id__in, added__gte).
+        
+        Args:
+            limit: Maximum number of documents to return
+            document_id: Fetch a specific document by ID
+            ignore_tags: If True, skip the default include/exclude tag filtering
+            title: Filter by title (case-insensitive contains)
+            tags: List of tag names to filter by
+            tags_mode: 'include' or 'exclude' for tag filtering
+            exclude_tags: Additional tag names to exclude (can combine with tags)
+            correspondents: List of correspondent names to filter by
+            correspondents_mode: 'include' or 'exclude' for correspondent filtering
+            doc_types: List of document type names to filter by
+            doc_types_mode: 'include' or 'exclude' for doc type filtering
+            date_from: Filter documents added on or after this date
+            date_to: Filter documents added on or before this date
+            
+        Returns:
+            List of document dicts from Paperless API
+        """
         try:
             # Skip tag filtering if ignore_tags is True
             if ignore_tags:
@@ -393,7 +454,6 @@ class PaperlessAPIClient:
                 params['title__icontains'] = title
             
             if tags and len(tags) > 0:
-                # Get tag IDs from names
                 tag_ids = []
                 for tag_name in tags:
                     tag_id = self.get_tag_id(tag_name)
@@ -401,14 +461,15 @@ class PaperlessAPIClient:
                         tag_ids.append(tag_id)
                 
                 if tag_ids:
-                    if tags_mode == 'include':
-                        params['tags__id__in'] = ','.join(map(str, tag_ids))
-                    else:  # exclude
+                    if tags_mode == 'exclude':
                         params['tags__id__none'] = ','.join(map(str, tag_ids))
+                    elif tags_mode == 'all':
+                        params['tags__id__all'] = ','.join(map(str, tag_ids))
+                    else:
+                        params['tags__id__in'] = ','.join(map(str, tag_ids))
             
-            # Handle separate exclude_tags parameter (can be used alongside tags)
+            # Handle separate exclude_tags parameter (can be used alongside the tags param above)
             if exclude_tags and len(exclude_tags) > 0:
-                # Get tag IDs from names
                 exclude_tag_ids = []
                 for tag_name in exclude_tags:
                     tag_id = self.get_tag_id(tag_name)
@@ -416,7 +477,7 @@ class PaperlessAPIClient:
                         exclude_tag_ids.append(tag_id)
                 
                 if exclude_tag_ids:
-                    # If tags__id__none already exists (from tags with exclude mode), append to it
+                    # Merge with any existing exclusions (e.g., from tags param in 'exclude' mode)
                     existing_none = params.get('tags__id__none', '')
                     if existing_none:
                         all_exclude_ids = existing_none + ',' + ','.join(map(str, exclude_tag_ids))
@@ -459,22 +520,22 @@ class PaperlessAPIClient:
                 params['added__lte'] = date_to
             
             if document_id:
-                # Get specific document
+                # Single-document fetch mode
                 response = self.session.get(f"{self.config.paperless_url}/api/documents/{document_id}/", timeout=self.REQUEST_TIMEOUT)
                 response.raise_for_status()
                 doc = response.json()
                 
-                # Skip tag filtering if ignore_tags is True
                 if ignore_tags:
                     return [doc]
                 
-                # Check if document matches filter criteria
+                # Verify document passes include/exclude tag filters before returning
                 doc_tag_ids = []
                 for tag in doc.get('tags', []):
+                    # Paperless may return tags as objects or raw IDs depending on context
                     if isinstance(tag, dict):
                         doc_tag_ids.append(tag['id'])
                     else:
-                        doc_tag_ids.append(tag)  # Tag is already an ID
+                        doc_tag_ids.append(tag)
                 
                 # Debug logging
                 self.logger.debug(f"Document {document_id} tags: {doc_tag_ids}")
@@ -490,11 +551,11 @@ class PaperlessAPIClient:
                     self.logger.warning(f"Document {document_id} does not match filter criteria")
                     return []
             else:
-                # Build query parameters
                 if not ignore_tags:
-                    # Apply tag filters
-                    params['tags__id__in'] = include_tag_id
-                    if exclude_tag_id:
+                    # Apply legacy tag filters only when no user-selected tag filters exist
+                    if 'tags__id__in' not in params and include_tag_id:
+                        params['tags__id__in'] = include_tag_id
+                    if 'tags__id__none' not in params and exclude_tag_id:
                         params['tags__id__none'] = exclude_tag_id
                 
                 # Handle pagination to get all documents
@@ -557,7 +618,14 @@ class PaperlessAPIClient:
             self.logger.info(f"Successfully updated document {document_id}")
             return True
         except requests.RequestException as e:
-            self.logger.error(f"Failed to update document {document_id}: {e}")
+            # Capture response body for debugging (truncated to 500 chars to avoid log bloat)
+            response_body = ''
+            if hasattr(e, 'response') and e.response is not None:
+                try:
+                    response_body = e.response.text[:500]
+                except Exception:
+                    pass
+            self.logger.error(f"Failed to update document {document_id}: {e} | Response: {response_body} | Payload: {updates}")
             return False
     
     def get_all_correspondents(self) -> Dict[str, int]:
