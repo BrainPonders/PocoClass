@@ -103,9 +103,8 @@ export default function BackgroundProcess() {
       if (!isMounted) return;
       
       try {
-        const sessionToken = localStorage.getItem('pococlass_session');
         const response = await fetch(`${API_BASE_URL}/api/background/status`, {
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          credentials: 'include'
         });
         
         if (response.ok && isMounted) {
@@ -151,9 +150,8 @@ export default function BackgroundProcess() {
 
   const loadStatus = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/status`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -169,9 +167,8 @@ export default function BackgroundProcess() {
 
   const loadHistory = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/history?limit=${historyLimit}&offset=${(historyPage - 1) * historyLimit}`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -185,9 +182,8 @@ export default function BackgroundProcess() {
 
   const loadBackgroundSettings = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/settings`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -217,7 +213,6 @@ export default function BackgroundProcess() {
   const loadMatchingDocuments = async () => {
     setLoadingDocuments(true);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const params = new URLSearchParams();
       
       // Build query params from filters
@@ -244,9 +239,7 @@ export default function BackgroundProcess() {
       if (filters.limit) params.append('limit', filters.limit);
       
       const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`
-        }
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Failed to fetch documents');
@@ -287,10 +280,9 @@ export default function BackgroundProcess() {
 
     setLoading(true);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/background/trigger`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (!response.ok) throw new Error('Trigger failed');
@@ -331,8 +323,6 @@ export default function BackgroundProcess() {
     setLoading(true);
     setCurrentDryRun(dryRunMode);
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
-      
       // Convert tri-state tagStates to backend format
       const includedTags = Object.entries(filters.tagStates || {})
         .filter(([_, state]) => state === 'include')
@@ -343,9 +333,9 @@ export default function BackgroundProcess() {
       
       const response = await fetch(`${API_BASE_URL}/api/background/process`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           filters: {
@@ -472,8 +462,7 @@ export default function BackgroundProcess() {
   };
 
   const handleViewPDF = (doc) => {
-    const sessionToken = localStorage.getItem('pococlass_session');
-    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    const url = `/api/documents/${doc.id}/preview`;
     window.open(url, '_blank');
   };
 

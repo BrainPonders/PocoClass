@@ -247,7 +247,7 @@ export default function TabbedPreviewPanel({
               pdfContent
             ) : documentId ? (
               <iframe
-                src={`/api/documents/${documentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}`}
+                src={`/api/documents/${documentId}/preview`}
                 className="w-full h-full border-0"
                 title="PDF Preview"
               />

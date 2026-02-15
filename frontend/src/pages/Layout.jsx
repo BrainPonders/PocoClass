@@ -96,9 +96,8 @@ function LayoutContent({ children }) {
   // Auto-sync Paperless data when user returns to the browser tab
   const handleTabVisible = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync/counts`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -112,7 +111,7 @@ function LayoutContent({ children }) {
 
           const syncResponse = await fetch(`${API_BASE_URL}/api/sync`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${sessionToken}` }
+            credentials: 'include'
           });
 
           if (syncResponse.ok) {
