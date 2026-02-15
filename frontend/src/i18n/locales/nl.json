@@ -407,7 +407,11 @@
       "usageHint": "Gebruik dit token in uw post-consumption script met: -H \"X-API-Key: UW_TOKEN\"",
       "adminOnly": "Alleen beheerders kunnen het systeem API-token beheren",
       "scriptSetupRequired": "Post-consumption script vereist",
-      "scriptSetupDesc": "Voor automatische verwerking moet u een post-consumption script configureren in Paperless-ngx. Kopieer pococlass_trigger.sh naar uw scriptmap en stel de omgevingsvariabele in:"
+      "scriptSetupDesc": "Voor automatische verwerking moet u een post-consumption script configureren in Paperless-ngx. Kopieer pococlass_trigger.sh naar uw scriptmap en stel de omgevingsvariabele in:",
+      "noToken": "Geen systeem-token geconfigureerd",
+      "copyWarning": "Zorg ervoor dat u dit token kopieert - het wordt niet opnieuw getoond!",
+      "confirmYes": "Ja",
+      "confirmNo": "Nee"
     },
     "pocoPlus": "Succesetiquette - Toegevoegd wanneer een document overeenkomt met een regel en beide POCO- en OCR-drempels passeren",
     "pocoMinus": "Mislukkingsetiket - Toegevoegd wanneer een document wordt verwerkt maar niet overeenkomt met een regel of drempels niet bereikt",

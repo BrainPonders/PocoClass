@@ -407,7 +407,11 @@
       "usageHint": "Usa questo token nel tuo script post-consumo con: -H \"X-API-Key: IL_TUO_TOKEN\"",
       "adminOnly": "Solo gli amministratori possono gestire il token API di sistema",
       "scriptSetupRequired": "Script post-consumo richiesto",
-      "scriptSetupDesc": "Per l'elaborazione automatica, devi configurare uno script post-consumo in Paperless-ngx. Copia pococlass_trigger.sh nella cartella degli script e imposta la variabile d'ambiente:"
+      "scriptSetupDesc": "Per l'elaborazione automatica, devi configurare uno script post-consumo in Paperless-ngx. Copia pococlass_trigger.sh nella cartella degli script e imposta la variabile d'ambiente:",
+      "noToken": "Nessun token di sistema configurato",
+      "copyWarning": "Assicurati di copiare questo token - non verrà mostrato di nuovo!",
+      "confirmYes": "Sì",
+      "confirmNo": "No"
     },
     "pocoPlus": "Etichetta di successo - Aggiunta quando un documento corrisponde a una regola e supera entrambe le soglie POCO e OCR",
     "pocoMinus": "Etichetta di fallimento - Aggiunta quando un documento viene elaborato ma non corrisponde a nessuna regola o non supera le soglie",
