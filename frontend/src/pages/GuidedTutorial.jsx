@@ -9,6 +9,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, GraduationCap } from 'lucide-react';
 import { createPageUrl } from '@/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 import PageLayout from '@/components/PageLayout';
 import StepProgress from '@/components/wizard/StepProgress';
 import TabbedPreviewPanel from '@/components/TabbedPreviewPanel';
@@ -27,6 +28,7 @@ import SummaryStep from '@/components/wizard/steps/SummaryStep';
 export default function GuidedTutorial() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
 
   // Resolve initial tutorial index from ?step= query param
   const getInitialIndex = () => {
@@ -133,8 +135,8 @@ export default function GuidedTutorial() {
 
   return (
     <PageLayout
-      title="Guided Tutorial"
-      subtitle="Learn how to build classification rules with a real bank statement example"
+      title={t('tutorial.pageTitle')}
+      subtitle={t('tutorial.pageSubtitle')}
       headerPadding="py-3"
       actions={
         <button
@@ -142,7 +144,7 @@ export default function GuidedTutorial() {
           className="btn btn-ghost"
         >
           <ArrowLeft size={16} />
-          Back to Rules
+          {t('tutorial.backToRules')}
         </button>
       }
     >
@@ -170,7 +172,7 @@ export default function GuidedTutorial() {
               gap: '6px',
             }}>
               <GraduationCap size={14} />
-              TUTORIAL MODE — Fields are read-only
+              {t('tutorial.readOnlyBanner')}
             </div>
             {renderCurrentStep()}
           </div>

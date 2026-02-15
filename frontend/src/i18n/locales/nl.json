@@ -1250,5 +1250,259 @@
       "step5Desc": "Ga naar Instellingen → Achtergrondverwerking en schakel de automatische modus in. PocoClass zal nu automatisch nieuwe documenten classificeren."
     },
     "fullGuide": "volledige handleiding"
+  },
+  "tutorial": {
+    "pageTitle": "Begeleide tutorial",
+    "pageSubtitle": "Leer hoe u classificatieregels opbouwt aan de hand van een echt bankafschriftvoorbeeld",
+    "backToRules": "Terug naar regels",
+    "readOnlyBanner": "TUTORIALMODUS — Velden zijn alleen-lezen",
+    "nav": {
+      "back": "Terug",
+      "next": "Volgende",
+      "finish": "Voltooien",
+      "step": "Stap"
+    },
+    "steps": {
+      "0_1": {
+        "title": "Welkom bij de tutorial voor de regelbouwer!",
+        "text": "Dit is waar u classificatieregels maakt. Elke regel leert PocoClass hoe een specifiek documenttype herkend moet worden. Laten we stap voor stap een regel bouwen voor bankafschriften."
+      },
+      "0_2": {
+        "title": "6 stappen om een regel te bouwen",
+        "text": "Elke classificatieregel wordt opgebouwd in 6 stappen, weergegeven in deze voortgangsbalk. Elke stap richt zich op een ander aspect — van het benoemen van uw regel, tot het definiëren van patronen, tot het toewijzen van metagegevens. U doorloopt ze van links naar rechts."
+      },
+      "0_3": {
+        "title": "Het invoergebied",
+        "text": "Dit is waar u uw regelgegevens invult. Elke stap toont verschillende invoervelden aan deze zijde. De velden veranderen naarmate u de 6 stappen doorloopt."
+      },
+      "0_4": {
+        "title": "Configuratieoverzicht",
+        "text": "Onderaan elke stap vindt u een configuratieoverzicht. Dit toont een overzicht van uw huidige instellingen en markeert alles wat aandacht nodig heeft met waarschuwingen."
+      },
+      "0_5": {
+        "title": "PDF-voorbeeld",
+        "text": "Dit paneel toont een voorbeeld van het document waarvoor u een regel bouwt. Gebruik het om tekstpatronen en visuele elementen te identificeren die uniek zijn voor dit type document."
+      },
+      "0_6": {
+        "title": "OCR-inhoud",
+        "textParts": [
+          { "text": "Dit tabblad toont de ruwe tekst die PocoClass uit het document extraheert met OCR (Optical Character Recognition). Dit is wat PocoClass daadwerkelijk 'leest' — " },
+          { "text": "merk op dat de tekstvolgorde kan afwijken van de visuele PDF-indeling.", "bold": true },
+          { "text": " Uw patronen moeten overeenkomen met deze tekst, niet met de PDF-indeling." }
+        ]
+      },
+      "0_7": {
+        "title": "YAML-voorbeeld",
+        "text": "Het YAML-tabblad toont uw regel als gestructureerde gegevens — dit is wat wordt opgeslagen. De meeste gebruikers hoeven YAML niet rechtstreeks te bewerken, maar het is nuttig voor ervaren gebruikers die regels willen verfijnen of kopiëren."
+      },
+      "1_0": {
+        "title": "Stap 1: Basisinformatie",
+        "text": "Laten we beginnen met de basis. In deze eerste stap geeft u uw regel een naam, een ID en een beschrijving. U stelt ook de POCO Score-drempel in — het minimale vertrouwensniveau dat nodig is om een document te classificeren."
+      },
+      "1_1": {
+        "title": "Regelnaam en ID",
+        "text": "Geef uw regel een duidelijke naam — zoals \"Bankafschrift\". De regel-ID wordt automatisch gegenereerd en wordt intern gebruikt. De beschrijving helpt u te onthouden wat deze regel doet."
+      },
+      "1_2": {
+        "title": "POCO Score-drempel",
+        "text": "De POCO Score-drempel bepaalt hoe zeker het systeem moet zijn voordat het een document classificeert. De standaardwaarde is 75% — dit betekent dat minimaal 75% van de gewogen patronen moet overeenkomen. Te laag = foutieve matches, te hoog = gemiste documenten."
+      },
+      "2_0": {
+        "title": "Stap 2: OCR-identificatiepatronen",
+        "textParts": [
+          { "text": "Dit is de belangrijkste stap. Hier definieert u tekstpatronen die uw documenttype uniek identificeren. Een tekstpatroon kan zo eenvoudig zijn als een woord of zin — zoals \"Royal Bank of Scotland\" of \"Factuurnummer\"." },
+          { "text": "\n\n" },
+          { "text": "Voor meer flexibiliteit kunt u reguliere expressies (regex) gebruiken — een manier om tekstpatronen te beschrijven die variaties zoals extra spaties of verschillende opmaak aankan. De patroon-assistent maakt het bouwen van regex eenvoudig, zelfs zonder ervaring. Voor meer details, zie " },
+          { "text": "Regex-ondersteuning in de gids", "action": "openGuide" },
+          { "text": "." }
+        ]
+      },
+      "2_1": {
+        "title": "PDF vs OCR — Wat PocoClass ziet",
+        "textParts": [
+          { "text": "Voordat we patronen definiëren, bekijk het verschil tussen de PDF (hoe u het document ziet) en de OCR-tekst (hoe PocoClass het ziet). " },
+          { "text": "Wissel", "action": "togglePreview" },
+          { "text": " tussen de PDF- en OCR-tabbladen aan de rechterkant — merk op dat de tekstvolgorde anders is! PocoClass werkt met de OCR-tekst, niet met de visuele indeling." }
+        ]
+      },
+      "2_2": {
+        "title": "Logische groep 1 — Bankidentificatie",
+        "textParts": [
+          { "text": "Ons eerste patroon zoekt naar " },
+          { "text": "\"Royal Bank of Scotland\"", "bold": true },
+          { "text": " als platte tekst — dit verschijnt onderaan elk RBS-afschrift. Het zoekgebied is ingesteld op de laatste 10 regels, waardoor de match sneller en preciezer is. Deze groep is optioneel — het verhoogt het vertrouwen maar weigert documenten niet als het ontbreekt." },
+          { "text": "\n\n" },
+          { "text": "Met behulp van de regex-bouwer kan hetzelfde patroon worden geschreven als " },
+          { "text": "Royal\\s*Bank\\s*of\\s*Scotland", "bold": true },
+          { "text": " — wat ook variaties zoals \"RoyalBank of Scotland\" of \"Royal   Bank of Scotland\" met ongebruikelijke spatiëring zou matchen. Eenvoudige tekst werkt voor de meeste gevallen; regex voegt flexibiliteit toe wanneer nodig." }
+        ]
+      },
+      "2_3": {
+        "title": "Logische groep 2 — Rekeningidentificatie",
+        "textParts": [
+          { "text": "Dit patroon zoekt naar uw volledige IBAN " },
+          { "text": "\"GB11RBOS 1610 0011 1111 11\"", "bold": true },
+          { "text": " in de eerste 10 regels van het document — waar bankafschriften doorgaans rekeninggegevens tonen." },
+          { "text": "\n\n" },
+          { "text": "Deze groep is verplicht gemaakt", "bold": true },
+          { "text": ", wat betekent dat de regel alleen slaagt als dit patroon wordt gevonden. Dit is belangrijk wanneer u meerdere rekeningen heeft bij Royal Bank — het zorgt ervoor dat u het juiste rekeningafschrift identificeert, niet zomaar een RBS-document." }
+        ]
+      },
+      "2_4": {
+        "title": "Meer logische groepen",
+        "textParts": [
+          { "text": "U kunt meer logische groepen toevoegen om de nauwkeurigheid te verbeteren. Elke regel heeft minimaal 3 en maximaal 10 groepen nodig. Groepen kunnen AND-logica gebruiken (alle voorwaarden moeten overeenkomen) of OR-logica (elke voorwaarde kan overeenkomen). In ons voorbeeld zoeken groep 3-5 naar " },
+          { "text": "\"Account Number\"", "bold": true },
+          { "text": ", " },
+          { "text": "\"Statement\"", "bold": true },
+          { "text": ", en " },
+          { "text": "\"Balance\"", "bold": true },
+          { "text": "." },
+          { "text": "\n\n" },
+          { "text": "De patroon-assistent (zoek het toverstafpictogram) helpt u regex-patronen te bouwen zonder regex-syntaxis te kennen. Voor meer details, zie " },
+          { "text": "Regex-ondersteuning in de gids", "action": "openGuide" },
+          { "text": "." }
+        ]
+      },
+      "2_5": {
+        "title": "OCR-drempel en gewichtsvermenigvuldiger",
+        "textParts": [
+          { "text": "De OCR-drempel (75%) stelt het minimumpercentage OCR-patronen in dat moet overeenkomen voordat het document kan worden geclassificeerd. Dit zorgt voor een basisniveau van op tekst gebaseerd vertrouwen." },
+          { "text": "\n\n" },
+          { "text": "De gewichtsvermenigvuldiger (x3) bepaalt hoeveel OCR-patronen meetellen voor de uiteindelijke POCO Score. Een regel kan drie bronnen gebruiken om documenten te identificeren: OCR-tekstpatronen (de hoofdbron), bestandsnaampatronen en Paperless-ngx-classificaties. De vermenigvuldiger laat u OCR prioriteren boven de andere bronnen. Voor meer details, zie " },
+          { "text": "Scoresysteem in de gids", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "3_0": {
+        "title": "Stap 3: Bestandsnaampatronen",
+        "text": "Naast OCR-tekst kan de bestandsnaam zelf helpen bij het identificeren van documenten. Uw bank biedt bijvoorbeeld mogelijk geautomatiseerde digitale afschriften met consistente bestandsnamen zoals \"RBS_Statement_2014-12-21.pdf\". Bestandsnaampatronen stellen u in staat hiervan gebruik te maken."
+      },
+      "3_1": {
+        "title": "Bestandsnaampatronen",
+        "textParts": [
+          { "text": "Patroon 1: " },
+          { "text": "\"RBS.*statement\"", "bold": true },
+          { "text": " komt overeen met elke bestandsnaam die \"RBS\" bevat gevolgd door willekeurige tekens en vervolgens \"statement\". De .* betekent dat er een willekeurig aantal tekens tussen kan staan — het matcht \"RBS_Statement_2014-12-21.pdf\" of \"RBS-Monthly-Statement.pdf\"." },
+          { "text": "\n\n" },
+          { "text": "Patroon 2: " },
+          { "text": "\"\\d{4}-\\d{2}-\\d{2}\"", "bold": true },
+          { "text": " zoekt naar een volledig datumpatroon in de bestandsnaam — vier cijfers, een streepje, twee cijfers, een streepje en twee cijfers. Dit matcht het \"2014-12-21\" deel in \"RBS_Statement_2014-12-21.pdf\", wat helpt bij het identificeren van documenten op basis van hun datumstempel." }
+        ]
+      },
+      "3_2": {
+        "title": "Bestandsnaam gewichtsvermenigvuldiger",
+        "textParts": [
+          { "text": "De bestandsnaam gewichtsvermenigvuldiger (x1) bepaalt hoeveel bestandsnaammatches bijdragen aan de uiteindelijke POCO Score — vergelijkbaar met de OCR-vermenigvuldiger die u eerder zag. De standaardwaarde van x1 betekent dat bestandsnaampatronen minder meetellen dan OCR-patronen (die x3 gebruiken)." },
+          { "text": "\n\n" },
+          { "text": "Dit is logisch omdat bestandsnamen minder betrouwbaar zijn dan documentinhoud — ze kunnen worden hernoemd of inconsistent zijn. Voor meer details over hoe alle vermenigvuldigers samenwerken, zie " },
+          { "text": "Scoresysteem in de gids", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "4_0": {
+        "title": "Stap 4: Gegevensverificatie",
+        "text": "Gegevensverificatie voegt een extra vertrouwenslaag toe door geëxtraheerde gegevens te vergelijken met bestaande Paperless-ngx-metagegevens. Deze stap is optioneel en is vooral nuttig voor geavanceerde opstellingen waar u documentgegevens wilt valideren tegen bekende waarden."
+      },
+      "4_1": {
+        "title": "Verificatie-placeholders",
+        "text": "Hier selecteert u welke Paperless-ngx-velden u wilt gebruiken voor verificatie. Indien ingeschakeld, controleert PocoClass of de waarde die in stap 5 is toegewezen overeenkomt met wat al in Paperless-ngx staat — waarmee een vertrouwensvermenigvuldiger aan de eindscore wordt toegevoegd. In ons voorbeeld zijn Correspondent en Documenttype ingeschakeld voor verificatie."
+      },
+      "4_2": {
+        "title": "Verificatievermenigvuldiger",
+        "textParts": [
+          { "text": "De verificatievermenigvuldiger bepaalt hoeveel gewicht Paperless-ngx-veldmatches toevoegen aan de uiteindelijke POCO Score. Standaard staat de modus op \"Auto\", wat het gewicht van deze bron neutraliseert — zodat verificatie een lichte vertrouwensverhoging blijft in plaats van een dominante factor." },
+          { "text": "\n\n" },
+          { "text": "Zonder de automatische modus zou de scoreberekening Paperless-classificaties een zeer hoog gewicht kunnen geven (tot x5), wat uw OCR-patronen mogelijk overschaduwt. De automatische modus voorkomt dit door de vermenigvuldiger dynamisch aan te passen. Voor meer details, zie " },
+          { "text": "Scoresysteem in de gids", "action": "openGuideScoring" },
+          { "text": "." }
+        ]
+      },
+      "5_0": {
+        "title": "Stap 5: Documentclassificaties",
+        "text": "Nu PocoClass weet hoe uw documenten geïdentificeerd moeten worden, is het tijd om aan te geven wat er moet gebeuren wanneer een match wordt gevonden. In deze stap definieert u welke classificatiegegevens moeten worden toegewezen — de correspondent, het documenttype en tags voor organisatie. U kunt ook dynamische gegevensextractie configureren, die specifieke waarden rechtstreeks uit de documenttekst haalt — zoals rekeningnummers, factuurtotalen of datums — en deze automatisch opslaat in Paperless-ngx-velden."
+      },
+      "5_1": {
+        "title": "Vooraf gedefinieerde Paperless-velden",
+        "textParts": [
+          { "text": "Deze velden komen rechtstreeks van uw Paperless-ngx-instantie — Correspondent, Documenttype en Tags zijn vervolgkeuzeselecties van waarden die al in Paperless-ngx bestaan. Aanmaakdatum is anders — het is een vrije datuminvoer waarmee u een specifieke datum kunt instellen. In ons voorbeeld wijzen we " },
+          { "text": "\"Royal Bank of Scotland\"", "bold": true },
+          { "text": " toe als correspondent, " },
+          { "text": "\"Bank Statement\"", "bold": true },
+          { "text": " als documenttype, en voegen de tags " },
+          { "text": "\"Financial\"", "bold": true },
+          { "text": " en " },
+          { "text": "\"Bank\"", "bold": true },
+          { "text": " toe." },
+          { "text": "\n\n" },
+          { "text": "Merk op dat Aanmaakdatum hier bewust leeg is gelaten. Het instellen van een vaste datum hier zou dezelfde datum toepassen op elk document dat deze regel matcht — wat zelden zinvol is. Dit is waar dynamische extractie echt uitblinkt. Paperless-ngx heeft zijn eigen ingebouwde datumdetectie, maar u heeft geen controle over welke datum het kiest. In ons bankafschrift zou Paperless 22 oktober 2014 kunnen kiezen in plaats van de juiste einddatum van het afschrift van 21 december 2014. Met dynamische extractie vertelt u PocoClass precies waar de juiste datum te vinden is." }
+        ]
+      },
+      "5_2": {
+        "title": "Aangepaste velden",
+        "textParts": [
+          { "text": "Met aangepaste velden kunt u aanvullende gegevens opslaan die specifiek zijn voor uw workflow. De hier getoonde velden zijn afhankelijk van uw veldzichtbaarheidsinstellingen — u ziet mogelijk meer of minder velden afhankelijk van uw configuratie." },
+          { "text": "\n\n" },
+          { "text": "Elk aangepast veld kan hier in de vooraf gedefinieerde sectie op een vaste waarde worden ingesteld, of dynamisch uit de documenttekst worden geëxtraheerd (geconfigureerd in de volgende sectie). Voor meer details over veldconfiguratie, zie " },
+          { "text": "Metagegevens in de gids", "action": "openGuideMetadata" },
+          { "text": "." }
+        ]
+      },
+      "5_3": {
+        "title": "Dynamische gegevensextractie",
+        "textParts": [
+          { "text": "Dynamische extractie gebruikt ankerpatronen om specifieke waarden in de documenttekst te lokaliseren en op te halen. Elke extractieregel definieert een \"vóór-anker\" (tekst die vlak voor de gewenste waarde verschijnt) en optioneel een \"na-anker\" (tekst die er vlak na verschijnt). De geëxtraheerde tekst tussen deze ankers wordt vervolgens opgeslagen in een Paperless-ngx-veld." },
+          { "text": "\n\n" },
+          { "text": "Dit is een van de krachtigste functies van PocoClass. In combinatie met aangepaste velden kunt u vrijwel elke informatie uit uw documenten extraheren — een rekeningnummer van een bankafschrift, het totaalbedrag van een factuur, verbruikte kWh van een elektriciteitsrekening, of een polisnummer van een verzekeringsdocument. Elk doelveld kan slechts één keer worden gebruikt — ofwel als vooraf gedefinieerde waarde, ofwel als dynamische extractie, nooit beide." }
+        ]
+      },
+      "5_4": {
+        "title": "De datum vinden in de OCR-tekst",
+        "textParts": [
+          { "text": "Laten we zien hoe dynamische extractie het datumprobleem uit stap 5.1 oplost. Bekijk de OCR-tekst — zoek de gemarkeerde regel " },
+          { "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"", "bold": true },
+          { "text": ". We willen de einddatum " },
+          { "text": "\"21 Dec 2014\"", "bold": true },
+          { "text": " extraheren — de werkelijke afschriftdatum." },
+          { "text": "\n\n" },
+          { "text": "Om het vóór-anker te bouwen, begin met de leesbare tekst die u kunt zien: " },
+          { "text": "\"22 Oct 2014 to\"", "bold": true },
+          { "text": ". Dit vertaalt zich naar het regex-patroon " },
+          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
+          { "text": " — wat overeenkomt met elke datum gevolgd door \"to\". De regex-assistent (toverstafpictogram) is hier erg handig om deze patronen stap voor stap te bouwen zonder regex-syntaxis te hoeven kennen." }
+        ]
+      },
+      "5_5": {
+        "title": "De extractieregel configureren",
+        "textParts": [
+          { "text": "Uit de vorige stap hebben we het vóór-anker " },
+          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
+          { "text": " en het datumformaat " },
+          { "text": "\"DD MMM YYYY\"", "bold": true },
+          { "text": " geïdentificeerd om de einddatum van het afschrift te extraheren. U kunt deze waarden links ingevuld zien — het doelveld is ingesteld op " },
+          { "text": "\"Date Created\"", "bold": true },
+          { "text": ", zodat \"21 Dec 2014\" rechtstreeks naar het Aanmaakdatum-veld van het document in Paperless-ngx wordt geschreven." },
+          { "text": "\n\n" },
+          { "text": "Het na-anker is optioneel maar aanbevolen", "bold": true },
+          { "text": " — het beperkt het zoekgebied zodat PocoClass stopt met zoeken zodra het die grens bereikt. Dit helpt foutieve matches te voorkomen wanneer een document veel vergelijkbare waarden bevat, en vangt fouten vroegtijdig op. In dit voorbeeld is een na-anker niet strikt noodzakelijk omdat het vóór-anker precies genoeg is, maar voor complexere documenten is het een goede gewoonte om het zoekgebied te beperken." }
+        ]
+      },
+      "6_0": {
+        "title": "Stap 6: Beoordeling en samenvatting",
+        "text": "De laatste stap brengt alles samen. Hier kunt u uw volledige regelconfiguratie bekijken, zien hoe de POCO-scoreberekening werkt met uw instellingen, en een voorbeeld bekijken van de gegenereerde YAML die uw regel definieert."
+      },
+      "6_1": {
+        "title": "Beoordeling van de regelconfiguratie",
+        "text": "Dit overzicht toont al uw regelinstellingen in één oogopslag — basisinformatie, OCR-patronen en drempels, bestandsnaampatronen, verificatievelden en documentclassificaties. Gebruik het om alles te controleren voordat u opslaat."
+      },
+      "6_2": {
+        "title": "POCO Score-berekening",
+        "text": "Deze sectie toont precies hoe de POCO Score wordt berekend voor uw regel. Het toont de maximaal mogelijke gewichten van elke bron (OCR, bestandsnaam, verificatie), toont een voorbeeldberekening bij 80% matchpercentage, en geeft beide scoredrempels weer waaraan moet worden voldaan voor classificatie."
+      },
+      "6_3": {
+        "title": "Dat is het!",
+        "text": "Aan de rechterkant kunt u de gegenereerde YAML zien — het daadwerkelijke regelbestand dat PocoClass gebruikt. U heeft zojuist gezien hoe een regel van begin tot eind wordt gebouwd. Het kernidee: vind patronen die uw documenttype uniek identificeren, stel verstandige drempels in, en laat PocoClass de rest doen. Begin eenvoudig met een paar verplichte OCR-patronen — u kunt later altijd verfijnen."
+      }
+    }
   }
 }
