@@ -625,17 +625,6 @@ export default function BackgroundProcess() {
         </Card>
       </div>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>{t('backgroundProcess.manualProcessing')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
-            {t('backgroundProcess.testRulesAgainst')}
-          </p>
-        </CardContent>
-      </Card>
-
       <DocumentListSection
         title={`${t('backgroundProcess.matchingDocuments')} (${matchingDocuments.length})`}
         documents={matchingDocuments}
@@ -658,9 +647,13 @@ export default function BackgroundProcess() {
       />
 
       <Card className="mb-8">
-        <CardContent className="pt-6">
-
-          <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text)' }}>{t('backgroundProcess.processingActions')}</h4>
+        <CardHeader>
+          <CardTitle>{t('backgroundProcess.manualProcessing')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+            {t('backgroundProcess.testRulesAgainst')}
+          </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Dry Run Button */}
@@ -700,10 +693,6 @@ export default function BackgroundProcess() {
                 </p>
               </div>
             </div>
-            
-          <div className="mt-4 p-3 rounded text-xs" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)', color: 'var(--info-text)' }}>
-            <strong>{t('common.note')}:</strong> {t('backgroundProcess.dryRunNote')}
-          </div>
         </CardContent>
       </Card>
 
