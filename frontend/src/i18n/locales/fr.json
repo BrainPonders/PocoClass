@@ -407,7 +407,11 @@
       "usageHint": "Utilisez ce jeton dans votre script post-consommation avec : -H \"X-API-Key: VOTRE_JETON\"",
       "adminOnly": "Seuls les administrateurs peuvent gérer le jeton API système",
       "scriptSetupRequired": "Script post-consommation requis",
-      "scriptSetupDesc": "Pour le traitement automatique, vous devez configurer un script post-consommation dans Paperless-ngx. Copiez pococlass_trigger.sh dans votre dossier de scripts et définissez la variable d'environnement :"
+      "scriptSetupDesc": "Pour le traitement automatique, vous devez configurer un script post-consommation dans Paperless-ngx. Copiez pococlass_trigger.sh dans votre dossier de scripts et définissez la variable d'environnement :",
+      "noToken": "Aucun jeton système configuré",
+      "copyWarning": "Assurez-vous de copier ce jeton - il ne sera plus affiché !",
+      "confirmYes": "Oui",
+      "confirmNo": "Non"
     },
     "allRequiredDataPresent": "Toutes les données requises présentes",
     "ensureAllRequired": "Assurez-vous que tous les champs personnalisés requis et les étiquettes existent dans Paperless-ngx pour que PocoClass fonctionne correctement",
