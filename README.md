@@ -1,35 +1,33 @@
 # PocoClass
 
-PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification in a controlled and transparent way.
+PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with a focus on control and transparency.
 
-### Why PocoClass?
+### The Problem: Statistical Uncertainty
 
-Paperless-ngx is excellent at storing and indexing documents. It can extract text through OCR and even attempt automatic classification based on learned patterns. However, its built-in classifier relies on historical data and statistical learning — and that comes with limitations.
+Paperless-ngx is an excellent tool for document indexing. While its built-in classifier uses OCR and statistical learning to suggest metadata, this approach has inherent limitations:
 
-To perform well, Paperless needs a large number of manually classified documents. Until that training base exists, results can be inconsistent. Even after learning, subtle nuances may still cause misclassification. For example:
+- **Training Requirements:** The classifier requires a large volume of manually classified documents before it becomes reliable.
+- **Contextual Confusion:** Subtle nuances often lead to misclassification. For instance, a classifier might select the wrong date from a document containing multiple timestamps or confuse two similar documents from the same organization (e.g., an account summary versus a contract update).
+- **Format Shifts:** Annual formatting changes or minor variations between subsidiaries can easily disrupt pattern-based recognition.
 
-- A document may contain multiple dates, and the classifier may select the wrong one as the creation date.
-- Two documents from the same organization may look nearly identical but represent different types (e.g., an account summary vs. a contract update).
-- Slight format changes from year to year can confuse pattern-based recognition.
-- Similar invoices from different subsidiaries may be misassigned to the wrong correspondent.
+As archives grow into the thousands, manual corrections become a repetitive burden. When users stop correcting these small errors, metadata becomes inconsistent and the quality of the digital archive degrades.
 
-Each of these errors seems small. But when processing hundreds or thousands of documents — especially during bulk imports — manual corrections become repetitive and time-consuming. Over time, users tend to correct fewer mistakes. Misclassified documents accumulate, metadata becomes inconsistent, and the quality of the archive slowly degrades.
+### The Solution: Deterministic Rule-Based Logic
 
-PocoClass addresses this by introducing deterministic, rule-based classification. Instead of relying purely on learning behaviour, it uses explicitly defined identification logic — including flexible pattern matching and dynamic data extraction — to classify documents with a high degree of precision. You create rules through a step-by-step wizard, and PocoClass runs them in the background, picking up new or unclassified documents automatically and applying the matching classifications directly in Paperless-ngx.
+PocoClass addresses these gaps by introducing deterministic, rule-based classification. Rather than relying on learned behaviors, it uses explicit identification logic — including flexible pattern matching and dynamic data extraction — to classify documents with high precision.
 
-When a document matches a rule, it matches for a clear reason.
+- **Step-by-Step Wizard:** Create complex rules without writing code.
+- **Background Processing:** Automatically monitors for new or unclassified documents.
+- **Transparent Scoring:** When a document matches a rule, PocoClass provides clear reasoning for the match.
+- **Direct Integration:** Applied classifications are pushed directly to your Paperless-ngx instance.
 
-### Where does the name POCO come from?
+### Origin Story: Why "POCO"?
 
-POCO stands for **Post Consumption**.
+The name stands for **Post Consumption**.
 
-The project began several years ago as a small script triggered by Paperless-ngx's post-consumption hook — the mechanism that runs after a document is imported. Its initial goal was to assist with large bulk imports by automatically classifying a limited set of document types.
+The project originated as a small script triggered by the Paperless-ngx post-consumption hook, a mechanism that runs immediately after a document is imported. What began as a tool for bulk imports evolved into a structured YAML-based rule engine.
 
-Over time, that script evolved into a structured rule engine powered by YAML-based definitions. While powerful, it required technical knowledge and remained limited to advanced users.
-
-PocoClass v2.0 was a complete rewrite. The original backend logic was reimagined and expanded with the help of Replit, transforming the script into a full web-based application with a visual rule builder, background processing engine, and transparent scoring system.
-
-The name remained as a reference to its origins — but the project has grown far beyond its initial script.
+With the release of PocoClass v2.0, the project was completely reimagined. The original backend logic was expanded into a full web-based application featuring a visual rule builder and a transparent scoring system. While the name remains a nod to its humble origins as a post-consumption script, the project has grown into a comprehensive automation suite.
 
 ## Architecture
 
