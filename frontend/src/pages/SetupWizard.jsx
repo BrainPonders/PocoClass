@@ -46,6 +46,7 @@ export default function SetupWizard() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/setup`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -58,7 +59,6 @@ export default function SetupWizard() {
         throw new Error(data.error || 'Setup failed');
       }
 
-      localStorage.setItem('pococlass_session', data.sessionToken);
       localStorage.setItem('pococlass_user', JSON.stringify(data.user));
 
       // Go to information step first
@@ -88,9 +88,8 @@ export default function SetupWizard() {
     try {
       setLoadingValidation(true);
       setValidationError(null);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -115,10 +114,9 @@ export default function SetupWizard() {
     try {
       setFixingMandatoryData(true);
       setShowCreateConfirmation(false);
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/validation/fix-mandatory-data`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {
@@ -158,11 +156,10 @@ export default function SetupWizard() {
   // Mark setup as complete and show NEW tag confirmation before navigating to app
   const handleContinueToDashboard = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/auth/complete-setup`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 
-          'Authorization': `Bearer ${sessionToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ skipMissingData: !validationData?.valid })
