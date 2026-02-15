@@ -381,7 +381,9 @@
       "disabled": "Disabled",
       "admin": "Admin",
       "user": "User",
-      "noUsers": "No users found"
+      "noUsers": "No users found",
+      "recentSync": "Recent Sync History",
+      "recentSyncSubtitle": "Overview of the latest data synchronization events"
     },
     "validation": {
       "title": "Data Validation",

@@ -299,7 +299,9 @@
       "disabled": "Disabilitato",
       "admin": "Amministratore",
       "user": "Utente",
-      "noUsers": "Nessun utente trovato"
+      "noUsers": "Nessun utente trovato",
+      "recentSync": "Cronologia sincronizzazione recente",
+      "recentSyncSubtitle": "Panoramica degli ultimi eventi di sincronizzazione dei dati"
     },
     "validation": {
       "title": "Convalida dati",
