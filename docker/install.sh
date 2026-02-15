@@ -4,7 +4,10 @@
 #  PocoClass Installer
 #  Builds a secure Docker image and prepares everything for deployment
 #
-#  Usage:  bash install.sh
+#  Usage:
+#    mkdir ~/pococlass && cd ~/pococlass
+#    git clone https://github.com/eRJe79/PocoClass.git source
+#    bash source/docker/install.sh
 #
 ###############################################################################
 
@@ -13,7 +16,6 @@ set -e
 POCOCLASS_VERSION="2.0"
 IMAGE_NAME="pococlass"
 IMAGE_TAG="latest"
-INSTALL_DIR="$(pwd)/pococlass"
 
 # ---- Colours for output ----
 RED='\033[0;31m'
@@ -40,6 +42,33 @@ print_warning() {
 
 print_error() {
     echo -e "${RED}[✗]${NC} $1"
+}
+
+# ---- Locate project root and deploy directory ----
+
+resolve_paths() {
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    SOURCE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+    if [ ! -f "$SOURCE_DIR/docker/Dockerfile" ]; then
+        print_error "Cannot find Dockerfile. Run this script from inside the cloned repository."
+        exit 1
+    fi
+
+    SOURCE_FOLDER="$(basename "$SOURCE_DIR")"
+    PARENT_DIR="$(cd "$SOURCE_DIR/.." && pwd)"
+
+    if [ "$PARENT_DIR" = "/" ] || [ "$PARENT_DIR" = "$SOURCE_DIR" ]; then
+        DEPLOY_DIR="$SOURCE_DIR"
+        SOURCE_FOLDER="."
+        print_warning "Repository is at a filesystem root. Deploy files will be placed inside the repo."
+    else
+        DEPLOY_DIR="$PARENT_DIR"
+    fi
+
+    echo "  Source code:  ${SOURCE_DIR}"
+    echo "  Deploy root:  ${DEPLOY_DIR}"
+    echo ""
 }
 
 # ---- Pre-flight checks ----
@@ -78,43 +107,28 @@ build_image() {
     echo "  This may take a few minutes on the first build."
     echo ""
 
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-
-    if [ ! -f "$PROJECT_ROOT/docker/Dockerfile" ]; then
-        if [ -f "./Dockerfile" ]; then
-            PROJECT_ROOT="$(dirname "$(pwd)")"
-            SCRIPT_DIR="$(pwd)"
-        else
-            print_error "Cannot find Dockerfile. Run this script from the docker/ directory or the project root."
-            exit 1
-        fi
-    fi
-
     docker build \
         -t "${IMAGE_NAME}:${IMAGE_TAG}" \
-        -f "$PROJECT_ROOT/docker/Dockerfile" \
-        "$PROJECT_ROOT"
+        -f "$SOURCE_DIR/docker/Dockerfile" \
+        "$SOURCE_DIR"
 
     echo ""
     print_step "Docker image built: ${IMAGE_NAME}:${IMAGE_TAG}"
 }
 
-# ---- Set up the installation directory ----
+# ---- Set up the deploy directory ----
 
-setup_install_dir() {
+setup_deploy_dir() {
     echo ""
-    echo "Setting up installation directory: ${INSTALL_DIR}"
+    echo "Setting up deployment in: ${DEPLOY_DIR}"
     echo ""
-
-    mkdir -p "$INSTALL_DIR"
 
     SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))" 2>/dev/null \
               || openssl rand -hex 32 2>/dev/null \
               || head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n' | head -c 64)
 
-    if [ ! -f "$INSTALL_DIR/.env" ]; then
-        cat > "$INSTALL_DIR/.env" <<EOF
+    if [ ! -f "$DEPLOY_DIR/.env" ]; then
+        cat > "$DEPLOY_DIR/.env" <<EOF
 # PocoClass Environment Configuration
 # Generated on $(date '+%Y-%m-%d %H:%M:%S')
 
@@ -131,21 +145,17 @@ EOF
         print_warning ".env file already exists, keeping existing configuration"
     fi
 
-    mkdir -p "$INSTALL_DIR/rules"
-    print_step "Created rules directory"
+    mkdir -p "$DEPLOY_DIR/rules"
+    print_step "Created rules/ directory"
 
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+    mkdir -p "$DEPLOY_DIR/data"
+    print_step "Created data/ directory (runtime database and settings)"
 
-    if [ ! -f "$PROJECT_ROOT/docker/docker-compose.yml" ]; then
-        PROJECT_ROOT="$(dirname "$(pwd)")"
-    fi
-
-    cp "$PROJECT_ROOT/docker/docker-compose.yml" "$INSTALL_DIR/docker-compose.yml"
+    cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
     print_step "Copied docker-compose.yml"
 
-    cp "$PROJECT_ROOT/scripts/pococlass_trigger.sh" "$INSTALL_DIR/pococlass_trigger.sh"
-    chmod +x "$INSTALL_DIR/pococlass_trigger.sh"
+    cp "$SOURCE_DIR/scripts/pococlass_trigger.sh" "$DEPLOY_DIR/pococlass_trigger.sh"
+    chmod +x "$DEPLOY_DIR/pococlass_trigger.sh"
     print_step "Copied pococlass_trigger.sh (Paperless post-consumption script)"
 }
 
@@ -157,13 +167,23 @@ print_instructions() {
     echo -e "${BLUE}  Installation Complete!${NC}"
     echo -e "${BLUE}========================================${NC}"
     echo ""
-    echo "  All files are in: ${INSTALL_DIR}"
+    echo -e "  ${YELLOW}Directory layout:${NC}"
+    echo ""
+    echo "     ${DEPLOY_DIR}/"
+    if [ "$SOURCE_FOLDER" != "." ]; then
+    echo "     ├── ${SOURCE_FOLDER}/            ← source code (git repo)"
+    fi
+    echo "     ├── docker-compose.yml"
+    echo "     ├── .env"
+    echo "     ├── rules/               ← your YAML rule files"
+    echo "     ├── data/                ← runtime data (database, settings)"
+    echo "     └── pococlass_trigger.sh"
     echo ""
     echo -e "  ${YELLOW}Next steps:${NC}"
     echo ""
     echo "  1. Edit .env to set your Paperless-ngx container URL:"
     echo ""
-    echo "     cd ${INSTALL_DIR}"
+    echo "     cd ${DEPLOY_DIR}"
     echo "     nano .env"
     echo ""
     echo "  2. Edit docker-compose.yml to match your setup:"
@@ -183,23 +203,18 @@ print_instructions() {
     echo "  To have Paperless-ngx automatically trigger PocoClass after"
     echo "  consuming a document, copy the trigger script:"
     echo ""
-    echo "     cp ${INSTALL_DIR}/pococlass_trigger.sh /path/to/paperless/scripts/"
+    echo "     cp ${DEPLOY_DIR}/pococlass_trigger.sh /path/to/paperless/scripts/"
     echo ""
     echo "  Then edit it to set your PocoClass URL and System API Token."
     echo "  See the script comments for detailed setup instructions."
-    echo ""
-    echo -e "  ${YELLOW}Files in ${INSTALL_DIR}:${NC}"
-    echo "     docker-compose.yml       - Docker Compose configuration"
-    echo "     .env                     - Secret key and Paperless URL"
-    echo "     rules/                   - Place your YAML rule files here"
-    echo "     pococlass_trigger.sh     - Paperless post-consumption script"
     echo ""
 }
 
 # ---- Main ----
 
 print_header
+resolve_paths
 check_requirements
 build_image
-setup_install_dir
+setup_deploy_dir
 print_instructions
