@@ -147,11 +147,8 @@ export default function RuleReviewer() {
       if (filters.dateTo) params.append('date_to', filters.dateTo);
       if (filters.limit) params.append('limit', filters.limit);
       
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/documents?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`
-        }
+        credentials: 'include'
       });
       
       if (!response.ok) throw new Error('Failed to fetch documents');
@@ -254,9 +251,7 @@ export default function RuleReviewer() {
   };
 
   const handleViewPDF = (doc) => {
-    // Get session token and pass it as query parameter for new tab
-    const sessionToken = localStorage.getItem('pococlass_session');
-    const url = `/api/documents/${doc.id}/preview?token=${encodeURIComponent(sessionToken)}`;
+    const url = `/api/documents/${doc.id}/preview`;
     window.open(url, '_blank');
   };
 
