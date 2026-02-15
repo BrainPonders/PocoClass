@@ -91,16 +91,26 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 ### Docker (recommended)
 
 ```bash
-git clone https://github.com/eRJe79/PocoClass.git
-cd PocoClass
-bash docker/install.sh
+mkdir ~/pococlass && cd ~/pococlass
+git clone https://github.com/eRJe79/PocoClass.git source
+bash source/docker/install.sh
 ```
 
-The install script builds the image, generates a secret key, and sets up a deployment directory at `./pococlass/`. After it finishes:
+The install script builds the image, generates a secret key, and sets up everything in your chosen directory:
+
+```
+~/pococlass/
+├── source/                  ← source code (git repo)
+├── docker-compose.yml
+├── .env
+├── rules/                   ← your YAML rule files
+├── data/                    ← runtime data (database, settings)
+└── pococlass_trigger.sh
+```
+
+After it finishes:
 
 ```bash
-cd pococlass
-
 # 1. Set your Paperless-ngx container URL
 nano .env
 

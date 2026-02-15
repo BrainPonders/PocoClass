@@ -2,10 +2,10 @@
 #  PocoClass - Docker Compose Configuration
 #
 #  PREREQUISITES:
-#    You must build the image first by running:  bash install.sh
+#    You must build the image first by running:  bash source/docker/install.sh
 #
 #  QUICK START:
-#    1. Run the install script:  bash install.sh
+#    1. Run the install script:  bash source/docker/install.sh
 #    2. Edit this file to match your setup (see comments below)
 #    3. Start PocoClass:  docker compose up -d
 #    4. Open http://your-server:5000 in your browser
@@ -48,12 +48,11 @@ services:
 
     volumes:
       # Persistent data (database, settings)
-      # Do not remove this volume or you will lose your configuration
-      - pococlass-data:/app/data
+      # Stored in ./data on your host for easy access and backup
+      - ./data:/app/data
 
-      # Rule files - mount your local rules folder here
-      # This lets you edit rules on the host without rebuilding the image
-      # Change the left side to the path where your rule files are stored
+      # Rule files - your YAML rules live in ./rules on the host
+      # You can add, edit, or delete rules without rebuilding the image
       - ./rules:/app/rules
 
     healthcheck:
@@ -68,9 +67,6 @@ services:
       # Run: docker network ls
       # to find the network name your Paperless container uses
       - paperless-network
-
-volumes:
-  pococlass-data:
 
 networks:
   paperless-network:
