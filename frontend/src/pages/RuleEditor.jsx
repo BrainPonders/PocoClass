@@ -752,7 +752,7 @@ export default function RuleEditor() {
       <PdfViewerModal
         isOpen={showPdfViewer}
         onClose={() => setShowPdfViewer(false)}
-        documentUrl={(ruleData.sourceDocumentId || selectedDocumentId) ? `/api/documents/${ruleData.sourceDocumentId || selectedDocumentId}/preview?token=${encodeURIComponent(localStorage.getItem('pococlass_session'))}` : ''}
+        documentUrl={(ruleData.sourceDocumentId || selectedDocumentId) ? `/api/documents/${ruleData.sourceDocumentId || selectedDocumentId}/preview` : ''}
         documentName={sourceDocumentFilename || selectedFile}
       />
 

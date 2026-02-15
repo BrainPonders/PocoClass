@@ -1,27 +1,16 @@
-/**
- * @file apiClient.js
- * @description Centralized API client for the PocoClass Python backend.
- * Wraps fetch with automatic Bearer token authentication from localStorage,
- * JSON content-type headers, and error response handling. Provides
- * convenience methods for GET, POST, PUT, and DELETE requests.
- */
-
 const API_BASE_URL = '/api';
 
 class APIClient {
   async request(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
     
-    // Get session token from localStorage
-    const sessionToken = localStorage.getItem('pococlass_session');
-    
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        ...(sessionToken && { 'Authorization': `Bearer ${sessionToken}` }),
         ...options.headers,
       },
       ...options,
+      credentials: 'include',
     };
 
     try {

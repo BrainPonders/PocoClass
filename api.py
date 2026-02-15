@@ -26,7 +26,7 @@ Middleware:
   - proxy_to_vite              — Dev-mode request proxy to Vite frontend
 """
 
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import os
 import yaml
@@ -66,6 +66,20 @@ CORS(app,
      allow_headers=['Content-Type', 'Authorization'],
      supports_credentials=True,
      max_age=3600)
+
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses."""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'"
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    if request.scheme == 'https':
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -108,13 +122,42 @@ def should_sync(entity_type='all', max_age_minutes=60):
         logger.error(f"Error checking sync status: {e}")
         return True  # Sync if uncertain
 
+COOKIE_NAME = 'pococlass_session'
+
+def set_session_cookie(response, session_token):
+    """Set HttpOnly session cookie on response."""
+    response.set_cookie(
+        COOKIE_NAME,
+        session_token,
+        httponly=True,
+        samesite='Lax',
+        secure=request.scheme == 'https',
+        path='/'
+    )
+    return response
+
+def clear_session_cookie(response):
+    """Clear session cookie from response."""
+    response.set_cookie(
+        COOKIE_NAME,
+        '',
+        httponly=True,
+        samesite='Lax',
+        secure=request.scheme == 'https',
+        path='/',
+        max_age=0
+    )
+    return response
+
 # ---- Authentication Decorators ----
 
 def require_auth(f):
-    """Verify a valid Bearer session token and attach user to request."""
+    """Verify a valid session token from cookie or Bearer header and attach user to request."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
         
@@ -135,7 +178,9 @@ def require_admin(f):
     """Require a valid session with admin role."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
         
@@ -167,7 +212,9 @@ def require_system_token_or_admin(f):
                 return jsonify({'error': 'Invalid system API token'}), 401
         
         # Fall back to session token (admin required)
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No authentication provided. Use X-API-Key header for system token or Authorization header for session token.'}), 401
         
@@ -402,15 +449,16 @@ def setup():
             
             logger.info(f"Initial setup (step 2) completed by user: {username}, awaiting validation (step 3)")
             
-            return jsonify({
+            resp = make_response(jsonify({
                 'success': True,
-                'sessionToken': session_token,
                 'user': {
                     'id': user_id,
                     'username': username,
                     'role': role
                 }
-            })
+            }))
+            set_session_cookie(resp, session_token)
+            return resp
             
         except requests.RequestException as e:
             logger.error(f"Error connecting to Paperless: {e}")
@@ -535,15 +583,16 @@ def login():
                 source='authentication'
             )
             
-            return jsonify({
+            resp = make_response(jsonify({
                 'success': True,
-                'sessionToken': session_token,
                 'user': {
                     'id': user_id,
                     'username': username,
                     'role': pococlass_user['pococlass_role']
                 }
-            })
+            }))
+            set_session_cookie(resp, session_token)
+            return resp
             
         except requests.RequestException as e:
             logger.error(f"Error authenticating with Paperless: {e}")
@@ -558,9 +607,14 @@ def login():
 def logout():
     """Logout and destroy session"""
     try:
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        db.delete_session(session_token)
-        return jsonify({'success': True})
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if session_token:
+            db.delete_session(session_token)
+        resp = make_response(jsonify({'success': True}))
+        clear_session_cookie(resp)
+        return resp
     except Exception as e:
         logger.error(f"Error during logout: {e}")
         return jsonify({'error': str(e)}), 500
@@ -2151,7 +2205,9 @@ def list_documents():
 def proxy_document_preview(doc_id):
     """Proxy document PDF preview with authentication"""
     try:
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401

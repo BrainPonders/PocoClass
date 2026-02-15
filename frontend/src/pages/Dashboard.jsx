@@ -46,18 +46,16 @@ export default function Dashboard() {
   // Fetch user, background settings, processing status, and sync counts in parallel
   const loadStatusData = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
-      
       const [user, bgSettings, bgStatus, syncStat] = await Promise.all([
         User.me().catch(() => null),
         fetch(`${API_BASE_URL}/api/background/settings`, {
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          credentials: 'include'
         }).then(r => r.ok ? r.json() : null).catch(() => null),
         fetch(`${API_BASE_URL}/api/background/status`, {
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          credentials: 'include'
         }).then(r => r.ok ? r.json() : null).catch(() => null),
         fetch(`${API_BASE_URL}/api/sync/status`, {
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          credentials: 'include'
         }).then(r => r.ok ? r.json() : null).catch(() => null)
       ]);
       
