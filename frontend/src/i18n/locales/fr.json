@@ -250,6 +250,7 @@
       "themeAuto": "Automatique",
       "colorblindMode": "Activer le mode daltonien",
       "colorblindModeDesc": "Ajuste les couleurs pour une meilleure accessibilité",
+      "colorblindNotImplemented": "Cette fonctionnalité n'est pas encore disponible dans cette version de PocoClass.",
       "availableLanguages": "Langues disponibles",
       "loadingSettings": "Chargement des paramètres..."
     },
