@@ -2,6 +2,8 @@
 
 PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with a focus on control and transparency.
 
+<br>
+
 ### The Problem: Learning Has Limits
 
 Paperless-ngx is an excellent tool for document indexing. While its built-in classifier uses OCR and statistical learning to suggest metadata, this approach has inherent limitations:
@@ -11,6 +13,8 @@ Paperless-ngx is an excellent tool for document indexing. While its built-in cla
 - **Format Shifts:** Annual formatting changes or minor variations between subsidiaries can easily disrupt pattern-based recognition.
 
 As archives grow into the thousands, manual corrections become a repetitive burden. When users stop correcting these small errors, metadata becomes inconsistent and the quality of the digital archive degrades.
+
+<br>
 
 ### The Solution: Deterministic Rule-Based Logic
 
@@ -23,6 +27,8 @@ PocoClass addresses these gaps by introducing deterministic, rule-based classifi
 
 When a document matches, it matches for a defined reason.
 
+<br>
+
 ### Origin Story: Why “POCO”?
 
 The name stands for Post Consumption.
@@ -30,6 +36,11 @@ The name stands for Post Consumption.
 The project originated as a small script triggered by the Paperless-ngx post-consumption hook, a mechanism that runs immediately after a document is imported. It began as a simple tool designed to support bulk imports and gradually evolved into a structured YAML-based rule engine.
 
 PocoClass v2.0 emerged from what initially started as an experiment to build a web-based frontend using Replit. What was meant to be a lightweight interface quickly turned into a complete redesign. The result was a fully reimagined application with a visual rule builder, background processing, and a transparent scoring system.
+
+<br>
+
+![Background Process Screenshot](documentation/images/background-process.png)
+
 
 ## Architecture
 
@@ -54,6 +65,8 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 **Frontend:** React, Vite, Tailwind CSS
 **Docker base:** `11notes/python:3.13` (rootless Alpine)
 
+<br>
+
 ### Backend
 
 - **Flask REST API** — rule management, document processing, authentication, settings
@@ -63,6 +76,8 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 - **Background processor** — debounced, tag-based document discovery and automatic rule application
 - **Rule loader** — YAML-based rule storage with validation
 - **SQLite** — users, sessions, Paperless-ngx data cache, logs, processing history
+
+<br>
 
 ## Installation
 
@@ -115,6 +130,8 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 ./start.sh
 ```
 
+<br>
+
 ## Configuration
 
 | Variable | Description | Default |
@@ -125,12 +142,16 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 | `GUNICORN_THREADS` | Threads per worker | `2` |
 | `GUNICORN_TIMEOUT` | Request timeout (seconds) | `120` |
 
+<br>
+
 ## First-time setup
 
 1. Open PocoClass in your browser
 2. Log in with your Paperless-ngx admin credentials
 3. Complete the setup wizard — it connects to Paperless-ngx and creates the required custom fields and tags
 4. Start building rules with the 6-step wizard or follow the built-in guided tutorial
+
+<br>
 
 ## Features
 
@@ -141,12 +162,16 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 - **Train Paperless faster** — helps automate the way Paperless learns to classify your documents
 - **Multi-language UI** — English, German, Spanish, French, Italian, Dutch
 
+<br>
+
 ## Roadmap
 
 - [ ] Improve GUI standardisation
 - [ ] Tutorial for rule evaluation
 - [ ] Tutorial for background processing
 - [ ] Improve regex helper
+
+<br>
 
 ## License
 
