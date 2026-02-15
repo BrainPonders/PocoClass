@@ -24,7 +24,6 @@ import sqlite3
 import json
 import logging
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Optional, Dict, List
 import secrets
 import hashlib
@@ -717,7 +716,7 @@ class Database:
         
         # Check if session expired (sliding window)
         if datetime.fromisoformat(session['expires_at']) < datetime.now():
-            logger.info(f"Session expired (sliding window timeout)")
+            logger.info("Session expired (sliding window timeout)")
             self.delete_session(session_token)
             return None
         

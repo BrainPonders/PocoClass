@@ -15,7 +15,7 @@ Key class:
 """
 
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 from api_client import PaperlessAPIClient
 from database import Database
 from config import Config

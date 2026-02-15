@@ -20,7 +20,6 @@ Key class:
 """
 
 import logging
-import time
 import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Any
@@ -583,11 +582,11 @@ class BackgroundProcessor:
                 updates = self._build_metadata_updates(best_result, doc, api_client)
                 logger.info(f"DRY RUN: updates dict has {len(updates)} keys: {list(updates.keys())}")
                 if updates:
-                    logger.info(f"DRY RUN: Calling _build_metadata_applied_list...")
+                    logger.info("DRY RUN: Calling _build_metadata_applied_list...")
                     metadata_applied = self._build_metadata_applied_list(updates, best_result, api_client)
                     logger.info(f"DRY RUN: metadata_applied has {len(metadata_applied)} items")
                 else:
-                    logger.info(f"DRY RUN: updates is empty - all fields already correct!")
+                    logger.info("DRY RUN: updates is empty - all fields already correct!")
             logger.info(f"DRY RUN: Would update document {doc_id} with POCO Score={poco_score:.1f}%, OCR={poco_ocr:.1f}%, {'POCO+' if classified else 'POCO-'}")
         
         # Log the processing

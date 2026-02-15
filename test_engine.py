@@ -12,7 +12,7 @@ Key class:
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 from pattern_matcher import PatternMatcher
 from metadata_processor import MetadataProcessor
 from scoring_calculator_v2 import POCOScoringV2
@@ -222,7 +222,7 @@ class TestEngine:
                         'match': False
                     })
             else:
-                self.logger.info(f"  Skipped (one or both values are None)")
+                self.logger.info("  Skipped (one or both values are None)")
         
         # Total reflects only the fields that were actually compared
         total = len(matches)

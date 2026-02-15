@@ -30,7 +30,6 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import yaml
-import json
 from datetime import datetime
 from pathlib import Path
 import logging
@@ -90,7 +89,7 @@ def should_sync(entity_type='all', max_age_minutes=60):
                 if not last_sync:
                     return True  # Never synced
                 
-                from datetime import datetime, timedelta
+                from datetime import datetime
                 age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
                 if age_minutes > max_age_minutes:
                     return True  # Data is stale
@@ -250,7 +249,7 @@ def fetch_all_users_paginated(paperless_url, token, username):
             user_info = user_response.json()
             user_id = user_info.get('id')
             is_superuser = user_info.get('is_superuser', False)
-            logger.info(f"Found user via /api/users/me/ endpoint")
+            logger.info("Found user via /api/users/me/ endpoint")
             return user_info, user_id, is_superuser
         else:
             logger.warning(f"/api/users/me/ returned {user_response.status_code}, trying paginated user list")
@@ -394,9 +393,9 @@ def setup():
             
             # Initial sync on setup (without auto-creating mandatory items)
             try:
-                logger.info(f"Performing initial sync of Paperless data...")
+                logger.info("Performing initial sync of Paperless data...")
                 sync_service.sync_all(paperless_token, paperless_url, ensure_mandatory=False)
-                logger.info(f"Initial sync completed successfully")
+                logger.info("Initial sync completed successfully")
             except Exception as e:
                 logger.warning(f"Initial sync failed (non-critical): {e}")
             
@@ -433,10 +432,10 @@ def complete_setup_endpoint():
             return jsonify({'error': 'Paperless URL not configured'}), 400
         
         if skip_missing_data:
-            logger.warning(f"Setup completed with missing mandatory data - user skipped creation")
+            logger.warning("Setup completed with missing mandatory data - user skipped creation")
         
         db.complete_setup(paperless_url)
-        logger.info(f"Setup completed successfully")
+        logger.info("Setup completed successfully")
         
         return jsonify({'success': True})
         

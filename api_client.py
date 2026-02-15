@@ -56,7 +56,7 @@ class PaperlessAPIClient:
             return None
         
         try:
-            from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+            from urllib.parse import urlparse, urlunparse
             
             parsed_next = urlparse(next_url)
             parsed_base = urlparse(self.config.paperless_url)
