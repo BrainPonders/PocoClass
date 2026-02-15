@@ -106,27 +106,19 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 
 ## Features
 
-- **Dual-score evaluation** — OCR transparency score + weighted POCO score, both must pass for classification
-- **6-step rule wizard** — guided rule builder with real-time score preview and YAML output
-- **Dynamic metadata extraction** — extract dates, amounts, and custom fields from OCR text using anchor patterns
-- **Background processing** — tag-based document discovery with automatic rule application
-- **Filename pattern matching** — secondary verification using filename regex patterns
-- **Paperless verification** — cross-reference extracted data against existing Paperless-ngx metadata
+- **Easy-to-use rule builder** — step-by-step wizard to create classification rules, no coding required
+- **Set it and forget it** — create a rule once and let it run automatically in the background
+- **Flexible scoring** — combines OCR content, filename patterns, and Paperless-ngx metadata for accurate classification
+- **Bulk import friendly** — ideal for importing large batches of unknown documents into Paperless-ngx
+- **Train Paperless faster** — helps automate the way Paperless learns to classify your documents
 - **Multi-language UI** — English, German, Spanish, French, Italian, Dutch
-- **Theme support** — light, dark, and auto modes with color blind accessibility
-- **Interactive tutorial** — 32-step guided walkthrough using a real bank statement example
-- **Post-consumption trigger** — optional script for Paperless-ngx to trigger PocoClass after document import
-- **User management** — admin and regular user roles, authenticated via Paperless-ngx credentials
-- **Security** — HttpOnly session cookies, encrypted API tokens, security headers, rootless Docker image
 
 ## Roadmap
 
-- [ ] Data validation integration for extracted metadata (monetary, integer, float formats)
-- [ ] Batch testing rules against multiple documents
-- [ ] Dynamic extraction for correspondent, document type, and tags (with fuzzy matching)
-- [ ] Rule templates library for common document types (invoices, receipts, contracts)
-- [ ] Export/import rules between PocoClass instances
-- [ ] Regex pattern builder tutorial
+- [ ] Improve GUI standardisation
+- [ ] Tutorial for rule evaluation
+- [ ] Tutorial for background processing
+- [ ] Improve regex helper
 
 ## License
 
