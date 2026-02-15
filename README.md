@@ -20,6 +20,7 @@ POCO stands for **Post Consumption** — it started as a simple script triggered
                │
 ┌──────────────▼──────────────────┐
 │     Paperless-ngx Instance      │
+│          (REST API)             │
 └─────────────────────────────────┘
 ```
 
