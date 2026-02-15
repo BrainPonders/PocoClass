@@ -1,9 +1,9 @@
 /**
  * @file LanguageContext.jsx
- * @description Internationalization (i18n) context provider supporting 5 languages
- * (en, es, fr, de, pt). Provides a translation function `t()` that resolves
- * dot-notation keys against loaded locale JSON files, with English fallback.
- * Language preference is persisted in localStorage.
+ * @description Internationalization (i18n) context provider supporting 6 languages
+ * (en, de, es, fr, it, nl). Provides translation functions `t()` and `getRaw()`
+ * that resolve dot-notation keys against loaded locale JSON files, with English
+ * fallback. Language preference is persisted in localStorage.
  */
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
@@ -11,6 +11,7 @@ import enTranslations from '../i18n/locales/en.json';
 import esTranslations from '../i18n/locales/es.json';
 import frTranslations from '../i18n/locales/fr.json';
 import deTranslations from '../i18n/locales/de.json';
+import itTranslations from '../i18n/locales/it.json';
 import nlTranslations from '../i18n/locales/nl.json';
 
 const LanguageContext = createContext();
@@ -23,12 +24,12 @@ export function useLanguage() {
   return context;
 }
 
-// Translation map
 const translationsMap = {
   en: enTranslations,
   es: esTranslations,
   fr: frTranslations,
   de: deTranslations,
+  it: itTranslations,
   nl: nlTranslations
 };
 
@@ -111,14 +112,28 @@ export function LanguageProvider({ children }) {
     return typeof value === 'string' ? value : key;
   }, [state.translations]);
 
+  const getRaw = useCallback((key) => {
+    const keys = key.split('.');
+    let value = state.translations;
+    for (const k of keys) {
+      if (value && typeof value === 'object' && k in value) {
+        value = value[k];
+      } else {
+        return undefined;
+      }
+    }
+    return value;
+  }, [state.translations]);
+
   // Memoize the context value to prevent infinite re-renders
   const contextValue = useMemo(() => ({
     language: state.language,
     updateLanguage,
     t,
+    getRaw,
     loading,
     translations: state.translations
-  }), [state.language, state.translations, updateLanguage, t, loading]);
+  }), [state.language, state.translations, updateLanguage, t, getRaw, loading]);
 
   return (
     <LanguageContext.Provider value={contextValue}>

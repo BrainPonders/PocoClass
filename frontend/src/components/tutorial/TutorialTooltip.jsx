@@ -7,8 +7,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext, onPrev, onClose, spotlightTarget, onAction }) {
+  const { t, getRaw } = useLanguage();
   const [position, setPosition] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
 
   const computePosition = useCallback(() => {
@@ -65,6 +67,10 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
 
   if (!step) return null;
 
+  const title = step.titleKey ? t(step.titleKey) : step.title;
+  const text = step.textKey ? t(step.textKey) : step.text;
+  const textParts = step.textPartsKey ? getRaw(step.textPartsKey) : step.textParts;
+
   return (
     <div
       style={{
@@ -92,7 +98,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
         color: '#fff'
       }}>
         <div style={{ fontSize: '1rem', fontWeight: '700' }}>
-          {step.title}
+          {title}
         </div>
         <button
           onClick={onClose}
@@ -104,14 +110,14 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
 
       <div style={{ padding: '20px', color: 'var(--app-text, #333)', minHeight: step.tooltipBodyMinHeight || undefined }}>
         <p style={{ fontSize: '0.9375rem', lineHeight: '1.6', margin: 0 }}>
-          {step.textParts ? step.textParts.map((part, i) => {
+          {textParts ? textParts.map((part, i) => {
             if (part.text === '\n\n') return <div key={i} style={{ height: '8px' }} />;
             if (part.action) {
               return <button key={i} onClick={() => onAction?.(part.action)} style={{ background: 'none', border: 'none', padding: 0, color: 'var(--app-primary, #2563eb)', cursor: 'pointer', fontWeight: '700', fontSize: 'inherit', fontFamily: 'inherit', textDecoration: 'underline' }}>{part.text}</button>;
             }
             if (part.bold) return <strong key={i}>{part.text}</strong>;
             return <span key={i}>{part.text}</span>;
-          }) : step.text}
+          }) : text}
         </p>
       </div>
 
@@ -139,7 +145,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
             fontSize: '0.875rem'
           }}
         >
-          <ChevronLeft size={15} /> Back
+          <ChevronLeft size={15} /> {t('tutorial.nav.back')}
         </button>
 
         <span style={{
@@ -147,7 +153,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
           color: 'var(--app-text-muted, #9ca3af)',
           fontWeight: '500'
         }}>
-          Step {step.id} · {currentIndex + 1}/{totalSteps}
+          {t('tutorial.nav.step')} {step.id} · {currentIndex + 1}/{totalSteps}
         </span>
 
         <button
@@ -166,7 +172,7 @@ export default function TutorialTooltip({ step, totalSteps, currentIndex, onNext
             fontWeight: '500'
           }}
         >
-          {currentIndex === totalSteps - 1 ? 'Finish' : 'Next'} {currentIndex < totalSteps - 1 && <ChevronRight size={15} />}
+          {currentIndex === totalSteps - 1 ? t('tutorial.nav.finish') : t('tutorial.nav.next')} {currentIndex < totalSteps - 1 && <ChevronRight size={15} />}
         </button>
       </div>
     </div>
