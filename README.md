@@ -16,7 +16,15 @@ Once your rules are in place, PocoClass runs in the background. It picks up new 
 
 ### Where does the name POCO come from?
 
-POCO stands for **Post Consumption**. It started as a simple script triggered by Paperless's post-consumption hook — the mechanism Paperless uses to run actions after importing a document. Over time it grew into the full application you see today, but the name stuck.
+POCO stands for **Post Consumption**.
+
+The project began several years ago as a small script triggered by Paperless-ngx's post-consumption hook — the mechanism that runs after a document is imported. Its initial goal was to assist with large bulk imports by automatically classifying a limited set of document types.
+
+Over time, that script evolved into a structured rule engine powered by YAML-based definitions. While powerful, it required technical knowledge and remained limited to advanced users.
+
+PocoClass v2.0 was a complete rewrite. The original backend logic was reimagined and expanded with the help of Replit, transforming the script into a full web-based application with a visual rule builder, background processing engine, and transparent scoring system.
+
+The name remained as a reference to its origins — but the project has grown far beyond its initial script.
 
 ## Architecture
 
