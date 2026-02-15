@@ -299,7 +299,9 @@
       "disabled": "Deaktiviert",
       "admin": "Administrator",
       "user": "Benutzer",
-      "noUsers": "Keine Benutzer gefunden"
+      "noUsers": "Keine Benutzer gefunden",
+      "recentSync": "Aktuelle Synchronisierungshistorie",
+      "recentSyncSubtitle": "Übersicht der letzten Datensynchronisierungsereignisse"
     },
     "validation": {
       "title": "Datenvalidierung",

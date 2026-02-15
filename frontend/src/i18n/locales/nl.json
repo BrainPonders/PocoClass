@@ -299,7 +299,9 @@
       "disabled": "Uitgeschakeld",
       "admin": "Beheerder",
       "user": "Gebruiker",
-      "noUsers": "Geen gebruikers gevonden"
+      "noUsers": "Geen gebruikers gevonden",
+      "recentSync": "Recente synchronisatiegeschiedenis",
+      "recentSyncSubtitle": "Overzicht van de laatste datasynchronisatie-gebeurtenissen"
     },
     "validation": {
       "title": "Gegevensvalidatie",

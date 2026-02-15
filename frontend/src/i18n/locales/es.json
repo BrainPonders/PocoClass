@@ -301,7 +301,9 @@
       "disabled": "Deshabilitado",
       "admin": "Administrador",
       "user": "Usuario",
-      "noUsers": "No se encontraron usuarios"
+      "noUsers": "No se encontraron usuarios",
+      "recentSync": "Historial de sincronización reciente",
+      "recentSyncSubtitle": "Resumen de los últimos eventos de sincronización de datos"
     },
     "validation": {
       "title": "Validación de datos",
