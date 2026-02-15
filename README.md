@@ -39,7 +39,10 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 
 <br>
 
-![Background Process Screenshot](documentation/images/background-process.png)
+<a href="documentation/images/background-process.png">
+  <img src="documentation/images/background-process.png" width="400">
+</a>
+
 
 
 ## Architecture
