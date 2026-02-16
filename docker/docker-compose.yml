@@ -2,17 +2,17 @@
 #  PocoClass - Docker Compose Configuration
 #
 #  PREREQUISITES:
-#    You must build the image first by running:  bash source/docker/install.sh
+#    Run the installer first:
+#      bash source/docker/install.sh
 #
 #  QUICK START:
-#    1. Run the install script:  bash source/docker/install.sh
-#    2. Edit this file to match your setup (see comments below)
-#    3. Start PocoClass:  docker compose up -d
-#    4. Open http://your-server:5000 in your browser
+#    1) Review .env (PAPERLESS_URL + PAPERLESS_NETWORK_NAME)
+#    2) Start PocoClass: docker compose up -d
+#    3) Open http://your-server:5000 in your browser
 #
-#  REQUIREMENTS:
-#    - Your Paperless-ngx instance must be reachable from this container
-#    - Both services must share the same Docker network
+#  NOTE:
+#    PocoClass and Paperless-ngx must be on the same Docker network.
+#    The installer tries to auto-detect this and writes it to .env.
 #
 ###############################################################################
 
@@ -23,36 +23,29 @@ services:
     restart: unless-stopped
 
     ports:
-      # PocoClass web interface port
-      # Change the left side if port 5000 is already in use on your host
+      # PocoClass web interface port (host:container)
       - "5000:5000"
 
     environment:
-      # REQUIRED: Secret key for session encryption
-      # The install script generates this automatically - do not change it
-      # unless you want to invalidate all existing sessions
+      # REQUIRED: Session encryption secret
       - POCOCLASS_SECRET_KEY=${POCOCLASS_SECRET_KEY}
 
-      # REQUIRED: Paperless-ngx URL as seen from inside the Docker network
-      # This is NOT your browser URL - it is the internal Docker hostname
-      # Common values:
-      #   http://paperless-ngx:8000      (if container is named "paperless-ngx")
-      #   http://paperless-webserver:8000 (if using the official compose setup)
-      # Tip: run "docker ps" to find your Paperless container name
-      - PAPERLESS_URL=${PAPERLESS_URL:-http://paperless-ngx:8000}
+      # REQUIRED: Paperless URL from inside Docker network
+      # Examples:
+      #   - Official paperless-ngx compose: http://paperless-webserver:8000
+      #   - 11notes paperless-ngx:          http://paperless-ngx:8000
+      - PAPERLESS_URL=${PAPERLESS_URL:-http://paperless-webserver:8000}
 
-      # OPTIONAL: Performance tuning (defaults shown)
-      # - GUNICORN_WORKERS=3        # Number of worker processes
-      # - GUNICORN_THREADS=2        # Threads per worker
-      # - GUNICORN_TIMEOUT=120      # Request timeout in seconds
+      # OPTIONAL: Performance tuning
+      # - GUNICORN_WORKERS=3
+      # - GUNICORN_THREADS=2
+      # - GUNICORN_TIMEOUT=120
 
     volumes:
       # Persistent data (database, settings)
-      # Stored in ./data on your host for easy access and backup
       - ./data:/app/data
 
-      # Rule files - your YAML rules live in ./rules on the host
-      # You can add, edit, or delete rules without rebuilding the image
+      # YAML rules directory
       - ./rules:/app/rules
 
     healthcheck:
@@ -63,13 +56,12 @@ services:
       start_period: 15s
 
     networks:
-      # IMPORTANT: This network must match your Paperless-ngx network
-      # Run: docker network ls
-      # to find the network name your Paperless container uses
-      - paperless-network
+      - paperless
 
 networks:
-  paperless-network:
-    # Set to 'true' if the network already exists (created by Paperless)
-    # Set to 'false' if you want Docker Compose to create it
-    external: true
+  paperless:
+    # Name of the existing Paperless network (set in .env)
+    name: ${PAPERLESS_NETWORK_NAME:-paperless_default}
+
+    # Keep true when the network is created by Paperless
+    external: ${PAPERLESS_NETWORK_EXTERNAL:-true}

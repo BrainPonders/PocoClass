@@ -90,13 +90,21 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 
 ### Docker (recommended)
 
+> Before running the installer, make sure your Paperless container is running.
+> The installer can auto-detect the Docker network from the running container.
+
 ```bash
 mkdir ~/pococlass && cd ~/pococlass
 git clone https://github.com/eRJe79/PocoClass.git source
 bash source/docker/install.sh
 ```
 
-The install script builds the image, generates a secret key, and sets up everything in your chosen directory:
+The installer now guides you through Paperless setup:
+- **Option 1: Official paperless-ngx compose**
+- **Option 2: 11notes paperless-ngx**
+- **Option 3: Custom**
+
+It builds the image, generates a secret key, and creates this deployment layout:
 
 ```
 ~/pococlass/
@@ -108,20 +116,67 @@ The install script builds the image, generates a secret key, and sets up everyth
 └── pococlass_trigger.sh
 ```
 
-After it finishes:
+Then start PocoClass:
 
 ```bash
-# 1. Set your Paperless-ngx container URL
-nano .env
-
-# 2. Set the Docker network to match your Paperless setup
-nano docker-compose.yml
-
-# 3. Start PocoClass
+cd ~/pococlass
 docker compose up -d
 ```
 
 Open `http://your-server:5000` in your browser.
+
+### Attach PocoClass to Paperless (official paperless-ngx compose)
+
+Typical defaults:
+- `PAPERLESS_URL=http://paperless-webserver:8000`
+- `PAPERLESS_CONTAINER_NAME=paperless-webserver`
+
+Installer behavior:
+- Prompts for container name
+- Detects the network from that container (if running)
+- Writes values into `~/pococlass/.env`
+
+If needed, adjust:
+```bash
+cd ~/pococlass
+nano .env
+docker compose up -d
+```
+
+### Attach PocoClass to Paperless (11notes paperless-ngx)
+
+Typical defaults:
+- `PAPERLESS_URL=http://paperless-ngx:8000`
+- `PAPERLESS_CONTAINER_NAME=paperless-ngx`
+
+Installer behavior:
+- Uses 11notes defaults automatically when you choose option `2`
+- Detects network from `paperless-ngx` (if running)
+- Writes values into `~/pococlass/.env`
+
+If needed, adjust:
+```bash
+cd ~/pococlass
+nano .env
+docker compose up -d
+```
+
+### Optional: Trigger PocoClass after Paperless consumption
+
+PocoClass ships with `pococlass_trigger.sh` for post-consume automation.
+
+1. Generate a **System API Token** in PocoClass: `Settings -> Background Processing`.
+2. Copy and edit the trigger script:
+```bash
+cd ~/pococlass
+cp pococlass_trigger.sh /path/to/paperless/scripts/
+nano /path/to/paperless/scripts/pococlass_trigger.sh
+chmod +x /path/to/paperless/scripts/pococlass_trigger.sh
+```
+3. Set `POCOCLASS_URL` and `POCOCLASS_TOKEN` in that script.
+4. Configure Paperless with:
+   - Docker: `PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh`
+   - Bare metal: same variable in `paperless.conf`
 
 ### Updating
 
@@ -172,6 +227,8 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 |----------|-------------|---------|
 | `POCOCLASS_SECRET_KEY` | Encryption key for sessions (required) | — |
 | `PAPERLESS_URL` | Paperless-ngx URL (required for Docker, or configure in web UI) | — |
+| `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless | `paperless_default` |
+| `PAPERLESS_NETWORK_EXTERNAL` | Whether Paperless network already exists | `true` |
 | `GUNICORN_WORKERS` | Number of worker processes | `3` |
 | `GUNICORN_THREADS` | Threads per worker | `2` |
 | `GUNICORN_TIMEOUT` | Request timeout (seconds) | `120` |
