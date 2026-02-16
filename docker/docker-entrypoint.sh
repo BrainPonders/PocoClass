@@ -17,8 +17,8 @@ fi
 export POCOCLASS_DB_PATH="$DB_PATH"
 
 if [ -z "$POCOCLASS_SECRET_KEY" ]; then
-    echo "WARNING: POCOCLASS_SECRET_KEY not set. Generating random key..."
-    export POCOCLASS_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
+    echo "WARNING: POCOCLASS_SECRET_KEY not set. Generating temporary Fernet key..."
+    export POCOCLASS_SECRET_KEY=$(python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())")
     echo "NOTE: Set POCOCLASS_SECRET_KEY env var for persistent sessions across restarts."
 fi
 
