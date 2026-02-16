@@ -5,7 +5,7 @@
  * actions. Generates the YAML string from the ruleData prop on demand.
  */
 import React, { useState } from 'react';
-import { Download, Copy, Check } from 'lucide-react';
+import { Download, ClipboardCopy, Check } from 'lucide-react';
 
 export default function YamlExportButton({ ruleData, buttonStyle = 'ghost' }) {
   const [copied, setCopied] = useState(false);
@@ -81,7 +81,7 @@ status: ${ruleData.status || 'draft'}`;
         title="Copy YAML"
         aria-label="Copy rule configuration as YAML"
       >
-        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+        {copied ? <Check className="w-4 h-4 text-green-600" /> : <ClipboardCopy className="w-4 h-4" />}
       </button>
       <button
         onClick={handleDownload}

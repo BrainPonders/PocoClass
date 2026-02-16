@@ -144,7 +144,8 @@
       "filtersRestrictive": "De huidige filters zijn te restrictief"
     },
     "checkConsole": "Controleer de browserconsole op details van het API-antwoord.",
-    "createFirstRuleDesc": "Maak uw eerste documentclassificatieregel"
+    "createFirstRuleDesc": "Maak uw eerste documentclassificatieregel",
+    "duplicateRule": "Regel dupliceren"
   },
   "wizard": {
     "step1": "Basisgegevens",

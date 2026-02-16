@@ -144,7 +144,8 @@
       "filtersRestrictive": "Die aktuellen Filter sind zu restriktiv"
     },
     "checkConsole": "Überprüfen Sie die Browserkonsole auf API-Antwortdetails.",
-    "createFirstRuleDesc": "Erstellen Sie Ihre erste Dokumentklassifizierungsregel"
+    "createFirstRuleDesc": "Erstellen Sie Ihre erste Dokumentklassifizierungsregel",
+    "duplicateRule": "Regel duplizieren"
   },
   "wizard": {
     "step1": "Grundinformationen",
