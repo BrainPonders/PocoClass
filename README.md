@@ -123,6 +123,23 @@ docker compose up -d
 
 Open `http://your-server:5000` in your browser.
 
+### Updating
+
+```bash
+cd ~/pococlass/source
+git pull
+bash docker/install.sh
+```
+
+The install script detects that this is an update and rebuilds the Docker image with the latest code. Your `.env`, `docker-compose.yml`, `rules/`, and `data/` are kept as-is.
+
+After the rebuild, restart the container:
+
+```bash
+cd ~/pococlass
+docker compose up -d
+```
+
 ### Native install
 
 Requires Python 3.13+ (3.11+ may work) and Node.js 20+.
