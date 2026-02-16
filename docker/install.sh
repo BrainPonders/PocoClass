@@ -269,8 +269,17 @@ build_image() {
 
     pause_continue
 
+    BUILD_NUM="dev"
+    if command -v git >/dev/null 2>&1 && git -C "$SOURCE_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+        BUILD_NUM=$(git -C "$SOURCE_DIR" rev-list --count HEAD 2>/dev/null || echo "dev")
+        print_step "Build number: #${BUILD_NUM} (from git commit count)"
+    else
+        print_warning "Git not available — using build number 'dev'"
+    fi
+
     POCOCLASS_IMAGE_NAME="${IMAGE_NAME}" \
     POCOCLASS_IMAGE_TAG="${IMAGE_TAG}" \
+    POCOCLASS_BUILD_NUMBER="${BUILD_NUM}" \
     bash "$SOURCE_DIR/docker/build-image.sh"
 
     echo ""

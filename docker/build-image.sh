@@ -26,9 +26,12 @@ if ! docker info >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Building image ${IMAGE_NAME}:${IMAGE_TAG}..."
+BUILD_NUMBER="${POCOCLASS_BUILD_NUMBER:-dev}"
+
+echo "Building image ${IMAGE_NAME}:${IMAGE_TAG} (build #${BUILD_NUMBER})..."
 docker build \
     -t "${IMAGE_NAME}:${IMAGE_TAG}" \
     -f "$DOCKERFILE_PATH" \
+    --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
     "$SOURCE_DIR"
 echo "Image build complete: ${IMAGE_NAME}:${IMAGE_TAG}"
