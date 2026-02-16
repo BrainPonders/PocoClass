@@ -352,6 +352,7 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 
 ## Roadmap
 
+- [ ] YAML rule import
 - [ ] Improve GUI standardisation
 - [ ] Tutorial for rule evaluation
 - [ ] Tutorial for background processing
