@@ -144,7 +144,8 @@
       "filtersRestrictive": "I filtri attuali sono troppo restrittivi"
     },
     "checkConsole": "Controlla la console del browser per i dettagli della risposta dell'API.",
-    "createFirstRuleDesc": "Crea la tua prima regola di classificazione dei documenti"
+    "createFirstRuleDesc": "Crea la tua prima regola di classificazione dei documenti",
+    "duplicateRule": "Duplica regola"
   },
   "wizard": {
     "step1": "Informazioni di base",
