@@ -15,12 +15,15 @@ RUN npm run build
 # Stage 2: Python runtime (11notes/python - rootless Alpine)
 FROM 11notes/python:3.13 AS runtime
 
+ARG BUILD_NUMBER=dev
+
 LABEL maintainer="PocoClass"
 LABEL description="Document Classification System for Paperless-ngx"
 LABEL version="2.0"
 
 ENV FLASK_ENV=production
 ENV POCOCLASS_DATA_DIR=/app/data
+ENV POCOCLASS_BUILD_NUMBER=${BUILD_NUMBER}
 
 USER root
 

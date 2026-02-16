@@ -240,10 +240,12 @@ def health_check():
     """Health check endpoint for Docker/container orchestration"""
     try:
         db_status = "ok" if db else "error"
+        build_number = os.environ.get('POCOCLASS_BUILD_NUMBER', 'dev')
         return jsonify({
             'status': 'healthy',
             'database': db_status,
-            'version': '2.0'
+            'version': '2.0',
+            'build': build_number
         }), 200
     except Exception as e:
         return jsonify({
