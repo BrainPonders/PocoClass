@@ -2,7 +2,7 @@
 ###############################################################################
 #
 #  PocoClass Installer
-#  Builds a secure Docker image and prepares everything for deployment
+#  Builds a Docker image and prepares everything for deployment
 #
 #  First install:
 #    mkdir ~/pococlass && cd ~/pococlass
@@ -21,6 +21,13 @@ POCOCLASS_VERSION="2.0"
 IMAGE_NAME="pococlass"
 IMAGE_TAG="latest"
 IS_UPDATE=false
+COMPOSE_CMD="docker compose"
+
+PAPERLESS_PROFILE=""
+PAPERLESS_CONTAINER_NAME=""
+PAPERLESS_URL=""
+PAPERLESS_NETWORK_NAME=""
+PAPERLESS_NETWORK_EXTERNAL="true"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -29,13 +36,13 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-print_step()    { echo -e "  ${GREEN}[✓]${NC} $1"; }
+print_step()    { echo -e "  ${GREEN}[OK]${NC} $1"; }
 print_warning() { echo -e "  ${YELLOW}[!]${NC} $1"; }
-print_error()   { echo -e "  ${RED}[✗]${NC} $1"; }
+print_error()   { echo -e "  ${RED}[X]${NC} $1"; }
 
 print_section() {
     echo ""
-    echo -e "${BLUE}── $1 ──${NC}"
+    echo -e "${BLUE}-- $1 --${NC}"
     echo ""
 }
 
@@ -44,6 +51,35 @@ pause_continue() {
     echo -en "  Press ${BOLD}Enter${NC} to continue or ${BOLD}Ctrl+C${NC} to cancel... "
     read -r
     echo ""
+}
+
+prompt_with_default() {
+    local prompt="$1"
+    local default_value="$2"
+    local input_value
+
+    echo -en "  ${prompt} [${default_value}]: "
+    read -r input_value
+
+    if [ -z "$input_value" ]; then
+        echo "$default_value"
+    else
+        echo "$input_value"
+    fi
+}
+
+detect_network_from_container() {
+    local container_name="$1"
+    local detected_network
+
+    detected_network=$(docker inspect -f '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}' "$container_name" 2>/dev/null | head -n1 | tr -d '[:space:]')
+
+    if [ -n "$detected_network" ]; then
+        echo "$detected_network"
+        return 0
+    fi
+
+    return 1
 }
 
 # ---- Locate project root and deploy directory ----
@@ -97,7 +133,7 @@ print_welcome() {
     else
         echo "  This will:"
         echo "    - Build the Docker image"
-        echo "    - Generate a secret key and .env file"
+        echo "    - Generate a .env file with guided Paperless settings"
         echo "    - Set up docker-compose.yml, rules/, and data/"
     fi
 
@@ -109,25 +145,93 @@ print_welcome() {
 check_requirements() {
     print_section "Checking requirements"
 
-    if ! command -v docker &> /dev/null; then
+    if ! command -v docker >/dev/null 2>&1; then
         print_error "Docker is not installed. Please install Docker first."
         echo "    Visit: https://docs.docker.com/get-docker/"
         exit 1
     fi
     print_step "Docker found: $(docker --version | head -1)"
 
-    if ! docker info &> /dev/null 2>&1; then
+    if ! docker info >/dev/null 2>&1; then
         print_error "Docker is not running. Please start Docker and try again."
         exit 1
     fi
     print_step "Docker is running"
 
-    if ! command -v docker compose &> /dev/null && ! command -v docker-compose &> /dev/null; then
+    if docker compose version >/dev/null 2>&1; then
+        COMPOSE_CMD="docker compose"
+        print_step "Docker Compose available (plugin)"
+    elif command -v docker-compose >/dev/null 2>&1; then
+        COMPOSE_CMD="docker-compose"
+        print_step "Docker Compose available (docker-compose)"
+    else
         print_error "Docker Compose is not available."
-        echo "    Docker Compose V2 is included with modern Docker installations."
+        echo "    Docker Compose v2 is included with modern Docker installations."
         exit 1
     fi
-    print_step "Docker Compose available"
+}
+
+# ---- Collect guided Paperless config ----
+
+collect_paperless_config() {
+    local profile_choice
+    local default_container
+    local default_url
+    local default_network
+    local detected_network
+
+    print_section "Paperless-ngx connection"
+
+    echo "  Choose your Paperless setup:"
+    echo ""
+    echo "    1) Official paperless-ngx compose"
+    echo "       - Typical container: paperless-webserver"
+    echo "    2) 11notes paperless-ngx"
+    echo "       - Typical container: paperless-ngx"
+    echo "    3) Custom"
+    echo ""
+
+    echo -en "  Selection [1/2/3] (default: 1): "
+    read -r profile_choice
+
+    case "$profile_choice" in
+        "2")
+            PAPERLESS_PROFILE="11notes"
+            default_container="paperless-ngx"
+            default_url="http://paperless-ngx:8000"
+            default_network="paperless-network"
+            ;;
+        "3")
+            PAPERLESS_PROFILE="custom"
+            default_container="paperless"
+            default_url="http://paperless:8000"
+            default_network="paperless-network"
+            ;;
+        *)
+            PAPERLESS_PROFILE="official"
+            default_container="paperless-webserver"
+            default_url="http://paperless-webserver:8000"
+            default_network="paperless_default"
+            ;;
+    esac
+
+    PAPERLESS_CONTAINER_NAME="$(prompt_with_default "Paperless container name" "$default_container")"
+
+    if detected_network="$(detect_network_from_container "$PAPERLESS_CONTAINER_NAME")"; then
+        print_step "Detected Docker network from container '$PAPERLESS_CONTAINER_NAME': $detected_network"
+        default_network="$detected_network"
+    else
+        print_warning "Could not inspect container '$PAPERLESS_CONTAINER_NAME'."
+        print_warning "If Paperless is not running yet, use the suggested network and adjust later in .env if needed."
+    fi
+
+    PAPERLESS_NETWORK_NAME="$(prompt_with_default "Docker network shared with Paperless" "$default_network")"
+    PAPERLESS_URL="$(prompt_with_default "Paperless URL from inside Docker" "$default_url")"
+
+    echo ""
+    print_step "Paperless profile: $PAPERLESS_PROFILE"
+    print_step "Paperless URL: $PAPERLESS_URL"
+    print_step "Docker network: $PAPERLESS_NETWORK_NAME"
 }
 
 # ---- Build the Docker image ----
@@ -162,21 +266,29 @@ setup_deploy_dir() {
               || head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n' | head -c 64)
 
     if [ ! -f "$DEPLOY_DIR/.env" ]; then
-        cat > "$DEPLOY_DIR/.env" <<EOF
+        collect_paperless_config
+
+        cat > "$DEPLOY_DIR/.env" <<EOF_ENV
 # PocoClass Environment Configuration
 # Generated on $(date '+%Y-%m-%d %H:%M:%S')
 
 # Secret key for session encryption (auto-generated, do not share)
 POCOCLASS_SECRET_KEY=${SECRET_KEY}
 
-# Paperless-ngx URL as seen from inside the Docker network
-# Change this to match your Paperless container name
-# Tip: run "docker ps" to find your Paperless container name
-PAPERLESS_URL=http://paperless-ngx:8000
-EOF
+# Paperless-ngx URL from inside Docker
+PAPERLESS_URL=${PAPERLESS_URL}
+
+# Installer metadata (optional, used as defaults)
+PAPERLESS_PROFILE=${PAPERLESS_PROFILE}
+PAPERLESS_CONTAINER_NAME=${PAPERLESS_CONTAINER_NAME}
+
+# Docker network shared by PocoClass and Paperless-ngx
+PAPERLESS_NETWORK_NAME=${PAPERLESS_NETWORK_NAME}
+PAPERLESS_NETWORK_EXTERNAL=${PAPERLESS_NETWORK_EXTERNAL}
+EOF_ENV
         print_step "Generated secret key and .env file"
     else
-        print_warning ".env already exists — keeping your configuration"
+        print_warning ".env already exists -- keeping your configuration"
     fi
 
     mkdir -p "$DEPLOY_DIR/rules"
@@ -187,7 +299,7 @@ EOF
         cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
         print_step "Copied docker-compose.yml"
     else
-        print_warning "docker-compose.yml already exists — keeping your configuration"
+        print_warning "docker-compose.yml already exists -- keeping your configuration"
     fi
 
     if [ ! -f "$DEPLOY_DIR/pococlass_trigger.sh" ]; then
@@ -195,7 +307,7 @@ EOF
         chmod +x "$DEPLOY_DIR/pococlass_trigger.sh"
         print_step "Copied pococlass_trigger.sh"
     else
-        print_warning "pococlass_trigger.sh already exists — keeping your configuration"
+        print_warning "pococlass_trigger.sh already exists -- keeping your configuration"
     fi
 }
 
@@ -212,7 +324,7 @@ print_done() {
         echo "  The image has been rebuilt. Restart the container to apply changes:"
         echo ""
         echo "    cd ${DEPLOY_DIR}"
-        echo "    docker compose up -d"
+        echo "    ${COMPOSE_CMD} up -d"
         echo ""
         echo -e "  ${BOLD}Check for updated config files:${NC}"
         echo ""
@@ -223,47 +335,42 @@ print_done() {
         echo "    Latest docker-compose.yml:   ${SOURCE_DIR}/docker/docker-compose.yml"
         echo "    Latest pococlass_trigger.sh: ${SOURCE_DIR}/scripts/pococlass_trigger.sh"
         echo ""
-        echo "  You can compare with:  diff ${DEPLOY_DIR}/docker-compose.yml ${SOURCE_DIR}/docker/docker-compose.yml"
+        echo "  You can compare with: diff ${DEPLOY_DIR}/docker-compose.yml ${SOURCE_DIR}/docker/docker-compose.yml"
         echo ""
     else
         echo -e "  ${BOLD}Directory layout:${NC}"
         echo ""
         echo "     ${DEPLOY_DIR}/"
         if [ "$SOURCE_FOLDER" != "." ]; then
-        echo "     ├── ${SOURCE_FOLDER}/            ← source code (git repo)"
+            echo "     |- ${SOURCE_FOLDER}/            <- source code (git repo)"
         fi
-        echo "     ├── docker-compose.yml"
-        echo "     ├── .env"
-        echo "     ├── rules/               ← your YAML rule files"
-        echo "     ├── data/                ← runtime data (database, settings)"
-        echo "     └── pococlass_trigger.sh"
+        echo "     |- docker-compose.yml"
+        echo "     |- .env"
+        echo "     |- rules/               <- your YAML rule files"
+        echo "     |- data/                <- runtime data (database, settings)"
+        echo "     '- pococlass_trigger.sh"
         echo ""
         echo -e "  ${BOLD}Next steps:${NC}"
         echo ""
-        echo "  1. Set your Paperless-ngx container URL:"
+        echo "  1. Start PocoClass:"
         echo ""
         echo "     cd ${DEPLOY_DIR}"
-        echo "     nano .env"
+        echo "     ${COMPOSE_CMD} up -d"
         echo ""
-        echo "  2. Set the Docker network to match your Paperless setup:"
-        echo ""
-        echo "     nano docker-compose.yml"
-        echo ""
-        echo "  3. Start PocoClass:"
-        echo ""
-        echo "     docker compose up -d"
-        echo ""
-        echo "  4. Open in your browser:"
+        echo "  2. Open PocoClass in your browser:"
         echo ""
         echo "     http://your-server:5000"
         echo ""
-        echo -e "  ${BOLD}Post-consumption script (optional):${NC}"
+        echo "  3. If needed, adjust Paperless settings in .env:"
         echo ""
-        echo "  To have Paperless-ngx trigger PocoClass after consuming a document:"
+        echo "     PAPERLESS_URL"
+        echo "     PAPERLESS_NETWORK_NAME"
+        echo ""
+        echo -e "  ${BOLD}Post-consumption trigger (optional):${NC}"
         echo ""
         echo "     cp ${DEPLOY_DIR}/pococlass_trigger.sh /path/to/paperless/scripts/"
         echo ""
-        echo "  Edit it to set your PocoClass URL and System API Token."
+        echo "  Then edit the script and set POCOCLASS_URL + POCOCLASS_TOKEN."
         echo ""
     fi
 }
