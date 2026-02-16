@@ -144,7 +144,8 @@
       "filtersRestrictive": "Current filters are too restrictive"
     },
     "checkConsole": "Check the browser console for API response details.",
-    "createFirstRuleDesc": "Create your first document classification rule to get started"
+    "createFirstRuleDesc": "Create your first document classification rule to get started",
+    "duplicateRule": "Duplicate rule"
   },
   "wizard": {
     "step1Title": "Basic Information",
