@@ -3,6 +3,7 @@ set -e
 
 echo "========================================"
 echo "  PocoClass v2.0 - Starting..."
+echo "  Base: 11notes/python (rootless Alpine)"
 echo "========================================"
 
 DATA_DIR="${POCOCLASS_DATA_DIR:-/app/data}"
@@ -20,35 +21,6 @@ if [ -z "$POCOCLASS_SECRET_KEY" ]; then
     export POCOCLASS_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
     echo "NOTE: Set POCOCLASS_SECRET_KEY env var for persistent sessions across restarts."
 fi
-
-GUNICORN_PID=""
-
-cleanup() {
-    echo ""
-    echo "Shutting down PocoClass..."
-    
-    if [ ! -z "$GUNICORN_PID" ] && kill -0 $GUNICORN_PID 2>/dev/null; then
-        echo "Stopping Gunicorn (PID $GUNICORN_PID)..."
-        kill -TERM $GUNICORN_PID 2>/dev/null || true
-        
-        for i in {1..10}; do
-            if ! kill -0 $GUNICORN_PID 2>/dev/null; then
-                break
-            fi
-            sleep 1
-        done
-        
-        if kill -0 $GUNICORN_PID 2>/dev/null; then
-            echo "Force stopping Gunicorn..."
-            kill -9 $GUNICORN_PID 2>/dev/null || true
-        fi
-    fi
-    
-    echo "Shutdown complete."
-    exit 0
-}
-
-trap cleanup SIGTERM SIGINT SIGQUIT
 
 WORKERS="${GUNICORN_WORKERS:-3}"
 THREADS="${GUNICORN_THREADS:-2}"
