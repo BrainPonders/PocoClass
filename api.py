@@ -2415,11 +2415,19 @@ def convert_backend_to_frontend(backend_data, rule_id):
     if backend_data.get('source_document_id'):
         frontend['sourceDocumentId'] = backend_data['source_document_id']
     
-    # Convert logic groups to OCR identifiers - Handle both v1 and v2 formats
+    # Convert logic groups to OCR identifiers - Handle v2, v1, and export formats
     # v2 format (core_identifiers)
     logic_groups_data = None
     if backend_data.get('core_identifiers'):
         logic_groups_data = backend_data['core_identifiers'].get('logic_groups', [])
+    # Export/legacy format (ocr_identifiers)
+    elif backend_data.get('ocr_identifiers'):
+        ocr_section = backend_data['ocr_identifiers']
+        logic_groups_data = ocr_section.get('logic_groups', [])
+        if not frontend.get('ocrThreshold') or frontend['ocrThreshold'] == 75:
+            frontend['ocrThreshold'] = ocr_section.get('threshold', 75)
+        if not frontend.get('ocrMultiplier') or frontend['ocrMultiplier'] == 3:
+            frontend['ocrMultiplier'] = ocr_section.get('multiplier', 3)
     # v1 format fallback (logic_groups)
     elif backend_data.get('logic_groups'):
         logic_groups_data = backend_data['logic_groups']
@@ -2447,9 +2455,9 @@ def convert_backend_to_frontend(backend_data, rule_id):
                     })
             frontend['ocrIdentifiers'].append(frontend_group)
     
-    # Static metadata
-    if backend_data.get('static_metadata'):
-        sm = backend_data['static_metadata']
+    # Static metadata (also handle legacy 'predefined_data' key)
+    sm = backend_data.get('static_metadata') or backend_data.get('predefined_data')
+    if sm:
         frontend['predefinedData'] = {
             'correspondent': sm.get('correspondent', ''),
             'documentType': sm.get('document_type', ''),
@@ -2532,9 +2540,14 @@ def convert_backend_to_frontend(backend_data, rule_id):
                 
                 frontend['dynamicData']['extractionRules'].append(extraction_rule)
     
-    # Filename patterns
-    if backend_data.get('filename_patterns'):
-        frontend['filenamePatterns']['patterns'] = backend_data['filename_patterns']
+    # Filename patterns - handle both flat list and nested dict formats
+    fp = backend_data.get('filename_patterns')
+    if fp:
+        if isinstance(fp, list):
+            frontend['filenamePatterns']['patterns'] = fp
+        elif isinstance(fp, dict):
+            frontend['filenamePatterns']['patterns'] = fp.get('patterns', [])
+            frontend['filenamePatterns']['dateFormats'] = fp.get('date_formats', [])
     
     # Verification fields
     if backend_data.get('verification_fields'):
