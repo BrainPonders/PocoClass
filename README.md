@@ -39,13 +39,13 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 
 <br>
 
-| <div align="center"><b>Rule Wizard</b></div> | <div align="center"><b>Defining OCR Patterns</b></div> |
+| <div align="center"><b>Welcome Screen</b></div> | <div align="center"><b>Defining OCR Patterns</b></div> |
 |---|---|
-| <a href="documentation/images/rule_wizard.png"><img src="documentation/images/rule_wizard.png" width="400"></a> | <a href="documentation/images/ocr_identification.png"><img src="documentation/images/ocr_identification.png" width="400"></a> |
-| <div align="center"><b>Rule Evaluation</b></div> | <div align="center"><b>&nbsp;</b></div> |
-| <a href="documentation/images/rule_evaluation.png"><img src="documentation/images/rule_evaluation.png" width="400"></a> | &nbsp; |
+| <div align="center"><a href="documentation/images/Welcome_Screen.png"><img src="documentation/images/Welcome_Screen.png" width="250"></a></div> | <div align="center"><a href="documentation/images/rule_wizard.png"><img src="documentation/images/rule_wizard.png" width="400"></a></div> |
 
-
+| <div align="center"><b>OCR Identification</b></div> | <div align="center"><b>Rule Evaluation</b></div> |
+|---|---|
+| <div align="center"><a href="documentation/images/ocr_identification.png"><img src="documentation/images/ocr_identification.png" width="400"></a></div> | <div align="center"><a href="documentation/images/rule_evaluation.png"><img src="documentation/images/rule_evaluation.png" width="400"></a></div> |
 
 <br>
 
