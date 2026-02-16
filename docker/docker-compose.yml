@@ -1,35 +1,75 @@
-version: '3.8'
+###############################################################################
+#  PocoClass - Docker Compose Configuration
+#
+#  PREREQUISITES:
+#    You must build the image first by running:  bash source/docker/install.sh
+#
+#  QUICK START:
+#    1. Run the install script:  bash source/docker/install.sh
+#    2. Edit this file to match your setup (see comments below)
+#    3. Start PocoClass:  docker compose up -d
+#    4. Open http://your-server:5000 in your browser
+#
+#  REQUIREMENTS:
+#    - Your Paperless-ngx instance must be reachable from this container
+#    - Both services must share the same Docker network
+#
+###############################################################################
 
 services:
   pococlass:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: pococlass:latest
     container_name: pococlass
     restart: unless-stopped
+
     ports:
+      # PocoClass web interface port
+      # Change the left side if port 5000 is already in use on your host
       - "5000:5000"
+
     environment:
+      # REQUIRED: Secret key for session encryption
+      # The install script generates this automatically - do not change it
+      # unless you want to invalidate all existing sessions
       - POCOCLASS_SECRET_KEY=${POCOCLASS_SECRET_KEY}
+
+      # REQUIRED: Paperless-ngx URL as seen from inside the Docker network
+      # This is NOT your browser URL - it is the internal Docker hostname
+      # Common values:
+      #   http://paperless-ngx:8000      (if container is named "paperless-ngx")
+      #   http://paperless-webserver:8000 (if using the official compose setup)
+      # Tip: run "docker ps" to find your Paperless container name
       - PAPERLESS_URL=${PAPERLESS_URL:-http://paperless-ngx:8000}
-      - GUNICORN_WORKERS=3
-      - GUNICORN_THREADS=2
-      - GUNICORN_TIMEOUT=120
+
+      # OPTIONAL: Performance tuning (defaults shown)
+      # - GUNICORN_WORKERS=3        # Number of worker processes
+      # - GUNICORN_THREADS=2        # Threads per worker
+      # - GUNICORN_TIMEOUT=120      # Request timeout in seconds
+
     volumes:
-      - pococlass-data:/app/data
-      - ../rules:/app/rules:ro
+      # Persistent data (database, settings)
+      # Stored in ./data on your host for easy access and backup
+      - ./data:/app/data
+
+      # Rule files - your YAML rules live in ./rules on the host
+      # You can add, edit, or delete rules without rebuilding the image
+      - ./rules:/app/rules
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
-    networks:
-      - paperless-network
+      start_period: 15s
 
-volumes:
-  pococlass-data:
+    networks:
+      # IMPORTANT: This network must match your Paperless-ngx network
+      # Run: docker network ls
+      # to find the network name your Paperless container uses
+      - paperless-network
 
 networks:
   paperless-network:
+    # Set to 'true' if the network already exists (created by Paperless)
+    # Set to 'false' if you want Docker Compose to create it
     external: true
