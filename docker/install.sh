@@ -82,6 +82,28 @@ detect_network_from_container() {
     return 1
 }
 
+generate_fernet_key() {
+    local generated_key
+
+    generated_key=$(python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())" 2>/dev/null \
+        || python -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())" 2>/dev/null)
+
+    if [ -n "$generated_key" ]; then
+        echo "$generated_key"
+        return 0
+    fi
+
+    if command -v openssl >/dev/null 2>&1; then
+        generated_key=$(openssl rand -base64 32 2>/dev/null | tr '+/' '-_' | tr -d '\n')
+        if [ -n "$generated_key" ]; then
+            echo "$generated_key"
+            return 0
+        fi
+    fi
+
+    return 1
+}
+
 # ---- Locate project root and deploy directory ----
 
 resolve_paths() {
@@ -247,10 +269,9 @@ build_image() {
 
     pause_continue
 
-    docker build \
-        -t "${IMAGE_NAME}:${IMAGE_TAG}" \
-        -f "$SOURCE_DIR/docker/Dockerfile" \
-        "$SOURCE_DIR"
+    POCOCLASS_IMAGE_NAME="${IMAGE_NAME}" \
+    POCOCLASS_IMAGE_TAG="${IMAGE_TAG}" \
+    bash "$SOURCE_DIR/docker/build-image.sh"
 
     echo ""
     print_step "Docker image built: ${IMAGE_NAME}:${IMAGE_TAG}"
@@ -261,9 +282,10 @@ build_image() {
 setup_deploy_dir() {
     print_section "Setting up deployment"
 
-    SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))" 2>/dev/null \
-              || openssl rand -hex 32 2>/dev/null \
-              || head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n' | head -c 64)
+    if ! SECRET_KEY="$(generate_fernet_key)"; then
+        print_error "Failed to generate a Fernet-compatible secret key."
+        exit 1
+    fi
 
     if [ ! -f "$DEPLOY_DIR/.env" ]; then
         collect_paperless_config
@@ -296,8 +318,13 @@ EOF_ENV
     print_step "rules/ and data/ directories ready"
 
     if [ ! -f "$DEPLOY_DIR/docker-compose.yml" ]; then
-        cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
-        print_step "Copied docker-compose.yml"
+        if [ -f "$SOURCE_DIR/docker/docker-compose.example.yml" ]; then
+            cp "$SOURCE_DIR/docker/docker-compose.example.yml" "$DEPLOY_DIR/docker-compose.yml"
+            print_step "Copied docker-compose.yml from template"
+        else
+            cp "$SOURCE_DIR/docker/docker-compose.yml" "$DEPLOY_DIR/docker-compose.yml"
+            print_step "Copied docker-compose.yml"
+        fi
     else
         print_warning "docker-compose.yml already exists -- keeping your configuration"
     fi
@@ -332,10 +359,10 @@ print_done() {
         echo "  changes to these files, compare and apply them manually:"
         echo ""
         echo "    Latest .env template:        ${SOURCE_DIR}/docker/.env.example"
-        echo "    Latest docker-compose.yml:   ${SOURCE_DIR}/docker/docker-compose.yml"
+        echo "    Latest docker-compose template: ${SOURCE_DIR}/docker/docker-compose.example.yml"
         echo "    Latest pococlass_trigger.sh: ${SOURCE_DIR}/scripts/pococlass_trigger.sh"
         echo ""
-        echo "  You can compare with: diff ${DEPLOY_DIR}/docker-compose.yml ${SOURCE_DIR}/docker/docker-compose.yml"
+        echo "  You can compare with: diff ${DEPLOY_DIR}/docker-compose.yml ${SOURCE_DIR}/docker/docker-compose.example.yml"
         echo ""
     else
         echo -e "  ${BOLD}Directory layout:${NC}"
@@ -367,6 +394,9 @@ print_done() {
         echo "     PAPERLESS_NETWORK_NAME"
         echo ""
         echo -e "  ${BOLD}Post-consumption trigger (optional):${NC}"
+        echo ""
+        echo "  Keep a working copy in ${DEPLOY_DIR}, but place the final script"
+        echo "  in your own Paperless post-consume scripts directory."
         echo ""
         echo "     cp ${DEPLOY_DIR}/pococlass_trigger.sh /path/to/paperless/scripts/"
         echo ""

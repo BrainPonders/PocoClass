@@ -47,7 +47,7 @@ Docker is the easiest way to run PocoClass alongside your existing Paperless-ngx
 **1. Generate a secret key** for session encryption:
 
 ```bash
-python3 -c "import secrets; print(secrets.token_hex(32))"
+python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
 
 Save this key securely - you'll need it for the configuration.
