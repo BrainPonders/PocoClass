@@ -1474,15 +1474,6 @@ def proxy_to_vite():
     
     return None
 
-@app.route('/')
-@app.route('/<path:path>')
-def serve_react_app(path=''):
-    """Serve the React SPA; falls back to index.html for client-side routing."""
-    static_folder = app.static_folder or 'frontend/dist'
-    if path and os.path.exists(os.path.join(static_folder, path)):
-        return send_from_directory(static_folder, path)
-    return send_from_directory(static_folder, 'index.html')
-
 # ---- Rule Management Routes ----
 
 @app.route('/api/rules', methods=['GET'])
@@ -3167,6 +3158,17 @@ def reset_application():
     except Exception as e:
         logger.error(f"Error resetting application: {e}")
         return jsonify({'error': str(e)}), 500
+
+# ---- SPA Catch-All Route (must be last) ----
+
+@app.route('/')
+@app.route('/<path:path>')
+def serve_react_app(path=''):
+    """Serve the React SPA; falls back to index.html for client-side routing."""
+    static_folder = app.static_folder or 'frontend/dist'
+    if path and os.path.exists(os.path.join(static_folder, path)):
+        return send_from_directory(static_folder, path)
+    return send_from_directory(static_folder, 'index.html')
 
 # ---- Development Server Entry Point ----
 
