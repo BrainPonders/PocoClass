@@ -57,7 +57,7 @@ class TokenEncryption:
                     "⚠️  WARNING: POCOCLASS_SECRET_KEY not set - using TEMPORARY encryption key!\n"
                     "   This is OK for development (POCOCLASS_DEV_MODE=true), but tokens will NOT persist across restarts.\n"
                     "   For production, generate a persistent key:\n"
-                    "     python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n"
+                    "     python3 -c 'import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())'\n"
                     "   Then set: POCOCLASS_SECRET_KEY=<your-generated-key>"
                 )
                 logger.warning(warning_msg)
@@ -72,7 +72,7 @@ class TokenEncryption:
                     "CRITICAL: POCOCLASS_SECRET_KEY environment variable not set!\n"
                     "Token encryption requires a persistent encryption key.\n\n"
                     "To generate a secure key, run:\n"
-                    "  python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'\n\n"
+                    "  python3 -c 'import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())'\n\n"
                     "Then add it to your environment:\n"
                     "  export POCOCLASS_SECRET_KEY=<your-generated-key>\n\n"
                     "For development testing only, you can bypass this check with:\n"
