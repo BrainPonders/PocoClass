@@ -32,8 +32,8 @@ ${ruleData.ocrIdentifiers?.map(group => `    - type: "${group.type || 'match'}"
       score: ${group.score || 20}
       mandatory: ${group.mandatory || false}
       conditions:
-${group.conditions?.map(condition => `        - pattern: "${condition.pattern || ''}"
-          range: "${condition.range || '0-1600'}"`).join('\n') || ''}`).join('\n') || '    []'}
+${group.conditions?.map(condition => `        - pattern: '${(condition.pattern || '').replace(/'/g, "''")}'
+          range: '${condition.range || '0-1600'}'`).join('\n') || ''}`).join('\n') || '    []'}
 
 # Document Classifications
 predefined_data:
@@ -43,8 +43,8 @@ predefined_data:
 
 # Filename Patterns (multiplier: ${ruleData.filenameMultiplier || 1})
 filename_patterns:
-  patterns: [${ruleData.filenamePatterns?.patterns?.filter(p => p && p.trim()).map(p => `"${p}"`).join(', ') || ''}]
-  date_formats: [${ruleData.filenamePatterns?.dateFormats?.map(f => `"${f.format}"`).join(', ') || ''}]
+  patterns: [${ruleData.filenamePatterns?.patterns?.filter(p => p && p.trim()).map(p => `'${p.replace(/'/g, "''")}'`).join(', ') || ''}]
+  date_formats: [${ruleData.filenamePatterns?.dateFormats?.map(f => `'${f.format}'`).join(', ') || ''}]
 
 # Status
 status: ${ruleData.status || 'draft'}`;
