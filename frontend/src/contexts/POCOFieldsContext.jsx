@@ -23,13 +23,13 @@ export function POCOFieldsProvider({ children }) {
   const refresh = useCallback(async () => {
     try {
       setIsLoading(true);
-      const sessionToken = localStorage.getItem('pococlass_session');
-      if (!sessionToken) {
+      const userExists = localStorage.getItem('pococlass_user');
+      if (!userExists) {
         return;
       }
 
       const response = await fetch(`${API_BASE_URL}/api/validation/mandatory-data`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (!response.ok) {
