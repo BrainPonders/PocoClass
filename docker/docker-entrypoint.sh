@@ -49,6 +49,7 @@ exec gunicorn \
     --workers $WORKERS \
     --threads $THREADS \
     --timeout $TIMEOUT \
+    --preload \
     --access-logfile - \
     --error-logfile - \
     --capture-output \
