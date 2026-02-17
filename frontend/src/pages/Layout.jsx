@@ -539,7 +539,7 @@ function LayoutContent({ children }) {
                   <div className="flex flex-col items-start gap-0">
                     <div className="flex items-end justify-start w-full">
                       <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
-                      <span className="text-xs mb-[2px] ml-1" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>v2.0 B.{buildNumber || '####'}</span>
+                      <span className="text-xs mb-[2px] ml-1" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>V2</span>
                     </div>
                     <div style={{ marginLeft: '41px', marginTop: '2px' }}>
                       <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
@@ -616,6 +616,10 @@ function LayoutContent({ children }) {
                       </SidebarMenu>
                     </SidebarGroupContent>
                   </SidebarGroup>
+
+                  <div className="px-5 py-2">
+                    <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Version 2.0 build {buildNumber || '####'}</p>
+                  </div>
 
                   {currentUser && (
                     <SidebarGroup className="mt-auto">
