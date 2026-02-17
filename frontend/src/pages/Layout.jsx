@@ -540,9 +540,9 @@ function LayoutContent({ children }) {
                     <div className="flex items-start justify-start w-full">
                       <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
                     </div>
-                    <div className="flex items-center gap-2" style={{ marginLeft: '41px', marginTop: '2px' }}>
-                      <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
-                      <span className="text-xs font-semibold" style={{ color: 'var(--app-text-muted)' }}>v2.0{buildNumber ? ` · B${buildNumber}` : ''}</span>
+                    <div className="flex items-center justify-between" style={{ marginLeft: '41px', marginTop: '2px' }}>
+                      <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)', whiteSpace: 'nowrap' }}>Document Classification</p>
+                      <span className="text-xs" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>v2.0{buildNumber ? `  B.${buildNumber}` : ''}</span>
                     </div>
                   </div>
                 </SidebarHeader>
