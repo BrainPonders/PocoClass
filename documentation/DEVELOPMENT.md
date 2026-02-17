@@ -43,7 +43,8 @@ Run from repository root:
 
 ## What `dev-rebuild.sh` does
 
-1. Fetches and hard-resets the repo to `origin/main`.
+1. Fetches and hard-resets the repo to `origin/<current-branch>` by default.
+   You can override this with `POCOCLASS_DEV_BRANCH=<branch>`.
 2. Cleans untracked files from the repository checkout.
 3. Builds a no-cache image tagged as:
    - `pococlass:dev-<shortsha>`
@@ -83,3 +84,7 @@ Set a custom runtime directory:
 Set a custom compose project name:
 
 - `POCOCLASS_DEV_PROJECT=my-dev-stack bash scripts/Maintainer/dev-rebuild.sh`
+
+Set a custom source branch:
+
+- `POCOCLASS_DEV_BRANCH=Docker-deploy bash scripts/Maintainer/dev-rebuild.sh`
