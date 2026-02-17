@@ -36,6 +36,11 @@ export default function YamlPreview({ ruleData, onGeneratorReady }) {
     return str.replace(/"/g, '\\"');
   };
 
+  const escapeSingleQuote = (str) => {
+    if (!str) return '';
+    return str.replace(/'/g, "''");
+  };
+
   const generateYaml = () => {
     const creationDate = new Date().toISOString().split('T')[0];
     const userName = currentUser?.full_name ?? 'Unknown User';
@@ -107,9 +112,9 @@ ${ruleData.ocrIdentifiers.map((group, idx) => {
       score: ${scorePerGroup}
       mandatory: ${mandatory}  # Must match for rule to succeed
       conditions:
-${group.conditions?.map(condition => `        - pattern: "${escapeYaml(condition.pattern ?? '')}"    # Search pattern (text or regex)
+${group.conditions?.map(condition => `        - pattern: '${escapeSingleQuote(condition.pattern ?? '')}'    # Search pattern (text or regex)
           source: content
-          range: "${condition.range ?? '0-1600'}"        # Search area`).join('\n') ?? ''}`;
+          range: '${condition.range ?? '0-1600'}'        # Search area`).join('\n') ?? ''}`;
 }).join('\n')}
 ` : '# =============================\n# STEP 2: OCR IDENTIFIERS\n# =============================\n# No OCR identifiers configured\n'}
 
@@ -141,12 +146,12 @@ ${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType !== 't
   // Custom fields use their actual name directly (e.g., "Total Price")
   
   return `  ${backendField}:
-    pattern_before: "${beforeAnchor}"
-    pattern_after: "${afterAnchor}"${extractionType === 'date' ? `
+    pattern_before: '${escapeSingleQuote(rule.beforeAnchor?.pattern ?? '')}'
+    pattern_after: '${escapeSingleQuote(rule.afterAnchor?.pattern ?? '')}'${extractionType === 'date' ? `
     format: ${dateFormat}` : ''}`;
 }).join('\n')}${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 'text' && rule.targetField === 'tags').length > 0 ? `
   extracted_tags:
-${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 'text' && rule.targetField === 'tags').map(rule => `    - pattern: "${escapeYaml(rule.regexPattern ?? '')}"
+${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 'text' && rule.targetField === 'tags').map(rule => `    - pattern: '${escapeSingleQuote(rule.regexPattern ?? '')}'
       value: "${escapeYaml(rule.tagValue ?? '')}"${rule.prefix ? `
       prefix: "${escapeYaml(rule.prefix)}"` : ''}`).join('\n')}` : ''}
 ` : ''}
@@ -159,7 +164,7 @@ ${ruleData.dynamicData.extractionRules.filter(rule => rule.extractionType === 't
 filename_multiplier: ${filenameMultiplier}  # ${filenameMultiplier}× weight
 
 filename_patterns:
-${ruleData.filenamePatterns?.patterns?.filter(p => p).map(pattern => `  - "${escapeYaml(pattern)}"`).join('\n') || '  # No filename patterns configured'}
+${ruleData.filenamePatterns?.patterns?.filter(p => p).map(pattern => `  - '${escapeSingleQuote(pattern)}'`).join('\n') || '  # No filename patterns configured'}
 
 # =============================
 # STEP 5: PAPERLESS DATA VERIFICATION

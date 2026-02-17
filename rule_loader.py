@@ -209,6 +209,20 @@ class RuleLoader:
                 errors.append(error_msg)
                 return False
         
+        # Normalise legacy 'ocr_identifiers' to 'core_identifiers'
+        if 'core_identifiers' not in rule and 'ocr_identifiers' in rule:
+            ocr_section = rule['ocr_identifiers']
+            if isinstance(ocr_section, dict):
+                rule['core_identifiers'] = {'logic_groups': ocr_section.get('logic_groups', [])}
+                if 'ocr_threshold' not in rule and 'threshold' in ocr_section:
+                    rule['ocr_threshold'] = ocr_section['threshold']
+                if 'ocr_multiplier' not in rule and 'multiplier' in ocr_section:
+                    rule['ocr_multiplier'] = ocr_section['multiplier']
+        
+        # Normalise legacy 'predefined_data' to 'static_metadata'
+        if 'static_metadata' not in rule and 'predefined_data' in rule:
+            rule['static_metadata'] = rule['predefined_data']
+        
         # Initialise core_identifiers with an empty structure if absent
         if 'core_identifiers' not in rule:
             rule['core_identifiers'] = {'logic_groups': []}

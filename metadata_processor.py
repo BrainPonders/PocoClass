@@ -402,7 +402,7 @@ class MetadataProcessor:
             return None
     
     def extract_filename_metadata(self, rule: Dict[str, Any], filename: str) -> Dict[str, Any]:
-        """Extract metadata from filename using v2 rule patterns.
+        r"""Extract metadata from filename using v2 rule patterns.
         
         V2 format supports two pattern configurations:
         1. Simple string: Just a regex pattern for basic matching

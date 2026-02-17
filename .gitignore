@@ -76,9 +76,12 @@ poetry.lock
 Thumbs.db
 .directory
 
-# Docker development files (use production Dockerfile instead)
-docker-compose.dev.yml
+# Docker local override files
 docker-compose.override.yml
+compose.override.yml
+
+# Local Docker build artifacts
+.buildx-cache/
 
 # Temporary files
 *.tmp
