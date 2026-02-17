@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   pococlass:
     image: "${POCOCLASS_IMAGE}"
@@ -11,7 +9,7 @@ services:
 
     environment:
       POCOCLASS_SECRET_KEY: "${POCOCLASS_SECRET_KEY:-}"
-      PAPERLESS_URL: "${PAPERLESS_URL:-http://paperless-ngx:8000}"
+      PAPERLESS_URL: "${PAPERLESS_URL}"
       GUNICORN_WORKERS: "${GUNICORN_WORKERS:-3}"
       GUNICORN_THREADS: "${GUNICORN_THREADS:-2}"
       GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-120}"
