@@ -54,7 +54,7 @@ COPY test_engine.py ./
 
 COPY rules/ ./rules/
 COPY scripts/ ./scripts/
-RUN chmod +x scripts/pococlass_trigger.sh
+RUN chmod +x scripts/post-consumption/pococlass_trigger.sh
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
