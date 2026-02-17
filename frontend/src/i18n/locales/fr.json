@@ -646,6 +646,12 @@
       "message": "Vous modifiez le multiplicateur de poids OCR de 3× (recommandé) à {multiplier}×. Cela affecte le poids des motifs OCR dans le score POCO final. Êtes-vous sûr ?",
       "confirmButton": "Oui, modifier",
       "cancelButton": "Annuler"
+    },
+    "unsavedChanges": {
+      "title": "Modifications non enregistrées",
+      "message": "Toutes les modifications non enregistrées seront perdues.",
+      "confirmButton": "Quitter quand même",
+      "cancelButton": "Annuler"
     }
   },
   "toasts": {
@@ -671,7 +677,11 @@
   "helpText": {
     "ruleNameHelp": "Choisissez un nom descriptif pour identifier cette règle",
     "ruleIdHelp": "Identifiant unique (minuscules, chiffres, traits de soulignement uniquement)",
-    "pocoScoreHelp": "Un document doit atteindre au moins {threshold}% pour être classé. Un score de {example}% réussirait."
+    "pocoScoreHelp": "Un document doit atteindre au moins {threshold}% pour être classé. Un score de {example}% réussirait.",
+    "ruleIdFilename": "Nom de fichier généré automatiquement sur le disque"
+  },
+  "editor": {
+    "exit": "Quitter"
   },
   "table": {
     "title": "Titre",
