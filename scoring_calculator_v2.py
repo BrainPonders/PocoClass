@@ -79,8 +79,9 @@ class POCOScoringV2:
         
         # --- 3. Paperless Weighted Score ---
         # Neutralized: max possible weight is always 1.0 regardless of field count
+        # When no verification fields exist (paperless_total == 0), exclude entirely
         paperless_weighted = paperless_matches * paperless_multiplier if paperless_total > 0 else 0
-        paperless_max_weight = 1.0
+        paperless_max_weight = 1.0 if paperless_total > 0 else 0
         
         # --- 4. POCO OCR Score (transparency-only, 0-100%) ---
         poco_ocr_score = (ocr_weighted / ocr_max_weight * 100) if ocr_max_weight > 0 else 0
