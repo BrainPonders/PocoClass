@@ -649,6 +649,12 @@
       "message": "Estás cambiando el multiplicador de peso OCR de 3× (recomendado) a {multiplier}×. Esto afecta cuánto influyen los patrones OCR en la puntuación final. ¿Estás seguro?",
       "confirmButton": "Sí, cámbialo",
       "cancelButton": "Cancelar"
+    },
+    "unsavedChanges": {
+      "title": "Cambios sin guardar",
+      "message": "Todos los cambios sin guardar se perderán.",
+      "confirmButton": "Salir de todos modos",
+      "cancelButton": "Cancelar"
     }
   },
   "toasts": {
@@ -674,7 +680,11 @@
   "helpText": {
     "ruleNameHelp": "Elige un nombre descriptivo para identificar esta regla",
     "ruleIdHelp": "Identificador único (solo minúsculas, números, guiones bajos)",
-    "pocoScoreHelp": "Un documento debe obtener ≥ {threshold}% para ser clasificado. Una puntuación de {example}% pasaría."
+    "pocoScoreHelp": "Un documento debe obtener ≥ {threshold}% para ser clasificado. Una puntuación de {example}% pasaría.",
+    "ruleIdFilename": "Nombre de archivo generado automáticamente en disco"
+  },
+  "editor": {
+    "exit": "Salir"
   },
   "table": {
     "title": "Título",

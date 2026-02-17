@@ -657,7 +657,7 @@ export default function RuleEditor() {
             className="btn btn-ghost"
           >
             <ArrowLeft size={16} />
-            Back
+            {t('editor.exit')}
           </button>
           <button
             onClick={() => navigate(createPageUrl('GuidedTutorial') + '?step=' + currentStep)}
@@ -801,10 +801,10 @@ export default function RuleEditor() {
         isOpen={showUnsavedWarning}
         onClose={cancelNavigation}
         onConfirm={confirmNavigation}
-        title={t('editor_unsaved_warning')}
-        message="All unsaved changes will be lost."
-        confirmText="Leave anyway"
-        cancelText={t('common_cancel')}
+        title={t('dialogs.unsavedChanges.title')}
+        message={t('dialogs.unsavedChanges.message')}
+        confirmText={t('dialogs.unsavedChanges.confirmButton')}
+        cancelText={t('dialogs.unsavedChanges.cancelButton')}
         variant="warning"
       />
     </PageLayout>
