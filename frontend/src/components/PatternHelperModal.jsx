@@ -336,12 +336,10 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
     }
   };
 
-  // Finalize and pass the regex literal (e.g., /pattern/i) back to the parent
   const handleUsePattern = () => {
     try {
       const pattern = generateRegexPattern();
-      const flags = getRegexFlags();
-      onUsePattern(`/${pattern}/${flags}`);
+      onUsePattern(pattern);
     } catch (e) {
       console.error('Error generating pattern:', e);
     }
