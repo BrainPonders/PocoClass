@@ -88,24 +88,21 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 
 ## Installation
 
-### Docker deployment from scratch
+### Docker deployment (end-user)
 
-Use this section when you want a fully manual setup with explicit Docker CLI commands and no helper scripts.
+This deployment path is for end users running PocoClass next to an existing Paperless-ngx setup.
+It assumes you will run a prebuilt image and not build locally from source.
 
 #### Overview
 
-1. Create a deployment folder and clone the source.
-2. Build the PocoClass Docker image directly from the Dockerfile.
-3. Copy runtime files into the deployment folder.
-4. Configure `.env` with the PocoClass secret and Paperless URL.
-5. Configure Docker network settings in `.env` and `docker-compose.yml`.
-6. Start PocoClass and verify it is healthy.
+1. Create a deployment folder.
+2. Copy the env template and choose bridge or host compose.
+3. Configure `.env` (secret key, image, Paperless URL).
+4. Configure shared Docker network settings (bridge mode only).
+5. Start PocoClass and verify health.
+6. Optionally enable post-consume trigger integration.
 
-#### Step-by-step
-
-##### Step 1. Create a deployment folder and clone the source
-
-Create a dedicated folder that will hold code, config, and runtime data:
+#### Step 1. Create deployment folder
 
 ```bash
 mkdir -p ~/pococlass
@@ -113,33 +110,33 @@ cd ~/pococlass
 git clone https://github.com/eRJe79/PocoClass.git source
 ```
 
-##### Step 2. Build the Docker image (raw Docker CLI)
-
-Build `pococlass:latest` directly from `docker/Dockerfile`:
-
-```bash
-cd ~/pococlass/source
-docker build -t pococlass:latest -f docker/Dockerfile .
-```
-
-##### Step 3. Prepare runtime files in the deploy root
-
-Copy compose/env templates and create persistent directories:
+#### Step 2. Copy runtime templates and create required folders
 
 ```bash
 cd ~/pococlass
-cp source/docker/docker-compose.example.yml docker-compose.yml
-cp source/docker/.env.example .env
-cp source/scripts/pococlass_trigger.sh .
+cp source/docker/compose/env.example .env
+
+# Bridge mode (recommended default)
+cp source/docker/compose/docker-compose.bridge.yml docker-compose.yml
+
+# Host mode (alternative)
+# cp source/docker/compose/docker-compose.host.yml docker-compose.yml
+
+cp source/scripts/post-consumption/pococlass_trigger.sh .
 chmod +x pococlass_trigger.sh
 mkdir -p rules data
 ```
 
-`rules/` and `data/` are required.  
-`rules/` stores your YAML rules, and `data/` stores runtime state (database/settings).
+Bridge vs host mode:
 
-Set folder ownership/permissions to match your environment.  
-For `11notes`, the default container user is `UID:GID 1000:1000`, for example:
+- Bridge mode: set `PAPERLESS_URL` to Docker-internal hostname (e.g. `http://paperless-webserver:8000`).
+- Host mode: set `PAPERLESS_URL` to the same URL you use in your browser UI (e.g. `https://paperless.example.com`).
+
+`rules/` stores your YAML rule files.  
+`data/` stores runtime state.
+
+Set permissions for your environment.
+For 11notes-based setups, default container user is often `UID:GID 1000:1000`:
 
 ```bash
 cd ~/pococlass
@@ -147,55 +144,7 @@ chown -R 1000:1000 rules data
 chmod -R u+rwX,go-rwx rules data
 ```
 
-`pococlass_trigger.sh` is copied to `~/pococlass` as a staging location.  
-The final destination is your own Paperless post-consume scripts folder.
-
-##### Step 4. Configure `.env` (secret key + Paperless URL)
-
-Open `.env`:
-
-```bash
-cd ~/pococlass
-nano .env
-```
-
-Set the required values:
-
-- `POCOCLASS_SECRET_KEY` -> generate one with:
-```bash
-python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
-```
-- `PAPERLESS_URL` -> container where the Paperless webserver is running.
-
-Check container names:
-
-```bash
-docker ps
-```
-
-Examples:
-
-- Official `paperless-ngx` compose: `http://paperless-webserver:8000`
-- `11notes` paperless-ngx: `http://paperless-ngx:8000`
-
-##### Step 5. Configure Docker network settings (`.env` + `docker-compose.yml`)
-
-PocoClass must join the same Docker network as Paperless.  
-Without a shared network, `PAPERLESS_URL` will not be reachable from the PocoClass container.
-
-Find the network used by Paperless:
-
-```bash
-docker inspect paperless-webserver --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
-```
-
-For 11notes, use:
-
-```bash
-docker inspect paperless-ngx --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
-```
-
-Set this network in `.env`:
+#### Step 3. Configure `.env`
 
 ```bash
 cd ~/pococlass
@@ -203,115 +152,90 @@ nano .env
 ```
 
 Set:
+
+- `POCOCLASS_SECRET_KEY` (required runtime secret), generate with:
+```bash
+python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
+```
+or:
+```bash
+python3 source/scripts/Maintainer/generate_secret_key.py
+```
+- `POCOCLASS_IMAGE` (required image reference for deployment), for example:
+  - `ghcr.io/<your-org>/pococlass:v2.0.0`
+- `PAPERLESS_URL` (depends on selected compose mode)
+
+Common `PAPERLESS_URL` values:
+
+- Bridge mode (Docker-internal):
+  - Official paperless-ngx compose: `http://paperless-webserver:8000`
+  - 11notes paperless-ngx: `http://paperless-ngx:8000`
+- Host mode (same as browser UI):
+  - Example: `https://paperless.example.com`
+
+`POCOCLASS_SECRET_KEY` is runtime-only and is not used during image build.
+
+#### Step 4. Configure shared Docker network (bridge mode only)
+
+If you selected `docker-compose.host.yml`, skip this step.
+
+PocoClass must join the same Docker network as Paperless.
+
+Check your Paperless network:
+
+```bash
+docker inspect paperless-webserver --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
+```
+
+For 11notes setups:
+
+```bash
+docker inspect paperless-ngx --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
+```
+
+Set in `.env`:
+
 - `PAPERLESS_NETWORK_NAME=<network_name_from_inspect>`
-- `PAPERLESS_NETWORK_EXTERNAL=true` (if Paperless network already exists)
+- `PAPERLESS_NETWORK_EXTERNAL=true`
 
-Then review `docker-compose.yml`:
-
-```bash
-cd ~/pococlass
-nano docker-compose.yml
-```
-
-The template should reference those `.env` values:
-
-```yaml
-networks:
-  paperless:
-    name: ${PAPERLESS_NETWORK_NAME:-paperless_default}
-    external: ${PAPERLESS_NETWORK_EXTERNAL:-true}
-```
-
-##### Step 6. Start PocoClass and verify
-
-Start PocoClass:
+#### Step 5. Start and verify
 
 ```bash
 cd ~/pococlass
+docker compose pull
 docker compose up -d
-```
-
-Verify container status:
-
-```bash
 docker compose ps
-```
-
-Check health/logs:
-
-```bash
 docker compose logs -f pococlass
 ```
 
-Then open `http://your-server:5000` in your browser.
-
-### Guided installer (optional)
-
-If your environment matches installer defaults, you can use:
+Health check:
 
 ```bash
-mkdir -p ~/pococlass && cd ~/pococlass
-git clone https://github.com/eRJe79/PocoClass.git source
-bash source/docker/install.sh
+curl -s http://localhost:5000/api/health
 ```
 
-### Optional: Trigger PocoClass after Paperless consumption
+#### Step 6. Optional post-consume trigger
 
-PocoClass ships with `pococlass_trigger.sh` for post-consume automation.
-You can keep a working copy in `~/pococlass`, but Paperless must execute the script from your chosen post-consume scripts directory.
+`pococlass_trigger.sh` is staged in `~/pococlass` from `source/scripts/post-consumption/pococlass_trigger.sh`.
+Final destination should be your Paperless post-consume scripts folder.
 
-1. Generate a **System API Token** in PocoClass: `Settings -> Background Processing`.
-2. Copy and edit the trigger script:
 ```bash
 cd ~/pococlass
 cp pococlass_trigger.sh /path/to/paperless/scripts/
 nano /path/to/paperless/scripts/pococlass_trigger.sh
 chmod +x /path/to/paperless/scripts/pococlass_trigger.sh
 ```
-3. Set `POCOCLASS_URL` and `POCOCLASS_TOKEN` in that script.
-4. Configure Paperless with:
-   - Docker: `PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh`
-   - Bare metal: same variable in `paperless.conf`
 
-### Updating
+Set `POCOCLASS_URL` and `POCOCLASS_TOKEN` in the trigger script.
 
-```bash
-cd ~/pococlass/source
-git pull
-docker build -t pococlass:latest -f docker/Dockerfile .
-```
+### Updating deployment
 
-This rebuilds the image with latest source. Your `.env`, `docker-compose.yml`, `rules/`, and `data/` stay unchanged.
-
-After the rebuild, restart the container:
+Update `POCOCLASS_IMAGE` in `.env` to the target release tag, then:
 
 ```bash
 cd ~/pococlass
-docker compose up -d
-```
-
-### Native install
-
-Requires Python 3.13+ (3.11+ may work) and Node.js 20+.
-
-```bash
-git clone https://github.com/eRJe79/PocoClass.git
-cd PocoClass
-
-# Backend
-pip install -r requirements.txt
-
-# Frontend
-cd frontend && npm install && npm run build && cd ..
-
-# Generate a secret key
-python3 scripts/generate_secret_key.py
-
-# Set required environment variable
-export POCOCLASS_SECRET_KEY="your_generated_key_here"
-
-# Start
-./start.sh
+docker compose pull pococlass
+docker compose up -d --force-recreate pococlass
 ```
 
 <br>
@@ -321,9 +245,10 @@ export POCOCLASS_SECRET_KEY="your_generated_key_here"
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `POCOCLASS_SECRET_KEY` | Encryption key for sessions (required) | — |
+| `POCOCLASS_IMAGE` | Image reference to run (supports release/testing tags) | `pococlass:latest` |
 | `PAPERLESS_URL` | Paperless-ngx URL (required for Docker, or configure in web UI) | — |
-| `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless | `paperless_default` |
-| `PAPERLESS_NETWORK_EXTERNAL` | Whether Paperless network already exists | `true` |
+| `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless (bridge mode only) | `paperless_default` |
+| `PAPERLESS_NETWORK_EXTERNAL` | Whether Paperless network already exists (bridge mode only) | `true` |
 | `GUNICORN_WORKERS` | Number of worker processes | `3` |
 | `GUNICORN_THREADS` | Threads per worker | `2` |
 | `GUNICORN_TIMEOUT` | Request timeout (seconds) | `120` |
