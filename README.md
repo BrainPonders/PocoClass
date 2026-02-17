@@ -277,10 +277,15 @@ docker compose up -d --force-recreate pococlass
 
 ## Roadmap
 
+### New Features
 - [ ] YAML rule import
-- [ ] Improve GUI standardisation
+- [ ] Rule evaluation reporting (pointing system and multipliers breakdown)
+- [ ] Rule evaluation results in file list table (top-level overview)
 - [ ] Tutorial for rule evaluation
 - [ ] Tutorial for background processing
+
+### Improvements
+- [ ] Improve GUI standardisation
 - [ ] Improve regex helper
 
 <br>
