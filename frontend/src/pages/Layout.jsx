@@ -539,7 +539,7 @@ function LayoutContent({ children }) {
                   <div className="flex flex-col items-start gap-0">
                     <div className="flex items-end justify-start w-full">
                       <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
-                      <span className="text-xs mb-[2px] ml-1" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>V2</span>
+                      <span className="text-xs mb-[2px] ml-1" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>v2</span>
                     </div>
                     <div style={{ marginLeft: '41px', marginTop: '2px' }}>
                       <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)' }}>Document Classification</p>
