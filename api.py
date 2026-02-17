@@ -44,7 +44,7 @@ from sync_service import SyncService
 import requests
 from functools import wraps
 
-app = Flask(__name__, static_folder='frontend/dist', static_url_path='')
+app = Flask(__name__, static_folder=None)
 
 # Configure CORS with security restrictions
 # Allow Replit domain and localhost for development
@@ -1417,15 +1417,6 @@ def proxy_to_vite():
             return None
     
     return None
-
-@app.route('/')
-@app.route('/<path:path>')
-def serve_react_app(path=''):
-    """Serve the React SPA; falls back to index.html for client-side routing."""
-    static_folder = app.static_folder or 'frontend/dist'
-    if path and os.path.exists(os.path.join(static_folder, path)):
-        return send_from_directory(static_folder, path)
-    return send_from_directory(static_folder, 'index.html')
 
 # ---- Rule Management Routes ----
 
@@ -3089,6 +3080,18 @@ def reset_application():
     except Exception as e:
         logger.error(f"Error resetting application: {e}")
         return jsonify({'error': str(e)}), 500
+
+# ---- SPA Catch-All Route (must be last) ----
+
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend', 'dist')
+
+@app.route('/')
+@app.route('/<path:path>')
+def serve_react_app(path=''):
+    """Serve the React SPA; falls back to index.html for client-side routing."""
+    if path and os.path.exists(os.path.join(STATIC_DIR, path)):
+        return send_from_directory(STATIC_DIR, path)
+    return send_from_directory(STATIC_DIR, 'index.html')
 
 # ---- Development Server Entry Point ----
 
