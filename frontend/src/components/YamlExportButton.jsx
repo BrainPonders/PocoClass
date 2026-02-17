@@ -5,14 +5,19 @@
  * actions. Generates the YAML string from the ruleData prop on demand.
  */
 import React, { useState } from 'react';
-import { Download, Copy, Check } from 'lucide-react';
+import { Download, ClipboardCopy, Check } from 'lucide-react';
 
 export default function YamlExportButton({ ruleData, buttonStyle = 'ghost' }) {
   const [copied, setCopied] = useState(false);
 
+  const escapeSingle = (str) => (str || '').replace(/'/g, "''");
+
   const generateYaml = () => {
-    return `# =================================================================================================
-# Document Identification Rule - ${ruleData.ruleName}
+    const numGroups = ruleData.ocrIdentifiers?.length || 1;
+    const scorePerGroup = Math.round(100 / numGroups);
+
+    let yaml = `# =================================================================================================
+# PocoClass Document Classification Rule
 # =================================================================================================
 # Generated: ${new Date().toISOString().split('T')[0]}
 # Rule ID: ${ruleData.ruleId}
@@ -20,34 +25,122 @@ export default function YamlExportButton({ ruleData, buttonStyle = 'ghost' }) {
 
 rule_name: "${ruleData.ruleName || ''}"
 rule_id: "${ruleData.ruleId || ''}"
-threshold: ${ruleData.threshold}  # Minimum confidence score (${ruleData.threshold}%)
 description: "${ruleData.description || ''}"
+threshold: ${ruleData.threshold}  # ${ruleData.threshold}% minimum confidence
+source_document_id: ${ruleData.sourceDocumentId || ''}
 
-# OCR Identifiers
-ocr_identifiers:
-  threshold: ${ruleData.ocrThreshold || 75}
-  multiplier: ${ruleData.ocrMultiplier || 3}
+ocr_threshold: ${ruleData.ocrThreshold || 75}  # ${ruleData.ocrThreshold || 75}% minimum match rate
+ocr_multiplier: ${ruleData.ocrMultiplier || 3}  # ${ruleData.ocrMultiplier || 3}× weight
+
+core_identifiers:
   logic_groups:
-${ruleData.ocrIdentifiers?.map(group => `    - type: "${group.type || 'match'}"
-      score: ${group.score || 20}
+`;
+
+    if (ruleData.ocrIdentifiers?.length > 0) {
+      ruleData.ocrIdentifiers.forEach((group, idx) => {
+        yaml += `    - type: ${group.type || 'match'}
+      score: ${scorePerGroup}
       mandatory: ${group.mandatory || false}
       conditions:
-${group.conditions?.map(condition => `        - pattern: "${condition.pattern || ''}"
-          range: "${condition.range || '0-1600'}"`).join('\n') || ''}`).join('\n') || '    []'}
+`;
+        (group.conditions || []).forEach(condition => {
+          yaml += `        - pattern: '${escapeSingle(condition.pattern)}'
+          source: content
+          range: '${condition.range || '0-1600'}'
+`;
+        });
+      });
+    } else {
+      yaml += `    []\n`;
+    }
 
-# Document Classifications
-predefined_data:
+    yaml += `
+static_metadata:
   correspondent: "${ruleData.predefinedData?.correspondent || ''}"
   document_type: "${ruleData.predefinedData?.documentType || ''}"
-  tags: [${ruleData.predefinedData?.tags?.map(tag => `"${tag}"`).join(', ') || ''}]
+`;
 
-# Filename Patterns (multiplier: ${ruleData.filenameMultiplier || 1})
+    const tags = ruleData.predefinedData?.tags || [];
+    if (tags.length > 0) {
+      yaml += `  tags: [${tags.map(tag => `'${escapeSingle(tag)}'`).join(', ')}]\n`;
+    }
+
+    const customFields = ruleData.predefinedData?.customFields || {};
+    const activeFields = Object.entries(customFields).filter(([, v]) => v);
+    if (activeFields.length > 0) {
+      yaml += `  custom_fields:\n`;
+      activeFields.forEach(([field, value]) => {
+        yaml += `    ${field}: '${escapeSingle(String(value))}'\n`;
+      });
+    }
+
+    const extractionRules = ruleData.dynamicData?.extractionRules || [];
+    if (extractionRules.length > 0) {
+      yaml += `\ndynamic_metadata:\n`;
+      extractionRules.forEach(rule => {
+        const target = rule.targetField === 'dateCreated' ? 'date_created' : rule.targetField;
+        if (target === 'tags' && rule.extractionType === 'text') return;
+        yaml += `  ${target}:\n`;
+        yaml += `    pattern_before: '${escapeSingle(rule.beforeAnchor?.pattern || '')}'\n`;
+        yaml += `    pattern_after: '${escapeSingle(rule.afterAnchor?.pattern || '')}'\n`;
+        if (rule.extractionType === 'date' && rule.dateFormat) {
+          yaml += `    format: ${rule.dateFormat}\n`;
+        }
+      });
+      const tagRules = extractionRules.filter(r => r.targetField === 'tags' && r.extractionType === 'text');
+      if (tagRules.length > 0) {
+        yaml += `  extracted_tags:\n`;
+        tagRules.forEach(rule => {
+          yaml += `    - pattern: '${escapeSingle(rule.regexPattern || '')}'\n`;
+          yaml += `      value: '${escapeSingle(rule.tagValue || '')}'\n`;
+          if (rule.prefix) {
+            yaml += `      prefix: '${escapeSingle(rule.prefix)}'\n`;
+          }
+        });
+      }
+    } else {
+      yaml += `\ndynamic_metadata: {}\n`;
+    }
+
+    yaml += `
+filename_multiplier: ${ruleData.filenameMultiplier || 1}  # ${ruleData.filenameMultiplier || 1}× weight
+
 filename_patterns:
-  patterns: [${ruleData.filenamePatterns?.patterns?.filter(p => p && p.trim()).map(p => `"${p}"`).join(', ') || ''}]
-  date_formats: [${ruleData.filenamePatterns?.dateFormats?.map(f => `"${f.format}"`).join(', ') || ''}]
+`;
 
-# Status
-status: ${ruleData.status || 'draft'}`;
+    const patterns = ruleData.filenamePatterns?.patterns?.filter(p => p && p.trim()) || [];
+    if (patterns.length > 0) {
+      patterns.forEach(p => {
+        yaml += `  - '${escapeSingle(p)}'\n`;
+      });
+    } else {
+      yaml += `  # No filename patterns configured\n`;
+    }
+
+    const verMultConfig = ruleData.verificationMultiplierConfig || {};
+    const verMode = verMultConfig.mode || 'auto';
+    const verValue = verMultConfig.value ?? ruleData.verificationMultiplier ?? 0.5;
+
+    yaml += `
+verification_multiplier_mode: "${verMode}"
+verification_multiplier: ${verValue}
+
+verification_fields:
+`;
+
+    const enabledFields = ruleData.verification?.enabledFields || {};
+    const enabledList = Object.entries(enabledFields).filter(([, v]) => v).map(([k]) => k);
+    if (enabledList.length > 0) {
+      enabledList.forEach(f => {
+        yaml += `  - ${f}\n`;
+      });
+    } else {
+      yaml += `  # No verification fields enabled\n`;
+    }
+
+    yaml += `\nstatus: ${ruleData.status || 'draft'}\n`;
+
+    return yaml;
   };
 
   const handleCopy = async (e) => {
@@ -81,7 +174,7 @@ status: ${ruleData.status || 'draft'}`;
         title="Copy YAML"
         aria-label="Copy rule configuration as YAML"
       >
-        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+        {copied ? <Check className="w-4 h-4 text-green-600" /> : <ClipboardCopy className="w-4 h-4" />}
       </button>
       <button
         onClick={handleDownload}

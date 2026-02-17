@@ -41,6 +41,7 @@ function LayoutContent({ children }) {
   const [showQuickGuide, setShowQuickGuide] = useState(false);
   const [showPaperlessInfo, setShowPaperlessInfo] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [buildNumber, setBuildNumber] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
 
@@ -78,6 +79,17 @@ function LayoutContent({ children }) {
     },
   ];
 
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/health`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.build && data.build !== 'dev') {
+          setBuildNumber(data.build);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Fetch current user on mount for role-based nav filtering
   useEffect(() => {
     loadUser();
@@ -96,9 +108,8 @@ function LayoutContent({ children }) {
   // Auto-sync Paperless data when user returns to the browser tab
   const handleTabVisible = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/sync/counts`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -112,7 +123,7 @@ function LayoutContent({ children }) {
 
           const syncResponse = await fetch(`${API_BASE_URL}/api/sync`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${sessionToken}` }
+            credentials: 'include'
           });
 
           if (syncResponse.ok) {
@@ -530,7 +541,7 @@ function LayoutContent({ children }) {
                       <div className="relative inline-block">
                         <img src="/logo.png" alt="PocoClass Logo" className="h-14 w-auto" />
                         <div className="absolute bottom-0 right-0 transform translate-x-[30px] translate-y-[1px]">
-                          <span className="text-xs font-semibold text-gray-500">v2.0</span>
+                          <span className="text-xs font-semibold text-gray-500">v2.0{buildNumber ? ` · #${buildNumber}` : ''}</span>
                         </div>
                       </div>
                     </div>

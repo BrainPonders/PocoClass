@@ -36,6 +36,7 @@ export default function Login() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -48,7 +49,6 @@ export default function Login() {
         throw new Error(data.error || 'Login failed');
       }
 
-      localStorage.setItem('pococlass_session', data.sessionToken);
       localStorage.setItem('pococlass_user', JSON.stringify(data.user));
 
       toast({

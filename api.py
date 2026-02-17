@@ -26,7 +26,7 @@ Middleware:
   - proxy_to_vite              — Dev-mode request proxy to Vite frontend
 """
 
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import os
 import yaml
@@ -66,6 +66,20 @@ CORS(app,
      allow_headers=['Content-Type', 'Authorization'],
      supports_credentials=True,
      max_age=3600)
+
+@app.after_request
+def add_security_headers(response):
+    """Add security headers to all responses."""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'"
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    if request.scheme == 'https':
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -108,13 +122,42 @@ def should_sync(entity_type='all', max_age_minutes=60):
         logger.error(f"Error checking sync status: {e}")
         return True  # Sync if uncertain
 
+COOKIE_NAME = 'pococlass_session'
+
+def set_session_cookie(response, session_token):
+    """Set HttpOnly session cookie on response."""
+    response.set_cookie(
+        COOKIE_NAME,
+        session_token,
+        httponly=True,
+        samesite='Lax',
+        secure=request.scheme == 'https',
+        path='/'
+    )
+    return response
+
+def clear_session_cookie(response):
+    """Clear session cookie from response."""
+    response.set_cookie(
+        COOKIE_NAME,
+        '',
+        httponly=True,
+        samesite='Lax',
+        secure=request.scheme == 'https',
+        path='/',
+        max_age=0
+    )
+    return response
+
 # ---- Authentication Decorators ----
 
 def require_auth(f):
-    """Verify a valid Bearer session token and attach user to request."""
+    """Verify a valid session token from cookie or Bearer header and attach user to request."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
         
@@ -135,7 +178,9 @@ def require_admin(f):
     """Require a valid session with admin role."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
         
@@ -167,7 +212,9 @@ def require_system_token_or_admin(f):
                 return jsonify({'error': 'Invalid system API token'}), 401
         
         # Fall back to session token (admin required)
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not session_token:
             return jsonify({'error': 'No authentication provided. Use X-API-Key header for system token or Authorization header for session token.'}), 401
         
@@ -193,10 +240,12 @@ def health_check():
     """Health check endpoint for Docker/container orchestration"""
     try:
         db_status = "ok" if db else "error"
+        build_number = os.environ.get('POCOCLASS_BUILD_NUMBER', 'dev')
         return jsonify({
             'status': 'healthy',
             'database': db_status,
-            'version': '2.0'
+            'version': '2.0',
+            'build': build_number
         }), 200
     except Exception as e:
         return jsonify({
@@ -402,15 +451,16 @@ def setup():
             
             logger.info(f"Initial setup (step 2) completed by user: {username}, awaiting validation (step 3)")
             
-            return jsonify({
+            resp = make_response(jsonify({
                 'success': True,
-                'sessionToken': session_token,
                 'user': {
                     'id': user_id,
                     'username': username,
                     'role': role
                 }
-            })
+            }))
+            set_session_cookie(resp, session_token)
+            return resp
             
         except requests.RequestException as e:
             logger.error(f"Error connecting to Paperless: {e}")
@@ -535,15 +585,16 @@ def login():
                 source='authentication'
             )
             
-            return jsonify({
+            resp = make_response(jsonify({
                 'success': True,
-                'sessionToken': session_token,
                 'user': {
                     'id': user_id,
                     'username': username,
                     'role': pococlass_user['pococlass_role']
                 }
-            })
+            }))
+            set_session_cookie(resp, session_token)
+            return resp
             
         except requests.RequestException as e:
             logger.error(f"Error authenticating with Paperless: {e}")
@@ -558,9 +609,14 @@ def login():
 def logout():
     """Logout and destroy session"""
     try:
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        db.delete_session(session_token)
-        return jsonify({'success': True})
+        session_token = request.cookies.get(COOKIE_NAME)
+        if not session_token:
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if session_token:
+            db.delete_session(session_token)
+        resp = make_response(jsonify({'success': True}))
+        clear_session_cookie(resp)
+        return resp
     except Exception as e:
         logger.error(f"Error during logout: {e}")
         return jsonify({'error': str(e)}), 500
@@ -1421,6 +1477,7 @@ def proxy_to_vite():
 # ---- Rule Management Routes ----
 
 @app.route('/api/rules', methods=['GET'])
+@require_auth
 def list_rules():
     """List all rules"""
     try:
@@ -1457,6 +1514,7 @@ def list_rules():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/errors', methods=['GET'])
+@require_auth
 def get_rule_errors():
     """Get rule loading errors"""
     try:
@@ -1473,6 +1531,7 @@ def get_rule_errors():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['GET'])
+@require_auth
 def get_rule(rule_id):
     """Get a single rule"""
     try:
@@ -1776,6 +1835,7 @@ status: {status}
     return yaml_content
 
 @app.route('/api/rules', methods=['POST'])
+@require_auth
 def create_rule():
     """Create a new rule"""
     try:
@@ -1814,6 +1874,7 @@ def create_rule():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['PUT'])
+@require_auth
 def update_rule(rule_id):
     """Update an existing rule"""
     try:
@@ -1858,6 +1919,7 @@ def update_rule(rule_id):
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/rules/<rule_id>', methods=['DELETE'])
+@require_auth
 def delete_rule(rule_id):
     """Delete a rule"""
     try:
@@ -1876,6 +1938,7 @@ def delete_rule(rule_id):
 # ---- Deleted Rules (Trash Can) Routes ----
 
 @app.route('/api/deleted-rules', methods=['GET'])
+@require_auth
 def list_deleted_rules():
     """List all deleted rules from the deleted folder"""
     try:
@@ -1914,6 +1977,7 @@ def list_deleted_rules():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/deleted-rules/<rule_id>', methods=['DELETE'])
+@require_admin
 def permanently_delete_rule(rule_id):
     """Permanently delete a rule from the deleted folder"""
     try:
@@ -1929,6 +1993,7 @@ def permanently_delete_rule(rule_id):
 # ---- Log Routes ----
 
 @app.route('/api/logs', methods=['GET'])
+@require_auth
 def list_logs():
     """List logs with optional filtering by type, level, date range, and search term."""
     try:
@@ -2133,10 +2198,9 @@ def list_documents():
 def proxy_document_preview(doc_id):
     """Proxy document PDF preview with authentication"""
     try:
-        # Get token from header or query parameter (for new tab opens)
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        session_token = request.cookies.get(COOKIE_NAME)
         if not session_token:
-            session_token = request.args.get('token')
+            session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
         
         if not session_token:
             return jsonify({'error': 'No session token provided'}), 401
@@ -2342,11 +2406,19 @@ def convert_backend_to_frontend(backend_data, rule_id):
     if backend_data.get('source_document_id'):
         frontend['sourceDocumentId'] = backend_data['source_document_id']
     
-    # Convert logic groups to OCR identifiers - Handle both v1 and v2 formats
+    # Convert logic groups to OCR identifiers - Handle v2, v1, and export formats
     # v2 format (core_identifiers)
     logic_groups_data = None
     if backend_data.get('core_identifiers'):
         logic_groups_data = backend_data['core_identifiers'].get('logic_groups', [])
+    # Export/legacy format (ocr_identifiers)
+    elif backend_data.get('ocr_identifiers'):
+        ocr_section = backend_data['ocr_identifiers']
+        logic_groups_data = ocr_section.get('logic_groups', [])
+        if not frontend.get('ocrThreshold') or frontend['ocrThreshold'] == 75:
+            frontend['ocrThreshold'] = ocr_section.get('threshold', 75)
+        if not frontend.get('ocrMultiplier') or frontend['ocrMultiplier'] == 3:
+            frontend['ocrMultiplier'] = ocr_section.get('multiplier', 3)
     # v1 format fallback (logic_groups)
     elif backend_data.get('logic_groups'):
         logic_groups_data = backend_data['logic_groups']
@@ -2374,9 +2446,9 @@ def convert_backend_to_frontend(backend_data, rule_id):
                     })
             frontend['ocrIdentifiers'].append(frontend_group)
     
-    # Static metadata
-    if backend_data.get('static_metadata'):
-        sm = backend_data['static_metadata']
+    # Static metadata (also handle legacy 'predefined_data' key)
+    sm = backend_data.get('static_metadata') or backend_data.get('predefined_data')
+    if sm:
         frontend['predefinedData'] = {
             'correspondent': sm.get('correspondent', ''),
             'documentType': sm.get('document_type', ''),
@@ -2459,9 +2531,14 @@ def convert_backend_to_frontend(backend_data, rule_id):
                 
                 frontend['dynamicData']['extractionRules'].append(extraction_rule)
     
-    # Filename patterns
-    if backend_data.get('filename_patterns'):
-        frontend['filenamePatterns']['patterns'] = backend_data['filename_patterns']
+    # Filename patterns - handle both flat list and nested dict formats
+    fp = backend_data.get('filename_patterns')
+    if fp:
+        if isinstance(fp, list):
+            frontend['filenamePatterns']['patterns'] = fp
+        elif isinstance(fp, dict):
+            frontend['filenamePatterns']['patterns'] = fp.get('patterns', [])
+            frontend['filenamePatterns']['dateFormats'] = fp.get('date_formats', [])
     
     # Verification fields
     if backend_data.get('verification_fields'):
@@ -2474,6 +2551,7 @@ def convert_backend_to_frontend(backend_data, rule_id):
 # ---- Rule Test & Execution Routes ----
 
 @app.route('/api/rules/test', methods=['POST'])
+@require_auth
 def test_rule_endpoint():
     """Test a rule against document content"""
     try:
@@ -3096,4 +3174,4 @@ def serve_react_app(path=''):
 # ---- Development Server Entry Point ----
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=os.environ.get('FLASK_DEBUG', 'false').lower() == 'true')

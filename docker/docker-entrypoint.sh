@@ -2,7 +2,8 @@
 set -e
 
 echo "========================================"
-echo "  PocoClass v2.0 - Starting..."
+echo "  PocoClass v2.0 (Build #${POCOCLASS_BUILD_NUMBER:-dev}) - Starting..."
+echo "  Base: 11notes/python (rootless Alpine)"
 echo "========================================"
 
 DATA_DIR="${POCOCLASS_DATA_DIR:-/app/data}"
@@ -16,45 +17,25 @@ fi
 export POCOCLASS_DB_PATH="$DB_PATH"
 
 if [ -z "$POCOCLASS_SECRET_KEY" ]; then
-    echo "WARNING: POCOCLASS_SECRET_KEY not set. Generating random key..."
-    export POCOCLASS_SECRET_KEY=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-    echo "NOTE: Set POCOCLASS_SECRET_KEY env var for persistent sessions across restarts."
-fi
-
-GUNICORN_PID=""
-
-cleanup() {
-    echo ""
-    echo "Shutting down PocoClass..."
-    
-    if [ ! -z "$GUNICORN_PID" ] && kill -0 $GUNICORN_PID 2>/dev/null; then
-        echo "Stopping Gunicorn (PID $GUNICORN_PID)..."
-        kill -TERM $GUNICORN_PID 2>/dev/null || true
-        
-        for i in {1..10}; do
-            if ! kill -0 $GUNICORN_PID 2>/dev/null; then
-                break
-            fi
-            sleep 1
-        done
-        
-        if kill -0 $GUNICORN_PID 2>/dev/null; then
-            echo "Force stopping Gunicorn..."
-            kill -9 $GUNICORN_PID 2>/dev/null || true
-        fi
+    if [ "${POCOCLASS_DEV_MODE:-false}" = "true" ]; then
+        echo "WARNING: POCOCLASS_SECRET_KEY not set. POCOCLASS_DEV_MODE=true, generating temporary Fernet key..."
+        export POCOCLASS_SECRET_KEY=$(python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())")
+        echo "NOTE: Temporary key will invalidate sessions/tokens on restart."
+    else
+        echo "ERROR: POCOCLASS_SECRET_KEY is required at runtime and is not used during image build."
+        echo "Set it via .env or environment variable before starting the container."
+        echo "Generate one with:"
+        echo "  python3 -c \"import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())\""
+        exit 1
     fi
-    
-    echo "Shutdown complete."
-    exit 0
-}
-
-trap cleanup SIGTERM SIGINT SIGQUIT
+fi
 
 WORKERS="${GUNICORN_WORKERS:-3}"
 THREADS="${GUNICORN_THREADS:-2}"
 TIMEOUT="${GUNICORN_TIMEOUT:-120}"
 
 echo "Configuration:"
+echo "  - Build: #${POCOCLASS_BUILD_NUMBER:-dev}"
 echo "  - Data directory: $DATA_DIR"
 echo "  - Database path: $DB_PATH"
 echo "  - Workers: $WORKERS"
