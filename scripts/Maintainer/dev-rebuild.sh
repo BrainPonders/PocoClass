@@ -3,11 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_PARENT_DIR="$(cd "$REPO_DIR/.." && pwd)"
 DEV_COMPOSE_PROJECT="${POCOCLASS_DEV_PROJECT:-pococlass-dev}"
 
-DEFAULT_HOME="${HOME:-/home/paperless}"
-DEV_ROOT="${POCOCLASS_DEV_ROOT:-${DEFAULT_HOME}/pococlass-dev}"
-RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.dev.yml"
+DEV_ROOT="${POCOCLASS_DEV_ROOT:-${REPO_PARENT_DIR}/pococlass-dev}"
+RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.yml"
+LEGACY_RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.dev.yml"
 RUNTIME_ENV="$DEV_ROOT/.env"
 RUNTIME_DATA_DIR="$DEV_ROOT/data"
 RUNTIME_RULES_DIR="$DEV_ROOT/rules"
@@ -51,6 +52,11 @@ docker build \
 
 echo "== Prepare runtime folder: ${DEV_ROOT} =="
 mkdir -p "$DEV_ROOT" "$RUNTIME_DATA_DIR" "$RUNTIME_RULES_DIR"
+
+if [ ! -f "$RUNTIME_COMPOSE" ] && [ -f "$LEGACY_RUNTIME_COMPOSE" ]; then
+    mv "$LEGACY_RUNTIME_COMPOSE" "$RUNTIME_COMPOSE"
+    echo "Migrated legacy runtime compose to ${RUNTIME_COMPOSE}"
+fi
 
 if [ ! -f "$RUNTIME_COMPOSE" ]; then
     cp "$TEMPLATE_COMPOSE" "$RUNTIME_COMPOSE"
