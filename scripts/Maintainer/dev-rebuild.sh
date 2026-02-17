@@ -3,11 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_PARENT_DIR="$(cd "$REPO_DIR/.." && pwd)"
 DEV_COMPOSE_PROJECT="${POCOCLASS_DEV_PROJECT:-pococlass-dev}"
 
-DEFAULT_HOME="${HOME:-/home/paperless}"
-DEV_ROOT="${POCOCLASS_DEV_ROOT:-${DEFAULT_HOME}/pococlass-dev}"
-RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.dev.yml"
+DEV_ROOT="${POCOCLASS_DEV_ROOT:-${REPO_PARENT_DIR}/pococlass-dev}"
+RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.yml"
+LEGACY_RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.dev.yml"
 RUNTIME_ENV="$DEV_ROOT/.env"
 RUNTIME_DATA_DIR="$DEV_ROOT/data"
 RUNTIME_RULES_DIR="$DEV_ROOT/rules"
@@ -30,10 +31,23 @@ compose_run() {
     exit 1
 }
 
-echo "== Sync repository to origin/main =="
+CURRENT_BRANCH="$(git -C "$REPO_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"
+if [ "$CURRENT_BRANCH" = "HEAD" ]; then
+    CURRENT_BRANCH="main"
+fi
+DEV_BRANCH="${POCOCLASS_DEV_BRANCH:-$CURRENT_BRANCH}"
+
+echo "== Sync repository to origin/${DEV_BRANCH} =="
 git -C "$REPO_DIR" fetch origin --prune
-git -C "$REPO_DIR" switch main >/dev/null 2>&1 || git -C "$REPO_DIR" checkout main >/dev/null 2>&1
-git -C "$REPO_DIR" reset --hard origin/main
+if git -C "$REPO_DIR" show-ref --verify --quiet "refs/remotes/origin/${DEV_BRANCH}"; then
+    git -C "$REPO_DIR" switch "$DEV_BRANCH" >/dev/null 2>&1 || git -C "$REPO_DIR" checkout "$DEV_BRANCH" >/dev/null 2>&1
+    git -C "$REPO_DIR" reset --hard "origin/${DEV_BRANCH}"
+else
+    echo "WARNING: Remote branch origin/${DEV_BRANCH} not found. Falling back to origin/main."
+    git -C "$REPO_DIR" switch main >/dev/null 2>&1 || git -C "$REPO_DIR" checkout main >/dev/null 2>&1
+    git -C "$REPO_DIR" reset --hard origin/main
+    DEV_BRANCH="main"
+fi
 git -C "$REPO_DIR" clean -fdx
 
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
@@ -51,6 +65,11 @@ docker build \
 
 echo "== Prepare runtime folder: ${DEV_ROOT} =="
 mkdir -p "$DEV_ROOT" "$RUNTIME_DATA_DIR" "$RUNTIME_RULES_DIR"
+
+if [ ! -f "$RUNTIME_COMPOSE" ] && [ -f "$LEGACY_RUNTIME_COMPOSE" ]; then
+    mv "$LEGACY_RUNTIME_COMPOSE" "$RUNTIME_COMPOSE"
+    echo "Migrated legacy runtime compose to ${RUNTIME_COMPOSE}"
+fi
 
 if [ ! -f "$RUNTIME_COMPOSE" ]; then
     cp "$TEMPLATE_COMPOSE" "$RUNTIME_COMPOSE"
@@ -112,6 +131,7 @@ echo "== Start PocoClass dev container =="
 
 echo "== Done =="
 echo "Image: ${IMAGE_REF}"
+echo "Source branch: ${DEV_BRANCH}"
 echo "Compose project: ${DEV_COMPOSE_PROJECT}"
 echo "Runtime folder: ${DEV_ROOT}"
 echo "If this is your first run, edit ${RUNTIME_ENV} and set POCOCLASS_SECRET_KEY."
