@@ -77,7 +77,7 @@ class PatternMatcher:
         """
         Convert a regex pattern from wizard format (/pattern/flags) to Python.
         
-        The wizard UI stores patterns in JavaScript notation (e.g. /Rabobank/i).
+        The wizard UI stores patterns in JavaScript notation (e.g. /ExampleBank/i).
         This method extracts the raw pattern and maps JS flags to Python re flags.
         Plain strings without slashes are returned with sensible defaults.
         
@@ -197,7 +197,7 @@ class PatternMatcher:
         without the detailed match information.
         
         Args:
-            pattern_str: Pattern to match (e.g., '/Rabobank/i').
+            pattern_str: Pattern to match (e.g., '/ExampleBank/i').
             condition: Condition config with source and range.
             content: Document OCR content.
             filename: Document filename.
@@ -218,7 +218,7 @@ class PatternMatcher:
             - Range filtering: restrict matching to specific line ranges
         
         Args:
-            pattern_str: Pattern to match (e.g., '/Rabobank/i').
+            pattern_str: Pattern to match (e.g., '/ExampleBank/i').
             condition: Condition config with 'source' and optional 'range'.
             content: Full document OCR content.
             filename: Document filename.

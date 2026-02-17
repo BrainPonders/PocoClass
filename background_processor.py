@@ -752,7 +752,7 @@ class BackgroundProcessor:
         
         Returns:
             List of dicts like [
-                {"label": "Correspondent", "value": "Rabobank", "needsUpdate": false},
+                {"label": "Correspondent", "value": "ExampleBank", "needsUpdate": false},
                 {"label": "documentCategory", "value": "FINANCE", "needsUpdate": true}
             ]
         """

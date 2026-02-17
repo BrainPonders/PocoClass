@@ -107,7 +107,7 @@ It assumes you will run a prebuilt image and not build locally from source.
 ```bash
 mkdir -p ~/pococlass
 cd ~/pococlass
-git clone https://github.com/eRJe79/PocoClass.git source
+git clone https://github.com/BrainPonders/PocoClass.git source
 ```
 
 #### Step 2. Copy runtime templates and create required folders
