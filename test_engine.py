@@ -183,8 +183,7 @@ class TestEngine:
         
         verification_fields = rule.get('verification_fields', [])
         if not verification_fields:
-            # Fall back to a default set of commonly verified fields
-            verification_fields = ['correspondent', 'document_type', 'date_created', 'tags']
+            return {'matched': 0, 'total': 0, 'matches': [], 'skipped': True}
         
         matched = 0
         matches = []
