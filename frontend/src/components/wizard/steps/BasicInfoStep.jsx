@@ -34,13 +34,10 @@ export default function BasicInfoStep({
 
   const handleRuleNameChange = (e) => {
     const newName = e.target.value;
-    const updates = { ruleName: newName };
-    
-    if (!ruleData.ruleIdManuallyEdited) {
-      updates.ruleId = generateRuleId(newName);
-    }
-    
-    updateRuleData('', updates);
+    updateRuleData('', { 
+      ruleName: newName, 
+      ruleId: generateRuleId(newName) 
+    });
   };
 
   const handleThresholdSliderChange = (e) => {
@@ -82,12 +79,6 @@ export default function BasicInfoStep({
     return '';
   };
 
-  const getRuleIdError = () => {
-    if (!ruleData.ruleId) return t('validation.ruleIdRequired');
-    if (!/^[a-z0-9_]+$/.test(ruleData.ruleId)) return t('validation.ruleIdFormat');
-    return '';
-  };
-
   const getDescriptionError = () => {
     if (!ruleData.description) return t('validation.descriptionRequired');
     if (ruleData.description.length < 10) return t('validation.descriptionMinLength');
@@ -116,19 +107,24 @@ export default function BasicInfoStep({
           helpText={t('helpText.ruleNameHelp')}
         />
 
-        <ValidatedInput
-          label={t('rules.ruleId')}
-          value={ruleData.ruleId}
-          onChange={(e) => updateRuleData('', { 
-            ruleId: e.target.value, 
-            ruleIdManuallyEdited: true 
-          })}
-          placeholder={t('placeholders.ruleId')}
-          error={ruleData.ruleId && getRuleIdError()}
-          success={ruleData.ruleId && !getRuleIdError()}
-          required
-          helpText={t('helpText.ruleIdHelp')}
-        />
+        <div className="form-group">
+          <label className="form-label flex items-center gap-2">
+            {t('rules.ruleId')}
+          </label>
+          <input
+            type="text"
+            value={ruleData.ruleId}
+            readOnly
+            className="form-input"
+            style={{ 
+              backgroundColor: 'var(--app-bg-secondary)', 
+              color: 'var(--app-text-secondary)',
+              cursor: 'not-allowed',
+              opacity: 0.7
+            }}
+          />
+          <p className="text-xs mt-1" style={{ color: 'var(--app-text-muted)' }}>{t('helpText.ruleIdFilename')}</p>
+        </div>
 
         <ValidatedTextarea
           label={t('rules.description')}

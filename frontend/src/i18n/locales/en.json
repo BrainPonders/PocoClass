@@ -728,6 +728,12 @@
       "message": "You're changing the OCR weight multiplier from 3× (recommended) to {multiplier}×. This affects how much OCR patterns influence the final POCO score. Are you sure?",
       "confirmButton": "Yes, Change It",
       "cancelButton": "Cancel"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved Changes",
+      "message": "All unsaved changes will be lost.",
+      "confirmButton": "Leave anyway",
+      "cancelButton": "Cancel"
     }
   },
   "toasts": {
@@ -753,7 +759,11 @@
   "helpText": {
     "ruleNameHelp": "Choose a descriptive name to identify this rule",
     "ruleIdHelp": "Unique identifier (lowercase, numbers, underscores only)",
-    "pocoScoreHelp": "A document must score ≥ {threshold}% to be classified. A score of {example}% would pass."
+    "pocoScoreHelp": "A document must score ≥ {threshold}% to be classified. A score of {example}% would pass.",
+    "ruleIdFilename": "Auto-generated filename used on disk"
+  },
+  "editor": {
+    "exit": "Exit"
   },
   "table": {
     "title": "Title",

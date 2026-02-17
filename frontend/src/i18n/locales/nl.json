@@ -646,6 +646,12 @@
       "message": "U wijzigt de OCR-gewichtsvermenigvuldiger van 3× (aanbevolen) naar {multiplier}×. Dit beïnvloedt de weging van OCR-patronen in de uiteindelijke POCO-score. Weet u zeker?",
       "confirmButton": "Ja, wijzigen",
       "cancelButton": "Annuleren"
+    },
+    "unsavedChanges": {
+      "title": "Niet-opgeslagen wijzigingen",
+      "message": "Alle niet-opgeslagen wijzigingen gaan verloren.",
+      "confirmButton": "Toch verlaten",
+      "cancelButton": "Annuleren"
     }
   },
   "toasts": {
@@ -671,7 +677,11 @@
   "helpText": {
     "ruleNameHelp": "Kies een beschrijvende naam voor identificatie van deze regel",
     "ruleIdHelp": "Unieke identifier (alleen kleine letters, cijfers, onderstrepen)",
-    "pocoScoreHelp": "Een document moet minimaal {threshold}% bereiken voor classificatie. Een score van {example}% zou succesvol zijn."
+    "pocoScoreHelp": "Een document moet minimaal {threshold}% bereiken voor classificatie. Een score van {example}% zou succesvol zijn.",
+    "ruleIdFilename": "Automatisch gegenereerde bestandsnaam op schijf"
+  },
+  "editor": {
+    "exit": "Afsluiten"
   },
   "table": {
     "title": "Titel",
