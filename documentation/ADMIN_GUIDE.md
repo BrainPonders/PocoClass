@@ -32,138 +32,19 @@ This guide is intended for administrators who need to install, configure, and ma
 
 ## Installation
 
-PocoClass can be installed using Docker (recommended) or manually. Both methods require a running Paperless-ngx instance to connect to.
+To keep deployment instructions in one place, installation is documented only in `/README.md`.
 
-### Prerequisites
+Use:
 
-- A running Paperless-ngx instance (v2.0+)
+- `/README.md` for end-user deployment steps (`docker/compose/docker-compose.bridge.yml` or `docker/compose/docker-compose.host.yml` + `docker/compose/env.example`).
+- `/documentation/DEVELOPMENT.md` for maintainer dev workflow (`scripts/Maintainer/dev-rebuild.sh`).
+- `/documentation/RELEASING.md` for release image workflow (`scripts/Maintainer/release.sh`).
+
+Prerequisites remain:
+
+- Running Paperless-ngx instance (v2.0+)
 - Network connectivity between PocoClass and Paperless-ngx
 - Admin credentials for Paperless-ngx
-
-### Docker Installation (Recommended)
-
-Docker is the easiest way to run PocoClass alongside your existing Paperless-ngx setup.
-
-**1. Generate a secret key** for session encryption:
-
-```bash
-python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
-```
-
-Save this key securely - you'll need it for the configuration.
-
-**2. Create a docker-compose.yml** (or add to your existing Paperless stack):
-
-```yaml
-version: "3.8"
-
-services:
-  pococlass:
-    image: pococlass:latest
-    container_name: pococlass
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      - POCOCLASS_SECRET_KEY=your-generated-secret-key-here
-      - PAPERLESS_URL=http://paperless-ngx:8000
-      - GUNICORN_WORKERS=3
-      - GUNICORN_THREADS=2
-    volumes:
-      - pococlass-data:/app/data
-      - ./rules:/app/rules:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - paperless-network
-
-volumes:
-  pococlass-data:
-
-networks:
-  paperless-network:
-    external: true
-```
-
-**3. Build and start the container:**
-
-```bash
-# Navigate to project root, then build from docker folder
-cd docker
-docker-compose up -d --build
-
-# Or build manually from project root
-docker build -t pococlass:latest -f docker/Dockerfile .
-```
-
-**4. Access PocoClass:**
-
-Open `http://your-server:5000` in your browser.
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POCOCLASS_SECRET_KEY` | **Required.** Encryption key for sessions and API tokens | None (auto-generated if not set) |
-| `PAPERLESS_URL` | URL to your Paperless-ngx instance | `http://localhost:8000` |
-| `GUNICORN_WORKERS` | Number of Gunicorn worker processes | `3` |
-| `GUNICORN_THREADS` | Number of threads per worker | `2` |
-| `GUNICORN_TIMEOUT` | Request timeout in seconds | `120` |
-
-### Docker Volumes
-
-| Volume | Description |
-|--------|-------------|
-| `/app/data` | Persistent storage for SQLite database (user data, settings, logs) |
-| `/app/rules` | Classification rules directory (mount your rules here) |
-
-### Manual Installation
-
-For environments where Docker is not available.
-
-**1. Clone the repository:**
-
-```bash
-git clone https://github.com/your-repo/pococlass.git
-cd pococlass
-```
-
-**2. Install Python dependencies:**
-
-```bash
-# Recommended: use a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-**3. Install frontend dependencies:**
-
-```bash
-cd frontend
-npm install
-npm run build
-cd ..
-```
-
-**4. Start PocoClass:**
-
-```bash
-# Development mode
-python api.py
-
-# Or use the start script
-./start.sh
-```
-
-**5. Access PocoClass:**
-
-Open `http://localhost:5000` in your browser.
 
 ---
 
@@ -567,7 +448,7 @@ Paperless-ngx runs post-consumption scripts automatically after a document is fu
 
 ### The Post-Consumption Script
 
-A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
+A ready-to-use script is included at `scripts/post-consumption/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
 
 **Note:** The NEW tag is assigned automatically by Paperless-ngx. When PocoClass creates the NEW tag, it configures it as an "inbox tag", which makes Paperless automatically assign it to all newly consumed documents. The script only needs to trigger PocoClass - it doesn't need to tag documents.
 
@@ -581,7 +462,7 @@ A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script
 5. **Important:** Copy the token immediately and save it securely. It will only be shown once.
 
 #### Step 2: Copy and Configure the Script
-1. Copy `scripts/pococlass_trigger.sh` to your Paperless scripts directory
+1. Copy `scripts/post-consumption/pococlass_trigger.sh` to your Paperless scripts directory
 2. Edit the configuration section at the top:
    - `POCOCLASS_URL` - Your PocoClass server address (e.g., `http://192.168.1.100:5000`)
    - `POCOCLASS_TOKEN` - The System API Token you generated in Step 1
@@ -597,12 +478,12 @@ Add the script path to your Paperless configuration:
 **For Docker installations**, add to your `docker-compose.yml`:
 ```yaml
 environment:
-  PAPERLESS_POST_CONSUME_SCRIPT: /path/to/scripts/pococlass_trigger.sh
+  PAPERLESS_POST_CONSUME_SCRIPT: /path/to/pococlass_trigger.sh
 ```
 
 **For bare-metal installations**, add to your `paperless.conf`:
 ```
-PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
+PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
 ```
 
 ### Authentication

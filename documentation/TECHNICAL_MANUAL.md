@@ -1161,23 +1161,23 @@ def values_match(extracted, paperless):
 
 To enable automatic processing, configure Paperless-ngx to call PocoClass after consuming documents.
 
-A ready-to-use script is included at `scripts/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
+A ready-to-use script is included at `scripts/post-consumption/pococlass_trigger.sh`. This script triggers PocoClass background processing when new documents are consumed.
 
 **Note:** The NEW tag is assigned automatically by Paperless-ngx. When PocoClass creates the NEW tag, it configures it as an "inbox tag" (`is_inbox_tag=True`), which makes Paperless automatically assign it to all newly consumed documents.
 
 **In Paperless-ngx configuration** (docker-compose.yml or environment):
 ```yaml
 environment:
-  - PAPERLESS_POST_CONSUME_SCRIPT=/path/to/scripts/pococlass_trigger.sh
+  - PAPERLESS_POST_CONSUME_SCRIPT=/path/to/pococlass_trigger.sh
 ```
 
-**Configuration required** in `scripts/pococlass_trigger.sh`:
+**Configuration required** in `scripts/post-consumption/pococlass_trigger.sh`:
 - `POCOCLASS_URL` - Your PocoClass server address
 - `POCOCLASS_TOKEN` - PocoClass System API Token (generated in Settings → Background Processing)
 
 **Make script executable**:
 ```bash
-chmod +x scripts/pococlass_trigger.sh
+chmod +x /path/to/pococlass_trigger.sh
 ```
 
 **Authentication**: The script uses the `X-API-Key` header with a permanent System API Token. This token:

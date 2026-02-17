@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DEV_COMPOSE_PROJECT="${POCOCLASS_DEV_PROJECT:-pococlass-dev}"
+
+DEFAULT_HOME="${HOME:-/home/paperless}"
+DEV_ROOT="${POCOCLASS_DEV_ROOT:-${DEFAULT_HOME}/pococlass-dev}"
+RUNTIME_COMPOSE="$DEV_ROOT/docker-compose.dev.yml"
+RUNTIME_ENV="$DEV_ROOT/.env"
+RUNTIME_DATA_DIR="$DEV_ROOT/data"
+RUNTIME_RULES_DIR="$DEV_ROOT/rules"
+
+TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose.dev.yml"
+TEMPLATE_ENV="$REPO_DIR/docker/compose/env.dev"
+
+compose_run() {
+    if docker compose version >/dev/null 2>&1; then
+        docker compose "$@"
+        return
+    fi
+
+    if command -v docker-compose >/dev/null 2>&1; then
+        docker-compose "$@"
+        return
+    fi
+
+    echo "ERROR: Docker Compose is not available."
+    exit 1
+}
+
+echo "== Sync repository to origin/main =="
+git -C "$REPO_DIR" fetch origin --prune
+git -C "$REPO_DIR" switch main >/dev/null 2>&1 || git -C "$REPO_DIR" checkout main >/dev/null 2>&1
+git -C "$REPO_DIR" reset --hard origin/main
+git -C "$REPO_DIR" clean -fdx
+
+SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
+IMAGE_TAG="dev-${SHORT_SHA}"
+IMAGE_REF="pococlass:${IMAGE_TAG}"
+
+echo "== Build image ${IMAGE_REF} =="
+docker build \
+    --no-cache \
+    --build-arg BUILD_NUMBER="${SHORT_SHA}" \
+    -t "${IMAGE_REF}" \
+    -t "pococlass:dev-latest" \
+    -f "$REPO_DIR/docker/Dockerfile" \
+    "$REPO_DIR"
+
+echo "== Prepare runtime folder: ${DEV_ROOT} =="
+mkdir -p "$DEV_ROOT" "$RUNTIME_DATA_DIR" "$RUNTIME_RULES_DIR"
+
+if [ ! -f "$RUNTIME_COMPOSE" ]; then
+    cp "$TEMPLATE_COMPOSE" "$RUNTIME_COMPOSE"
+    echo "Created ${RUNTIME_COMPOSE}"
+else
+    if ! cmp -s "$TEMPLATE_COMPOSE" "$RUNTIME_COMPOSE"; then
+        cp "$TEMPLATE_COMPOSE" "${RUNTIME_COMPOSE}.new"
+        echo "Template updated: ${RUNTIME_COMPOSE}.new (existing file preserved)"
+    fi
+fi
+
+RUNTIME_ENV_CREATED=false
+if [ ! -f "$RUNTIME_ENV" ]; then
+    cp "$TEMPLATE_ENV" "$RUNTIME_ENV"
+    RUNTIME_ENV_CREATED=true
+    echo "Created ${RUNTIME_ENV}"
+else
+    if ! cmp -s "$TEMPLATE_ENV" "$RUNTIME_ENV"; then
+        cp "$TEMPLATE_ENV" "${RUNTIME_ENV}.new"
+        echo "Template updated: ${RUNTIME_ENV}.new (existing file preserved)"
+    fi
+fi
+
+# Align volume paths on first run and auto-fill them when missing.
+if grep -q '^DEV_DATA_DIR=' "$RUNTIME_ENV"; then
+    if [ "$RUNTIME_ENV_CREATED" = true ]; then
+        sed -i.bak "s|^DEV_DATA_DIR=.*$|DEV_DATA_DIR=${RUNTIME_DATA_DIR}|" "$RUNTIME_ENV"
+    fi
+else
+    printf '\nDEV_DATA_DIR=%s\n' "$RUNTIME_DATA_DIR" >> "$RUNTIME_ENV"
+fi
+
+if grep -q '^DEV_RULES_DIR=' "$RUNTIME_ENV"; then
+    if [ "$RUNTIME_ENV_CREATED" = true ]; then
+        sed -i.bak "s|^DEV_RULES_DIR=.*$|DEV_RULES_DIR=${RUNTIME_RULES_DIR}|" "$RUNTIME_ENV"
+    fi
+else
+    printf '\nDEV_RULES_DIR=%s\n' "$RUNTIME_RULES_DIR" >> "$RUNTIME_ENV"
+fi
+rm -f "${RUNTIME_ENV}.bak"
+
+# Update only POCOCLASS_IMAGE in runtime .env and preserve all other local tweaks.
+if grep -q '^POCOCLASS_IMAGE=' "$RUNTIME_ENV"; then
+    sed -i.bak "s|^POCOCLASS_IMAGE=.*$|POCOCLASS_IMAGE=${IMAGE_REF}|" "$RUNTIME_ENV"
+    rm -f "${RUNTIME_ENV}.bak"
+else
+    printf '\nPOCOCLASS_IMAGE=%s\n' "$IMAGE_REF" >> "$RUNTIME_ENV"
+fi
+
+echo "== Start PocoClass dev container =="
+(
+    cd "$DEV_ROOT"
+    compose_run \
+        -p "$DEV_COMPOSE_PROJECT" \
+        --env-file "$RUNTIME_ENV" \
+        -f "$RUNTIME_COMPOSE" \
+        up -d --pull never --force-recreate pococlass
+)
+
+echo "== Done =="
+echo "Image: ${IMAGE_REF}"
+echo "Compose project: ${DEV_COMPOSE_PROJECT}"
+echo "Runtime folder: ${DEV_ROOT}"
+echo "If this is your first run, edit ${RUNTIME_ENV} and set POCOCLASS_SECRET_KEY."

@@ -17,9 +17,17 @@ fi
 export POCOCLASS_DB_PATH="$DB_PATH"
 
 if [ -z "$POCOCLASS_SECRET_KEY" ]; then
-    echo "WARNING: POCOCLASS_SECRET_KEY not set. Generating temporary Fernet key..."
-    export POCOCLASS_SECRET_KEY=$(python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())")
-    echo "NOTE: Set POCOCLASS_SECRET_KEY env var for persistent sessions across restarts."
+    if [ "${POCOCLASS_DEV_MODE:-false}" = "true" ]; then
+        echo "WARNING: POCOCLASS_SECRET_KEY not set. POCOCLASS_DEV_MODE=true, generating temporary Fernet key..."
+        export POCOCLASS_SECRET_KEY=$(python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())")
+        echo "NOTE: Temporary key will invalidate sessions/tokens on restart."
+    else
+        echo "ERROR: POCOCLASS_SECRET_KEY is required at runtime and is not used during image build."
+        echo "Set it via .env or environment variable before starting the container."
+        echo "Generate one with:"
+        echo "  python3 -c \"import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())\""
+        exit 1
+    fi
 fi
 
 WORKERS="${GUNICORN_WORKERS:-3}"
