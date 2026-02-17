@@ -542,7 +542,7 @@ function LayoutContent({ children }) {
                     </div>
                     <div className="flex items-center justify-between" style={{ marginLeft: '41px', marginTop: '2px' }}>
                       <p className="text-xs font-medium" style={{ color: 'var(--app-text-secondary)', whiteSpace: 'nowrap' }}>Document Classification</p>
-                      <span className="text-xs" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>v2.0{buildNumber ? `  B.${buildNumber}` : ''}</span>
+                      <span className="text-xs" style={{ color: 'var(--app-text-muted)', whiteSpace: 'nowrap' }}>v2.0  B.{buildNumber || '####'}</span>
                     </div>
                   </div>
                 </SidebarHeader>
