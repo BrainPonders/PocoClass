@@ -278,15 +278,15 @@ docker compose up -d --force-recreate pococlass
 ## Roadmap
 
 ### New Features
-- [ ] YAML rule import
-- [ ] Rule evaluation reporting (pointing system and multipliers breakdown)
-- [ ] Rule evaluation results in file list table (top-level overview)
-- [ ] Tutorial for rule evaluation
-- [ ] Tutorial for background processing
+- [ ] **YAML Rule Import** — Allow importing rules from YAML files, enabling users to share rule configurations and quickly onboard pre-built classification templates without manually recreating them in the wizard.
+- [ ] **Rule Evaluation Reporting** — Enhance rule evaluation results to display the full pointing system and multipliers breakdown, showing earned vs. possible weights per source (OCR, Filename, Paperless) so users can understand exactly how the POCO score is calculated.
+- [ ] **Rule Evaluation in File List** — Show test results (e.g., pass/fail, POCO score) directly in the document file list table for a top-level overview without needing to expand individual results.
+- [ ] **Tutorial for Rule Evaluation** — Guided tutorial covering the rule evaluation workflow, walking users through testing rules against documents, interpreting scores, and understanding match results.
+- [ ] **Tutorial for Background Processing** — Guided tutorial covering background processing setup and usage, explaining tag-based discovery, batch processing, and how to monitor processing history.
 
 ### Improvements
-- [ ] Improve GUI standardisation
-- [ ] Improve regex helper
+- [ ] **Improve GUI Standardisation** — Further standardize UI components for consistent look and feel across all pages, ensuring uniform spacing, input sizing, button styles, and layout patterns.
+- [ ] **Improve Regex Helper** — Enhance the Pattern Helper Modal with better guidance, more examples, and additional pattern categories to help users build regex patterns more confidently.
 
 <br>
 
