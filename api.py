@@ -921,9 +921,9 @@ def get_settings_batch():
 # ---- Sync Routes ----
 
 @app.route('/api/sync', methods=['POST'])
-@require_admin
+@require_auth
 def trigger_sync():
-    """Trigger a full sync of Paperless data (admin only) - does NOT auto-create mandatory items"""
+    """Trigger a full sync of Paperless data - does NOT auto-create mandatory items"""
     try:
         session = request.current_user
         paperless_url = db.get_config('paperless_url')

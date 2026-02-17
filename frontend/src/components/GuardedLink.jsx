@@ -12,7 +12,7 @@ import ConfirmDialog from './ConfirmDialog';
 
 export default function GuardedLink({ to, children, className, ...props }) {
   const navigate = useNavigate();
-  const { hasUnsavedChanges } = useUnsavedChanges();
+  const { hasUnsavedChanges, setHasUnsavedChanges } = useUnsavedChanges();
   const { t } = useLanguage();
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -25,6 +25,7 @@ export default function GuardedLink({ to, children, className, ...props }) {
 
   const handleConfirm = () => {
     setShowConfirm(false);
+    setHasUnsavedChanges(false);
     navigate(to);
   };
 
