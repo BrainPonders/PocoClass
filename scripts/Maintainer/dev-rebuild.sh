@@ -50,14 +50,16 @@ else
 fi
 git -C "$REPO_DIR" clean -fdx
 
+BUILD_NUMBER="$(git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || echo dev)"
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
 IMAGE_REF="pococlass:${IMAGE_TAG}"
 
 echo "== Build image ${IMAGE_REF} =="
+echo "== Build number #${BUILD_NUMBER} =="
 docker build \
     --no-cache \
-    --build-arg BUILD_NUMBER="${SHORT_SHA}" \
+    --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
     -t "${IMAGE_REF}" \
     -t "pococlass:dev-latest" \
     -f "$REPO_DIR/docker/Dockerfile" \

@@ -20,7 +20,7 @@ Optional environment variables:
 
 - `POCOCLASS_IMAGE_NAME` (default: `pococlass`)
 - `POCOCLASS_IMAGE_TAG` (default: `latest`)
-- `POCOCLASS_BUILD_NUMBER` (default: git short hash)
+- `POCOCLASS_BUILD_NUMBER` (default: git commit count)
 
 ## Script Behavior
 

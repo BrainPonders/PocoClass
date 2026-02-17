@@ -8,10 +8,8 @@ IMAGE_NAME="${POCOCLASS_IMAGE_NAME:-pococlass}"
 IMAGE_TAG="${POCOCLASS_IMAGE_TAG:-latest}"
 
 build_number_default() {
-    local short_hash
     if command -v git >/dev/null 2>&1 && git -C "$REPO_DIR" rev-parse --git-dir >/dev/null 2>&1; then
-        short_hash="$(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo "nogit")"
-        printf '%s' "$short_hash"
+        git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || printf '%s' "dev"
     else
         printf '%s' "dev"
     fi

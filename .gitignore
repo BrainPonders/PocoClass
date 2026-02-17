@@ -80,6 +80,10 @@ Thumbs.db
 docker-compose.override.yml
 compose.override.yml
 
+# Local Codex policy files (workspace-only, do not commit)
+AGENTS.md
+AGEND.md
+
 # Local Docker build artifacts
 .buildx-cache/
 
