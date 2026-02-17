@@ -682,9 +682,9 @@ export default function Rules() {
                       <code className="text-xs px-2 py-1 rounded" style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>{rule.ruleId}</code>
                     </td>
                     <td className="px-4 py-3">
-                      {rule.source_document_id ? (
+                      {rule.sourceDocumentId ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-mono" style={{ color: 'var(--app-text)' }}>{rule.source_document_id}</span>
+                          <span className="text-sm font-mono" style={{ color: 'var(--app-text)' }}>{rule.sourceDocumentId}</span>
                           <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>({t('filters.searchPlaceholder') === 'Rechercher...' ? 'ID Paperless' : 'Paperless ID'})</span>
                         </div>
                       ) : (
