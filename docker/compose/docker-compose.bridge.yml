@@ -34,10 +34,8 @@ services:
       POCOCLASS_SECRET_KEY: ${POCOCLASS_SECRET_KEY:-}
 
       # REQUIRED: Paperless URL from inside Docker network
-      # Examples:
-      #   - Official paperless-ngx compose: http://paperless-webserver:8000
-      #   - 11notes paperless-ngx:          http://paperless-ngx:8000
-      PAPERLESS_URL: ${PAPERLESS_URL:-http://paperless-webserver:8000}
+      # Set PAPERLESS_URL in .env
+      PAPERLESS_URL: ${PAPERLESS_URL:-}
 
       # OPTIONAL: Performance tuning
       # - GUNICORN_WORKERS=3

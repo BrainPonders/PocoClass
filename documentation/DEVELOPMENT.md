@@ -49,6 +49,7 @@ Run from repository root:
 3. Builds a no-cache image tagged as:
    - `pococlass:dev-<shortsha>`
    - `pococlass:dev-latest`
+   Build arg `BUILD_NUMBER` is set from git commit count.
 4. Ensures `<repo-parent>/pococlass-dev/` exists (or `POCOCLASS_DEV_ROOT` if set).
 5. Copies templates to runtime folder only if missing.
 6. If templates changed, writes non-destructive update files:
