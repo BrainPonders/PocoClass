@@ -47,11 +47,8 @@ export default function DocumentClassificationsStep({
 
   const loadDocumentOcr = async (docId) => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/ocr`, {
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`
-        }
+        credentials: 'include'
       });
       if (response.ok) {
         const data = await response.json();

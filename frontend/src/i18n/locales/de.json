@@ -143,7 +143,9 @@
       "allProcessed": "Alle Dokumente wurden verarbeitet",
       "filtersRestrictive": "Die aktuellen Filter sind zu restriktiv"
     },
-    "checkConsole": "Überprüfen Sie die Browserkonsole auf API-Antwortdetails."
+    "checkConsole": "Überprüfen Sie die Browserkonsole auf API-Antwortdetails.",
+    "createFirstRuleDesc": "Erstellen Sie Ihre erste Dokumentklassifizierungsregel",
+    "duplicateRule": "Regel duplizieren"
   },
   "wizard": {
     "step1": "Grundinformationen",
@@ -1287,9 +1289,16 @@
       "0_6": {
         "title": "OCR-Inhalt",
         "textParts": [
-          { "text": "Dieser Tab zeigt den Rohtext, den PocoClass mittels OCR (Optical Character Recognition) aus dem Dokument extrahiert. Das ist, was PocoClass tatsächlich ‚liest' — " },
-          { "text": "beachten Sie, dass die Textreihenfolge vom visuellen PDF-Layout abweichen kann.", "bold": true },
-          { "text": " Ihre Muster müssen mit diesem Text übereinstimmen, nicht mit dem PDF-Layout." }
+          {
+            "text": "Dieser Tab zeigt den Rohtext, den PocoClass mittels OCR (Optical Character Recognition) aus dem Dokument extrahiert. Das ist, was PocoClass tatsächlich ‚liest' — "
+          },
+          {
+            "text": "beachten Sie, dass die Textreihenfolge vom visuellen PDF-Layout abweichen kann.",
+            "bold": true
+          },
+          {
+            "text": " Ihre Muster müssen mit diesem Text übereinstimmen, nicht mit dem PDF-Layout."
+          }
         ]
       },
       "0_7": {
@@ -1311,68 +1320,153 @@
       "2_0": {
         "title": "Schritt 2: OCR-Identifizierungsmuster",
         "textParts": [
-          { "text": "Dies ist der wichtigste Schritt. Hier definieren Sie Textmuster, die Ihren Dokumenttyp eindeutig identifizieren. Ein Textmuster kann so einfach sein wie ein Wort oder eine Phrase — wie \"Royal Bank of Scotland\" oder \"Rechnungsnummer\"." },
-          { "text": "\n\n" },
-          { "text": "Für mehr Flexibilität können Sie reguläre Ausdrücke (regex) verwenden — eine Möglichkeit, Textmuster zu beschreiben, die Variationen wie zusätzliche Leerzeichen oder unterschiedliche Formatierungen berücksichtigt. Die Muster-Assistent-Schaltfläche macht das Erstellen von regex einfach, auch ohne Erfahrung. Weitere Details finden Sie unter " },
-          { "text": "Regex Support in the Guide", "action": "openGuide" },
-          { "text": "." }
+          {
+            "text": "Dies ist der wichtigste Schritt. Hier definieren Sie Textmuster, die Ihren Dokumenttyp eindeutig identifizieren. Ein Textmuster kann so einfach sein wie ein Wort oder eine Phrase — wie \"Royal Bank of Scotland\" oder \"Rechnungsnummer\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Für mehr Flexibilität können Sie reguläre Ausdrücke (regex) verwenden — eine Möglichkeit, Textmuster zu beschreiben, die Variationen wie zusätzliche Leerzeichen oder unterschiedliche Formatierungen berücksichtigt. Die Muster-Assistent-Schaltfläche macht das Erstellen von regex einfach, auch ohne Erfahrung. Weitere Details finden Sie unter "
+          },
+          {
+            "text": "Regex Support in the Guide",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "2_1": {
         "title": "PDF vs. OCR — Was PocoClass sieht",
         "textParts": [
-          { "text": "Bevor wir Muster definieren, schauen Sie sich den Unterschied zwischen dem PDF (wie Sie das Dokument sehen) und dem OCR-Text (wie PocoClass es sieht) an. " },
-          { "text": "Wechseln", "action": "togglePreview" },
-          { "text": " Sie zwischen den PDF- und OCR-Tabs auf der rechten Seite — beachten Sie, wie die Textreihenfolge unterschiedlich ist! PocoClass arbeitet mit dem OCR-Text, nicht mit dem visuellen Layout." }
+          {
+            "text": "Bevor wir Muster definieren, schauen Sie sich den Unterschied zwischen dem PDF (wie Sie das Dokument sehen) und dem OCR-Text (wie PocoClass es sieht) an. "
+          },
+          {
+            "text": "Wechseln",
+            "action": "togglePreview"
+          },
+          {
+            "text": " Sie zwischen den PDF- und OCR-Tabs auf der rechten Seite — beachten Sie, wie die Textreihenfolge unterschiedlich ist! PocoClass arbeitet mit dem OCR-Text, nicht mit dem visuellen Layout."
+          }
         ]
       },
       "2_2": {
         "title": "Logische Gruppe 1 — Bankidentifizierung",
         "textParts": [
-          { "text": "Unser erstes Muster sucht nach " },
-          { "text": "\"Royal Bank of Scotland\"", "bold": true },
-          { "text": " als reiner Text — er erscheint am Ende jedes RBS-Kontoauszugs. Der Suchbereich ist auf die letzten 10 Zeilen eingestellt, was die Übereinstimmung schneller und präziser macht. Diese Gruppe ist optional — sie erhöht das Vertrauen, lehnt aber keine Dokumente ab, wenn sie fehlt." },
-          { "text": "\n\n" },
-          { "text": "Mit Hilfe des regex-Builders könnte dieses gleiche Muster als " },
-          { "text": "Royal\\s*Bank\\s*of\\s*Scotland", "bold": true },
-          { "text": " geschrieben werden — was auch Variationen wie \"RoyalBank of Scotland\" oder \"Royal   Bank of Scotland\" mit ungewöhnlichen Leerzeichen erkennen würde. Einfacher Text funktioniert für die meisten Fälle; regex bietet bei Bedarf zusätzliche Flexibilität." }
+          {
+            "text": "Unser erstes Muster sucht nach "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " als reiner Text — er erscheint am Ende jedes RBS-Kontoauszugs. Der Suchbereich ist auf die letzten 10 Zeilen eingestellt, was die Übereinstimmung schneller und präziser macht. Diese Gruppe ist optional — sie erhöht das Vertrauen, lehnt aber keine Dokumente ab, wenn sie fehlt."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Mit Hilfe des regex-Builders könnte dieses gleiche Muster als "
+          },
+          {
+            "text": "Royal\\s*Bank\\s*of\\s*Scotland",
+            "bold": true
+          },
+          {
+            "text": " geschrieben werden — was auch Variationen wie \"RoyalBank of Scotland\" oder \"Royal   Bank of Scotland\" mit ungewöhnlichen Leerzeichen erkennen würde. Einfacher Text funktioniert für die meisten Fälle; regex bietet bei Bedarf zusätzliche Flexibilität."
+          }
         ]
       },
       "2_3": {
         "title": "Logische Gruppe 2 — Kontoidentifizierung",
         "textParts": [
-          { "text": "Dieses Muster sucht nach Ihrer vollständigen IBAN " },
-          { "text": "\"GB11RBOS 1610 0011 1111 11\"", "bold": true },
-          { "text": " in den ersten 10 Zeilen des Dokuments — wo Kontoauszüge typischerweise die Kontodetails anzeigen." },
-          { "text": "\n\n" },
-          { "text": "Diese Gruppe wurde als pflichtmäßig markiert", "bold": true },
-          { "text": ", das bedeutet, die Regel wird nur bestehen, wenn dieses Muster gefunden wird. Dies ist wichtig, wenn Sie mehrere Konten bei der Royal Bank haben — es stellt sicher, dass Sie den Auszug des richtigen Kontos identifizieren, nicht nur irgendein RBS-Dokument." }
+          {
+            "text": "Dieses Muster sucht nach Ihrer vollständigen IBAN "
+          },
+          {
+            "text": "\"GB11RBOS 1610 0011 1111 11\"",
+            "bold": true
+          },
+          {
+            "text": " in den ersten 10 Zeilen des Dokuments — wo Kontoauszüge typischerweise die Kontodetails anzeigen."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Diese Gruppe wurde als pflichtmäßig markiert",
+            "bold": true
+          },
+          {
+            "text": ", das bedeutet, die Regel wird nur bestehen, wenn dieses Muster gefunden wird. Dies ist wichtig, wenn Sie mehrere Konten bei der Royal Bank haben — es stellt sicher, dass Sie den Auszug des richtigen Kontos identifizieren, nicht nur irgendein RBS-Dokument."
+          }
         ]
       },
       "2_4": {
         "title": "Weitere logische Gruppen",
         "textParts": [
-          { "text": "Sie können weitere logische Gruppen hinzufügen, um die Genauigkeit zu verbessern. Jede Regel benötigt mindestens 3 und kann bis zu 10 Gruppen haben. Gruppen können AND-Logik (alle Bedingungen müssen zutreffen) oder OR-Logik (eine beliebige Bedingung kann zutreffen) verwenden. In unserem Beispiel suchen die Gruppen 3-5 nach " },
-          { "text": "\"Account Number\"", "bold": true },
-          { "text": ", " },
-          { "text": "\"Statement\"", "bold": true },
-          { "text": ", und " },
-          { "text": "\"Balance\"", "bold": true },
-          { "text": "." },
-          { "text": "\n\n" },
-          { "text": "Die Muster-Assistent-Schaltfläche (suchen Sie nach dem Zauberstab-Symbol) hilft Ihnen, regex-Muster zu erstellen, ohne die regex-Syntax kennen zu müssen. Weitere Details finden Sie unter " },
-          { "text": "Regex Support in the Guide", "action": "openGuide" },
-          { "text": "." }
+          {
+            "text": "Sie können weitere logische Gruppen hinzufügen, um die Genauigkeit zu verbessern. Jede Regel benötigt mindestens 3 und kann bis zu 10 Gruppen haben. Gruppen können AND-Logik (alle Bedingungen müssen zutreffen) oder OR-Logik (eine beliebige Bedingung kann zutreffen) verwenden. In unserem Beispiel suchen die Gruppen 3-5 nach "
+          },
+          {
+            "text": "\"Account Number\"",
+            "bold": true
+          },
+          {
+            "text": ", "
+          },
+          {
+            "text": "\"Statement\"",
+            "bold": true
+          },
+          {
+            "text": ", und "
+          },
+          {
+            "text": "\"Balance\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Die Muster-Assistent-Schaltfläche (suchen Sie nach dem Zauberstab-Symbol) hilft Ihnen, regex-Muster zu erstellen, ohne die regex-Syntax kennen zu müssen. Weitere Details finden Sie unter "
+          },
+          {
+            "text": "Regex Support in the Guide",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "2_5": {
         "title": "OCR-Schwellenwert & Gewichtsmultiplikator",
         "textParts": [
-          { "text": "Der OCR-Schwellenwert (75%) legt den Mindestprozentsatz an OCR-Mustern fest, die übereinstimmen müssen, bevor das Dokument klassifiziert werden kann. Dies stellt ein grundlegendes Maß an textbasiertem Vertrauen sicher." },
-          { "text": "\n\n" },
-          { "text": "Der Gewichtsmultiplikator (x3) steuert, wie stark OCR-Muster zum endgültigen POCO Score beitragen. Eine Regel kann drei Quellen verwenden, um Dokumente zu identifizieren: OCR-Textmuster (die Hauptquelle), Dateinamenmuster und Paperless-ngx-Klassifizierungen. Der Multiplikator ermöglicht es Ihnen, OCR gegenüber den anderen Quellen zu priorisieren. Weitere Details finden Sie unter " },
-          { "text": "Scoring System in the Guide", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "Der OCR-Schwellenwert (75%) legt den Mindestprozentsatz an OCR-Mustern fest, die übereinstimmen müssen, bevor das Dokument klassifiziert werden kann. Dies stellt ein grundlegendes Maß an textbasiertem Vertrauen sicher."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Der Gewichtsmultiplikator (x3) steuert, wie stark OCR-Muster zum endgültigen POCO Score beitragen. Eine Regel kann drei Quellen verwenden, um Dokumente zu identifizieren: OCR-Textmuster (die Hauptquelle), Dateinamenmuster und Paperless-ngx-Klassifizierungen. Der Multiplikator ermöglicht es Ihnen, OCR gegenüber den anderen Quellen zu priorisieren. Weitere Details finden Sie unter "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "3_0": {
@@ -1382,23 +1476,50 @@
       "3_1": {
         "title": "Dateinamenmuster",
         "textParts": [
-          { "text": "Muster 1: " },
-          { "text": "\"RBS.*statement\"", "bold": true },
-          { "text": " stimmt mit jedem Dateinamen überein, der \"RBS\" gefolgt von beliebigen Zeichen und dann \"statement\" enthält. Das .* bedeutet, dass beliebig viele Zeichen dazwischen erscheinen können — passend zu \"RBS_Statement_2014-12-21.pdf\" oder \"RBS-Monthly-Statement.pdf\"." },
-          { "text": "\n\n" },
-          { "text": "Muster 2: " },
-          { "text": "\"\\d{4}-\\d{2}-\\d{2}\"", "bold": true },
-          { "text": " sucht nach einem vollständigen Datumsmuster im Dateinamen — vier Ziffern, ein Bindestrich, zwei Ziffern, ein Bindestrich und zwei Ziffern. Dies stimmt mit dem Teil \"2014-12-21\" in \"RBS_Statement_2014-12-21.pdf\" überein und hilft bei der Identifizierung von Dokumenten anhand ihres Datumsstempels." }
+          {
+            "text": "Muster 1: "
+          },
+          {
+            "text": "\"RBS.*statement\"",
+            "bold": true
+          },
+          {
+            "text": " stimmt mit jedem Dateinamen überein, der \"RBS\" gefolgt von beliebigen Zeichen und dann \"statement\" enthält. Das .* bedeutet, dass beliebig viele Zeichen dazwischen erscheinen können — passend zu \"RBS_Statement_2014-12-21.pdf\" oder \"RBS-Monthly-Statement.pdf\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Muster 2: "
+          },
+          {
+            "text": "\"\\d{4}-\\d{2}-\\d{2}\"",
+            "bold": true
+          },
+          {
+            "text": " sucht nach einem vollständigen Datumsmuster im Dateinamen — vier Ziffern, ein Bindestrich, zwei Ziffern, ein Bindestrich und zwei Ziffern. Dies stimmt mit dem Teil \"2014-12-21\" in \"RBS_Statement_2014-12-21.pdf\" überein und hilft bei der Identifizierung von Dokumenten anhand ihres Datumsstempels."
+          }
         ]
       },
       "3_2": {
         "title": "Dateinamen-Gewichtsmultiplikator",
         "textParts": [
-          { "text": "Der Dateinamen-Gewichtsmultiplikator (x1) steuert, wie stark Dateinamenübereinstimmungen zum endgültigen POCO Score beitragen — ähnlich wie der OCR-Multiplikator, den Sie zuvor gesehen haben. Der Standardwert von x1 bedeutet, dass Dateinamenmuster weniger zählen als OCR-Muster (die x3 verwenden)." },
-          { "text": "\n\n" },
-          { "text": "Das ist sinnvoll, da Dateinamen weniger zuverlässig sind als Dokumentinhalte — sie können umbenannt werden oder inkonsistent sein. Weitere Details darüber, wie alle Multiplikatoren zusammenwirken, finden Sie unter " },
-          { "text": "Scoring System in the Guide", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "Der Dateinamen-Gewichtsmultiplikator (x1) steuert, wie stark Dateinamenübereinstimmungen zum endgültigen POCO Score beitragen — ähnlich wie der OCR-Multiplikator, den Sie zuvor gesehen haben. Der Standardwert von x1 bedeutet, dass Dateinamenmuster weniger zählen als OCR-Muster (die x3 verwenden)."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Das ist sinnvoll, da Dateinamen weniger zuverlässig sind als Dokumentinhalte — sie können umbenannt werden oder inkonsistent sein. Weitere Details darüber, wie alle Multiplikatoren zusammenwirken, finden Sie unter "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "4_0": {
@@ -1412,11 +1533,22 @@
       "4_2": {
         "title": "Verifizierungsmultiplikator",
         "textParts": [
-          { "text": "Der Verifizierungsmultiplikator steuert, wie stark Paperless-ngx-Feldübereinstimmungen zum endgültigen POCO Score beitragen. Standardmäßig ist der Modus auf \"Auto\" eingestellt, was das Gewicht dieser Quelle neutralisiert — die Verifizierung bleibt ein sanfter Vertrauensschub statt eines dominanten Faktors." },
-          { "text": "\n\n" },
-          { "text": "Ohne den Auto-Modus könnte die Scoring-Berechnung den Paperless-Klassifizierungen ein sehr hohes Gewicht geben (bis zu x5), was Ihre OCR-Muster möglicherweise überschatten könnte. Der Auto-Modus verhindert dies durch dynamische Anpassung des Multiplikators. Weitere Details finden Sie unter " },
-          { "text": "Scoring System in the Guide", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "Der Verifizierungsmultiplikator steuert, wie stark Paperless-ngx-Feldübereinstimmungen zum endgültigen POCO Score beitragen. Standardmäßig ist der Modus auf \"Auto\" eingestellt, was das Gewicht dieser Quelle neutralisiert — die Verifizierung bleibt ein sanfter Vertrauensschub statt eines dominanten Faktors."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Ohne den Auto-Modus könnte die Scoring-Berechnung den Paperless-Klassifizierungen ein sehr hohes Gewicht geben (bis zu x5), was Ihre OCR-Muster möglicherweise überschatten könnte. Der Auto-Modus verhindert dies durch dynamische Anpassung des Multiplikators. Weitere Details finden Sie unter "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "5_0": {
@@ -1426,66 +1558,159 @@
       "5_1": {
         "title": "Vordefinierte Paperless-Felder",
         "textParts": [
-          { "text": "Diese Felder stammen direkt aus Ihrer Paperless-ngx-Instanz — Korrespondent, Dokumenttyp und Tags sind Dropdown-Auswahlen aus Werten, die bereits in Paperless-ngx existieren. Erstellungsdatum ist anders — es ist eine freie Datumseingabe, mit der Sie ein bestimmtes Datum festlegen können. In unserem Beispiel weisen wir " },
-          { "text": "\"Royal Bank of Scotland\"", "bold": true },
-          { "text": " als Korrespondent, " },
-          { "text": "\"Bank Statement\"", "bold": true },
-          { "text": " als Dokumenttyp zu und fügen die Tags " },
-          { "text": "\"Financial\"", "bold": true },
-          { "text": " und " },
-          { "text": "\"Bank\"", "bold": true },
-          { "text": " hinzu." },
-          { "text": "\n\n" },
-          { "text": "Beachten Sie, dass das Erstellungsdatum hier absichtlich leer gelassen wurde. Ein festes Datum hier einzustellen würde dasselbe Datum auf jedes Dokument anwenden, das dieser Regel entspricht — was selten sinnvoll ist. Hier zeigt die dynamische Extraktion ihre wahre Stärke. Paperless-ngx hat eine eigene eingebaute Datumserkennung, aber Sie haben keine Kontrolle darüber, welches Datum es auswählt. In unserem Kontoauszug könnte Paperless den 22. Oktober 2014 statt des korrekten Auszugsenddatums 21. Dezember 2014 wählen. Mit der dynamischen Extraktion sagen Sie PocoClass genau, wo das richtige Datum zu finden ist." }
+          {
+            "text": "Diese Felder stammen direkt aus Ihrer Paperless-ngx-Instanz — Korrespondent, Dokumenttyp und Tags sind Dropdown-Auswahlen aus Werten, die bereits in Paperless-ngx existieren. Erstellungsdatum ist anders — es ist eine freie Datumseingabe, mit der Sie ein bestimmtes Datum festlegen können. In unserem Beispiel weisen wir "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " als Korrespondent, "
+          },
+          {
+            "text": "\"Bank Statement\"",
+            "bold": true
+          },
+          {
+            "text": " als Dokumenttyp zu und fügen die Tags "
+          },
+          {
+            "text": "\"Financial\"",
+            "bold": true
+          },
+          {
+            "text": " und "
+          },
+          {
+            "text": "\"Bank\"",
+            "bold": true
+          },
+          {
+            "text": " hinzu."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Beachten Sie, dass das Erstellungsdatum hier absichtlich leer gelassen wurde. Ein festes Datum hier einzustellen würde dasselbe Datum auf jedes Dokument anwenden, das dieser Regel entspricht — was selten sinnvoll ist. Hier zeigt die dynamische Extraktion ihre wahre Stärke. Paperless-ngx hat eine eigene eingebaute Datumserkennung, aber Sie haben keine Kontrolle darüber, welches Datum es auswählt. In unserem Kontoauszug könnte Paperless den 22. Oktober 2014 statt des korrekten Auszugsenddatums 21. Dezember 2014 wählen. Mit der dynamischen Extraktion sagen Sie PocoClass genau, wo das richtige Datum zu finden ist."
+          }
         ]
       },
       "5_2": {
         "title": "Benutzerdefinierte Felder",
         "textParts": [
-          { "text": "Benutzerdefinierte Felder ermöglichen es Ihnen, zusätzliche Daten zu speichern, die spezifisch für Ihren Arbeitsablauf sind. Die hier angezeigten Felder hängen von Ihren Feldsichtbarkeitseinstellungen ab — je nach Konfiguration sehen Sie mehr oder weniger Felder." },
-          { "text": "\n\n" },
-          { "text": "Jedes benutzerdefinierte Feld kann hier im vordefinierten Bereich auf einen festen Wert gesetzt oder dynamisch aus dem Dokumenttext extrahiert werden (konfiguriert im nächsten Abschnitt). Weitere Details zur Feldkonfiguration finden Sie unter " },
-          { "text": "Metadata in the Guide", "action": "openGuideMetadata" },
-          { "text": "." }
+          {
+            "text": "Benutzerdefinierte Felder ermöglichen es Ihnen, zusätzliche Daten zu speichern, die spezifisch für Ihren Arbeitsablauf sind. Die hier angezeigten Felder hängen von Ihren Feldsichtbarkeitseinstellungen ab — je nach Konfiguration sehen Sie mehr oder weniger Felder."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Jedes benutzerdefinierte Feld kann hier im vordefinierten Bereich auf einen festen Wert gesetzt oder dynamisch aus dem Dokumenttext extrahiert werden (konfiguriert im nächsten Abschnitt). Weitere Details zur Feldkonfiguration finden Sie unter "
+          },
+          {
+            "text": "Metadata in the Guide",
+            "action": "openGuideMetadata"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "5_3": {
         "title": "Dynamische Datenextraktion",
         "textParts": [
-          { "text": "Die dynamische Extraktion verwendet Ankermuster, um bestimmte Werte aus dem Dokumenttext zu lokalisieren und zu extrahieren. Jede Extraktionsregel definiert einen \"Vor-Anker\" (Text, der direkt vor dem gewünschten Wert erscheint) und optional einen \"Nach-Anker\" (Text, der direkt danach erscheint). Der extrahierte Text zwischen diesen Ankern wird dann in einem Paperless-ngx-Feld gespeichert." },
-          { "text": "\n\n" },
-          { "text": "Dies ist eine der leistungsstärksten Funktionen von PocoClass. In Kombination mit benutzerdefinierten Feldern können Sie praktisch jede Information aus Ihren Dokumenten extrahieren — eine Kontonummer aus einem Kontoauszug, den Gesamtbetrag einer Rechnung, verbrauchte kWh aus einer Stromrechnung oder eine Policennummer aus einem Versicherungsdokument. Jedes Zielfeld kann nur einmal verwendet werden — entweder als vordefinierter Wert oder als dynamische Extraktion, niemals beides." }
+          {
+            "text": "Die dynamische Extraktion verwendet Ankermuster, um bestimmte Werte aus dem Dokumenttext zu lokalisieren und zu extrahieren. Jede Extraktionsregel definiert einen \"Vor-Anker\" (Text, der direkt vor dem gewünschten Wert erscheint) und optional einen \"Nach-Anker\" (Text, der direkt danach erscheint). Der extrahierte Text zwischen diesen Ankern wird dann in einem Paperless-ngx-Feld gespeichert."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Dies ist eine der leistungsstärksten Funktionen von PocoClass. In Kombination mit benutzerdefinierten Feldern können Sie praktisch jede Information aus Ihren Dokumenten extrahieren — eine Kontonummer aus einem Kontoauszug, den Gesamtbetrag einer Rechnung, verbrauchte kWh aus einer Stromrechnung oder eine Policennummer aus einem Versicherungsdokument. Jedes Zielfeld kann nur einmal verwendet werden — entweder als vordefinierter Wert oder als dynamische Extraktion, niemals beides."
+          }
         ]
       },
       "5_4": {
         "title": "Das Datum im OCR-Text finden",
         "textParts": [
-          { "text": "Sehen wir uns an, wie die dynamische Extraktion das Datumsproblem aus Schritt 5.1 löst. Schauen Sie sich den OCR-Text an — finden Sie die hervorgehobene Zeile " },
-          { "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"", "bold": true },
-          { "text": ". Wir möchten das Enddatum " },
-          { "text": "\"21 Dec 2014\"", "bold": true },
-          { "text": " extrahieren — das tatsächliche Auszugsdatum." },
-          { "text": "\n\n" },
-          { "text": "Um den Vor-Anker zu erstellen, beginnen Sie mit dem lesbaren Text, den Sie sehen können: " },
-          { "text": "\"22 Oct 2014 to\"", "bold": true },
-          { "text": ". Dies wird zum regex-Muster " },
-          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
-          { "text": " — das jedes Datum gefolgt von \"to\" erkennt. Der Regex-Assistent (Zauberstab-Symbol) ist hier wirklich nützlich, um diese Muster Schritt für Schritt zu erstellen, ohne die regex-Syntax kennen zu müssen." }
+          {
+            "text": "Sehen wir uns an, wie die dynamische Extraktion das Datumsproblem aus Schritt 5.1 löst. Schauen Sie sich den OCR-Text an — finden Sie die hervorgehobene Zeile "
+          },
+          {
+            "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": ". Wir möchten das Enddatum "
+          },
+          {
+            "text": "\"21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": " extrahieren — das tatsächliche Auszugsdatum."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Um den Vor-Anker zu erstellen, beginnen Sie mit dem lesbaren Text, den Sie sehen können: "
+          },
+          {
+            "text": "\"22 Oct 2014 to\"",
+            "bold": true
+          },
+          {
+            "text": ". Dies wird zum regex-Muster "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " — das jedes Datum gefolgt von \"to\" erkennt. Der Regex-Assistent (Zauberstab-Symbol) ist hier wirklich nützlich, um diese Muster Schritt für Schritt zu erstellen, ohne die regex-Syntax kennen zu müssen."
+          }
         ]
       },
       "5_5": {
         "title": "Die Extraktionsregel konfigurieren",
         "textParts": [
-          { "text": "Aus dem vorherigen Schritt haben wir den Vor-Anker " },
-          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
-          { "text": " und das Datumsformat " },
-          { "text": "\"DD MMM YYYY\"", "bold": true },
-          { "text": " identifiziert, um das Auszugsenddatum zu extrahieren. Sie können diese Werte links ausgefüllt sehen — das Zielfeld ist auf " },
-          { "text": "\"Date Created\"", "bold": true },
-          { "text": " eingestellt, sodass \"21 Dec 2014\" direkt in das Erstellungsdatum-Feld des Dokuments in Paperless-ngx geschrieben wird." },
-          { "text": "\n\n" },
-          { "text": "Der Nach-Anker ist optional, aber empfohlen", "bold": true },
-          { "text": " — er begrenzt den Suchbereich, sodass PocoClass aufhört zu suchen, sobald es diese Grenze erreicht. Dies hilft, falsche Übereinstimmungen zu vermeiden, wenn ein Dokument viele ähnliche Werte enthält, und erkennt Fehler frühzeitig. In diesem Beispiel ist ein Nach-Anker nicht zwingend erforderlich, da der Vor-Anker präzise genug ist, aber bei komplexeren Dokumenten ist es eine gute Praxis, die Suche einzugrenzen." }
+          {
+            "text": "Aus dem vorherigen Schritt haben wir den Vor-Anker "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " und das Datumsformat "
+          },
+          {
+            "text": "\"DD MMM YYYY\"",
+            "bold": true
+          },
+          {
+            "text": " identifiziert, um das Auszugsenddatum zu extrahieren. Sie können diese Werte links ausgefüllt sehen — das Zielfeld ist auf "
+          },
+          {
+            "text": "\"Date Created\"",
+            "bold": true
+          },
+          {
+            "text": " eingestellt, sodass \"21 Dec 2014\" direkt in das Erstellungsdatum-Feld des Dokuments in Paperless-ngx geschrieben wird."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Der Nach-Anker ist optional, aber empfohlen",
+            "bold": true
+          },
+          {
+            "text": " — er begrenzt den Suchbereich, sodass PocoClass aufhört zu suchen, sobald es diese Grenze erreicht. Dies hilft, falsche Übereinstimmungen zu vermeiden, wenn ein Dokument viele ähnliche Werte enthält, und erkennt Fehler frühzeitig. In diesem Beispiel ist ein Nach-Anker nicht zwingend erforderlich, da der Vor-Anker präzise genug ist, aber bei komplexeren Dokumenten ist es eine gute Praxis, die Suche einzugrenzen."
+          }
         ]
       },
       "6_0": {

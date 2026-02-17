@@ -67,9 +67,8 @@ export default function PatternHelperModal({ isOpen, onClose, onUsePattern, init
 
   const loadDateFormats = async () => {
     try {
-      const sessionToken = localStorage.getItem('pococlass_session');
       const response = await fetch(`${API_BASE_URL}/api/settings/date-formats/selected`, {
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        credentials: 'include'
       });
       
       if (response.ok) {

@@ -143,7 +143,9 @@
       "allProcessed": "Tutti i documenti sono stati elaborati",
       "filtersRestrictive": "I filtri attuali sono troppo restrittivi"
     },
-    "checkConsole": "Controlla la console del browser per i dettagli della risposta dell'API."
+    "checkConsole": "Controlla la console del browser per i dettagli della risposta dell'API.",
+    "createFirstRuleDesc": "Crea la tua prima regola di classificazione dei documenti",
+    "duplicateRule": "Duplica regola"
   },
   "wizard": {
     "step1": "Informazioni di base",
@@ -1289,9 +1291,16 @@
       "0_6": {
         "title": "Contenuto OCR",
         "textParts": [
-          { "text": "Questa scheda mostra il testo grezzo che PocoClass estrae dal documento usando l'OCR (Optical Character Recognition). Questo è ciò che PocoClass effettivamente 'legge' — " },
-          { "text": "nota come l'ordine del testo può differire dal layout visivo del PDF.", "bold": true },
-          { "text": " I tuoi pattern devono corrispondere a questo testo, non al layout del PDF." }
+          {
+            "text": "Questa scheda mostra il testo grezzo che PocoClass estrae dal documento usando l'OCR (Optical Character Recognition). Questo è ciò che PocoClass effettivamente 'legge' — "
+          },
+          {
+            "text": "nota come l'ordine del testo può differire dal layout visivo del PDF.",
+            "bold": true
+          },
+          {
+            "text": " I tuoi pattern devono corrispondere a questo testo, non al layout del PDF."
+          }
         ]
       },
       "0_7": {
@@ -1313,68 +1322,153 @@
       "2_0": {
         "title": "Passo 2: Pattern di identificazione OCR",
         "textParts": [
-          { "text": "Questo è il passo più importante. Qui definisci i pattern di testo che identificano in modo univoco il tuo tipo di documento. Un pattern di testo può essere semplice come una parola o una frase — come \"Royal Bank of Scotland\" o \"Invoice Number\"." },
-          { "text": "\n\n" },
-          { "text": "Per maggiore flessibilità, puoi usare le espressioni regolari (regex) — un modo per descrivere pattern di testo che gestisce variazioni come spazi extra o formattazione diversa. Il pulsante Assistente pattern rende la creazione di regex facile, anche senza esperienza. Per maggiori dettagli, vedi " },
-          { "text": "Supporto Regex nella Guida", "action": "openGuide" },
-          { "text": "." }
+          {
+            "text": "Questo è il passo più importante. Qui definisci i pattern di testo che identificano in modo univoco il tuo tipo di documento. Un pattern di testo può essere semplice come una parola o una frase — come \"Royal Bank of Scotland\" o \"Invoice Number\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Per maggiore flessibilità, puoi usare le espressioni regolari (regex) — un modo per descrivere pattern di testo che gestisce variazioni come spazi extra o formattazione diversa. Il pulsante Assistente pattern rende la creazione di regex facile, anche senza esperienza. Per maggiori dettagli, vedi "
+          },
+          {
+            "text": "Supporto Regex nella Guida",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "2_1": {
         "title": "PDF vs OCR — Cosa vede PocoClass",
         "textParts": [
-          { "text": "Prima di definire i pattern, guarda la differenza tra il PDF (come vedi tu il documento) e il testo OCR (come lo vede PocoClass). " },
-          { "text": "Passa", "action": "togglePreview" },
-          { "text": " tra le schede PDF e OCR sulla destra — nota come l'ordine del testo è diverso! PocoClass lavora con il testo OCR, non con il layout visivo." }
+          {
+            "text": "Prima di definire i pattern, guarda la differenza tra il PDF (come vedi tu il documento) e il testo OCR (come lo vede PocoClass). "
+          },
+          {
+            "text": "Passa",
+            "action": "togglePreview"
+          },
+          {
+            "text": " tra le schede PDF e OCR sulla destra — nota come l'ordine del testo è diverso! PocoClass lavora con il testo OCR, non con il layout visivo."
+          }
         ]
       },
       "2_2": {
         "title": "Gruppo logico 1 — Identificazione banca",
         "textParts": [
-          { "text": "Il nostro primo pattern cerca " },
-          { "text": "\"Royal Bank of Scotland\"", "bold": true },
-          { "text": " come testo semplice — appare in fondo a ogni estratto conto RBS. L'area di ricerca è impostata sulle ultime 10 righe, rendendo la corrispondenza più veloce e precisa. Questo gruppo è opzionale — aumenta la confidenza ma non rifiuterà i documenti se mancante." },
-          { "text": "\n\n" },
-          { "text": "Con l'aiuto del costruttore di regex, lo stesso pattern potrebbe essere scritto come " },
-          { "text": "Royal\\s*Bank\\s*of\\s*Scotland", "bold": true },
-          { "text": " — che corrisponderebbe anche a variazioni come \"RoyalBank of Scotland\" o \"Royal   Bank of Scotland\" con spaziatura insolita. Il testo semplice funziona nella maggior parte dei casi; la regex aggiunge flessibilità quando necessario." }
+          {
+            "text": "Il nostro primo pattern cerca "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " come testo semplice — appare in fondo a ogni estratto conto RBS. L'area di ricerca è impostata sulle ultime 10 righe, rendendo la corrispondenza più veloce e precisa. Questo gruppo è opzionale — aumenta la confidenza ma non rifiuterà i documenti se mancante."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Con l'aiuto del costruttore di regex, lo stesso pattern potrebbe essere scritto come "
+          },
+          {
+            "text": "Royal\\s*Bank\\s*of\\s*Scotland",
+            "bold": true
+          },
+          {
+            "text": " — che corrisponderebbe anche a variazioni come \"RoyalBank of Scotland\" o \"Royal   Bank of Scotland\" con spaziatura insolita. Il testo semplice funziona nella maggior parte dei casi; la regex aggiunge flessibilità quando necessario."
+          }
         ]
       },
       "2_3": {
         "title": "Gruppo logico 2 — Identificazione conto",
         "textParts": [
-          { "text": "Questo pattern cerca il tuo IBAN completo " },
-          { "text": "\"GB11RBOS 1610 0011 1111 11\"", "bold": true },
-          { "text": " nelle prime 10 righe del documento — dove gli estratti conto bancari tipicamente mostrano i dettagli del conto." },
-          { "text": "\n\n" },
-          { "text": "Questo gruppo è stato reso obbligatorio", "bold": true },
-          { "text": ", il che significa che la regola passerà solo se questo pattern viene trovato. Questo è importante quando hai più conti con Royal Bank — assicura che identifichi l'estratto conto del conto corretto, non un qualsiasi documento RBS." }
+          {
+            "text": "Questo pattern cerca il tuo IBAN completo "
+          },
+          {
+            "text": "\"GB11RBOS 1610 0011 1111 11\"",
+            "bold": true
+          },
+          {
+            "text": " nelle prime 10 righe del documento — dove gli estratti conto bancari tipicamente mostrano i dettagli del conto."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Questo gruppo è stato reso obbligatorio",
+            "bold": true
+          },
+          {
+            "text": ", il che significa che la regola passerà solo se questo pattern viene trovato. Questo è importante quando hai più conti con Royal Bank — assicura che identifichi l'estratto conto del conto corretto, non un qualsiasi documento RBS."
+          }
         ]
       },
       "2_4": {
         "title": "Altri gruppi logici",
         "textParts": [
-          { "text": "Puoi aggiungere altri gruppi logici per migliorare la precisione. Ogni regola necessita di un minimo di 3 e può avere fino a 10 gruppi. I gruppi possono usare la logica AND (tutte le condizioni devono corrispondere) o la logica OR (qualsiasi condizione può corrispondere). Nel nostro esempio, i gruppi 3-5 cercano " },
-          { "text": "\"Account Number\"", "bold": true },
-          { "text": ", " },
-          { "text": "\"Statement\"", "bold": true },
-          { "text": ", e " },
-          { "text": "\"Balance\"", "bold": true },
-          { "text": "." },
-          { "text": "\n\n" },
-          { "text": "Il pulsante Assistente pattern (cerca l'icona della bacchetta) ti aiuta a costruire pattern regex senza bisogno di conoscere la sintassi regex. Per maggiori dettagli, vedi " },
-          { "text": "Supporto Regex nella Guida", "action": "openGuide" },
-          { "text": "." }
+          {
+            "text": "Puoi aggiungere altri gruppi logici per migliorare la precisione. Ogni regola necessita di un minimo di 3 e può avere fino a 10 gruppi. I gruppi possono usare la logica AND (tutte le condizioni devono corrispondere) o la logica OR (qualsiasi condizione può corrispondere). Nel nostro esempio, i gruppi 3-5 cercano "
+          },
+          {
+            "text": "\"Account Number\"",
+            "bold": true
+          },
+          {
+            "text": ", "
+          },
+          {
+            "text": "\"Statement\"",
+            "bold": true
+          },
+          {
+            "text": ", e "
+          },
+          {
+            "text": "\"Balance\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Il pulsante Assistente pattern (cerca l'icona della bacchetta) ti aiuta a costruire pattern regex senza bisogno di conoscere la sintassi regex. Per maggiori dettagli, vedi "
+          },
+          {
+            "text": "Supporto Regex nella Guida",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "2_5": {
         "title": "Soglia OCR e moltiplicatore di peso",
         "textParts": [
-          { "text": "La soglia OCR (75%) imposta la percentuale minima di pattern OCR che devono corrispondere prima che il documento possa essere classificato. Questo garantisce un livello base di confidenza basata sul testo." },
-          { "text": "\n\n" },
-          { "text": "Il moltiplicatore di peso (x3) controlla quanto i pattern OCR contano nel POCO Score finale. Una regola può usare tre fonti per identificare i documenti: pattern di testo OCR (la fonte principale), pattern del nome file e classificazioni Paperless-ngx. Il moltiplicatore ti permette di dare priorità all'OCR rispetto alle altre fonti. Per maggiori dettagli, vedi " },
-          { "text": "Sistema di punteggio nella Guida", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "La soglia OCR (75%) imposta la percentuale minima di pattern OCR che devono corrispondere prima che il documento possa essere classificato. Questo garantisce un livello base di confidenza basata sul testo."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Il moltiplicatore di peso (x3) controlla quanto i pattern OCR contano nel POCO Score finale. Una regola può usare tre fonti per identificare i documenti: pattern di testo OCR (la fonte principale), pattern del nome file e classificazioni Paperless-ngx. Il moltiplicatore ti permette di dare priorità all'OCR rispetto alle altre fonti. Per maggiori dettagli, vedi "
+          },
+          {
+            "text": "Sistema di punteggio nella Guida",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "3_0": {
@@ -1384,23 +1478,50 @@
       "3_1": {
         "title": "Pattern nome file",
         "textParts": [
-          { "text": "Pattern 1: " },
-          { "text": "\"RBS.*statement\"", "bold": true },
-          { "text": " corrisponde a qualsiasi nome di file contenente \"RBS\" seguito da qualsiasi carattere e poi \"statement\". Il .* significa che qualsiasi numero di caratteri può apparire tra di essi — corrisponde a \"RBS_Statement_2014-12-21.pdf\" o \"RBS-Monthly-Statement.pdf\"." },
-          { "text": "\n\n" },
-          { "text": "Pattern 2: " },
-          { "text": "\"\\d{4}-\\d{2}-\\d{2}\"", "bold": true },
-          { "text": " cerca un pattern di data completo nel nome del file — quattro cifre, un trattino, due cifre, un trattino e due cifre. Questo corrisponde alla parte \"2014-12-21\" in \"RBS_Statement_2014-12-21.pdf\", aiutando a identificare i documenti per la loro data." }
+          {
+            "text": "Pattern 1: "
+          },
+          {
+            "text": "\"RBS.*statement\"",
+            "bold": true
+          },
+          {
+            "text": " corrisponde a qualsiasi nome di file contenente \"RBS\" seguito da qualsiasi carattere e poi \"statement\". Il .* significa che qualsiasi numero di caratteri può apparire tra di essi — corrisponde a \"RBS_Statement_2014-12-21.pdf\" o \"RBS-Monthly-Statement.pdf\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Pattern 2: "
+          },
+          {
+            "text": "\"\\d{4}-\\d{2}-\\d{2}\"",
+            "bold": true
+          },
+          {
+            "text": " cerca un pattern di data completo nel nome del file — quattro cifre, un trattino, due cifre, un trattino e due cifre. Questo corrisponde alla parte \"2014-12-21\" in \"RBS_Statement_2014-12-21.pdf\", aiutando a identificare i documenti per la loro data."
+          }
         ]
       },
       "3_2": {
         "title": "Moltiplicatore di peso nome file",
         "textParts": [
-          { "text": "Il moltiplicatore di peso del nome file (x1) controlla quanto le corrispondenze del nome file contribuiscono al POCO Score finale — simile al moltiplicatore OCR che hai visto prima. Il valore predefinito di x1 significa che i pattern del nome file contano meno dei pattern OCR (che usano x3)." },
-          { "text": "\n\n" },
-          { "text": "Questo ha senso perché i nomi dei file sono meno affidabili del contenuto del documento — possono essere rinominati o incoerenti. Per maggiori dettagli su come funzionano insieme tutti i moltiplicatori, vedi " },
-          { "text": "Sistema di punteggio nella Guida", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "Il moltiplicatore di peso del nome file (x1) controlla quanto le corrispondenze del nome file contribuiscono al POCO Score finale — simile al moltiplicatore OCR che hai visto prima. Il valore predefinito di x1 significa che i pattern del nome file contano meno dei pattern OCR (che usano x3)."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Questo ha senso perché i nomi dei file sono meno affidabili del contenuto del documento — possono essere rinominati o incoerenti. Per maggiori dettagli su come funzionano insieme tutti i moltiplicatori, vedi "
+          },
+          {
+            "text": "Sistema di punteggio nella Guida",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "4_0": {
@@ -1414,11 +1535,22 @@
       "4_2": {
         "title": "Moltiplicatore di verifica",
         "textParts": [
-          { "text": "Il moltiplicatore di verifica controlla quanto peso aggiungono le corrispondenze dei campi Paperless-ngx al POCO Score finale. Per impostazione predefinita, la modalità è impostata su \"Auto\" che neutralizza il peso di questa fonte — mantenendo la verifica come un leggero aumento di confidenza piuttosto che un fattore dominante." },
-          { "text": "\n\n" },
-          { "text": "Senza la modalità Auto, il calcolo del punteggio potrebbe dare alle classificazioni Paperless un peso molto alto (fino a x5), potenzialmente oscurando i tuoi pattern OCR. La modalità Auto previene questo regolando dinamicamente il moltiplicatore. Per maggiori dettagli, vedi " },
-          { "text": "Sistema di punteggio nella Guida", "action": "openGuideScoring" },
-          { "text": "." }
+          {
+            "text": "Il moltiplicatore di verifica controlla quanto peso aggiungono le corrispondenze dei campi Paperless-ngx al POCO Score finale. Per impostazione predefinita, la modalità è impostata su \"Auto\" che neutralizza il peso di questa fonte — mantenendo la verifica come un leggero aumento di confidenza piuttosto che un fattore dominante."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Senza la modalità Auto, il calcolo del punteggio potrebbe dare alle classificazioni Paperless un peso molto alto (fino a x5), potenzialmente oscurando i tuoi pattern OCR. La modalità Auto previene questo regolando dinamicamente il moltiplicatore. Per maggiori dettagli, vedi "
+          },
+          {
+            "text": "Sistema di punteggio nella Guida",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "5_0": {
@@ -1428,66 +1560,159 @@
       "5_1": {
         "title": "Campi predefiniti di Paperless",
         "textParts": [
-          { "text": "Questi campi provengono direttamente dalla tua istanza Paperless-ngx — Corrispondente, Tipo di documento e Etichette sono selezioni a discesa dai valori già esistenti in Paperless-ngx. Data di creazione è diverso — è un campo di inserimento data libero che ti permette di impostare una data specifica. Nel nostro esempio, assegniamo " },
-          { "text": "\"Royal Bank of Scotland\"", "bold": true },
-          { "text": " come corrispondente, " },
-          { "text": "\"Bank Statement\"", "bold": true },
-          { "text": " come tipo di documento, e aggiungiamo le etichette " },
-          { "text": "\"Financial\"", "bold": true },
-          { "text": " e " },
-          { "text": "\"Bank\"", "bold": true },
-          { "text": "." },
-          { "text": "\n\n" },
-          { "text": "Nota che Data di creazione è stata lasciata intenzionalmente vuota qui. Impostare una data fissa qui applicherebbe la stessa data a ogni documento che corrisponde a questa regola — il che raramente ha senso. È qui che l'estrazione dinamica brilla davvero. Paperless-ngx ha il proprio rilevamento data integrato, ma non hai controllo su quale data sceglie. Nel nostro estratto conto bancario, Paperless potrebbe scegliere il 22 ottobre 2014 invece della data corretta di fine estratto conto del 21 dicembre 2014. Con l'estrazione dinamica, dici a PocoClass esattamente dove trovare la data giusta." }
+          {
+            "text": "Questi campi provengono direttamente dalla tua istanza Paperless-ngx — Corrispondente, Tipo di documento e Etichette sono selezioni a discesa dai valori già esistenti in Paperless-ngx. Data di creazione è diverso — è un campo di inserimento data libero che ti permette di impostare una data specifica. Nel nostro esempio, assegniamo "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " come corrispondente, "
+          },
+          {
+            "text": "\"Bank Statement\"",
+            "bold": true
+          },
+          {
+            "text": " come tipo di documento, e aggiungiamo le etichette "
+          },
+          {
+            "text": "\"Financial\"",
+            "bold": true
+          },
+          {
+            "text": " e "
+          },
+          {
+            "text": "\"Bank\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Nota che Data di creazione è stata lasciata intenzionalmente vuota qui. Impostare una data fissa qui applicherebbe la stessa data a ogni documento che corrisponde a questa regola — il che raramente ha senso. È qui che l'estrazione dinamica brilla davvero. Paperless-ngx ha il proprio rilevamento data integrato, ma non hai controllo su quale data sceglie. Nel nostro estratto conto bancario, Paperless potrebbe scegliere il 22 ottobre 2014 invece della data corretta di fine estratto conto del 21 dicembre 2014. Con l'estrazione dinamica, dici a PocoClass esattamente dove trovare la data giusta."
+          }
         ]
       },
       "5_2": {
         "title": "Campi personalizzati",
         "textParts": [
-          { "text": "I campi personalizzati ti permettono di memorizzare dati aggiuntivi specifici per il tuo flusso di lavoro. I campi mostrati qui dipendono dalle tue Impostazioni di visibilità dei campi — potresti vedere più o meno campi a seconda della tua configurazione." },
-          { "text": "\n\n" },
-          { "text": "Ogni campo personalizzato può essere impostato su un valore fisso qui nella sezione predefinita, o estratto dinamicamente dal testo del documento (configurato nella sezione successiva). Per maggiori dettagli sulla configurazione dei campi, vedi " },
-          { "text": "Metadati nella Guida", "action": "openGuideMetadata" },
-          { "text": "." }
+          {
+            "text": "I campi personalizzati ti permettono di memorizzare dati aggiuntivi specifici per il tuo flusso di lavoro. I campi mostrati qui dipendono dalle tue Impostazioni di visibilità dei campi — potresti vedere più o meno campi a seconda della tua configurazione."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Ogni campo personalizzato può essere impostato su un valore fisso qui nella sezione predefinita, o estratto dinamicamente dal testo del documento (configurato nella sezione successiva). Per maggiori dettagli sulla configurazione dei campi, vedi "
+          },
+          {
+            "text": "Metadati nella Guida",
+            "action": "openGuideMetadata"
+          },
+          {
+            "text": "."
+          }
         ]
       },
       "5_3": {
         "title": "Estrazione dinamica dei dati",
         "textParts": [
-          { "text": "L'estrazione dinamica usa pattern di ancoraggio per localizzare e prelevare valori specifici dal testo del documento. Ogni regola di estrazione definisce un \"ancoraggio prima\" (testo che appare subito prima del valore desiderato) e opzionalmente un \"ancoraggio dopo\" (testo che appare subito dopo). Il testo estratto tra questi ancoraggi viene poi memorizzato in un campo di Paperless-ngx." },
-          { "text": "\n\n" },
-          { "text": "Questa è una delle funzionalità più potenti di PocoClass. Combinata con i campi personalizzati, puoi estrarre virtualmente qualsiasi informazione dai tuoi documenti — un numero di conto da un estratto conto bancario, l'importo totale da una fattura, i kWh consumati da una bolletta elettrica o un numero di polizza da un documento assicurativo. Ogni campo di destinazione può essere usato una sola volta — o come valore predefinito o come estrazione dinamica, mai entrambi." }
+          {
+            "text": "L'estrazione dinamica usa pattern di ancoraggio per localizzare e prelevare valori specifici dal testo del documento. Ogni regola di estrazione definisce un \"ancoraggio prima\" (testo che appare subito prima del valore desiderato) e opzionalmente un \"ancoraggio dopo\" (testo che appare subito dopo). Il testo estratto tra questi ancoraggi viene poi memorizzato in un campo di Paperless-ngx."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Questa è una delle funzionalità più potenti di PocoClass. Combinata con i campi personalizzati, puoi estrarre virtualmente qualsiasi informazione dai tuoi documenti — un numero di conto da un estratto conto bancario, l'importo totale da una fattura, i kWh consumati da una bolletta elettrica o un numero di polizza da un documento assicurativo. Ogni campo di destinazione può essere usato una sola volta — o come valore predefinito o come estrazione dinamica, mai entrambi."
+          }
         ]
       },
       "5_4": {
         "title": "Trovare la data nel testo OCR",
         "textParts": [
-          { "text": "Vediamo come l'estrazione dinamica risolve il problema della data dal Passo 5.1. Guarda il testo OCR — trova la riga evidenziata " },
-          { "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"", "bold": true },
-          { "text": ". Vogliamo estrarre la data finale " },
-          { "text": "\"21 Dec 2014\"", "bold": true },
-          { "text": " — la data effettiva dell'estratto conto." },
-          { "text": "\n\n" },
-          { "text": "Per costruire l'ancoraggio prima, inizia con il testo leggibile che puoi vedere: " },
-          { "text": "\"22 Oct 2014 to\"", "bold": true },
-          { "text": ". Questo si traduce nel pattern regex " },
-          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
-          { "text": " — che corrisponde a qualsiasi data seguita da \"to\". L'Assistente Regex (icona della bacchetta) è davvero utile qui per costruire questi pattern passo dopo passo senza bisogno di conoscere la sintassi regex." }
+          {
+            "text": "Vediamo come l'estrazione dinamica risolve il problema della data dal Passo 5.1. Guarda il testo OCR — trova la riga evidenziata "
+          },
+          {
+            "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": ". Vogliamo estrarre la data finale "
+          },
+          {
+            "text": "\"21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": " — la data effettiva dell'estratto conto."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Per costruire l'ancoraggio prima, inizia con il testo leggibile che puoi vedere: "
+          },
+          {
+            "text": "\"22 Oct 2014 to\"",
+            "bold": true
+          },
+          {
+            "text": ". Questo si traduce nel pattern regex "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " — che corrisponde a qualsiasi data seguita da \"to\". L'Assistente Regex (icona della bacchetta) è davvero utile qui per costruire questi pattern passo dopo passo senza bisogno di conoscere la sintassi regex."
+          }
         ]
       },
       "5_5": {
         "title": "Configurazione della regola di estrazione",
         "textParts": [
-          { "text": "Dal passo precedente, abbiamo identificato l'ancoraggio prima " },
-          { "text": "\"\\d{1,2} \\w{3} \\d{4} to\"", "bold": true },
-          { "text": " e il formato data " },
-          { "text": "\"DD MMM YYYY\"", "bold": true },
-          { "text": " per estrarre la data di fine estratto conto. Puoi vedere questi valori compilati a sinistra — il campo di destinazione è impostato su " },
-          { "text": "\"Date Created\"", "bold": true },
-          { "text": ", quindi \"21 Dec 2014\" verrà scritto direttamente nel campo Data di creazione del documento in Paperless-ngx." },
-          { "text": "\n\n" },
-          { "text": "L'ancoraggio dopo è opzionale ma consigliato", "bold": true },
-          { "text": " — limita l'area di ricerca in modo che PocoClass smetta di cercare una volta raggiunto quel confine. Questo aiuta a prevenire corrispondenze errate quando un documento contiene molti valori simili, e rileva errori in anticipo. In questo esempio, un ancoraggio dopo non è strettamente necessario perché l'ancoraggio prima è abbastanza preciso, ma per documenti più complessi è buona pratica limitare la ricerca." }
+          {
+            "text": "Dal passo precedente, abbiamo identificato l'ancoraggio prima "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " e il formato data "
+          },
+          {
+            "text": "\"DD MMM YYYY\"",
+            "bold": true
+          },
+          {
+            "text": " per estrarre la data di fine estratto conto. Puoi vedere questi valori compilati a sinistra — il campo di destinazione è impostato su "
+          },
+          {
+            "text": "\"Date Created\"",
+            "bold": true
+          },
+          {
+            "text": ", quindi \"21 Dec 2014\" verrà scritto direttamente nel campo Data di creazione del documento in Paperless-ngx."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "L'ancoraggio dopo è opzionale ma consigliato",
+            "bold": true
+          },
+          {
+            "text": " — limita l'area di ricerca in modo che PocoClass smetta di cercare una volta raggiunto quel confine. Questo aiuta a prevenire corrispondenze errate quando un documento contiene molti valori simili, e rileva errori in anticipo. In questo esempio, un ancoraggio dopo non è strettamente necessario perché l'ancoraggio prima è abbastanza preciso, ma per documenti più complessi è buona pratica limitare la ricerca."
+          }
         ]
       },
       "6_0": {

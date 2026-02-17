@@ -1,17 +1,7 @@
-/**
- * @file auth.js
- * @description Authentication utilities for POCOclass. Manages session tokens
- * and user data in localStorage, provides setup status checks, session
- * validation against the backend, and logout with cleanup.
- */
-
 import API_BASE_URL from '../config/api';
 const API_AUTH_URL = `${API_BASE_URL}/api`;
 
 export const auth = {
-  /**
-   * Check if setup is completed
-   */
   async checkSetupStatus() {
     try {
       const response = await fetch(`${API_AUTH_URL}/auth/status`);
@@ -23,48 +13,28 @@ export const auth = {
     }
   },
 
-  /**
-   * Get current session token from localStorage
-   */
   getSessionToken() {
-    return localStorage.getItem('pococlass_session');
+    return localStorage.getItem('pococlass_user') ? 'cookie' : null;
   },
 
-  /**
-   * Get current user from localStorage
-   */
   getCurrentUser() {
     const user = localStorage.getItem('pococlass_user');
     return user ? JSON.parse(user) : null;
   },
 
-  /**
-   * Check if user is authenticated
-   */
   isAuthenticated() {
     return !!this.getSessionToken();
   },
 
-  /**
-   * Check if current user is admin
-   */
   isAdmin() {
     const user = this.getCurrentUser();
     return user && user.role === 'admin';
   },
 
-  /**
-   * Validate current session with backend
-   */
   async validateSession() {
-    const token = this.getSessionToken();
-    if (!token) return false;
-
     try {
       const response = await fetch(`${API_AUTH_URL}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -82,23 +52,14 @@ export const auth = {
     }
   },
 
-  /**
-   * Logout user
-   */
   async logout() {
-    const token = this.getSessionToken();
-    
-    if (token) {
-      try {
-        await fetch(`${API_AUTH_URL}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-      } catch (error) {
-        console.error('Error during logout:', error);
-      }
+    try {
+      await fetch(`${API_AUTH_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
     }
 
     localStorage.removeItem('pococlass_session');
