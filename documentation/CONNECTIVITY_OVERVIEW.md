@@ -2,6 +2,7 @@
 
 This document gives a focused view of how PocoClass and Paperless-ngx communicate,
 how data flows between the two systems, and how processing is triggered.
+<br>
 
 ## 1. High-Level Connection Diagram
 
@@ -34,6 +35,7 @@ flowchart LR
     Proc -->|"Write classification\nresults back"| Paperless
     Proc -->|"Log processing\nhistory"| DB
 ```
+<br>
 
 ## 2. Data Flow: What Goes Where
 
@@ -45,7 +47,9 @@ flowchart LR
 | Document content / OCR text | Rule testing, background processing | Pattern matching against OCR identifiers |
 | Document preview (thumbnail) | UI document list | Display document thumbnails |
 
+<br>
 > **Sync** happens in three situations: on user login, via the Sync button under Settings, and automatically before every background processing run.
+<br>
 
 ### PocoClass writes TO Paperless
 | Data | When | Purpose |
@@ -57,6 +61,7 @@ flowchart LR
 | Custom Fields (POCO Score, POCO OCR) | After rule evaluation | Write dual scores for transparency and audit |
 | Custom Fields (static/dynamic metadata) | After rule match | Write extracted metadata (dates, amounts, etc.) |
 | Document notes | After rule evaluation | Append POCO score summary to document notes |
+<br>
 
 ## 3. API Endpoint Categories
 
@@ -70,6 +75,7 @@ flowchart LR
 | `/api/auth/logout` | POST | Session | End user session |
 | `/api/auth/status` | GET | None | Check if setup is complete |
 | `/api/auth/me` | GET | Session | Get current user info |
+<br>
 
 ### Data Sync (Paperless -> PocoClass cache)
 | Endpoint | Method | Auth | Purpose |
@@ -78,6 +84,7 @@ flowchart LR
 | `GET /api/sync/status` | GET | Session | Check sync status |
 | `GET /api/sync/history` | GET | Session | View sync history |
 | `GET /api/sync/counts` | GET | Session | Get cached entity counts |
+<br>
 
 ### Rule Management
 | Endpoint | Method | Auth | Purpose |
@@ -88,12 +95,14 @@ flowchart LR
 | `PUT /api/rules/<rule_id>` | PUT | Session | Update rule |
 | `DELETE /api/rules/<rule_id>` | DELETE | Admin | Delete rule |
 | `GET /api/rules/errors` | GET | Session | Get rules with validation errors |
+<br>
 
 ### Rule Testing & Execution (triggers Paperless reads)
 | Endpoint | Method | Auth | Purpose |
 |---|---|---|---|
 | `POST /api/rules/test` | POST | Session | Test rule against document content (reads OCR from Paperless) |
 | `POST /api/rules/<rule_id>/execute` | POST | Session | Execute rule against a Paperless document |
+<br>
 
 ### Document Browsing (reads from Paperless via cache)
 | Endpoint | Method | Auth | Purpose |
@@ -101,6 +110,7 @@ flowchart LR
 | `GET /api/documents` | GET | Session | List/search documents |
 | `GET /api/documents/<id>/preview` | GET | Session | Get document thumbnail |
 | `GET /api/documents/<id>/content` | GET | Session | Get document content / OCR text |
+<br>
 
 ### Background Processing (reads + writes to Paperless)
 | Endpoint | Method | Auth | Purpose |
@@ -112,6 +122,7 @@ flowchart LR
 | `GET /api/background/history/<run_id>/details` | GET | Session | Get detailed results for a processing run |
 | `GET /api/background/settings` | GET | Session | Get background processing settings |
 | `POST /api/background/settings` | POST | Admin | Update background processing settings |
+<br>
 
 ### Settings & Configuration
 | Endpoint | Method | Auth | Purpose |
@@ -125,6 +136,7 @@ flowchart LR
 | `GET/PUT /api/settings/paperless-config` | GET/PUT | Session/Admin | Paperless connection settings |
 | `GET/PUT /api/settings/poco-ocr-enabled` | GET/PUT | Session/Admin | Toggle POCO OCR feature |
 | `GET/PUT /api/settings/placeholders` | GET/PUT | Session/Admin | Field visibility settings |
+<br>
 
 ### System Administration
 | Endpoint | Method | Auth | Purpose |
@@ -134,6 +146,7 @@ flowchart LR
 | `DELETE /api/system-token` | DELETE | Admin | Revoke system token |
 | `POST /api/system/reset-app` | POST | Admin | Factory reset the application |
 | `GET /api/logs` | GET | Admin | Get system logs |
+<br>
 
 ## 4. Processing Pipeline
 
@@ -162,12 +175,16 @@ Trigger received (UI button or script)
     → Log results to processing history
     → Release lock
 ```
+<br>
 
 ### Auto-Pause Mechanism
 Automatic and script-triggered runs check if any user has an active session (within the last 5 minutes). If so, processing is skipped to avoid conflicting with a user actively working in the UI. UI-initiated triggers (Trigger button, Run, Dry Run) bypass this check since the user explicitly requested processing.
+<br>
 
 ### Debounce Mechanism
 The trigger endpoint uses a debounce timer (configurable, default 30 seconds). If multiple triggers arrive within the debounce window, only the last one executes. This prevents excessive processing when Paperless sends rapid post-consumption webhooks.
+
+<br>
 
 ## 5. Authentication Model
 
@@ -177,6 +194,8 @@ The trigger endpoint uses a debounce timer (configurable, default 30 seconds). I
 | **System token** (X-API-Key header) | External scripts, automation | Admin generates a system token in Settings → script sends it as `X-API-Key` header → used for `/api/background/trigger` only |
 
 All API endpoints require authentication except: `/api/health`, `/api/auth/status`, `/api/auth/login`, `/api/auth/setup`, `/api/auth/complete-setup`.
+
+<br>
 
 ## 6. External Script Integration
 
