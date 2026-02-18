@@ -473,6 +473,8 @@ export default function BackgroundProcess() {
         return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>{t('backgroundProcess.dryRun')}</Badge>;
       case 'manual_run':
         return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
+      case 'trigger':
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Trigger</Badge>;
       case 'automatic':
         return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>Automatic</Badge>;
       default:
@@ -736,7 +738,7 @@ export default function BackgroundProcess() {
                           <AlertCircle className="w-3.5 h-3.5 text-yellow-600" />
                         )}
                       </div>
-                      <div className="flex-1 grid grid-cols-6 gap-2 text-xs">
+                      <div className="flex-1 grid gap-2 text-xs" style={{ gridTemplateColumns: '140px 1fr 1fr 1fr 1fr 1fr' }}>
                         <div>
                           <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.started')}</div>
                           <div className="font-medium">{formatDateTime(entry.started_at)}</div>

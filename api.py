@@ -2769,7 +2769,7 @@ def trigger_background_processing():
                 'validation_required': True
             }), 400
         
-        result = background_processor.trigger_processing()
+        result = background_processor.trigger_processing(user_session=session)
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error triggering background processing: {e}", exc_info=True)
