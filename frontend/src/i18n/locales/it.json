@@ -506,6 +506,8 @@
     "noProcessingHistory": "Nessuna cronologia di elaborazione",
     "processingRunsAppear": "Le esecuzioni di elaborazione in background verranno visualizzate qui",
     "processingFailed": "Elaborazione non riuscita",
+    "autoPauseWarningTitle": "L'elaborazione automatica è in pausa mentre sei connesso",
+    "autoPauseWarningDesc": "Per evitare conflitti tra il lavoro manuale e l'elaborazione automatica, l'elaborazione in background attivata da script esterni viene sospesa mentre una sessione utente è attiva. L'elaborazione tramite il pulsante Attiva in questa pagina non è interessata.",
     "days": "giorni",
     "runs": "esecuzioni",
     "metadata": {

@@ -506,6 +506,8 @@
     "noProcessingHistory": "Kein Verarbeitungsverlauf",
     "processingRunsAppear": "Hintergrundverarbeitungsläufe werden hier angezeigt",
     "processingFailed": "Verarbeitung fehlgeschlagen",
+    "autoPauseWarningTitle": "Automatische Verarbeitung pausiert, solange Sie angemeldet sind",
+    "autoPauseWarningDesc": "Um Konflikte zwischen manueller Arbeit und automatischer Verarbeitung zu vermeiden, wird die durch externe Skripte ausgelöste Hintergrundverarbeitung pausiert, solange eine Benutzersitzung aktiv ist. Die Verarbeitung über die Auslösen-Schaltfläche auf dieser Seite ist davon nicht betroffen.",
     "table": {
       "started": "Gestartet",
       "documents": "Dokumente",

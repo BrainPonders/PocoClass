@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { Rule, Document, Paperless } from "@/api/entities";
 import { apiClient } from "@/api/apiClient";
 import { createPageUrl } from "@/utils";
-import { FileText, Play, CheckSquare, Square, Info, Eye, X, Pencil } from "lucide-react";
+import { FileText, Play, CheckSquare, Square, Eye, X, Pencil } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
@@ -20,6 +20,7 @@ import DocumentListSection from '@/components/DocumentListSection';
 import API_BASE_URL from '@/config/api';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
+import Banner from '@/components/Banner';
 
 const truncatePattern = (pattern, maxLen = 40) => {
   if (!pattern || pattern.length <= maxLen) return pattern;
@@ -433,17 +434,10 @@ export default function RuleReviewer() {
 
       {/* Info Section */}
       {!hasRun && (
-        <Card className="mb-6" style={{ background: 'var(--info-bg)', borderColor: 'var(--info-border)' }}>
-          <CardContent className="pt-4">
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
-              <div className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
-                <p className="font-medium mb-1" style={{ color: 'var(--info-text)' }}>{t('ruleEvaluation.whatIsThisFor')}</p>
-                <p>{t('ruleEvaluation.description')}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <Banner variant="info">
+          <p className="font-medium mb-1">{t('ruleEvaluation.whatIsThisFor')}</p>
+          <p>{t('ruleEvaluation.description')}</p>
+        </Banner>
       )}
 
       {/* Document Browser */}

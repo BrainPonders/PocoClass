@@ -23,6 +23,7 @@ import DocumentListSection from '@/components/DocumentListSection';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PageLayout from '@/components/PageLayout';
+import Banner from '@/components/Banner';
 
 export default function Rules() {
   const navigate = useNavigate();
@@ -516,11 +517,9 @@ export default function Rules() {
       }
     >
       {/* Warning banner about rule activation */}
-      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-        <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
-          <strong>⚠️ {t('warnings.ruleActivationWarning')}</strong>
-        </p>
-      </div>
+      <Banner variant="warning">
+        <p className="font-medium">{t('warnings.ruleActivationWarning')}</p>
+      </Banner>
 
         {/* Search, Filter, Sort Bar */}
         <div className="card mb-6">

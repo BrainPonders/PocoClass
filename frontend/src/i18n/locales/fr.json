@@ -506,6 +506,8 @@
     "noProcessingHistory": "Aucun historique de traitement",
     "processingRunsAppear": "Les exécutions de traitement en arrière-plan apparaîtront ici",
     "processingFailed": "Traitement échoué",
+    "autoPauseWarningTitle": "Le traitement automatique est suspendu tant que vous êtes connecté",
+    "autoPauseWarningDesc": "Pour éviter les conflits entre le travail manuel et le traitement automatique, le traitement en arrière-plan déclenché par des scripts externes est suspendu tant qu'une session utilisateur est active. Le traitement via le bouton Déclencher sur cette page n'est pas affecté.",
     "table": {
       "started": "Démarré",
       "documents": "Documents",

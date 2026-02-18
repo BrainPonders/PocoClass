@@ -506,6 +506,8 @@
     "noProcessingHistory": "Geen verwerkingsgeschiedenis",
     "processingRunsAppear": "Achtergrondverwerkingsruns worden hier weergegeven",
     "processingFailed": "Verwerking mislukt",
+    "autoPauseWarningTitle": "Automatische verwerking pauzeert terwijl u bent ingelogd",
+    "autoPauseWarningDesc": "Om conflicten tussen handmatig werk en automatische verwerking te voorkomen, wordt achtergrondverwerking die door externe scripts wordt geactiveerd gepauzeerd zolang een gebruikerssessie actief is. Verwerking via de Activeren-knop op deze pagina wordt niet beïnvloed.",
     "table": {
       "started": "Gestart",
       "documents": "Documenten",

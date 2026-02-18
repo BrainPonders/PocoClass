@@ -508,6 +508,8 @@
     "noProcessingHistory": "Sin historial de procesamiento",
     "processingRunsAppear": "Las ejecuciones de procesamiento en segundo plano aparecerán aquí",
     "processingFailed": "Procesamiento fallido",
+    "autoPauseWarningTitle": "El procesamiento automático se pausa mientras está conectado",
+    "autoPauseWarningDesc": "Para evitar conflictos entre el trabajo manual y el procesamiento automático, el procesamiento en segundo plano activado por scripts externos se pausa mientras una sesión de usuario está activa. El procesamiento mediante el botón Activar en esta página no se ve afectado.",
     "table": {
       "started": "Iniciado",
       "documents": "Documentos",

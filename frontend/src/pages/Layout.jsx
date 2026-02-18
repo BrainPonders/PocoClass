@@ -194,6 +194,12 @@ function LayoutContent({ children }) {
                 --info-bg: #eff6ff;
                 --info-border: #bfdbfe;
                 --info-text: #1e40af;
+                --tip-bg: #fefce8;
+                --tip-border: #fde047;
+                --tip-text: #a16207;
+                --warning-bg: #fff7ed;
+                --warning-border: #fdba74;
+                --warning-text: #9a3412;
                 --info-yellow-bg: #fefce8;
                 --info-yellow-border: #fde047;
                 --info-yellow-text: #a16207;
@@ -226,6 +232,12 @@ function LayoutContent({ children }) {
                 --info-bg: rgba(37, 99, 235, 0.1);
                 --info-border: rgba(59, 130, 246, 0.3);
                 --info-text: #93c5fd;
+                --tip-bg: rgba(234, 179, 8, 0.1);
+                --tip-border: rgba(234, 179, 8, 0.3);
+                --tip-text: #fde047;
+                --warning-bg: rgba(249, 115, 22, 0.1);
+                --warning-border: rgba(249, 115, 22, 0.3);
+                --warning-text: #fdba74;
                 --info-yellow-bg: #422006;
                 --info-yellow-border: #92400e;
                 --info-yellow-text: #fbbf24;

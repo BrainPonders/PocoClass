@@ -6,7 +6,7 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square, ChevronDown, ChevronRight, Info } from 'lucide-react';
+import { Activity, Play, RefreshCw, Clock, CheckCircle, XCircle, AlertCircle, Eye, FileText, X, CheckSquare, Square, ChevronDown, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -20,6 +20,7 @@ import PaperlessFilterBar from "@/components/PaperlessFilterBar";
 import DocumentListSection from '@/components/DocumentListSection';
 import PageLayout from "@/components/PageLayout";
 import { useLanguage } from '@/contexts/LanguageContext';
+import Banner from '@/components/Banner';
 
 export default function BackgroundProcess() {
   const { t } = useLanguage();
@@ -529,18 +530,18 @@ export default function BackgroundProcess() {
     >
 
       {/* Info Section */}
-      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--info-text)' }} />
-          <div className="text-sm" style={{ color: 'var(--info-text)' }}>
-            <p className="font-medium mb-2">{t('backgroundProcess.whatIsThisFor')}</p>
-            <p className="mb-3">{t('backgroundProcess.description')}</p>
-            <p className="text-xs">
-              <strong>{t('backgroundProcess.triggerNow')}</strong> {t('backgroundProcess.triggerNowDesc')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <Banner variant="info">
+        <p className="font-medium mb-2">{t('backgroundProcess.whatIsThisFor')}</p>
+        <p className="mb-3">{t('backgroundProcess.description')}</p>
+        <p className="text-xs">
+          <strong>{t('backgroundProcess.triggerNow')}</strong> {t('backgroundProcess.triggerNowDesc')}
+        </p>
+      </Banner>
+
+      <Banner variant="warning">
+        <p className="font-medium mb-1">{t('backgroundProcess.autoPauseWarningTitle')}</p>
+        <p>{t('backgroundProcess.autoPauseWarningDesc')}</p>
+      </Banner>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <Card>

@@ -582,6 +582,8 @@
     "dryRunComplete": "Dry run completed",
     "processingComplete": "Processing completed",
     "processingFailed": "Processing failed",
+    "autoPauseWarningTitle": "Automatic processing pauses while you are logged in",
+    "autoPauseWarningDesc": "To prevent conflicts between manual work and automatic processing, background processing triggered by external scripts is paused while a user session is active. Processing via the Trigger button on this page is not affected.",
     "testAllRules": "Test All Rules",
     "applyRulesToPaperless": "Apply Rules to Paperless",
     "warningMessage": "Warning: This will modify documents in Paperless",
