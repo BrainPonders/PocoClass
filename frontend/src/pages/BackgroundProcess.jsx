@@ -472,9 +472,9 @@ export default function BackgroundProcess() {
       case 'manual_dry_run':
         return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>{t('backgroundProcess.dryRun')}</Badge>;
       case 'manual_run':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
+        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Run</Badge>;
       case 'trigger':
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Trigger</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Trigger</Badge>;
       case 'automatic':
         return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>Automatic</Badge>;
       default:
