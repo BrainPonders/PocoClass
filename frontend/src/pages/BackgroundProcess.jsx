@@ -728,7 +728,7 @@ export default function BackgroundProcess() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <div className="flex items-center gap-3 flex-1 text-left">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5" style={{ minWidth: '90px', width: '90px' }}>
                         {getTriggerTypeBadge(entry.trigger_type)}
                         {entry.status === 'completed' ? (
                           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
@@ -738,7 +738,7 @@ export default function BackgroundProcess() {
                           <AlertCircle className="w-3.5 h-3.5 text-yellow-600" />
                         )}
                       </div>
-                      <div className="flex-1 grid gap-2 text-xs" style={{ gridTemplateColumns: '140px 1fr 1fr 1fr 1fr 1fr' }}>
+                      <div className="flex-1 grid gap-2 text-xs" style={{ gridTemplateColumns: '130px 1fr 1fr 1fr 1fr 1fr' }}>
                         <div>
                           <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.started')}</div>
                           <div className="font-medium">{formatDateTime(entry.started_at)}</div>
