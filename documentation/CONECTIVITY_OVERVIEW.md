@@ -40,9 +40,7 @@ flowchart LR
 ### PocoClass reads FROM Paperless
 | Data | When | Purpose |
 |---|---|---|
-| Correspondents, Tags, Document Types | Sync (manual, pre-processing, login) | Populate dropdowns, validate rules, resolve entity names |
-| Custom Fields | Sync | Check for POCO Score / POCO OCR fields, display in UI |
-| Users | Sync | User management display |
+| Correspondents, Tags, Document Types, Custom Fields, Users | Sync | Populate dropdowns, validate rules, resolve entity names, check required fields |
 | Documents (list + metadata) | Rule testing, background processing, document browsing | Match against rules, apply classification |
 | Document content / OCR text | Rule testing, background processing | Pattern matching against OCR identifiers |
 | Document preview (thumbnail) | UI document list | Display document thumbnails |
