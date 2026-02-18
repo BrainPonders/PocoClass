@@ -1,11 +1,14 @@
 # PocoClass Technical Manual v2
 **Version:** 2.0  
-**Last Updated:** November 21, 2025  
+**Last Updated:** February 18, 2026  
 **Purpose:** Comprehensive technical documentation for PocoClass v2 architecture, logic, and implementation
 
 ---
 
-## Recent Changes (November 2025)
+## Recent Changes
+
+**February 18, 2026:**
+- Updated technical manual: corrected trigger types (`trigger`, `manual_run`, `manual_dry_run`, `automatic`), POCO scoring formula (paperless_max_weight = 0 when no verification fields), auto-pause bypass documentation, and background processing page path
 
 **November 21, 2025:**
 - Updated in-app guides (Full Guide + Quick Reference) with comprehensive documentation covering all aspects of PocoClass
@@ -158,14 +161,15 @@ The POCO Scoring v2 system implements a **weighted, multi-source evaluation** me
 # Scoring Components
 ocr_weighted = ocr_matches × 3.0          # OCR trust multiplier
 filename_weighted = filename_matches × 1.0 # Filename trust multiplier
-paperless_weighted = paperless_matches / paperless_total  # Neutralized
+paperless_weighted = paperless_matches / paperless_total  # Neutralized (0 if no fields)
 
 # POCO OCR Score (transparency)
 poco_ocr_score = (ocr_weighted / ocr_max_weight) × 100
 
 # POCO Score (actionable)
 total_weighted = ocr_weighted + filename_weighted + paperless_weighted
-total_max_weight = ocr_max_weight + filename_max_weight + 1.0
+paperless_max_weight = 1.0 if paperless_total > 0 else 0  # Excluded when no verification fields
+total_max_weight = ocr_max_weight + filename_max_weight + paperless_max_weight
 poco_score = (total_weighted / total_max_weight) × 100
 ```
 
@@ -217,20 +221,23 @@ MD_weighted = (m_md / t_md) × t_md × (1 / t_md)
 
 **Trust Multiplier**: `1 / t_md` (auto-calculated, neutralizes total weight)
 
-**Maximum Weight**: Always `1.0` regardless of field count
+**Maximum Weight**: `1.0` when verification fields exist, `0` when `t_md == 0` (no verification fields defined)
 
-**Rationale**: Ensures metadata can contribute at most 1 point of weight, preventing field-count inflation.
+**Rationale**: Ensures metadata can contribute at most 1 point of weight, preventing field-count inflation. When no verification fields are defined, the Paperless component is excluded entirely from the denominator.
 
 #### Formula 4: Final POCO Score
 
 ```
-POCO = ((m_ocr × 3) + (m_fn × t_w) + (m_md × (1/t_md))) / ((t_ocr × 3) + (t_fn × t_w) + 1) × 100
+POCO = ((m_ocr × 3) + (m_fn × t_w) + (m_md × (1/t_md))) / ((t_ocr × 3) + (t_fn × t_w) + md_max) × 100
 ```
 
+Where `md_max = 1` when `t_md > 0`, otherwise `md_max = 0`.
+
 **Expanded**:
+
 ```
-Numerator   = (m_ocr × 3) + (m_fn × t_w) + (m_md / t_md)
-Denominator = (t_ocr × 3) + (t_fn × t_w) + 1
+Numerator   = (m_ocr × 3) + (m_fn × t_w) + (m_md / t_md)   [paperless term = 0 when t_md = 0]
+Denominator = (t_ocr × 3) + (t_fn × t_w) + md_max
 POCO        = (Numerator / Denominator) × 100
 ```
 
@@ -318,8 +325,8 @@ filename_percentage = (filename_matches / filename_total) × 100
 ```python
 paperless_multiplier = 1.0 / paperless_total  # Neutralization
 paperless_weighted = paperless_matches × paperless_multiplier
-paperless_max_weight = 1.0  # Always 1.0 due to neutralization
-paperless_percentage = (paperless_matches / paperless_total) × 100
+paperless_max_weight = 1.0 if paperless_total > 0 else 0  # Excluded when no verification fields
+paperless_percentage = (paperless_matches / paperless_total) × 100 if paperless_total > 0 else 0
 ```
 
 **Example**:
@@ -337,11 +344,13 @@ Without neutralization, rules with more verification fields would artificially i
 **Calculation**:
 ```python
 total_weighted = ocr_weighted + filename_weighted + paperless_weighted
-total_max_weight = ocr_max_weight + filename_max_weight + 1.0
+paperless_max_weight = 1.0 if paperless_total > 0 else 0
+total_max_weight = ocr_max_weight + filename_max_weight + paperless_max_weight
 poco_score = (total_weighted / total_max_weight) × 100
 ```
 
 **Complete Example**:
+
 ```
 OCR: 8/10 matched → weighted 24.0 / 30.0
 Filename: 2/3 matched → weighted 2.0 / 3.0
@@ -1252,7 +1261,7 @@ class BackgroundProcessor:
         self.debounce_timer = None
         self.debounce_lock = threading.Lock()
     
-    def trigger_processing(self, delay_seconds=None):
+    def trigger_processing(self, delay_seconds=None, user_session=None):
         # Check if enabled
         enabled = db.get_config('bg_enabled') == 'true'
         if not enabled:
@@ -1268,8 +1277,11 @@ class BackgroundProcessor:
                 self.debounce_timer.cancel()
                 logger.info(f"Cancelled existing timer, restarting with {delay_seconds}s delay")
             
-            # Create new timer
-            self.debounce_timer = threading.Timer(delay_seconds, self._execute_processing)
+            # Create new timer — user_session is threaded through to bypass auto-pause
+            self.debounce_timer = threading.Timer(
+                delay_seconds, self._execute_processing,
+                kwargs={'user_session': user_session}
+            )
             self.debounce_timer.daemon = True
             self.debounce_timer.start()
             
@@ -1352,7 +1364,10 @@ bg_needs_rerun: 'true' | 'false'
 
 **Purpose**: Pause background processing when users are actively using the Web UI to prevent sync conflicts.
 
+> **Auto-pause bypass**: All UI-initiated triggers bypass auto-pause because `user_session` is threaded through the entire processing pipeline — from `trigger_processing()` through `_execute_processing()` into `process_batch()`. This means the Trigger button, Run with filters, and Dry Run all bypass the auto-pause check. Only script-triggered and scheduled runs (where `user_session` is `None`) are subject to auto-pause.
+
 **Detection**:
+
 ```python
 def _is_web_ui_active():
     # Check for sessions active in last 5 minutes
@@ -1367,7 +1382,7 @@ def _is_web_ui_active():
     return active_count > 0
 
 def process_batch(user_session=None):
-    # Skip auto-pause if manual processing
+    # Auto-pause only applies when no user_session (automatic/script triggers)
     if user_session is None and _is_web_ui_active():
         logger.info("Web UI active, skipping (auto-pause)")
         return {
@@ -1382,9 +1397,12 @@ def process_batch(user_session=None):
 **Session Activity Tracking**:
 - Every API request updates `sessions.last_activity`
 - Background processor checks for sessions active in last 5 minutes
-- If active, skip processing and return early
+- If active and no `user_session` provided, skip processing and return early
+- UI-initiated triggers (Trigger button, Run, Dry Run) always pass `user_session`, bypassing auto-pause
 
 ### 7.7 Processing Flow
+
+> **Sync** in the processing context refers to the pre-run sync that happens automatically before every background processing run. This ensures the local entity cache (correspondents, tags, document types, custom fields, users) is up-to-date before classification decisions are made.
 
 **Complete Batch Process**:
 
@@ -1496,7 +1514,7 @@ CREATE TABLE processing_history (
 **Lifecycle**:
 ```python
 # 1. Create run record
-run_id = db.create_processing_run(trigger_type='post-consumption')
+run_id = db.create_processing_run(trigger_type='trigger')
 
 # 2. Execute processing
 result = process_batch()
@@ -1515,9 +1533,10 @@ db.update_processing_run(
 ```
 
 **Trigger Types**:
-- `post-consumption`: Automatic trigger via webhook
-- `manual`: User-initiated via dashboard
-- `scheduled`: Future feature for cron-like scheduling
+- `trigger`: UI-initiated via the Trigger button
+- `manual_run`: User-initiated Run with filters
+- `manual_dry_run`: User-initiated Dry Run (simulation only)
+- `automatic`: Script-triggered or scheduled (e.g., post-consumption webhook)
 
 ### 7.10 Implementation Reference
 
@@ -1544,7 +1563,7 @@ db.update_processing_run(
 
 ### 8.1 Dashboard Controls
 
-**Background Processing Panel** (`/dashboard`):
+**Background Processing Panel** (`/BackgroundProcess`):
 
 **Features**:
 - **Enable/Disable Toggle**: Master switch for background processing
@@ -1955,7 +1974,7 @@ CREATE TABLE processing_history (
     started_at TEXT NOT NULL,
     completed_at TEXT,
     status TEXT NOT NULL,  -- running, completed, failed
-    trigger_type TEXT NOT NULL,  -- post-consumption, manual, scheduled
+    trigger_type TEXT NOT NULL,  -- trigger, manual_run, manual_dry_run, automatic
     documents_found INTEGER DEFAULT 0,
     documents_processed INTEGER DEFAULT 0,
     documents_classified INTEGER DEFAULT 0,
