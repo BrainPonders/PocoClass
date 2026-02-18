@@ -434,7 +434,7 @@ export default function RuleReviewer() {
 
       {/* Info Section */}
       {!hasRun && (
-        <Banner variant="info">
+        <Banner variant="info" dismissible storageKey="rule_reviewer_info">
           <p className="font-medium mb-1">{t('ruleEvaluation.whatIsThisFor')}</p>
           <p>{t('ruleEvaluation.description')}</p>
         </Banner>

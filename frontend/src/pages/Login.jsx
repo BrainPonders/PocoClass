@@ -51,6 +51,8 @@ export default function Login() {
 
       localStorage.setItem('pococlass_user', JSON.stringify(data.user));
 
+      Object.keys(sessionStorage).filter(k => k.startsWith('banner_dismissed_')).forEach(k => sessionStorage.removeItem(k));
+
       toast({
         title: 'Welcome back!',
         description: `Logged in as ${data.user.username}`,

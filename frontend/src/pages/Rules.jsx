@@ -517,7 +517,7 @@ export default function Rules() {
       }
     >
       {/* Warning banner about rule activation */}
-      <Banner variant="warning">
+      <Banner variant="warning" dismissible storageKey="rules_activation_warning">
         <p className="font-medium">{t('warnings.ruleActivationWarning')}</p>
       </Banner>
 

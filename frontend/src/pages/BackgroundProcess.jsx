@@ -530,7 +530,7 @@ export default function BackgroundProcess() {
     >
 
       {/* Info Section */}
-      <Banner variant="info">
+      <Banner variant="info" dismissible storageKey="bg_what_is_this">
         <p className="font-medium mb-2">{t('backgroundProcess.whatIsThisFor')}</p>
         <p className="mb-3">{t('backgroundProcess.description')}</p>
         <p className="text-xs">
@@ -538,7 +538,7 @@ export default function BackgroundProcess() {
         </p>
       </Banner>
 
-      <Banner variant="warning">
+      <Banner variant="warning" dismissible storageKey="bg_auto_pause_warning">
         <p className="font-medium mb-1">{t('backgroundProcess.autoPauseWarningTitle')}</p>
         <p>{t('backgroundProcess.autoPauseWarningDesc')}</p>
       </Banner>

@@ -19,6 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import GuardedLink from "@/components/GuardedLink";
 import API_BASE_URL from '@/config/api';
 import ValidationBanner from '@/components/ValidationBanner';
+import Banner from '@/components/Banner';
 import {
   Sidebar,
   SidebarContent,
@@ -736,18 +737,8 @@ function LayoutContent({ children }) {
                       <p>
                         {t('guide.introduction.p2')}
                       </p>
-                      <div style={{
-                        backgroundColor: '#fef9c3',
-                        border: '1px solid #eab308',
-                        borderRadius: '8px',
-                        padding: '12px 16px',
-                        marginTop: '12px',
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: '10px'
-                      }}>
-                        <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                        <p style={{ margin: 0, fontSize: '13px', color: '#854d0e' }}>
+                      <Banner variant="tip" className="mt-3 mb-0">
+                        <p style={{ margin: 0 }}>
                           {t('guide.introduction.paperlessTip')}{' '}
                           <button
                             onClick={(e) => { e.stopPropagation(); setShowPaperlessInfo(true); }}
@@ -758,14 +749,13 @@ function LayoutContent({ children }) {
                               textDecoration: 'underline',
                               cursor: 'pointer',
                               padding: 0,
-                              font: 'inherit',
-                              fontSize: '13px'
+                              font: 'inherit'
                             }}
                           >
                             {t('guide.introduction.paperlessTipLink')}
                           </button>
                         </p>
-                      </div>
+                      </Banner>
                     </div>
 
                     <div className="guide-section">
@@ -1080,9 +1070,9 @@ function LayoutContent({ children }) {
                         <p style={{ fontSize: '0.9rem', marginTop: '8px', marginBottom: '0' }}>{t('guide.buildingRules.regexOptionalNote')}</p>
                       </div>
 
-                      <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
-                        <p style={{ margin: 0, fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.regexBuilderTip') }} />
-                      </div>
+                      <Banner variant="tip" className="mt-4 mb-0">
+                        <p style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: t('guide.buildingRules.regexBuilderTip') }} />
+                      </Banner>
 
                       <h4>{t('guide.buildingRules.step3Title')}</h4>
                       <p>
@@ -1245,9 +1235,9 @@ function LayoutContent({ children }) {
                         <li dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.step5') }} />
                       </ul>
 
-                      <div className="info-box info-box-yellow" style={{ marginTop: '16px' }}>
-                        <p style={{ margin: 0, fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipNewTag') }} />
-                        <p style={{ margin: '8px 0 0 0', fontSize: '0.9rem' }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipLocation') }} />
+                      <Banner variant="tip" className="mt-4 mb-0">
+                        <p style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipNewTag') }} />
+                        <p style={{ margin: '8px 0 0 0' }} dangerouslySetInnerHTML={{ __html: t('guide.backgroundProcessing.tipLocation') }} />
                         <button
                           onClick={() => {
                             sessionStorage.setItem('settings_active_tab', 'backgroundProcessing');
@@ -1260,7 +1250,7 @@ function LayoutContent({ children }) {
                           <Settings className="w-4 h-4" />
                           {t('guide.backgroundProcessing.openSettings')}
                         </button>
-                      </div>
+                      </Banner>
 
                       <h4>{t('guide.backgroundProcessing.modesTitle')}</h4>
                       <p><strong>{t('guide.backgroundProcessing.automaticMode')}</strong></p>
