@@ -823,6 +823,12 @@
       "message": "Stai modificando il moltiplicatore da 3× (consigliato) a {multiplier}×. Questo influisce su quanto i pattern OCR influenzano il punteggio finale. Sei sicuro?",
       "confirmButton": "Sì, modificalo",
       "cancelButton": "Annulla"
+    },
+    "unsavedChanges": {
+      "title": "Modifiche non salvate",
+      "message": "Tutte le modifiche non salvate andranno perse.",
+      "confirmButton": "Esci comunque",
+      "cancelButton": "Annulla"
     }
   },
   "toasts": {
@@ -848,7 +854,11 @@
   "helpText": {
     "ruleNameHelp": "Scegli un nome descrittivo per identificare questa regola",
     "ruleIdHelp": "Identificatore univoco (solo minuscole, numeri, underscore)",
-    "pocoScoreHelp": "Un documento deve ottenere ≥ {threshold}% per essere classificato. Un punteggio di {example}% passerebbe."
+    "pocoScoreHelp": "Un documento deve ottenere ≥ {threshold}% per essere classificato. Un punteggio di {example}% passerebbe.",
+    "ruleIdFilename": "Nome file generato automaticamente su disco"
+  },
+  "editor": {
+    "exit": "Esci"
   },
   "status": {
     "new": "Nuovo",

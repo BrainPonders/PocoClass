@@ -472,7 +472,9 @@ export default function BackgroundProcess() {
       case 'manual_dry_run':
         return <Badge style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>{t('backgroundProcess.dryRun')}</Badge>;
       case 'manual_run':
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Run</Badge>;
+        return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-100">Run</Badge>;
+      case 'trigger':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Trigger</Badge>;
       case 'automatic':
         return <Badge style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text)' }}>Automatic</Badge>;
       default:
@@ -726,7 +728,7 @@ export default function BackgroundProcess() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <div className="flex items-center gap-3 flex-1 text-left">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5" style={{ minWidth: '90px', width: '90px' }}>
                         {getTriggerTypeBadge(entry.trigger_type)}
                         {entry.status === 'completed' ? (
                           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
@@ -736,7 +738,7 @@ export default function BackgroundProcess() {
                           <AlertCircle className="w-3.5 h-3.5 text-yellow-600" />
                         )}
                       </div>
-                      <div className="flex-1 grid grid-cols-6 gap-2 text-xs">
+                      <div className="flex-1 grid gap-2 text-xs" style={{ gridTemplateColumns: '130px 1fr 1fr 1fr 1fr 1fr' }}>
                         <div>
                           <div style={{ color: 'var(--app-text-muted)' }}>{t('backgroundProcess.table.started')}</div>
                           <div className="font-medium">{formatDateTime(entry.started_at)}</div>

@@ -46,58 +46,56 @@ class BackgroundProcessor:
         self.debounce_timer = None
         self.debounce_lock = threading.Lock()
     
-    def trigger_processing(self, delay_seconds: int = None) -> Dict[str, Any]:
+    def trigger_processing(self, delay_seconds: int = None, user_session: Dict = None) -> Dict[str, Any]:
         """
         Trigger background processing with debouncing
         If called multiple times within debounce window, only the last call will execute
+        
+        Args:
+            delay_seconds: Override debounce delay
+            user_session: If provided, bypasses auto-pause check (UI-initiated trigger)
         """
-        # Check if background processing is enabled
         enabled = self.db.get_config('bg_enabled') == 'true'
         if not enabled:
             return {'status': 'disabled', 'message': 'Background processing is disabled'}
         
-        # Get debounce delay from config or use provided value
         if delay_seconds is None:
             delay_seconds = int(self.db.get_config('bg_debounce_seconds') or '30')
         
         with self.debounce_lock:
-            # Cancel existing timer if any
             if self.debounce_timer and self.debounce_timer.is_alive():
                 self.debounce_timer.cancel()
                 logger.info(f"Cancelled existing debounce timer, restarting with {delay_seconds}s delay")
             
-            # Create new timer
-            self.debounce_timer = threading.Timer(delay_seconds, self._execute_processing)
+            self.debounce_timer = threading.Timer(delay_seconds, self._execute_processing, kwargs={'user_session': user_session})
             self.debounce_timer.daemon = True
             self.debounce_timer.start()
             
-            logger.info(f"Background processing triggered, will execute in {delay_seconds} seconds")
+            trigger_source = "UI" if user_session else "automatic"
+            logger.info(f"Background processing triggered ({trigger_source}), will execute in {delay_seconds} seconds")
             return {
                 'status': 'scheduled',
                 'message': f'Processing scheduled in {delay_seconds} seconds',
                 'delay_seconds': delay_seconds
             }
     
-    def _execute_processing(self):
+    def _execute_processing(self, user_session: Dict = None):
         """Execute the actual background processing (called by timer)"""
         try:
-            # Check if processing is locked
             if self.db.get_processing_lock():
                 logger.warning("Processing already running, setting needs_rerun flag")
                 self.db.set_needs_rerun(True)
                 return
             
-            # Acquire lock
             self.db.set_processing_lock(True)
             self.db.set_needs_rerun(False)
             
-            # Create processing run record with automatic trigger type
-            run_id = self.db.create_processing_run(trigger_type='automatic')
+            trigger_type = 'trigger' if user_session else 'automatic'
+            run_id = self.db.create_processing_run(trigger_type=trigger_type)
             
-            logger.info(f"Starting background processing run #{run_id}")
+            logger.info(f"Starting background processing run #{run_id} (trigger_type={trigger_type})")
             
-            # Execute processing with run_id
-            result = self.process_batch(run_id=run_id)
+            result = self.process_batch(user_session=user_session, run_id=run_id)
             
             logger.info(f"Background processing run #{run_id} completed: {result}")
             
@@ -110,14 +108,12 @@ class BackgroundProcessor:
                     error_message=str(e)
                 )
         finally:
-            # Release lock
             self.db.set_processing_lock(False)
             
-            # Check if we need to rerun
             if self.db.get_needs_rerun():
                 logger.info("needs_rerun flag set, triggering another processing run")
                 self.db.set_needs_rerun(False)
-                self.trigger_processing(delay_seconds=5)
+                self.trigger_processing(delay_seconds=5, user_session=user_session)
     
     def process_batch(self, user_session: Dict = None, filters: Dict = None, dry_run: bool = False, run_id: int = None) -> Dict[str, Any]:
         """
