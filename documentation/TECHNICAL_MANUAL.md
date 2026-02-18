@@ -429,6 +429,8 @@ else:
 - `evaluate_thresholds()`: Determines classification_allowed status
 - `calculate_full_evaluation()`: Complete scoring + threshold evaluation
 
+> **Source**: `scoring_calculator_v2.py` — `POCOScoringV2.calculate_scores()` (line 35), `evaluate_thresholds()` (line 126), `calculate_full_evaluation()` (line 188)
+
 ---
 
 ## 4. Pattern Matching Engine
@@ -441,15 +443,15 @@ else:
 - Has a **type** (AND or OR logic)
 
 **Group Types**:
-1. **`match` (AND)**: ALL conditions must match
-2. **`or` (OR)**: At least ONE condition must match
+1. **`match_all` (AND)**: ALL conditions must match
+2. **`match` or `or` (OR)**: At least ONE condition must match
 
 **Structure**:
 ```yaml
 core_identifiers:
   logic_groups:
     - title: "Bank Identifier"
-      type: "match"  # AND logic
+      type: "match_all"  # AND logic — every condition must match
       conditions:
         - pattern: "/Organization Name/i"
           source: "content"
@@ -457,7 +459,7 @@ core_identifiers:
           source: "content"
     
     - title: "Account Type"
-      type: "or"  # OR logic
+      type: "match"  # OR logic — at least one condition must match
       conditions:
         - pattern: "/Checking Account/i"
           source: "content"
@@ -507,84 +509,107 @@ def normalize_regex_pattern(pattern: str) -> Tuple[str, int]:
 
 Each condition supports:
 - **Source**: `content` (OCR text) or `filename`
-- **Range**: Percentile-based text slicing (e.g., "0-25" = first 25% of document)
+- **Range**: Line-number based text slicing (e.g., "0-25" = lines 0 through 24 of the document)
 
 **Range Filtering**:
 ```python
-def check_pattern_match(pattern_str, condition, content, filename):
+def check_pattern_match_detailed(self, pattern_str, condition, content, filename):
     source = condition.get('source', 'content')
     range_str = condition.get('range', '')
     
-    # Select text source
     text = content if source == 'content' else filename
     
-    # Apply range if specified
+    # Apply line-range filter when specified (only meaningful for content)
     if range_str and source == 'content' and '-' in range_str:
-        parts = range_str.split('-')
-        start_pct = int(parts[0])  # e.g., 0
-        end_pct = int(parts[1])    # e.g., 25
-        
-        # Convert percentile to character position
-        text_len = len(text)
-        start_pos = (start_pct * text_len) // 100
-        end_pos = (end_pct * text_len) // 100
-        
-        text = text[start_pos:end_pos]  # Slice document
+        try:
+            parts = range_str.split('-')
+            start_line = int(parts[0])
+            end_line = int(parts[1])
+            
+            lines = text.splitlines()
+            total_lines = len(lines)
+            
+            # Clamp to valid bounds to avoid index errors
+            start_line = max(0, min(start_line, total_lines))
+            end_line = max(0, min(end_line, total_lines))
+            
+            if start_line < end_line:
+                selected_lines = lines[start_line:end_line]
+                text = '\n'.join(selected_lines)
+        except (ValueError, IndexError):
+            pass  # Gracefully fall back to full text
     
-    # Check for match
-    normalized_pattern, flags = normalize_regex_pattern(pattern_str)
-    match = re.search(normalized_pattern, text, flags)
-    return match is not None
+    normalized_pattern, flags = self.normalize_regex_pattern(pattern_str)
+    
+    try:
+        match = re.search(normalized_pattern, text, flags)
+        if match:
+            matched_text = match.group(0)
+            if len(matched_text) > 50:
+                matched_text = matched_text[:47] + '...'
+            return {'matched': True, 'pattern': pattern_str, 'matched_text': matched_text}
+        else:
+            return {'matched': False, 'pattern': pattern_str, 'matched_text': None}
+    except re.error as e:
+        return {'matched': False, 'pattern': pattern_str, 'matched_text': None, 'error': str(e)}
 ```
 
-**Use Case**: Bank statements often have account info in the first 25% of the document.
+**Use Case**: Bank statements often have account info in the first 25 lines of the document.
 
 ### 4.4 OCR Match Counting
 
 **Algorithm**:
 ```python
-def count_ocr_matches(logic_groups, content, filename):
+def count_ocr_matches(self, logic_groups, content, filename):
     total_count = 0
     matched_count = 0
     all_matches = []
     
-    for group in logic_groups:
+    for i, group in enumerate(logic_groups):
         group_type = group.get('type', 'match')
         conditions = group.get('conditions', [])
+        score = group.get('score', 0)
         
-        # Each group counts as 1 unit
         total_count += 1
+        condition_results = []
         
-        # Evaluate based on group type
         group_matched = False
-        
-        if group_type == 'match':  # AND logic
+        if group_type == 'match_all':  # AND logic — every condition must match
             all_match = True
             for condition in conditions:
-                if not check_pattern_match(condition['pattern'], condition, content, filename):
+                pattern_str = condition.get('pattern', '')
+                match_result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
+                condition_results.append(match_result)
+                if not match_result['matched']:
                     all_match = False
-                    break
             group_matched = all_match
         
-        elif group_type == 'or':  # OR logic
+        else:  # OR logic (type 'match' or 'or') — any single condition is sufficient
             for condition in conditions:
-                if check_pattern_match(condition['pattern'], condition, content, filename):
+                pattern_str = condition.get('pattern', '')
+                match_result = self.check_pattern_match_detailed(pattern_str, condition, content, filename)
+                condition_results.append(match_result)
+                if match_result['matched']:
                     group_matched = True
-                    break
         
-        # Record result
+        group_name = group.get('title', f'Logic Group {i + 1}')
+        
         if group_matched:
             matched_count += 1
             all_matches.append({
-                'name': group.get('title', f'Logic Group {i+1}'),
+                'name': group_name,
                 'matched': True,
-                'score': group.get('score', 0)
+                'score': score,
+                'group_type': group_type,
+                'conditions': condition_results
             })
         else:
             all_matches.append({
-                'name': group.get('title', f'Logic Group {i+1}'),
+                'name': group_name,
                 'matched': False,
-                'score': 0
+                'score': 0,
+                'group_type': group_type,
+                'conditions': condition_results
             })
     
     return {
@@ -596,21 +621,37 @@ def count_ocr_matches(logic_groups, content, filename):
 
 ### 4.5 Filename Pattern Matching
 
-**Simple Counting**:
+**Counting with Capture Group Extraction**:
 ```python
-def count_filename_matches(filename_patterns, filename):
+def count_filename_matches(self, filename_patterns, filename):
+    if not filename_patterns:
+        return {'total_count': 0, 'matched_count': 0, 'matches': []}
+    
     total_count = len(filename_patterns)
     matched_count = 0
     matches = []
     
     for pattern in filename_patterns:
-        normalized_pattern, flags = normalize_regex_pattern(pattern)
-        
-        if re.search(normalized_pattern, filename, flags):
-            matched_count += 1
-            matches.append({'pattern': pattern, 'matched': True})
-        else:
-            matches.append({'pattern': pattern, 'matched': False})
+        try:
+            normalized_pattern, flags = self.normalize_regex_pattern(pattern)
+            match = re.search(normalized_pattern, filename, flags)
+            if match:
+                matched_count += 1
+                extracted_value = match.group(1) if match.groups() else match.group(0)
+                matches.append({
+                    'pattern': pattern, 'matched': True,
+                    'score': 1, 'extracted_value': extracted_value
+                })
+            else:
+                matches.append({
+                    'pattern': pattern, 'matched': False,
+                    'score': 0, 'extracted_value': None
+                })
+        except re.error as e:
+            matches.append({
+                'pattern': pattern, 'matched': False,
+                'score': 0, 'extracted_value': None
+            })
     
     return {
         'total_count': total_count,
@@ -627,8 +668,11 @@ def count_filename_matches(filename_patterns, filename):
 - `evaluate_rule_v2()`: Main entry point for pattern matching
 - `normalize_regex_pattern()`: JavaScript → Python regex conversion
 - `count_ocr_matches()`: Logic group evaluation
-- `count_filename_matches()`: Filename pattern evaluation
-- `check_pattern_match()`: Single pattern match with source/range support
+- `count_filename_matches()`: Filename pattern evaluation with capture group extraction
+- `check_pattern_match_detailed()`: Single pattern match with source/range support (returns detailed result)
+- `check_pattern_match()`: Boolean-only convenience wrapper
+
+> **Source**: `pattern_matcher.py` — `PatternMatcher.evaluate_rule_v2()` (line 33), `normalize_regex_pattern()` (line 76), `count_ocr_matches()` (line 111), `check_pattern_match_detailed()` (line 211), `count_filename_matches()` (line 297)
 
 ---
 
@@ -709,28 +753,37 @@ def extract_static_metadata(rule):
      extraction_type: "monetary"
    ```
 
-**Anchor Pattern Matching**:
+**Anchor Pattern Matching** (sequential windowed approach):
 ```python
-def extract_value_between_anchors(text, before_pattern, after_pattern):
+def extract_value_between_anchors(self, text, before_pattern, after_pattern):
     try:
-        if before_pattern and after_pattern:
-            # Both anchors: extract between
-            pattern = f"{before_pattern}\\s*([\\s\\S]+?)\\s*{after_pattern}"
-        elif after_pattern:
-            # After anchor only
-            pattern = f"{after_pattern}\\s*([^\\n]+)"
-        elif before_pattern:
-            # Before anchor only
-            pattern = f"([^\\n]+?)\\s*{before_pattern}"
-        else:
+        search_text = text
+        
+        if not before_pattern and not after_pattern:
             return None
         
-        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-        if match:
-            return match.groups()[0].strip()
-        return None
+        # Step 1: Find beforeAnchor, take text AFTER it
+        if before_pattern:
+            before_match = re.search(before_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+            if before_match:
+                search_text = search_text[before_match.end():]
+            else:
+                return None
+        
+        # Step 2: Find afterAnchor in remaining text, take text BEFORE it
+        if after_pattern:
+            after_match = re.search(after_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+            if after_match:
+                search_text = search_text[:after_match.start()]
+            else:
+                return None
+        
+        # Step 3: Return the window between the two anchors
+        result = search_text.strip()
+        return result if result else None
+        
     except Exception as e:
-        logger.error(f"Error extracting value: {e}")
+        self.logger.error(f"Error extracting value between anchors: {e}")
         return None
 ```
 
@@ -893,10 +946,12 @@ def extract_filename_metadata(rule, filename):
 - `extract_metadata_from_rule()`: Main entry point
 - `extract_static_metadata()`: Process static fields
 - `extract_dynamic_metadata()`: Anchor-based extraction
-- `extract_value_between_anchors()`: Pattern matching for anchors
+- `extract_value_between_anchors()`: Sequential windowed anchor matching
 - `apply_extraction_type_filter()`: Type-specific filtering
 - `extract_filename_metadata()`: Filename regex group extraction
 - `validate_and_sanitize_value()`: Numeric sanitization
+
+> **Source**: `metadata_processor.py` — `MetadataProcessor.extract_metadata_from_rule()` (line 40), `extract_static_metadata()` (line 66), `extract_dynamic_metadata()` (line 93), `extract_value_between_anchors()` (line 144), `apply_extraction_type_filter()` (line 195), `extract_filename_metadata()` (line 404), `validate_and_sanitize_value()` (line 336)
 
 ---
 
@@ -945,24 +1000,27 @@ def extract_filename_metadata(rule, filename):
 **Main Method**: `test_rule()`
 
 ```python
-def test_rule(rule, document_content, document_filename, paperless_metadata=None):
+def test_rule(self, rule, document_content, document_filename, paperless_metadata=None):
     # 1. Pattern matching
-    match_result = pattern_matcher.evaluate_rule_v2(
+    match_result = self.pattern_matcher.evaluate_rule_v2(
         rule, document_content, document_filename
     )
     
     # 2. Metadata extraction
-    metadata = metadata_processor.extract_metadata_from_rule(
+    metadata = self.metadata_processor.extract_metadata_from_rule(
         rule, document_content, document_filename
     )
     
     # 3. Paperless verification
-    verification_result = verify_paperless_metadata(
+    verification_result = self.verify_paperless_metadata(
         rule, metadata, paperless_metadata
     ) if paperless_metadata else {'matched': 0, 'total': 0, 'matches': []}
     
     # 4. Score calculation
-    score_result = scorer.calculate_full_evaluation(
+    ocr_threshold = rule.get('ocr_threshold', 75.0)
+    poco_threshold = rule.get('threshold', 80.0)
+    
+    score_result = self.scorer.calculate_full_evaluation(
         ocr_matches=match_result['ocr']['matched'],
         ocr_total=match_result['ocr']['total'],
         filename_matches=match_result['filename']['matched'],
@@ -971,8 +1029,8 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
         paperless_total=verification_result['total'],
         ocr_multiplier=rule.get('ocr_multiplier', 3.0),
         filename_multiplier=rule.get('filename_multiplier', 1.0),
-        ocr_threshold=rule.get('ocr_threshold', 75.0),
-        poco_threshold=rule.get('threshold', 80.0)
+        ocr_threshold=ocr_threshold,
+        poco_threshold=poco_threshold
     )
     
     # 5. Build comprehensive result
@@ -982,28 +1040,57 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
         'rule_name': rule.get('rule_name'),
         'classification_allowed': score_result['summary']['classification_allowed'],
         'status': score_result['evaluation']['status'],
+        'threshold': poco_threshold,
+        'ocr_threshold': ocr_threshold,
         'scores': {
             'poco_ocr_score': score_result['summary']['poco_ocr_score'],
-            'poco_score': score_result['summary']['poco_score']
+            'poco_score': score_result['summary']['poco_score'],
+            'ocr_threshold': ocr_threshold,
+            'poco_threshold': poco_threshold
         },
         'breakdown': {
             'ocr': {
                 'matched': match_result['ocr']['matched'],
                 'total': match_result['ocr']['total'],
-                'groups': match_result['ocr']['matches']
+                'weighted': score_result['scores']['ocr']['weighted'],
+                'max_weight': score_result['scores']['ocr']['max_weight'],
+                'percentage': score_result['scores']['ocr']['percentage'],
+                'matches': match_result['ocr']['matches'],
+                'groups': match_result['ocr']['matches']  # Alias for frontend
             },
             'filename': {
                 'matched': match_result['filename']['matched'],
                 'total': match_result['filename']['total'],
-                'patterns': match_result['filename']['matches']
+                'weighted': score_result['scores']['filename']['weighted'],
+                'max_weight': score_result['scores']['filename']['max_weight'],
+                'percentage': score_result['scores']['filename']['percentage'],
+                'matches': match_result['filename']['matches'],
+                'patterns': match_result['filename']['matches']  # Alias for frontend
+            },
+            'paperless': {
+                'matched': verification_result['matched'],
+                'total': verification_result['total'],
+                'weighted': score_result['scores']['paperless']['weighted'],
+                'max_weight': score_result['scores']['paperless']['max_weight'],
+                'percentage': score_result['scores']['paperless']['percentage'],
+                'matches': verification_result['matches']
             },
             'verification': {
                 'matched': verification_result['matched'],
                 'total': verification_result['total'],
-                'matches': verification_result['matches']
+                'matches': verification_result['matches']  # Alias for frontend
             }
         },
-        'extracted_metadata': metadata
+        'extracted_metadata': {
+            'static': metadata.get('static', {}),
+            'dynamic': metadata.get('dynamic', {}),
+            'filename': metadata.get('filename', {})
+        },
+        'evaluation': {
+            'message': score_result['evaluation']['reason'],
+            'ocr_passes': score_result['evaluation']['ocr_passes'],
+            'poco_passes': score_result['evaluation']['poco_passes']
+        }
     }
 ```
 
@@ -1022,7 +1109,9 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
   "ocr_threshold": 75.0,
   "scores": {
     "poco_ocr_score": 85.0,
-    "poco_score": 82.5
+    "poco_score": 82.5,
+    "ocr_threshold": 75.0,
+    "poco_threshold": 80.0
   },
   "breakdown": {
     "ocr": {
@@ -1031,18 +1120,8 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "weighted": 24.0,
       "max_weight": 30.0,
       "percentage": 80.0,
-      "groups": [
-        {
-          "name": "Organization Identifier",
-          "matched": true,
-          "score": 1
-        },
-        {
-          "name": "Account Type",
-          "matched": false,
-          "score": 0
-        }
-      ]
+      "matches": [...],
+      "groups": [...]
     },
     "filename": {
       "matched": 2,
@@ -1050,24 +1129,21 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "weighted": 2.0,
       "max_weight": 3.0,
       "percentage": 66.67,
-      "patterns": [
-        {
-          "pattern": "/Organization/i",
-          "matched": true
-        }
-      ]
+      "matches": [...],
+      "patterns": [...]
+    },
+    "paperless": {
+      "matched": 3,
+      "total": 5,
+      "weighted": 0.6,
+      "max_weight": 1.0,
+      "percentage": 60.0,
+      "matches": [...]
     },
     "verification": {
       "matched": 3,
       "total": 5,
-      "matches": [
-        {
-          "field": "correspondent",
-          "extracted": "Organization Name",
-          "paperless": "Organization Name",
-          "match": true
-        }
-      ]
+      "matches": [...]
     }
   },
   "extracted_metadata": {
@@ -1080,6 +1156,11 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
       "account_number": "123456789"
     },
     "filename": {}
+  },
+  "evaluation": {
+    "message": "Confident classification",
+    "ocr_passes": true,
+    "poco_passes": true
   }
 }
 ```
@@ -1095,52 +1176,48 @@ def test_rule(rule, document_content, document_filename, paperless_metadata=None
 **Paperless Metadata Verification**:
 
 ```python
-def verify_paperless_metadata(rule, extracted_metadata, paperless_metadata):
-    verification_fields = rule.get('verification_fields', [
-        'correspondent', 'document_type', 'date_created', 'tags'
-    ])
+def verify_paperless_metadata(self, rule, extracted_metadata, paperless_metadata):
+    verification_fields = rule.get('verification_fields', [])
+    if not verification_fields:
+        return {'matched': 0, 'total': 0, 'matches': [], 'skipped': True}
     
     matched = 0
-    total = len(verification_fields)
     matches = []
     
-    # Combine all extracted sources
     all_extracted = {}
     all_extracted.update(extracted_metadata.get('static', {}))
     all_extracted.update(extracted_metadata.get('dynamic', {}))
     all_extracted.update(extracted_metadata.get('filename', {}))
     
     for field in verification_fields:
-        extracted_value = all_extracted.get(field)
-        paperless_value = paperless_metadata.get(field)
+        extracted_value = self._resolve_field_value(field, all_extracted)
+        paperless_value = self._resolve_field_value(field, paperless_metadata)
         
-        if extracted_value and paperless_value:
-            if values_match(extracted_value, paperless_value):
+        # Only compare when both sides have a value
+        if extracted_value is not None and paperless_value is not None:
+            match_result = self._values_match(extracted_value, paperless_value)
+            if match_result:
                 matched += 1
                 matches.append({
-                    'field': field,
-                    'extracted': extracted_value,
-                    'paperless': paperless_value,
-                    'match': True
+                    'field': field, 'extracted': extracted_value,
+                    'paperless': paperless_value, 'match': True
                 })
             else:
                 matches.append({
-                    'field': field,
-                    'extracted': extracted_value,
-                    'paperless': paperless_value,
-                    'match': False
+                    'field': field, 'extracted': extracted_value,
+                    'paperless': paperless_value, 'match': False
                 })
     
-    return {
-        'matched': matched,
-        'total': total,
-        'matches': matches
-    }
+    # Total reflects only the fields that were actually compared
+    total = len(matches)
+    
+    return {'matched': matched, 'total': total, 'matches': matches}
 
-def values_match(extracted, paperless):
-    # Handle tags (list comparison)
+def _values_match(self, extracted, paperless):
+    # Handle tags (list comparison) — filter out 'NEW' inbox tag
     if isinstance(extracted, list) and isinstance(paperless, list):
-        return set(extracted) == set(paperless)
+        paperless_filtered = [tag for tag in paperless if tag.upper() != 'NEW']
+        return set(extracted) == set(paperless_filtered)
     
     # Handle strings (case-insensitive)
     if isinstance(extracted, str) and isinstance(paperless, str):
@@ -1149,6 +1226,10 @@ def values_match(extracted, paperless):
     # Handle other types
     return str(extracted).strip() == str(paperless).strip()
 ```
+
+> **Note**: `_resolve_field_value()` handles camelCase → snake_case mapping (e.g., `documentType` → `document_type`), Paperless nested objects (extracts `name` from `{"id": 1, "name": "Invoice"}`), and custom field lookups via Title Case conversion.
+
+> **Source**: `test_engine.py` — `TestEngine.test_rule()` (line 39), `verify_paperless_metadata()` (line 164), `_resolve_field_value()` (line 235), `_values_match()` (line 316)
 
 ---
 
@@ -1159,7 +1240,7 @@ def values_match(extracted, paperless):
 **Trigger Mechanism**: PocoClass uses Paperless-ngx's **post-consumption script** feature to automatically process documents after they are consumed (imported) by Paperless.
 
 **Components**:
-1. **Post-Consumption Webhook**: Paperless calls PocoClass after consuming each document
+1. **Post-Consumption Script**: A shell script calls the PocoClass API after Paperless consumes each document
 2. **Debounced Trigger**: 30-second timer batches multiple rapid triggers into a single run
 3. **Document Discovery**: Tag-based filtering finds documents with NEW tag (no POCO+/POCO-)
 4. **Processing Lock**: Prevents concurrent processing runs
@@ -1219,17 +1300,17 @@ See `ADMIN_GUIDE.md` for detailed setup instructions.
 
 **Discovery Query**:
 ```python
-def _discover_documents(api_client):
-    # Get tag IDs
-    tag_new = db.get_config('bg_tag_new') or 'NEW'
+def _discover_documents(self, api_client):
+    tag_new = self.db.get_config('bg_tag_new') or 'NEW'
     new_tag_id = api_client.get_tag_id(tag_new)
     poco_plus_tag_id = api_client.get_tag_id('POCO+')
     poco_minus_tag_id = api_client.get_tag_id('POCO-')
     
-    # Get all documents
+    if not new_tag_id:
+        return []
+    
     all_docs = api_client.get_documents(ignore_tags=True)
     
-    # Filter for documents with NEW tag but without POCO tags
     filtered_docs = []
     for doc in all_docs:
         doc_tags = doc.get('tags', [])
@@ -1242,6 +1323,8 @@ def _discover_documents(api_client):
     
     return filtered_docs
 ```
+
+> **Source**: `background_processor.py` — `BackgroundProcessor._discover_documents()` (line 290)
 
 **Tag Meanings**:
 - **NEW**: Document ready for classification (user-controlled)
@@ -1307,33 +1390,33 @@ Final trigger (t=20s) → Schedule at t=50s
 
 **Implementation**:
 ```python
-def _execute_processing():
+def _execute_processing(self, user_session=None):
     try:
-        # Check lock
-        if db.get_processing_lock():
+        if self.db.get_processing_lock():
             logger.warning("Processing already running, setting needs_rerun flag")
-            db.set_needs_rerun(True)
+            self.db.set_needs_rerun(True)
             return
         
-        # Acquire lock
-        db.set_processing_lock(True)
-        db.set_needs_rerun(False)
+        self.db.set_processing_lock(True)
+        self.db.set_needs_rerun(False)
         
-        # Execute processing
-        result = process_batch()
+        trigger_type = 'trigger' if user_session else 'automatic'
+        run_id = self.db.create_processing_run(trigger_type=trigger_type)
+        
+        result = self.process_batch(user_session=user_session, run_id=run_id)
         
     except Exception as e:
-        logger.error(f"Processing failed: {e}")
+        logger.error(f"Processing failed: {e}", exc_info=True)
     finally:
-        # Always release lock
-        db.set_processing_lock(False)
+        self.db.set_processing_lock(False)
         
-        # Check if another run is needed
-        if db.get_needs_rerun():
+        if self.db.get_needs_rerun():
             logger.info("needs_rerun flag set, triggering another run")
-            db.set_needs_rerun(False)
-            trigger_processing(delay_seconds=5)
+            self.db.set_needs_rerun(False)
+            self.trigger_processing(delay_seconds=5, user_session=user_session)
 ```
+
+> **Source**: `background_processor.py` — `BackgroundProcessor._execute_processing()` (line 82)
 
 **Database Fields**:
 ```sql
@@ -1407,47 +1490,92 @@ def process_batch(user_session=None):
 **Complete Batch Process**:
 
 ```python
-def process_batch(user_session=None):
-    # 1. Auto-pause check
-    if user_session is None and _is_web_ui_active():
-        return {'success': True, 'skipped': True, 'reason': 'auto-pause'}
+def process_batch(self, user_session=None, filters=None, dry_run=False, run_id=None):
+    # 1. Determine trigger_type
+    if dry_run:
+        trigger_type = 'manual_dry_run'
+    elif filters or user_session:
+        trigger_type = 'manual_run'
+    else:
+        trigger_type = 'automatic'
     
-    # 2. Sync Paperless data
+    # 2. Create processing run if not provided
+    if run_id is None:
+        user_id = user_session.get('user_id') if user_session else None
+        run_id = self.db.create_processing_run(trigger_type=trigger_type, user_id=user_id)
+    
+    # 3. Auto-pause check (only for automatic/script triggers)
+    if user_session is None and self._is_web_ui_active():
+        return {'success': True, 'skipped': True, 'reason': 'auto-pause', 'run_id': run_id}
+    
+    # 4. Sync Paperless data
+    from sync_service import SyncService
+    sync_service = SyncService(self.db)
     sync_service.sync_all(paperless_token, paperless_url)
     
-    # 3. Discover documents
-    documents = _discover_documents(api_client)
+    # 5. Discover or filter documents
+    if filters:
+        documents = self._fetch_filtered_documents(api_client, filters)
+    else:
+        documents = self._discover_documents(api_client)
     
-    # 4. Load rules
-    rules = rule_loader.load_all_rules()
+    # 6. Load rules
+    rule_loader = RuleLoader('rules')
+    rules_dict = rule_loader.load_all_rules()
+    rules = list(rules_dict.values())
     
-    # 5. Process each document
+    # 7. Process each document
     processed = 0
     classified = 0
+    skipped = 0
+    unique_rules_used = set()
     
     for doc in documents:
-        result = _process_document(doc, rules, api_client)
+        result = self._process_document(doc, rules, api_client, dry_run=dry_run, run_id=run_id)
         processed += 1
         if result['classified']:
             classified += 1
+            if result.get('rule_id'):
+                unique_rules_used.add(result['rule_id'])
+        else:
+            skipped += 1
+        
+        # Save per-document details
+        if result.get('detail'):
+            self.db.add_processing_detail(run_id, result['detail'])
     
-    # 6. Return summary
+    rules_applied_count = len(unique_rules_used)
+    
+    # 8. Return summary
     return {
         'success': True,
         'documents_found': len(documents),
         'documents_processed': processed,
-        'documents_classified': classified
+        'documents_classified': classified,
+        'documents_skipped': skipped,
+        'rules_applied': rules_applied_count,
+        'run_id': run_id
     }
 ```
+
+> **Source**: `background_processor.py` — `BackgroundProcessor.process_batch()` (line 118)
 
 ### 7.8 Single Document Processing
 
 **Always Tag, Always Score**:
 
 ```python
-def _process_document(doc, rules, api_client):
+def _process_document(self, doc, rules, api_client, dry_run=False, run_id=None):
     doc_id = doc['id']
     content = api_client.get_document_content(doc_id)
+    if not content:
+        return {'classified': False, 'rules_applied': 0, 'detail': None}
+    
+    # Convert document IDs to names for proper verification
+    paperless_metadata = self._convert_document_ids_to_names(doc)
+    
+    # Create test engine instance
+    test_engine = TestEngine()
     
     # Test all rules, find best match
     best_score = 0
@@ -1455,38 +1583,35 @@ def _process_document(doc, rules, api_client):
     best_rule = None
     
     for rule in rules:
-        result = test_engine.test_rule(rule, doc_id, content, doc['original_file_name'], doc)
-        poco_score = result.get('poco_score', 0)
+        result = test_engine.test_rule(rule, content, doc.get('original_file_name', ''), paperless_metadata)
+        poco_score = result.get('scores', {}).get('poco_score', 0)
         
         if poco_score > best_score:
             best_score = poco_score
             best_result = result
             best_rule = rule
     
-    # Determine classification
-    threshold = best_rule.get('threshold', 75) if best_rule else 75
-    classified = best_result and best_result.get('match') and best_score >= threshold
+    # Classification uses the classification_allowed flag from scoring
+    classified = best_result and best_result.get('classification_allowed', False)
     
     # Get scores (default to 0 if no match)
     poco_score = best_score if best_result else 0
-    poco_ocr = best_result.get('poco_ocr', 0) if best_result else 0
+    poco_ocr = best_result.get('scores', {}).get('poco_ocr_score', 0) if best_result else 0
     
-    # Apply metadata if classified
-    if classified and best_result:
-        updates = _build_metadata_updates(best_result, api_client)
-        api_client.update_document(doc_id, updates)
+    if not dry_run:
+        # Apply metadata if classified (consolidated update approach)
+        if classified and best_result:
+            updates = self._build_metadata_updates(best_result, doc, api_client)
+            # Merges POCO scores + tags into single API call
+            ...
+        
+        # ALWAYS add scores, tags, and scoring note
+        ...
     
-    # ALWAYS add scores to custom fields
-    _add_poco_scores(doc_id, poco_score, poco_ocr, api_client)
-    
-    # ALWAYS add POCO tag (+ or -)
-    _add_poco_tag(doc_id, doc, classified, api_client)
-    
-    # ALWAYS add scoring note
-    _add_scoring_note(doc_id, best_result, best_rule, poco_score, poco_ocr, classified, threshold, api_client)
-    
-    return {'classified': classified, 'rules_applied': 1 if classified else 0}
+    return {'classified': classified, 'rules_applied': 1 if classified else 0, 'detail': ...}
 ```
+
+> **Source**: `background_processor.py` — `BackgroundProcessor._process_document()` (line 443), `_convert_document_ids_to_names()` (line 379)
 
 ### 7.9 Processing History
 
@@ -1545,10 +1670,14 @@ db.update_processing_run(
 **Key Methods**:
 - `trigger_processing()`: Debounced trigger entry point
 - `_execute_processing()`: Timer callback with lock management
-- `process_batch()`: Main batch processing with auto-pause
+- `process_batch()`: Main batch processing with auto-pause, filters, dry_run support
 - `_discover_documents()`: Tag-based document discovery
+- `_fetch_filtered_documents()`: Manual mode filtered document fetching
 - `_process_document()`: Single document classification
+- `_convert_document_ids_to_names()`: Converts Paperless IDs to names for verification
 - `_is_web_ui_active()`: Session activity detection
+
+> **Source**: `background_processor.py` — `BackgroundProcessor.trigger_processing()` (line 49), `_execute_processing()` (line 82), `process_batch()` (line 118), `_discover_documents()` (line 290), `_process_document()` (line 443)
 
 **Configuration Settings** (database config table):
 - `bg_enabled`: 'true' | 'false'
@@ -1611,10 +1740,12 @@ db.update_processing_run(
 
 **Activity Tracking**:
 ```python
-@app.route('/api/*', methods=['*'])
 @require_auth
 def api_endpoint(*args, **kwargs):
-    session_token = request.headers.get('Authorization').replace('Bearer ', '')
+    # Session token is read from HttpOnly cookie (primary) or Authorization header (fallback)
+    session_token = request.cookies.get('session_token')
+    if not session_token:
+        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
     
     # Update last_activity on every request
     db.update_session_activity(session_token)
@@ -1622,6 +1753,10 @@ def api_endpoint(*args, **kwargs):
     # Continue with request handling
     ...
 ```
+
+> **Note**: PocoClass uses HttpOnly cookies (`session_token`) as the primary session mechanism. The `@require_auth` decorator checks cookies first, then falls back to `Authorization: Bearer` header for API compatibility.
+
+> **Source**: `api.py` — `require_auth()` (line 154)
 
 ### 8.5 Log Viewer
 
