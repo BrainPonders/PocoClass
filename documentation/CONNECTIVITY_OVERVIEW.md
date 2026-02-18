@@ -45,6 +45,8 @@ flowchart LR
 | Document content / OCR text | Rule testing, background processing | Pattern matching against OCR identifiers |
 | Document preview (thumbnail) | UI document list | Display document thumbnails |
 
+> **Sync** happens in three situations: on user login, via the Sync button under Settings, and automatically before every background processing run.
+
 ### PocoClass writes TO Paperless
 | Data | When | Purpose |
 |---|---|---|
