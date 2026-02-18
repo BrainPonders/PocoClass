@@ -48,6 +48,7 @@ flowchart LR
 | Document preview (thumbnail) | UI document list | Display document thumbnails |
 
 <br>
+
 > **Sync** happens in three situations: on user login, via the Sync button under Settings, and automatically before every background processing run.
 <br>
 
