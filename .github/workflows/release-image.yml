@@ -18,14 +18,20 @@ concurrency:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/pococlass
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Compute image name
+        id: image
+        shell: bash
+        run: |
+          set -euo pipefail
+          owner_lc="$(printf '%s' "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          echo "image_name=ghcr.io/${owner_lc}/pococlass" >> "$GITHUB_OUTPUT"
 
       - name: Validate release tag
         id: validate
@@ -51,6 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          image_name="${{ steps.image.outputs.image_name }}"
           build_number="$(git rev-list --count HEAD)"
           short_sha="$(git rev-parse --short=12 HEAD)"
           source_tag="${GITHUB_REF_NAME}"
@@ -60,11 +67,11 @@ jobs:
             echo "short_sha=$short_sha"
             echo "source_tag=$source_tag"
             echo "tags<<EOF"
-            echo "${IMAGE_NAME}:${source_tag}"
-            echo "${IMAGE_NAME}:build-${build_number}"
-            echo "${IMAGE_NAME}:sha-${short_sha}"
+            echo "${image_name}:${source_tag}"
+            echo "${image_name}:build-${build_number}"
+            echo "${image_name}:sha-${short_sha}"
             if [[ "${{ steps.validate.outputs.channel }}" == "develop" ]]; then
-              echo "${IMAGE_NAME}:${source_tag}-build-${build_number}"
+              echo "${image_name}:${source_tag}-build-${build_number}"
             fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
