@@ -3,8 +3,7 @@
 #
 #  DIFFERENCE VS HOST MODE:
 #    - Bridge mode connects PocoClass to a Docker network.
-#    - PAPERLESS_URL must be a Docker-internal hostname,
-#      e.g. http://paperless-webserver:8000 or http://paperless-ngx:8000.
+#    - PAPERLESS_URL must be a Docker-internal hostname.
 #    - Host mode allows using the same PAPERLESS_URL as your browser UI URL.
 #
 #  QUICK START:
@@ -34,8 +33,7 @@ services:
       POCOCLASS_SECRET_KEY: ${POCOCLASS_SECRET_KEY:-}
 
       # REQUIRED: Paperless URL from inside Docker network
-      # Set PAPERLESS_URL in .env
-      PAPERLESS_URL: ${PAPERLESS_URL:-}
+      PAPERLESS_URL: ${PAPERLESS_URL}
 
       # OPTIONAL: Performance tuning
       # - GUNICORN_WORKERS=3

@@ -3,10 +3,8 @@
 #
 #  DIFFERENCE VS BRIDGE MODE:
 #    - Host mode shares the host network stack.
-#    - You can use the same PAPERLESS_URL that you use in your browser UI,
-#      e.g. https://paperless.example.com.
-#    - Bridge mode requires PAPERLESS_URL to be a Docker-internal hostname,
-#      e.g. http://paperless-webserver:8000 or http://paperless-ngx:8000.
+#    - You can use the same PAPERLESS_URL that you use in your browser UI.
+#    - Bridge mode requires PAPERLESS_URL to be a Docker-internal hostname.
 #
 #  QUICK START:
 #    1) Copy this file to your deploy root as docker-compose.yml
@@ -34,8 +32,7 @@ services:
 
       # REQUIRED: Paperless URL reachable from the host network.
       # In host mode this can be the same URL used in your browser.
-      # Set PAPERLESS_URL in .env
-      PAPERLESS_URL: ${PAPERLESS_URL:-}
+      PAPERLESS_URL: ${PAPERLESS_URL}
 
       # OPTIONAL: Performance tuning
       # - GUNICORN_WORKERS=3
