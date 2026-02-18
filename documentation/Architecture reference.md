@@ -1,4 +1,4 @@
-# PocoClass Technical Manual v2
+# PocoClass Architecture reference v2
 **Version:** 2.0  
 **Last Updated:** February 18, 2026  
 **Purpose:** Comprehensive technical documentation for PocoClass v2 architecture, logic, and implementation
@@ -8,7 +8,7 @@
 ## Recent Changes
 
 **February 18, 2026:**
-- Updated technical manual: corrected trigger types (`trigger`, `manual_run`, `manual_dry_run`, `automatic`), POCO scoring formula (paperless_max_weight = 0 when no verification fields), auto-pause bypass documentation, and background processing page path
+- Updated architecture reference: corrected trigger types (`trigger`, `manual_run`, `manual_dry_run`, `automatic`), POCO scoring formula (paperless_max_weight = 0 when no verification fields), auto-pause bypass documentation, and background processing page path
 
 **November 21, 2025:**
 - Updated in-app guides (Full Guide + Quick Reference) with comprehensive documentation covering all aspects of PocoClass
@@ -2127,4 +2127,4 @@ CREATE INDEX idx_processing_history_status ON processing_history(status);
 
 ---
 
-**End of Technical Manual**
+**End of Architecture reference**
