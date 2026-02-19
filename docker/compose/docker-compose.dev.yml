@@ -1,0 +1,34 @@
+services:
+  pococlass:
+    image: "${POCOCLASS_IMAGE}"
+    container_name: pococlass-dev
+    restart: unless-stopped
+
+    ports:
+      - "${POCOCLASS_PORT:-5000}:5000"
+
+    environment:
+      POCOCLASS_SECRET_KEY: "${POCOCLASS_SECRET_KEY:-}"
+      PAPERLESS_URL: "${PAPERLESS_URL}"
+      GUNICORN_WORKERS: "${GUNICORN_WORKERS:-3}"
+      GUNICORN_THREADS: "${GUNICORN_THREADS:-2}"
+      GUNICORN_TIMEOUT: "${GUNICORN_TIMEOUT:-120}"
+
+    volumes:
+      - "${DEV_DATA_DIR:-/home/paperless/pococlass-dev/data}:/app/data"
+      - "${DEV_RULES_DIR:-/home/paperless/pococlass-dev/rules}:/app/rules"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    networks:
+      - paperless
+
+networks:
+  paperless:
+    name: "${PAPERLESS_NETWORK_NAME:-paperless_default}"
+    external: ${PAPERLESS_NETWORK_EXTERNAL:-true}

@@ -1,0 +1,970 @@
+/**
+ * @file DocumentClassificationsStep.jsx
+ * @description Step 5 of the rule builder wizard - Document classifications configuration.
+ * Combines predefined metadata assignment (correspondent, document type, tags, custom fields)
+ * with dynamic data extraction rules (anchor-based text extraction from OCR content).
+ * Supports live extraction testing against the selected document's OCR text.
+ */
+
+import React from 'react';
+import { Plus, Trash2, Wand2, Play, CheckCircle, XCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import Tooltip from '@/components/Tooltip';
+import TagSelector from '@/components/TagSelector';
+import PatternHelperModal from '@/components/PatternHelperModal';
+import FieldSelector from '@/components/FieldSelector';
+import API_BASE_URL from '@/config/api';
+
+export default function DocumentClassificationsStep({
+  ruleData,
+  updateRuleData,
+  selectedDocumentId
+}) {
+  const { t } = useLanguage();
+  const [showPatternHelper, setShowPatternHelper] = React.useState(false);
+  const [activeAnchorType, setActiveAnchorType] = React.useState(null);
+  const [activeRuleIndex, setActiveRuleIndex] = React.useState(null);
+  const [fieldDisplaySettings, setFieldDisplaySettings] = React.useState({});
+  const [customFieldNames, setCustomFieldNames] = React.useState({});
+  const [testResults, setTestResults] = React.useState({});
+  const [customFieldsData, setCustomFieldsData] = React.useState({});
+  const [allPlaceholders, setAllPlaceholders] = React.useState([]);
+  const [placeholdersLoaded, setPlaceholdersLoaded] = React.useState(false);
+  const [documentOcr, setDocumentOcr] = React.useState('');
+
+  React.useEffect(() => {
+    loadFieldDisplaySettings();
+    loadCustomFieldsData();
+    loadAllPlaceholders();
+  }, []);
+
+  // Load OCR content when selectedDocumentId is available
+  React.useEffect(() => {
+    if (selectedDocumentId) {
+      loadDocumentOcr(selectedDocumentId);
+    }
+  }, [selectedDocumentId]);
+
+  const loadDocumentOcr = async (docId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/documents/${docId}/ocr`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDocumentOcr(data.ocr || '');
+      }
+    } catch (error) {
+      console.error('Error loading OCR:', error);
+    }
+  };
+
+  const loadFieldDisplaySettings = () => {
+    try {
+      const settings = localStorage.getItem('pococlass_settings');
+      const parsed = settings ? JSON.parse(settings) : {};
+      
+      // Always set defaults (whether localStorage exists or not)
+      const defaultFieldSettings = {
+        title: 'predefined',
+        dateCreated: 'dynamic',
+        correspondent: 'predefined',
+        documentType: 'predefined',
+        tags: 'predefined',
+        customField1: 'disabled',
+        customField2: 'disabled',
+        documentCategory: 'predefined'
+      };
+      
+      const defaultCustomNames = {
+        customField1: t('documentClassifications.invoiceNumberDefault'),
+        customField2: t('documentClassifications.referenceIdDefault'),
+        documentCategory: t('documentClassifications.documentCategoryDefault')
+      };
+      
+      setFieldDisplaySettings(parsed.fieldDisplaySettings || defaultFieldSettings);
+      
+      // Ensure customFieldNames are always strings, not objects
+      const rawNames = parsed.customFieldNames || defaultCustomNames;
+      
+      // Convert any objects to strings (defensive coding)
+      const safeNames = {};
+      Object.keys(rawNames).forEach(key => {
+        const value = rawNames[key];
+        safeNames[key] = typeof value === 'string' ? value : String(value?.label || value?.name || t('documentClassifications.customFieldDefault'));
+      });
+      
+      setCustomFieldNames(safeNames);
+    } catch (e) {
+      console.error('Error reading settings:', e);
+      // On error, set safe defaults
+      setFieldDisplaySettings({
+        title: 'predefined',
+        dateCreated: 'dynamic',
+        correspondent: 'predefined',
+        documentType: 'predefined',
+        tags: 'predefined',
+        customField1: 'disabled',
+        customField2: 'disabled',
+        documentCategory: 'predefined'
+      });
+      setCustomFieldNames({
+        customField1: t('documentClassifications.invoiceNumberDefault'),
+        customField2: t('documentClassifications.referenceIdDefault'),
+        documentCategory: t('documentClassifications.documentCategoryDefault')
+      });
+    }
+  };
+
+  const loadCustomFieldsData = async () => {
+    try {
+      const { Paperless } = await import('@/api/entities');
+      const customFields = await Paperless.getCustomFields();
+      
+      const fieldsMap = {};
+      customFields.forEach(field => {
+        const fieldName = field.name;
+        fieldsMap[fieldName] = {
+          dataType: field.data_type,
+          extraData: field.extra_data,
+          id: field.paperless_id
+        };
+      });
+      setCustomFieldsData(fieldsMap);
+    } catch (e) {
+      console.error('Error loading custom fields:', e);
+    }
+  };
+
+  const loadAllPlaceholders = async () => {
+    try {
+      const { apiClient } = await import('../../../api/apiClient');
+      const data = await apiClient.get('/settings/placeholders');
+      setAllPlaceholders(data);
+      setPlaceholdersLoaded(true);
+    } catch (e) {
+      console.error('Error loading placeholders:', e);
+    }
+  };
+
+  // Helper function to safely get custom field name as string (defensive against objects)
+  const getCustomFieldName = (fieldKey, defaultName) => {
+    const rawValue = customFieldNames?.[fieldKey];
+    if (!rawValue) return defaultName;
+    if (typeof rawValue === 'string') return rawValue;
+    // Handle object case (defensive coding for malformed localStorage data)
+    return rawValue?.label || rawValue?.name || defaultName;
+  };
+
+  // Get all custom field placeholders that should be shown in predefined section
+  const getCustomFieldPlaceholders = (mode) => {
+    return allPlaceholders.filter(p => {
+      return p.is_custom_field && 
+        !p.is_internal && 
+        !p.is_locked &&
+        p.visibility_mode &&
+        (p.visibility_mode === mode || p.visibility_mode === 'both');
+    });
+  };
+
+  const addExtractionRule = () => {
+    const newRules = [...(ruleData.dynamicData?.extractionRules || []), {
+      targetField: '',
+      beforeAnchor: { pattern: '' },
+      afterAnchor: { pattern: '' },
+      extractionType: 'dateFormat', // Default for new rules, will be overridden by targetField change
+      dateFormat: '',
+      regexPattern: '',
+      tagValue: ''
+    }];
+    updateRuleData('dynamicData', { ...ruleData.dynamicData, extractionRules: newRules });
+  };
+
+  const updateExtractionRule = (index, field, value) => {
+    const newRules = [...(ruleData.dynamicData?.extractionRules || [])];
+    if (newRules[index]) {
+      newRules[index] = { ...newRules[index], [field]: value };
+      
+      // Auto-set extraction type based on target field
+      if (field === 'targetField') {
+        if (value === 'dateCreated') {
+          newRules[index].extractionType = 'date';
+          newRules[index].dateFormat = 'DD-MM-YYYY'; // Set default dateFormat
+        } else if (value === 'tags') {
+          // Tags extraction
+          newRules[index].extractionType = 'text';
+          newRules[index].regexPattern = '';
+          newRules[index].tagValue = '';
+        } else if (value) {
+          // Check if this is a custom field by looking it up in the placeholder list
+          // (more reliable than customFieldsData which may not be loaded yet)
+          const customFieldPlaceholder = allPlaceholders.find(p => 
+            p.is_custom_field && p.placeholder_name === value
+          );
+          
+          if (customFieldPlaceholder) {
+            // Check if it's a date-type custom field using customFieldsData if available
+            const fieldData = customFieldsData[value];
+            if (fieldData?.dataType === 'date') {
+              newRules[index].extractionType = 'date';
+              newRules[index].dateFormat = 'DD-MM-YYYY';
+            } else {
+              // Default to text-type for custom fields when dataType is unknown
+              newRules[index].extractionType = 'text';
+              newRules[index].regexPattern = '';
+            }
+          }
+        }
+      }
+      
+      updateRuleData('dynamicData', { ...ruleData.dynamicData, extractionRules: newRules });
+    }
+  };
+
+  const updateAnchor = (index, anchorType, value) => {
+    const newRules = [...(ruleData.dynamicData?.extractionRules || [])];
+    if (newRules[index]) {
+      newRules[index] = {
+        ...newRules[index],
+        [anchorType]: { pattern: value }
+      };
+      updateRuleData('dynamicData', { ...ruleData.dynamicData, extractionRules: newRules });
+    }
+  };
+
+  const removeExtractionRule = (index) => {
+    const newRules = (ruleData.dynamicData?.extractionRules || []).filter((_, i) => i !== index);
+    updateRuleData('dynamicData', { ...ruleData.dynamicData, extractionRules: newRules });
+  };
+
+  const openPatternHelper = (ruleIndex, anchorType) => {
+    setActiveRuleIndex(ruleIndex);
+    setActiveAnchorType(anchorType);
+    setShowPatternHelper(true);
+  };
+
+  const handleUsePattern = (pattern) => {
+    if (activeRuleIndex !== null && activeAnchorType) {
+      if (activeAnchorType === 'beforeAnchor' || activeAnchorType === 'afterAnchor') {
+        updateAnchor(activeRuleIndex, activeAnchorType, pattern);
+      } else if (activeAnchorType === 'extraction') { // For regexPattern
+        updateExtractionRule(activeRuleIndex, 'regexPattern', pattern);
+      } else if (activeAnchorType === 'dateFormat') { // For dateFormat
+        updateExtractionRule(activeRuleIndex, 'dateFormat', pattern);
+      }
+    }
+    setShowPatternHelper(false);
+    setActiveRuleIndex(null);
+    setActiveAnchorType(null);
+  };
+
+  const applyExtractionTypeFilter = (text, extractionType, dateFormat) => {
+    // Apply extraction type filtering to extract specific data from raw text
+    if (extractionType === 'date' || extractionType === 'dateFormat') {
+      // Convert date format to regex pattern (e.g., DD-MM-YYYY -> \d{2}-\d{2}-\d{4})
+      if (dateFormat) {
+        let pattern = dateFormat;
+        pattern = pattern.replace(/YYYY/g, '\\d{4}');
+        pattern = pattern.replace(/YY/g, '\\d{2}');
+        pattern = pattern.replace(/MM/g, '\\d{2}');
+        pattern = pattern.replace(/DD/g, '\\d{2}');
+        pattern = pattern.replace(/M/g, '\\d{1,2}');
+        pattern = pattern.replace(/D/g, '\\d{1,2}');
+        
+        const dateRegex = new RegExp(pattern);
+        const match = text.match(dateRegex);
+        if (match) {
+          return match[0];
+        }
+      }
+      // Fallback: try common date patterns
+      const commonPatterns = [
+        /\d{2}-\d{2}-\d{4}/,  // DD-MM-YYYY
+        /\d{2}\/\d{2}\/\d{4}/, // DD/MM/YYYY
+        /\d{4}-\d{2}-\d{2}/,  // YYYY-MM-DD
+        /\d{2}\.\d{2}\.\d{4}/ // DD.MM.YYYY
+      ];
+      for (const pattern of commonPatterns) {
+        const match = text.match(pattern);
+        if (match) return match[0];
+      }
+    }
+    // For text and unknown types, return as-is
+    return text;
+  };
+
+  const testExtractionRule = (index) => {
+    const rule = ruleData.dynamicData?.extractionRules?.[index];
+    if (!rule || !documentOcr) {
+      setTestResults({ ...testResults, [index]: { error: t('documentClassifications.errors.noOcrContent') } });
+      return;
+    }
+
+    try {
+      const beforePattern = rule.beforeAnchor?.pattern || '';
+      const afterPattern = rule.afterAnchor?.pattern || '';
+      
+      // Find the text between before and after anchors
+      let extractedText = '';
+      let ocrText = documentOcr;
+
+      // Apply before anchor
+      if (beforePattern) {
+        const beforeRegex = new RegExp(beforePattern, 'i');
+        const beforeMatch = ocrText.match(beforeRegex);
+        if (beforeMatch) {
+          ocrText = ocrText.substring(beforeMatch.index + beforeMatch[0].length);
+        } else {
+          setTestResults({ ...testResults, [index]: { error: t('documentClassifications.errors.beforeAnchorNotFound', { pattern: beforePattern }) } });
+          return;
+        }
+      }
+
+      // Apply after anchor
+      if (afterPattern) {
+        const afterRegex = new RegExp(afterPattern, 'i');
+        const afterMatch = ocrText.match(afterRegex);
+        if (afterMatch) {
+          extractedText = ocrText.substring(0, afterMatch.index).trim();
+        } else {
+          setTestResults({ ...testResults, [index]: { error: t('documentClassifications.errors.afterAnchorNotFound', { pattern: afterPattern }) } });
+          return;
+        }
+      } else {
+        // No after anchor, take some reasonable amount of text
+        extractedText = ocrText.substring(0, 200).trim();
+      }
+
+      // Apply extraction type filtering
+      if (rule.extractionType && rule.extractionType !== 'text') {
+        const filteredText = applyExtractionTypeFilter(extractedText, rule.extractionType, rule.dateFormat);
+        if (filteredText) {
+          extractedText = filteredText;
+        } else {
+          setTestResults({ ...testResults, [index]: { error: t('documentClassifications.errors.extractionTypeNoMatch', { type: rule.extractionType }) } });
+          return;
+        }
+      }
+
+      // Apply regex extraction pattern if specified (for text type with regex)
+      if (rule.extractionType === 'text' && rule.regexPattern) {
+        const extractRegex = new RegExp(rule.regexPattern, 'i');
+        const match = extractedText.match(extractRegex);
+        if (match) {
+          extractedText = match[1] || match[0];
+        } else {
+          setTestResults({ ...testResults, [index]: { error: t('documentClassifications.errors.extractionPatternNoMatch', { pattern: rule.regexPattern }) } });
+          return;
+        }
+      }
+
+      setTestResults({ ...testResults, [index]: { success: true, value: extractedText } });
+    } catch (error) {
+      setTestResults({ ...testResults, [index]: { error: `Error: ${error.message}` } });
+    }
+  };
+
+  const getAvailableTargetFields = () => {
+    const fields = [];
+    
+    try {
+      // Date Created (only extractable field that makes sense for dynamic)
+      if (fieldDisplaySettings.dateCreated === 'dynamic' || fieldDisplaySettings.dateCreated === 'both') {
+        const hasPredefined = hasPredefinedValue('dateCreated');
+        fields.push({ 
+          value: 'dateCreated', 
+          label: t('documentClassifications.dateCreatedLabel'), 
+          canRepeat: false, 
+          disabled: hasPredefined,
+          disabledReason: hasPredefined ? t('documentClassifications.removePredefinedFirstMsg') : null
+        });
+      }
+      
+      // Dynamically add ALL custom fields that support dynamic extraction (string, integer, float, monetary, date)
+      const extractableTypes = ['string', 'integer', 'float', 'monetary', 'date'];
+      const dynamicCustomFields = getCustomFieldPlaceholders('dynamic');
+      
+      dynamicCustomFields.forEach(placeholder => {
+        const fieldName = placeholder.placeholder_name;
+        const fieldData = customFieldsData[fieldName];
+        const fieldKey = `customField_${placeholder.id}`;
+        
+        // Only include if dataType is extractable (or unknown/null - be permissive)
+        if (!fieldData || extractableTypes.includes(fieldData?.dataType)) {
+          // Check if field has a predefined value (should be disabled in dropdown)
+          const hasPredefined = hasPredefinedValue(fieldKey, fieldName);
+          
+          fields.push({ 
+            value: fieldName,  // Use actual field name as value (e.g., "Total Price")
+            label: `${t('documentClassifications.labels.customFieldLabel', { name: fieldName })}`, 
+            canRepeat: false,
+            fieldKey: fieldKey,
+            disabled: hasPredefined,
+            disabledReason: hasPredefined ? t('documentClassifications.removePredefinedFirstMsg') : null
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error building target fields:', error);
+    }
+    
+    return fields;
+  };
+
+  const isFieldDisabled = (fieldValue, currentIndex) => {
+    // All fields can only be extracted once
+    const rules = ruleData.dynamicData?.extractionRules || [];
+    return rules.some((rule, idx) => idx !== currentIndex && rule.targetField === fieldValue);
+  };
+
+  // Check if a field has a predefined value set
+  const hasPredefinedValue = (fieldKey, fieldName = null) => {
+    // For custom fields, check the customFields object using fieldName
+    if (fieldName) {
+      const value = ruleData.predefinedData?.customFields?.[fieldName];
+      return value !== undefined && value !== null && value !== '';
+    }
+    // For non-custom fields, check directly on predefinedData
+    const value = ruleData.predefinedData?.[fieldKey];
+    return value !== undefined && value !== null && value !== '';
+  };
+
+  // Check if a field has a dynamic extraction rule
+  const hasDynamicRule = (fieldKeyOrName) => {
+    const rules = ruleData.dynamicData?.extractionRules || [];
+    
+    // For custom fields, we need to check against the actual field name
+    // (e.g., "Total Price") since that's what we now store in targetField
+    if (fieldKeyOrName.startsWith('customField_')) {
+      // Get the actual field name from the placeholder
+      const placeholder = allPlaceholders.find(p => `customField_${p.id}` === fieldKeyOrName);
+      if (placeholder) {
+        const fieldName = placeholder.placeholder_name;
+        // Check for both new format (actual field name) and legacy format (customField_*)
+        return rules.some(rule => 
+          rule.targetField === fieldName || 
+          rule.targetField === fieldKeyOrName
+        );
+      }
+      // If placeholder not found, check for legacy format directly
+      return rules.some(rule => rule.targetField === fieldKeyOrName);
+    }
+    
+    // For non-custom fields, check directly
+    return rules.some(rule => rule.targetField === fieldKeyOrName);
+  };
+
+  const targetFields = getAvailableTargetFields();
+
+  return (
+    <div className="wizard-container">
+      <div className="mb-6">
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-bold">{t('wizard.step5Title')}</h2>
+          <Tooltip content={t('documentClassifications.stepTooltip')} />
+        </div>
+        <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
+          {t('documentClassifications.stepDescription')}
+        </p>
+      </div>
+
+      {/* Predefined Data Section */}
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-4 pb-2 border-b">{t('documentClassifications.predefinedDataSection')}</h3>
+        <div className="space-y-6">
+          {(fieldDisplaySettings.title === 'predefined' || fieldDisplaySettings.title === 'both') && (
+            <div className="form-group">
+              <label className="form-label">{t('documentClassifications.labels.title')}</label>
+              <input
+                type="text"
+                disabled
+                placeholder={t('documentClassifications.placeholders.autoGenerated')}
+                className="pc-input cursor-not-allowed"
+                style={{ backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-secondary)' }}
+              />
+            </div>
+          )}
+
+          <div data-tutorial-field="tutorial-field-predefined-paperless">
+          {(fieldDisplaySettings.dateCreated === 'predefined' || fieldDisplaySettings.dateCreated === 'both') && (
+            <div className="form-group">
+              <label className="form-label">{t('documentClassifications.labels.dateCreated')}</label>
+              <input
+                type="date"
+                value={ruleData.predefinedData?.dateCreated || ''}
+                onChange={(e) => updateRuleData('predefinedData', { ...ruleData.predefinedData, dateCreated: e.target.value })}
+                className={`pc-input ${
+                  hasDynamicRule('dateCreated') 
+                    ? 'cursor-not-allowed' 
+                    : ''
+                }`}
+                style={
+                  hasDynamicRule('dateCreated') 
+                    ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } 
+                    : (!ruleData.predefinedData?.dateCreated ? { color: 'var(--app-text-muted)' } : {})
+                }
+                disabled={hasDynamicRule('dateCreated')}
+                placeholder={hasDynamicRule('dateCreated') ? t('documentClassifications.placeholders.disabledDynamicRule') : ""}
+              />
+              {hasDynamicRule('dateCreated') && (
+                <p className="text-sm text-orange-600 mt-1">
+                  {t('documentClassifications.messages.fieldInUseWarning')}
+                </p>
+              )}
+            </div>
+          )}
+
+          {(fieldDisplaySettings.correspondent === 'predefined' || fieldDisplaySettings.correspondent === 'both') && (
+            <div className="form-group">
+              <label className="form-label">{t('documentClassifications.labels.correspondent')}</label>
+              <FieldSelector
+                type="correspondent"
+                value={ruleData.predefinedData?.correspondent || ''}
+                onChange={(value) => updateRuleData('predefinedData', { ...ruleData.predefinedData, correspondent: value })}
+                placeholder={t('documentClassifications.placeholders.selectCorrespondent')}
+                allowCustom={false}
+              />
+            </div>
+          )}
+
+          {(fieldDisplaySettings.documentType === 'predefined' || fieldDisplaySettings.documentType === 'both') && (
+            <div className="form-group">
+              <label className="form-label">{t('documentClassifications.labels.documentType')}</label>
+              <FieldSelector
+                type="documentType"
+                value={ruleData.predefinedData?.documentType || ''}
+                onChange={(value) => updateRuleData('predefinedData', { ...ruleData.predefinedData, documentType: value })}
+                placeholder={t('documentClassifications.placeholders.selectDocumentType')}
+                allowCustom={false}
+              />
+            </div>
+          )}
+
+          {(fieldDisplaySettings.tags === 'predefined' || fieldDisplaySettings.tags === 'both') && (
+            <div className="form-group">
+              <label className="form-label">{t('documentClassifications.labels.tags')}</label>
+              <TagSelector
+                selectedTags={ruleData.predefinedData?.tags || []}
+                onChange={(tags) => updateRuleData('predefinedData', { ...ruleData.predefinedData, tags })}
+                placeholder={t('documentClassifications.placeholders.selectTags')}
+                allowCustom={false}
+              />
+            </div>
+          )}
+          </div>
+
+          <div data-tutorial-field="tutorial-field-predefined-custom">
+          {/* Dynamically render ALL custom fields from Settings */}
+          {getCustomFieldPlaceholders('predefined').map(placeholder => {
+            const fieldName = placeholder.placeholder_name;
+            const fieldData = customFieldsData[fieldName];
+            const fieldKey = `customField_${placeholder.id}`;
+            const hasConflict = hasDynamicRule(fieldKey);
+            
+            // Helper to update custom fields properly
+            const updateCustomField = (value) => {
+              const currentCustomFields = ruleData.predefinedData?.customFields || {};
+              updateRuleData('predefinedData', { 
+                ...ruleData.predefinedData, 
+                customFields: {
+                  ...currentCustomFields,
+                  [fieldName]: value
+                }
+              });
+            };
+            
+            return (
+              <div key={placeholder.id} className="form-group">
+                <label className="form-label">{t('documentClassifications.labels.customFieldLabel', { name: fieldName })}</label>
+                {fieldData?.dataType === 'select' && fieldData?.extraData?.select_options ? (
+                  <>
+                    <select
+                      value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                      onChange={(e) => updateCustomField(e.target.value)}
+                      className={`pc-input ${
+                        hasConflict 
+                          ? 'cursor-not-allowed' 
+                          : ''
+                      }`}
+                      style={
+                        hasConflict 
+                          ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } 
+                          : { 
+                              backgroundColor: '#f3e8ff', 
+                              borderColor: '#a855f7',
+                              color: ruleData.predefinedData?.customFields?.[fieldName] ? 'var(--app-text)' : 'var(--app-text-muted)'
+                            }
+                      }
+                      disabled={hasConflict}
+                    >
+                      <option value="">{t('documentClassifications.placeholders.selectOption')}</option>
+                      {fieldData.extraData.select_options.map((option, idx) => {
+                        const optionValue = typeof option === 'string' ? option : (option?.value || option?.label || option?.name || String(option));
+                        const optionLabel = typeof option === 'string' ? option : (option?.label || option?.name || option?.value || String(option));
+                        return (
+                          <option key={idx} value={optionValue}>{optionLabel}</option>
+                        );
+                      })}
+                    </select>
+                    {hasConflict && (
+                      <p className="text-sm text-orange-600 mt-1">
+                        {t('documentClassifications.messages.fieldInUseWarning')}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="text"
+                      value={ruleData.predefinedData?.customFields?.[fieldName] || ''}
+                      onChange={(e) => updateCustomField(e.target.value)}
+                      placeholder={hasConflict ? t('documentClassifications.placeholders.disabledDynamicRule') : t('documentClassifications.placeholders.enterFieldName', { fieldName: fieldName.toLowerCase() })}
+                      className={`pc-input ${hasConflict ? 'cursor-not-allowed' : ''}`}
+                      style={hasConflict ? { backgroundColor: 'var(--app-bg-secondary)', color: 'var(--app-text-muted)' } : { backgroundColor: '#f3e8ff', borderColor: '#a855f7' }}
+                      disabled={hasConflict}
+                    />
+                    {hasConflict && (
+                      <p className="text-sm text-orange-600 mt-1">
+                        {t('documentClassifications.messages.fieldInUseWarning')}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic Data Section */}
+      <div className="mt-10" data-tutorial-field="tutorial-field-dynamic-extraction">
+        <div className="flex justify-between items-center mb-4 pb-2 border-b">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-semibold">{t('documentClassifications.dynamicDataSection')}</h3>
+            <Tooltip content={t('documentClassifications.dynamicDataTooltip')} />
+          </div>
+        </div>
+
+        <p className="mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+          {t('documentClassifications.dynamicDataDescription')}
+        </p>
+
+        {(ruleData.dynamicData?.extractionRules?.length || 0) === 0 ? (
+          <div className="text-center py-12 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--app-border)' }}>
+            <div className="text-6xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold mb-2">{t('documentClassifications.noDynamicRulesTitle')}</h3>
+            <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>{t('documentClassifications.noDynamicRulesDescription')}</p>
+            <button onClick={addExtractionRule} className="btn btn-primary">
+              <Plus className="w-4 h-4" />
+              {t('documentClassifications.buttons.addFirstRule')}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {ruleData.dynamicData?.extractionRules?.map((rule, index) => {
+              // Determine if current field is custom field or document category for purple styling
+              // Tags should not receive custom field styling, but default green.
+              const isCustomField = allPlaceholders.some(p => 
+                p.is_custom_field && p.placeholder_name === rule.targetField
+              );
+              const isCustomFieldOrDocumentCategory = rule.targetField === 'documentCategory' || isCustomField;
+              const isTag = rule.targetField === 'tags';
+              
+              const customFieldStyle = { backgroundColor: '#f3e8ff', borderColor: '#a855f7' };
+
+              return (
+                <div key={index} className="card">
+                  <div className="flex justify-between items-start mb-4">
+                    <h4 className="font-semibold">{t('documentClassifications.dynamicExtractionRuleNumber', { number: index + 1 })}</h4>
+                    <button
+                      onClick={() => removeExtractionRule(index)}
+                      className="btn btn-ghost text-red-500 btn-sm"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Graphic Representation - anchors stay blue, extracted data changes color */}
+                    <div className="flex items-center justify-center gap-3 p-4 rounded-lg" style={{ backgroundColor: 'var(--app-surface)' }}>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
+                        {t('documentClassifications.visualization.beforeAnchor')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ 
+                        backgroundColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#e9d5ff' : '#d1fae5',
+                        borderColor: (isCustomFieldOrDocumentCategory && !isTag) ? '#a855f7' : '#10b981',
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857'
+                      }}>
+                        {t('documentClassifications.visualization.extractedData')}
+                      </div>
+                      <div className="px-4 py-2 border-2 rounded-lg font-mono text-sm" style={{ backgroundColor: 'var(--info-bg)', borderColor: 'var(--info-border)', color: 'var(--info-text)' }}>
+                        {t('documentClassifications.visualization.afterAnchor')}
+                      </div>
+                    </div>
+
+                    {/* Target Field */}
+                    <div className="form-group">
+                      <label className="form-label">{t('documentClassifications.labels.targetField')}</label>
+                      <select
+                        value={rule.targetField}
+                        onChange={(e) => updateExtractionRule(index, 'targetField', e.target.value)}
+                        className="pc-select"
+                        style={isCustomFieldOrDocumentCategory && !isTag ? customFieldStyle : {}}
+                      >
+                        <option value="">{t('documentClassifications.placeholders.selectTargetField')}</option>
+                        {targetFields.map(field => {
+                          const safeLabel = typeof field.label === 'string' ? field.label : String(field.label?.label || field.label?.name || t('documentClassifications.customFieldDefault'));
+                          const alreadyUsed = isFieldDisabled(field.value, index);
+                          const hasPredefined = field.disabled;
+                          const isDisabled = alreadyUsed || hasPredefined;
+                          
+                          let suffix = '';
+                          if (alreadyUsed) suffix = t('documentClassifications.dropdown.alreadyUsed');
+                          else if (hasPredefined) suffix = t('documentClassifications.dropdown.removePredefinedFirst');
+                          
+                          return (
+                            <option 
+                              key={field.value} 
+                              value={field.value}
+                              disabled={isDisabled}
+                            >
+                              {safeLabel}{suffix}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    {/* Before Anchor */}
+                    <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '8px', border: '2px solid #3b82f6' }}>
+                      <h5 className="font-semibold text-sm mb-2" style={{ color: '#1e40af' }}>{t('documentClassifications.labels.beforeAnchor')}</h5>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={rule.beforeAnchor?.pattern || ''}
+                          onChange={(e) => updateAnchor(index, 'beforeAnchor', e.target.value)}
+                          placeholder={t('documentClassifications.placeholders.enterTextOrRegex')}
+                          className="pc-input flex-1"
+                        />
+                        <button
+                          onClick={() => openPatternHelper(index, 'beforeAnchor')}
+                          className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
+                          type="button"
+                        >
+                          <Wand2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Extraction Type */}
+                    <div style={{ 
+                      background: (isCustomFieldOrDocumentCategory && !isTag) ? '#f3e8ff' : '#d1fae5', 
+                      padding: '16px', 
+                      borderRadius: '8px', 
+                      border: (isCustomFieldOrDocumentCategory && !isTag) ? '2px solid #a855f7' : '2px solid #10b981' 
+                    }}>
+                      <h5 className="font-semibold text-sm mb-2" style={{ 
+                        color: (isCustomFieldOrDocumentCategory && !isTag) ? '#7c3aed' : '#047857' 
+                      }}>{t('documentClassifications.labels.extractionType')}</h5>
+                      
+                      {rule.targetField === 'dateCreated' && (
+                        <div className="form-group">
+                          <label className="form-label">{t('documentClassifications.labels.dateFormat')}</label>
+                          <div className="flex items-center gap-2">
+                            <FieldSelector
+                              type="dateFormat"
+                              value={rule.dateFormat || ''}
+                              onChange={(value) => updateExtractionRule(index, 'dateFormat', value)}
+                              placeholder={t('documentClassifications.placeholders.selectDateFormat')}
+                              allowCustom={true}
+                            />
+                            <button
+                              onClick={() => openPatternHelper(index, 'dateFormat')}
+                              className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
+                              type="button"
+                            >
+                              <Wand2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {rule.targetField === 'tags' && (
+                        <div className="space-y-3">
+                          <div className="form-group">
+                            <label className="form-label">{t('documentClassifications.labels.selectTagToExtract')}</label>
+                            <TagSelector
+                              selectedTags={rule.tagValue ? [rule.tagValue] : []}
+                              onChange={(tags) => updateExtractionRule(index, 'tagValue', tags[0] || '')}
+                              placeholder={t('documentClassifications.placeholders.selectTag')}
+                              singleSelect
+                              allowCustom={false}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">{t('documentClassifications.labels.patternToMatch')}</label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={rule.regexPattern || ''}
+                                onChange={(e) => updateExtractionRule(index, 'regexPattern', e.target.value)}
+                                placeholder={t('documentClassifications.placeholders.enterTextOrRegex')}
+                                className="pc-input flex-1"
+                              />
+                              <button
+                                onClick={() => openPatternHelper(index, 'extraction')}
+                                className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
+                                type="button"
+                              >
+                                <Wand2 className="w-5 h-5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {rule.targetField && (isCustomField || rule.targetField === 'documentCategory') && (
+                        <div className="form-group">
+                          <label className="form-label">{t('documentClassifications.labels.patternToMatch')}</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={rule.regexPattern || ''}
+                              onChange={(e) => updateExtractionRule(index, 'regexPattern', e.target.value)}
+                              placeholder={t('documentClassifications.placeholders.enterTextOrRegex')}
+                              className="pc-input flex-1"
+                              style={customFieldStyle}
+                            />
+                            <button
+                              onClick={() => openPatternHelper(index, 'extraction')}
+                              className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
+                              type="button"
+                            >
+                              <Wand2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!rule.targetField && (
+                        <p className="text-sm italic" style={{ color: 'var(--app-text-muted)' }}>{t('documentClassifications.messages.selectTargetField')}</p>
+                      )}
+                    </div>
+
+                    {/* After Anchor */}
+                    <div style={{ background: '#dbeafe', padding: '16px', borderRadius: '8px', border: '2px solid #3b82f6' }}>
+                      <h5 className="font-semibold text-sm mb-2" style={{ color: '#1e40af' }}>{t('documentClassifications.labels.afterAnchor')}</h5>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={rule.afterAnchor?.pattern || ''}
+                          onChange={(e) => updateAnchor(index, 'afterAnchor', e.target.value)}
+                          placeholder={t('documentClassifications.placeholders.enterTextOrRegex')}
+                          className="pc-input flex-1"
+                        />
+                        <button
+                          onClick={() => openPatternHelper(index, 'afterAnchor')}
+                          className="p-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center justify-center flex-shrink-0"
+                          type="button"
+                        >
+                          <Wand2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Test Extraction Button */}
+                    {documentOcr && (
+                      <div className="mt-4">
+                        <button
+                          onClick={() => testExtractionRule(index)}
+                          className="btn btn-secondary w-full"
+                          type="button"
+                          disabled={!rule.beforeAnchor?.pattern && !rule.afterAnchor?.pattern}
+                        >
+                          <Play className="w-4 h-4" />
+                          {t('documentClassifications.buttons.testExtraction')}
+                        </button>
+                        
+                        {/* Test Results */}
+                        {testResults[index] && (
+                          <div className={`mt-3 p-3 rounded-lg border ${
+                            testResults[index].success 
+                              ? 'bg-green-50 border-green-300' 
+                              : 'bg-red-50 border-red-300'
+                          }`}>
+                            {testResults[index].success ? (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <CheckCircle className="w-5 h-5 text-green-600" />
+                                  <span className="font-semibold text-green-900">{t('documentClassifications.messages.extractedValueLabel')}</span>
+                                </div>
+                                <div className="p-2 rounded border border-green-200 font-mono text-sm" style={{ backgroundColor: 'var(--app-surface)', color: 'var(--app-text)' }}>
+                                  {testResults[index].value}
+                                </div>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <XCircle className="w-5 h-5 text-red-600" />
+                                  <span className="font-semibold text-red-900">{t('documentClassifications.messages.extractionFailedLabel')}</span>
+                                </div>
+                                <div className="text-sm text-red-800">
+                                  {testResults[index].error}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        <button 
+          onClick={addExtractionRule}
+          className="w-full p-3 border-2 border-dashed rounded-lg bg-transparent font-medium transition-colors flex items-center justify-center gap-2 mt-4"
+          style={{ 
+            borderColor: 'var(--app-border)', 
+            color: 'var(--info-text)'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--info-border)'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--app-border)'}
+        >
+          <Plus className="w-4 h-4" />
+          {t('documentClassifications.buttons.addExtractionRule')}
+        </button>
+      </div>
+
+      {showPatternHelper && (
+        <PatternHelperModal
+          isOpen={showPatternHelper}
+          onClose={() => {
+            setShowPatternHelper(false);
+            setActiveRuleIndex(null);
+            setActiveAnchorType(null);
+          }}
+          onUsePattern={handleUsePattern}
+          initialValue={
+            activeRuleIndex !== null && activeAnchorType
+              ? activeAnchorType === 'extraction'
+                ? ruleData.dynamicData?.extractionRules?.[activeRuleIndex]?.regexPattern || ''
+                : activeAnchorType === 'dateFormat'
+                  ? ruleData.dynamicData?.extractionRules?.[activeRuleIndex]?.dateFormat || ''
+                  : ruleData.dynamicData?.extractionRules?.[activeRuleIndex]?.[activeAnchorType]?.pattern || ''
+              : ''
+          }
+          restrictToDateOnly={
+            activeRuleIndex !== null && 
+            (activeAnchorType === 'dateFormat' ||
+             (activeAnchorType === 'extraction' && ruleData.dynamicData?.extractionRules?.[activeRuleIndex]?.targetField === 'dateCreated'))
+          }
+        />
+      )}
+    </div>
+  );
+}

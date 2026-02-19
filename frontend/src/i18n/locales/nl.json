@@ -1,0 +1,1746 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "add": "Toevoegen",
+    "search": "Zoeken",
+    "loading": "Bezig met laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "confirm": "Bevestigen",
+    "yes": "Ja",
+    "no": "Nee",
+    "close": "Sluiten",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "finish": "Voltooien",
+    "submit": "Indienen",
+    "reset": "Herstellen",
+    "resetFilters": "Filters herstellen",
+    "notSet": "Niet ingesteld",
+    "patterns": "patronen",
+    "tags": "labels",
+    "points": "punten",
+    "note": "Opmerking"
+  },
+  "filters": {
+    "title": "Titel",
+    "tags": "Labels",
+    "correspondent": "Correspondent",
+    "documentType": "Documenttype",
+    "datesAdded": "Toegevoegd",
+    "limit": "Limiet",
+    "type": "Type",
+    "level": "Niveau",
+    "dates": "Data",
+    "searchPlaceholder": "Zoeken...",
+    "searchLogsPlaceholder": "Logboeken zoeken...",
+    "filterTags": "Labels filteren",
+    "filterCorrespondents": "Correspondenten filteren",
+    "filterDocumentTypes": "Documenttypen filteren",
+    "notAssigned": "Niet toegewezen",
+    "any": "Willekeurig",
+    "all": "Alles",
+    "include": "Opnemen",
+    "exclude": "Uitsluiten",
+    "from": "Van",
+    "to": "Tot",
+    "allTypes": "Alle types",
+    "ruleExecution": "Regeluitvoering",
+    "classification": "Classificatie",
+    "system": "Systeem",
+    "errorType": "Fout",
+    "paperlessApi": "Paperless API",
+    "allLevels": "Alle niveaus",
+    "info": "Informatie",
+    "success": "Succes",
+    "warning": "Waarschuwing",
+    "dateRange": "Datumbereik",
+    "last7Days": "Afgelopen 7 dagen",
+    "allStatus": "Alle statussen",
+    "newestFirst": "Nieuwste eerst",
+    "oldestFirst": "Oudste eerst"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "rules": "Regels",
+    "ruleEvaluation": "Regelevaluatie",
+    "backgroundProcess": "Achtergrondproces",
+    "logs": "Logboeken",
+    "settings": "Instellingen",
+    "guide": "Gids",
+    "quickStart": "Snelstart",
+    "logout": "Afmelden"
+  },
+  "auth": {
+    "login": "Aanmelden",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "loginButton": "Aanmelden",
+    "loginError": "Ongeldige gegevens",
+    "sessionExpired": "Sessie verlopen. Meld u alstublieft opnieuw aan."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Systeemoverzicht en statistieken",
+    "welcome": "Welkom bij PocoClass",
+    "systemStatus": "Systeemstatus",
+    "backgroundProcessing": "Achtergrondverwerking",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld",
+    "paused": "Onderbroken (actieve sessie)",
+    "correspondents": "Correspondenten",
+    "documentTypes": "Documenttypen",
+    "customFields": "Aangepaste velden",
+    "users": "Gebruikers",
+    "recentRuleActivity": "Recente regelactiviteit",
+    "noRulesYet": "Nog geen regels",
+    "createFirstRule": "Eerste regel maken",
+    "createFirstRuleDesc": "Maak uw eerste documentclassificatieregel",
+    "noteExecutionTracking": "Opmerking:",
+    "executionTrackingDesc": "Uitvoeringsvolging komt binnenkort. Op dit moment worden regelmaakdatums weergegeven als activiteitsindicatoren.",
+    "deactivatedRules": "Gedeactiveerde regels",
+    "stats": {
+      "totalRules": "Totale regels",
+      "activeRules": "Actieve regels",
+      "processedDocuments": "Verwerkte documenten",
+      "successRate": "Slagingspercentage"
+    },
+    "ruleActivity": {
+      "lastActivity": "Laatste activiteit",
+      "status": "Status",
+      "executions": "Uitvoeringen",
+      "successRate": "Succespercentage",
+      "new": "nieuw"
+    }
+  },
+  "rules": {
+    "title": "Regels",
+    "subtitle": "Beheer uw documentclassificatieregels",
+    "createNew": "Nieuwe regel maken",
+    "newRule": "+ Nieuwe regel",
+    "editRule": "Regel bewerken",
+    "deleteRule": "Regel verwijderen",
+    "enableRule": "Regel inschakelen",
+    "disableRule": "Regel uitschakelen",
+    "ruleName": "Regelnaam",
+    "ruleId": "Regel-id",
+    "description": "Beschrijving",
+    "threshold": "Drempel",
+    "ocrThreshold": "OCR-drempel",
+    "status": "Status",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld",
+    "noRules": "Geen regels gevonden",
+    "documentsWithoutRules": "Documenten zonder regels ({count})",
+    "noDocumentsFound": "Geen documenten gevonden",
+    "noDocumentsDesc": "Geen documenten gevonden. Dit kan betekenen:",
+    "noDocumentsReasons": {
+      "noDocs": "Er zijn geen documenten in Paperless-ngx",
+      "allProcessed": "Alle documenten zijn verwerkt",
+      "filtersRestrictive": "De huidige filters zijn te restrictief"
+    },
+    "checkConsole": "Controleer de browserconsole op details van het API-antwoord.",
+    "createFirstRuleDesc": "Maak uw eerste documentclassificatieregel",
+    "duplicateRule": "Regel dupliceren"
+  },
+  "wizard": {
+    "step1": "Basisgegevens",
+    "step1Description": "Definieer basisregelinformatie en vertrouwensvereisten",
+    "step2": {
+      "logicGroup": "Logische groep",
+      "searchLines": "Zoekregels",
+      "to": "tot",
+      "first": "Eerste",
+      "last": "Laatste",
+      "matchAnyOR": "Willekeurig (OF)",
+      "matchAllAND": "Alles (EN)",
+      "mandatory": "Verplicht",
+      "pattern": "Patroon",
+      "addPattern": "Patroon toevoegen",
+      "enterPattern": "Voer een tekstpatroon of regex in of gebruik de regex-generator",
+      "tooltipLogicGroup": "Een logische groep bevat een of meer patronen. Gebruik 'Willekeurig (OF)' wanneer een patroon het document kan identificeren. Gebruik 'Alles (EN)' wanneer alle patronen aanwezig moeten zijn. Selecteer 'Verplicht' om deze groep verplicht te maken - als verplichte groepen niet overeenkomen, mislukt de regel ongeacht de POCO-score.",
+      "tooltipPattern": "Voer een eenvoudige teksttekenreeks in om te zoeken, gebruik de patroon-assistent om flexibele patronen te maken, of schrijf uw eigen regex voor geavanceerde overeenkomsten.",
+      "deleteLogicGroup": "Logische groep verwijderen",
+      "removePattern": "Patroon verwijderen",
+      "openPatternHelper": "Patroon-assistent openen"
+    },
+    "step2Description": "Definieer patronen die dit documenttype in OCR-tekst identificeren",
+    "step3": "Bestandsnaampatronen",
+    "step3Description": "Definieer patronen die dit documenttype op bestandsnaam identificeren",
+    "step4": "Configuratie",
+    "step5": "Metagegevensstoewijzing",
+    "step6": "Verificatie",
+    "step7": "Beoordeling",
+    "stepOf": "Stap {current} van {total}",
+    "configSummary": "Configuratieoverzicht",
+    "ruleNameLabel": "Regelnaam",
+    "ruleIdLabel": "Regel-id",
+    "notSet": "Niet ingesteld",
+    "pocoScoreReq": "POCO-score-eis",
+    "ocrScoreReq": "OCR-score-eis",
+    "totalPatterns": "Totale patronen",
+    "currentMultiplier": "Huidige vermenigvuldiger",
+    "patternWeight": "Patroongewicht",
+    "maxFilenameWeight": "Max. bestandsnaamgewicht",
+    "examplePrefix": "Voorbeeld:",
+    "workingWith": "Werken met:",
+    "ocrScoreRequirement": "OCR-score-eis",
+    "ocrWeightMultiplier": "OCR-gewichtsvermenigvuldiger",
+    "logicGroups": "Logische groepen",
+    "totalIdentifiers": "Totale identificaties",
+    "includingAnd": "(inclusief EN)",
+    "ocrScoreRequirementLabel": "OCR-score-eis",
+    "ocrMultiplier": "OCR-vermenigvuldiger",
+    "maxOcrWeight": "Max. OCR-gewicht",
+    "ocrExampleText": "Voorbeeld: Als alle {count} patronen passen, OCR-score = ({count}/{count}) × 100 = 100%. Max. OCR-gewicht = {weight} punten.",
+    "ocrScoreChangedWarning": "OCR-score-eis is gewijzigd ten opzichte van standaard (75%).",
+    "ocrMultiplierChangedWarning": "OCR-vermenigvuldiger is gewijzigd ten opzichte van standaard (3×).",
+    "filenamePattern": "Bestandsnaampatroon",
+    "removePattern": "Patroon verwijderen",
+    "openPatternHelper": "Patroon-assistent openen",
+    "filenameMultiplierWarning": "Bestandsnaamvermenigvuldiger is verhoogd ten opzichte van standaard (1×).",
+    "filenameWeightExceedsOcr": "Bestandsnaamgewicht overschrijdt OCR-gewicht.",
+    "filenameExampleText": "Voorbeeld: Met {count} gedefinieerde patronen bedraagt het maximale bestandsnaamgewicht = {count} × {count} × {multiplier} = {weight} punten.",
+    "verificationDescription": "Selecteer de Paperless-placeholders die moeten worden geverifieerd en configureer de verificatievermenigvuldiger.",
+    "verificationOptionalNote": "Deze stap is optioneel. Als u geen veld inschakelt, blijft het uitgeschakeld en kunt u naar de volgende stap gaan.",
+    "selectPlaceholdersLabel": "Selecteer tijdelijke aanduidingen voor verificatie",
+    "noPlaceholdersEnabled": "Geen placeholders ingeschakeld. Schakel placeholders in onder Instellingen > Stap 5.",
+    "step3Of6Title": "Stap 3 van 6: Definitie van statische classificatiegegevens",
+    "step4Of7Title": "Stap 4 van 7: Statische metagegevens",
+    "step5Of6Title": "Stap 5 van 6: Documentclassificaties",
+    "staticDataDescription": "Configureer vaste classificatiegegevens die van toepassing zijn op alle documenten die aan deze regel voldoen.",
+    "staticMetadataDescription": "Configureer vaste informatie die van toepassing is op alle documenten die aan deze regel voldoen. Dit zijn constante gegevens die eenmaal worden toegewezen wanneer een document wordt herkend.",
+    "documentClassificationsDescription": "Configureer documentclassificatiegegevens die zijn geëxtraheerd uit OCR",
+    "staticClassificationDataInfoTitle": "Statische classificatiegegevens",
+    "staticClassificationDataInfoText": "Dit zijn constante gegevens die u aan een document wilt toewijzen zodra het wordt herkend. Grijze velden worden automatisch door het systeem ingevuld.",
+    "staticMetadataInfoTitle": "Statische metagegevens",
+    "staticMetadataInfoText": "Dit zijn constante gegevens die u aan een document wilt toewijzen zodra het wordt herkend. Bijvoorbeeld elke afrekening van een bepaald type krijgt altijd dezelfde correspondent toegewezen.",
+    "reviewBeforeSaving": "Controleer uw regelconfiguratie voordat u deze opslaat"
+  },
+  "ocr_identifiers_description": "Definieer patronen die dit documenttype in OCR-tekst identificeren",
+  "ocr_identifiers_warning": "⚠️ Waarschuwing: U hebt slechts {filledGroups} van de 3 vereiste logische groepen ingevuld. Voeg alstublieft patronen toe aan minimaal 3 logische groepen voor betrouwbare classificatie.",
+  "add_logic_group": "Logische groep toevoegen",
+  "ocr_score_requirement_tooltip": "Minimumpercentage OCR-patronen dat moet overeenkomen voor succes van deze regel. 75% betekent dat minstens 75% van uw gedefinieerde patronen moet worden gevonden in de OCR-tekst van het document.",
+  "ocr_weight_multiplier_tooltip": "Bepaalt de weging van OCR-patroonovereenkomsten in de uiteindelijke POCO-score. Hogere waarden maken OCR-overeenkomst belangrijker. De standaardwaarde is 3× voor sterke OCR-gebaseerde classificatie.",
+  "change_ocr_score_requirement_title": "OCR-score-eis wijzigen?",
+  "change_ocr_score_requirement_message": "U wijzigt de OCR-score-eis van 75% (aanbevolen) naar {pendingOcrThreshold}%. Weet u zeker?",
+  "yes_change_it": "Ja, wijzigen",
+  "cancel": "Annuleren",
+  "change_ocr_weight_multiplier_title": "OCR-gewichtsvermenigvuldiger wijzigen?",
+  "change_ocr_weight_multiplier_message": "U wijzigt de OCR-gewichtsvermenigvuldiger van 3× (aanbevolen) naar {pendingMultiplier}×. Dit beïnvloedt de weging van OCR-patronen in de uiteindelijke POCO-score. Weet u zeker?",
+  "settings": {
+    "title": "Instellingen",
+    "tabs": {
+      "system": "Systeem",
+      "validation": "Gegevensvalidatie",
+      "appearance": "Weergave",
+      "dateFormats": "Datumformaten",
+      "fieldVisibility": "Veldzichtbaarheid",
+      "backgroundProcessing": "Achtergrondverwerking"
+    },
+    "appearance": {
+      "title": "Weergave-instellingen",
+      "subtitle": "Pas thema, taal en toegankelijkheidsopties aan",
+      "language": "Taal",
+      "theme": "Thema",
+      "themeLight": "Licht",
+      "themeDark": "Donker",
+      "themeAuto": "Automatisch",
+      "colorblindMode": "Kleurenblindenmodus inschakelen",
+      "colorblindModeDesc": "Past kleuren aan voor betere toegankelijkheid",
+      "colorblindNotImplemented": "Deze functie is nog niet beschikbaar in deze versie van PocoClass.",
+      "availableLanguages": "Beschikbare talen",
+      "loadingSettings": "Instellingen laden..."
+    },
+    "system": {
+      "title": "Systeembeheer",
+      "subtitle": "Beheer Paperless-verbinding, gebruikers en gegevenssynchronisatie",
+      "syncingData": "Gegevens worden gesynchroniseerd van Paperless-ngx...",
+      "paperlessConnection": "Paperless-verbinding",
+      "paperlessUrl": "Paperless-URL",
+      "testConnection": "Verbinding testen",
+      "testing": "Test wordt uitgevoerd...",
+      "update": "Bijwerken",
+      "onlyAdminCanUpdate": "Alleen beheerders kunnen de Paperless-URL bijwerken",
+      "sessionSettings": "Sessie-instellingen",
+      "sessionSettingsSubtitle": "Configureer sessie-timeout en automatisch afmeldingsgedrag",
+      "sessionTimeout": "Sessie-timeout (uren)",
+      "bgProtectionTitle": "Achtergrondverwerkingsbescherming:",
+      "bgProtectionDesc": "Het automatische achtergrondproces wordt onderbroken wanneer gebruikers zijn aangemeld. Dit voorkomt ongewenste documentwijzigingen bij handmatig testen of regelconfiguratie. Achtergrondverwerking wordt hervat nadat alle gebruikers zijn afgemeld.",
+      "paperlessSync": "Synchronisatie van Paperless-gegevensvelden",
+      "syncSubtitle": "Synchroniseer en bekijk in de cache opgeslagen gegevens van Paperless-ngx",
+      "sync": "Nu synchroniseren",
+      "syncing": "Synchronisatie wordt uitgevoerd...",
+      "syncHistory": "Synchronisatiegeschiedenis",
+      "syncHistorySubtitle": "Recente synchronisatiegebeurtenissen van Paperless-ngx",
+      "items": "items",
+      "correspondents": "Correspondenten",
+      "tags": "Labels",
+      "documentTypes": "Documenttypen",
+      "customFields": "Aangepaste velden",
+      "users": "Gebruikers",
+      "custom_fields": "Aangepaste velden",
+      "document_types": "Documenttypen",
+      "userManagement": "Gebruikersbeheer",
+      "userManagementSubtitle": "Alle Paperless-gebruikers met hun PocoClass-activeringstatus",
+      "username": "Gebruikersnaam",
+      "groups": "Groep(en)",
+      "paperlessStatus": "Paperless-status",
+      "pococlassStatus": "PocoClass-status",
+      "role": "Rol",
+      "actions": "Acties",
+      "active": "Actief",
+      "inactive": "Inactief",
+      "superuser": "Supergebruiker",
+      "notRegistered": "Niet geregistreerd",
+      "enable": "Inschakelen",
+      "disable": "Uitschakelen",
+      "disabled": "Uitgeschakeld",
+      "admin": "Beheerder",
+      "user": "Gebruiker",
+      "noUsers": "Geen gebruikers gevonden",
+      "recentSync": "Recente synchronisatiegeschiedenis",
+      "recentSyncSubtitle": "Overzicht van de laatste datasynchronisatie-gebeurtenissen"
+    },
+    "validation": {
+      "title": "Gegevensvalidatie",
+      "requiredFields": "Vereiste aangepaste velden",
+      "optionalFields": "Optionele aangepaste velden",
+      "optionalFeatures": "Optionele functies",
+      "pocoScore": "POCO-score",
+      "pocoOcr": "POCO-OCR",
+      "present": "Aanwezig",
+      "missing": "Ontbreekt",
+      "optional": "Optioneel",
+      "verifying": "Wordt geverifieerd...",
+      "fixMissingData": "Ontbrekende gegevens corrigeren",
+      "createMissing": "Ontbrekende items maken"
+    },
+    "dateFormats": {
+      "title": "Datumformaatinstellingen",
+      "subtitle": "Selecteer datumformaten die in de snellekeuze-vervolgkeuzelijst van de assistent moeten worden weergegeven",
+      "availableFormats": "Beschikbare datumformaten",
+      "pattern": "Patroon",
+      "example": "Voorbeeld",
+      "selected": "Geselecteerd",
+      "dash": "Koppelteken (-)",
+      "slash": "Schuine streep (/)",
+      "dot": "Punt (.)",
+      "spaceText": "Ruimte / Tekst"
+    },
+    "fieldVisibility": {
+      "title": "Veldzichtbaarheid-instellingen",
+      "subtitle": "Beheer welke velden in de assistent verschijnen en hun gedrag",
+      "fieldName": "Veldnaam",
+      "visibility": "Zichtbaarheid",
+      "visibilityModes": "Zichtbaarheidsmodi",
+      "modeDisabled": "Uitgeschakeld:",
+      "modeDisabledDesc": "Het veld is verborgen voor de assistent",
+      "modePredefined": "Vooraf ingesteld:",
+      "modePredefinedDesc": "Weergave met bestaande Paperless-waarden (gebruikt voor statische toewijzing en verificatie)",
+      "modeDynamic": "Dynamisch:",
+      "modeDynamicDesc": "Extraheer de waarde uit documentinhoud met behulp van patronen en ankers",
+      "modeBothEnabled": "Beide ingeschakeld:",
+      "modeBothEnabledDesc": "Schakel de modi Vooraf ingesteld en Dynamisch in - het veld kan statisch worden toegewezen en/of dynamisch worden geëxtraheerd",
+      "noteVerification": "Opmerking:",
+      "noteVerificationDesc": "Elk niet-uitgeschakeld veld is ook beschikbaar in stap 5 (Verificatie) voor verificatie van geëxtraheerde gegevens tegen bestaande Paperless-metagegevens.",
+      "builtInField": "Ingebouwd veld",
+      "customField": "Aangepast veld",
+      "notAvailable": "Niet beschikbaar in deze versie van PocoClass"
+    },
+    "backgroundProcessing": {
+      "title": "Achtergrondverwerking",
+      "subtitle": "Configureer automatische documentclassificatie voor nieuw geüploade documenten",
+      "enableProcessing": "Achtergrondverwerking inschakelen",
+      "enableProcessingDesc": "Classificeer documenten automatisch wanneer zij naar Paperless-ngx worden geüpload",
+      "debounceTime": "Vertragingstijd (seconden)",
+      "seconds": "seconden",
+      "debounceDesc": "Wachttijd na detectie van nieuwe documenten voordat verwerking plaatsvindt (voorkomt meerdere runs voor batch-uploads). Bereik: 5-300 seconden.",
+      "tagConfiguration": "Labelconfiguratie",
+      "tagConfigurationDesc": "PocoClass gebruikt deze vaste labels voor documentverwerking en classificatie",
+      "tagNew": "NIEUW",
+      "tagNewDesc": "Detectielabel - Documenten met dit label worden automatisch verwerkt door achtergrondverwerking",
+      "tagPocoPlus": "POCO+",
+      "tagPocoPlusDesc": "Succesvol label - Toegevoegd wanneer een document aan een regel voldoet en de POCO- en OCR-drempels overschrijdt",
+      "tagPocoMinus": "POCO-",
+      "tagPocoMinusDesc": "Mislukt label - Toegevoegd wanneer een document wordt verwerkt maar aan geen regel voldoet of de drempels niet bereikt",
+      "removeNewTag": "Verwijder NEW label na verwerking",
+      "removeNewTagDesc": "Indien ingeschakeld, verwijdert PocoClass automatisch het NEW label van documenten na verwerking. Dit houdt uw inbox schoon door het trigger label te verwijderen zodra een document is geclassificeerd.",
+      "retentionPolicy": "Retentiebeleid voor verwerkingsgeschiedenis",
+      "retentionPolicyDesc": "Bepaal hoe lang verwerkingsgeschiedenis in de database wordt bewaard",
+      "retentionType": "Retentietype",
+      "byDays": "Op datum",
+      "byRuns": "Op aantal runs",
+      "daysToKeep": "Dagen om te bewaren",
+      "runsToKeep": "Runs om te bewaren",
+      "days": "dagen",
+      "daysToKeepDesc": "Verwerkingsruns ouder dan deze tijd worden automatisch verwijderd (standaard: 365 dagen / 1 jaar)",
+      "runs": "runs",
+      "saveSettings": "Instellingen opslaan"
+    },
+    "systemToken": {
+      "title": "Systeem API-token",
+      "description": "Genereer een permanent API-token voor geautomatiseerd activeren van achtergrondverwerking via scripts of externe systemen.",
+      "active": "Systeem-token is actief",
+      "notConfigured": "Geen systeem-token geconfigureerd",
+      "createdAt": "Aangemaakt",
+      "generate": "Token genereren",
+      "regenerate": "Token opnieuw genereren",
+      "revoke": "Token intrekken",
+      "confirm": "Bevestigen",
+      "cancel": "Annuleren",
+      "generating": "Wordt gegenereerd...",
+      "revoking": "Wordt ingetrokken...",
+      "confirmGenerate": "Een nieuw systeem-token genereren?",
+      "confirmRegenerate": "Dit zal het bestaande token ongeldig maken. Doorgaan?",
+      "confirmRevoke": "Systeem-token intrekken? Scripts die het gebruiken zullen stoppen met werken.",
+      "generated": "Token gegenereerd",
+      "generatedDesc": "Kopieer en sla dit token nu op - het kan later niet worden opgehaald.",
+      "revoked": "Token ingetrokken",
+      "revokedDesc": "Het systeem-token is ingetrokken. Scripts die het gebruiken werken niet meer.",
+      "error": "Fout",
+      "copy": "Kopiëren",
+      "copied": "Gekopieerd",
+      "copiedDesc": "Token naar klembord gekopieerd",
+      "saveWarning": "Sla dit token nu op - het wordt niet opnieuw getoond!",
+      "usageHint": "Gebruik dit token in uw post-consumption script met: -H \"X-API-Key: UW_TOKEN\"",
+      "adminOnly": "Alleen beheerders kunnen het systeem API-token beheren",
+      "scriptSetupRequired": "Post-consumption script vereist",
+      "scriptSetupDesc": "Voor automatische verwerking moet u een post-consumption script configureren in Paperless-ngx. Kopieer pococlass_trigger.sh naar uw scriptmap en stel de omgevingsvariabele in:",
+      "noToken": "Geen systeem-token geconfigureerd",
+      "copyWarning": "Zorg ervoor dat u dit token kopieert - het wordt niet opnieuw getoond!",
+      "confirmYes": "Ja",
+      "confirmNo": "Nee"
+    },
+    "pocoPlus": "Succesetiquette - Toegevoegd wanneer een document overeenkomt met een regel en beide POCO- en OCR-drempels passeren",
+    "pocoMinus": "Mislukkingsetiket - Toegevoegd wanneer een document wordt verwerkt maar niet overeenkomt met een regel of drempels niet bereikt",
+    "ensureAllRequired": "Zorg ervoor dat alle vereiste aangepaste velden en tags bestaan in Paperless-ngx zodat PocoClass correct werkt",
+    "allRequiredDataPresent": "Alle vereiste gegevens aanwezig",
+    "allMandatoryConfigured": "Alle verplichte aangepaste velden en tags zijn correct geconfigureerd in Paperless-ngx.",
+    "requiredTags": "Vereiste tags",
+    "requiredCustomFields": "Vereiste aangepaste velden",
+    "optionalCustomFields": "Optionele aangepaste velden",
+    "optionalFeatures": "Optionele functies",
+    "pocoOcrTransparencyField": "POCO OCR-transparantieveld",
+    "pocoOcrTransparencyDesc": "Optioneel veld om de OCR-patroonherkenning transparantiescores op te slaan. Deze score toont hoe goed het document overeenkomt met de OCR-patronen (0-100%). Helpt bij het verifiëren van vertrouwen in OCR-gebaseerde classificatie.",
+    "pocoOcrDesc": "Slaat de OCR-betrouwbaarheidsscore (0-100%) op. Optioneel voor transparantie.",
+    "newTag": "Detectie-etiket - Documenten met dit etiket worden automatisch verwerkt door de achtergrondverwerking",
+    "pocoScoreDesc": "Slaat de algemene POCO-score (0-100%) op",
+    "verifying": "Bezig met controleren...",
+    "present": "Aanwezig",
+    "missing": "Ontbreekt",
+    "optional": "Optional"
+  },
+  "processing": {
+    "status": "Verwerkingsstatus",
+    "enabled": "Ingeschakeld",
+    "disabled": "Uitgeschakeld",
+    "trigger": "Triggerverwerking",
+    "dryRun": "Proefdruk",
+    "history": "Verwerkingsgeschiedenis",
+    "noHistory": "Geen verwerkingsgeschiedenis beschikbaar",
+    "active": "Actief",
+    "idle": "Inactief",
+    "never": "Nooit",
+    "processing": "Wordt verwerkt",
+    "lastRun": "Laatste uitvoering",
+    "documentsProcessed": "Verwerkte documenten",
+    "loadingStatus": "Status laden...",
+    "triggering": "Wordt geactiveerd..."
+  },
+  "logs": {
+    "title": "Logboeken",
+    "level": "Niveau",
+    "message": "Bericht",
+    "timestamp": "Tijdstempel",
+    "noLogs": "Geen logboeken gevonden",
+    "description": "Systeemlogboeken weergeven en analyseren",
+    "refresh": "Vernieuwen",
+    "exportCSV": "CSV exporteren",
+    "showing": "Toont {{count}} van {{total}} logboeken",
+    "noLogsFound": "Geen logboeken gevonden"
+  },
+  "ruleEvaluation": {
+    "subtitle": "Test en evalueer documentclassificatieregels",
+    "whatIsThisFor": "Waarvoor is deze sectie?",
+    "description": "Test hoe uw classificatieregels werken op documenten. Selecteer een regel, kies documenten om te testen en klik op Uitvoeren om gedetailleerde resultaten weer te geven met POCO-scores, patroonovereenkomsten en geëxtraheerde metagegevens. Gebruik dit om uw regels af te stemmen voordat u ze in productie zet.",
+    "testDocuments": "Testdocumenten",
+    "selectRule": "Regel selecteren...",
+    "noDocumentsAvailable": "Geen documenten beschikbaar",
+    "noDocumentsMatch": "Geen documenten komen overeen met de geselecteerde filters."
+  },
+  "backgroundProcess": {
+    "subtitle": "Controleer en beheer automatische documentclassificatie",
+    "triggering": "Wordt geactiveerd...",
+    "autoDiscover": "Ontdek en verwerk automatisch documenten met label \"NEW\"",
+    "whatIsThisFor": "Waarvoor is deze sectie?",
+    "description": "Controleer en beheer de documentverwerking in Paperless. Gebruik proefdruk om regels te testen zonder wijzigingen aan te brengen, of Uitvoeren om actieve regels toe te passen op geselecteerde documenten. De verwerkingsgeschiedenis toont alle uitvoeringsdetails met resultaten per document.",
+    "triggerNow": "Nu triggeren:",
+    "triggerNowDesc": "Ontdekt en verwerkt automatisch alle documenten met label \"NEW\" (werkt onafhankelijk van onderstaande filters).",
+    "quickStats": "Snelstatistieken",
+    "totalRuns": "Totale runs",
+    "successful": "Succesvol",
+    "failed": "Mislukt",
+    "manualProcessing": "Handmatige verwerking",
+    "testRulesAgainst": "Test regels tegen gefilterde documenten. Selecteer documenten hieronder met de filterbalk en kies vervolgens uw testmodus.",
+    "matchingDocuments": "Overeenkomende documenten",
+    "noDocumentsMatch": "Geen documenten komen overeen met de huidige filtercriteria",
+    "processingActions": "Verwerkingsacties",
+    "dryRun": "Testronde",
+    "dryRunComplete": "Testronde voltooid",
+    "processingComplete": "Verwerking voltooid",
+    "dryRunNote": "Opmerking: Alleen regels met status \"actief\" worden toegepast tijdens het uitvoeren. Testronde test alle regels ongeacht de status.",
+    "accessDenied": "Toegang geweigerd",
+    "adminOnly": "Alleen beheerders hebben toegang tot achtergrondverwerking",
+    "testAllRules": "Test alle regels zonder Paperless te wijzigen",
+    "run": "Uitvoeren",
+    "testing": "Testen...",
+    "running": "Wordt uitgevoerd...",
+    "applyRulesToPaperless": "⚠️ Actieve regels op Paperless toepassen",
+    "warningMessage": "⚠️ WAARSCHUWING: Dit zal actieve regels op uw Paperless-documenten toepassen en echte wijzigingen aanbrengen. Weet u zeker dat u wilt doorgaan?",
+    "retention": "Retentie",
+    "noProcessingHistory": "Geen verwerkingsgeschiedenis",
+    "processingRunsAppear": "Achtergrondverwerkingsruns worden hier weergegeven",
+    "processingFailed": "Verwerking mislukt",
+    "autoPauseWarningTitle": "Automatische verwerking pauzeert terwijl u bent ingelogd",
+    "autoPauseWarningDesc": "Om conflicten tussen handmatig werk en automatische verwerking te voorkomen, wordt achtergrondverwerking die door externe scripts wordt geactiveerd gepauzeerd zolang een gebruikerssessie actief is. Verwerking via de Activeren-knop op deze pagina wordt niet beïnvloed.",
+    "table": {
+      "started": "Gestart",
+      "documents": "Documenten",
+      "classified": "Geclassificeerd",
+      "skipped": "Overgeslagen",
+      "rulesApplied": "Regels toegepast",
+      "status": "Status",
+      "created": "Gemaakt",
+      "noMatch": "Geen overeenkomst",
+      "noDetails": "Geen documentdetails beschikbaar"
+    },
+    "days": "dagen",
+    "runs": "runs",
+    "metadata": {
+      "fieldTitle": "Titel",
+      "fieldCorrespondent": "Correspondent",
+      "fieldDocType": "Documenttype",
+      "fieldTags": "Tags",
+      "fieldDate": "Datum",
+      "fieldStoragePath": "Opslagpad",
+      "fieldDocumentCategory": "Documentcategorie",
+      "dateCreated": "Datum gemaakt"
+    }
+  },
+  "scores": {
+    "pocoScore": "POCO-score",
+    "ocrScore": "OCR-score",
+    "threshold": "Drempel",
+    "classification": "Classificatie",
+    "classified": "Geclassificeerd",
+    "notClassified": "Niet geclassificeerd"
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "minLength": "Minimale lengte is {min} tekens",
+    "invalidFormat": "Ongeldig formaat",
+    "lowercaseOnly": "Alleen kleine letters, cijfers en onderstrepen",
+    "ruleNameRequired": "Regelnaam is verplicht",
+    "ruleNameMinLength": "Naam moet minimaal 3 tekens lang zijn",
+    "ruleIdRequired": "Regel-id is verplicht",
+    "ruleIdFormat": "Alleen kleine letters, cijfers en onderstrepen",
+    "descriptionRequired": "Beschrijving is verplicht",
+    "descriptionMinLength": "Beschrijving moet minimaal 10 tekens lang zijn"
+  },
+  "patterns": {
+    "logicGroup": "Logische groep",
+    "pattern": "Patroon",
+    "addPattern": "Patroon toevoegen",
+    "addFilenamePattern": "Bestandsnaampatroon toevoegen",
+    "searchLines": "Zoekregels",
+    "to": "tot",
+    "first": "Eerste",
+    "last": "Laatste",
+    "matchAny": "Willekeurig (OF)",
+    "matchAll": "Alles (EN)",
+    "mandatory": "Verplicht",
+    "enterPattern": "Voer een tekstpatroon of regex in of gebruik de regex-generator",
+    "filenameWeightMultiplier": "Bestandsnaamgewicht-vermenigvuldiger"
+  },
+  "placeholders": {
+    "ruleName": "bijv. Elektriciteitsrekeningsclassificatie",
+    "ruleId": "bijv. electric_bill_rule",
+    "description": "Beschrijf de documenten die deze regel identificeert...",
+    "searchRules": "Regels zoeken...",
+    "enterPattern": "Voer een tekstpatroon of regex in of gebruik de regex-generator",
+    "enterFilenamePattern": "Voer een tekstpatroon of regex in...",
+    "organizationName": "bijv. Organisatienaam",
+    "yearStatement": "bijv. Jaarverklaring",
+    "addTag": "Label toevoegen en op Enter drukken",
+    "fieldName": "Veldnaam",
+    "fieldValue": "Veldwaarde",
+    "autoGenerated": "Automatisch gegenereerd",
+    "autoGeneratedFromDoc": "Automatisch gegenereerd uit document",
+    "autoGeneratedRules": "Automatisch gegenereerd op basis van regels",
+    "definedPaperless": "Gedefinieerd in Paperless",
+    "exampleFinancial": "bijv. Financiën",
+    "autoCalculated": "Automatisch berekend",
+    "autoPopulated": "Automatisch ingevuld op basis van OCR"
+  },
+  "tooltips": {
+    "basicInfoHelp": "Basisgegevens helpen u uw regel te identificeren en het classificatiegedrag te controleren. De POCO-score-eis bepaalt het vertrouwen dat het systeem moet hebben voordat het een document classificeert. Zie de gids in de zijbalk voor meer details.",
+    "pocoScoreHelp": "De minimaal vereiste totale betrouwbaarheidsscore voor classificatie van een document door deze regel. De POCO-score combineert OCR-inhoudsovereenkomst, bestandsnaampatronen en metagegevensverificatie. 75% wordt aanbevolen voor uitgebalanceerde nauwkeurigheid.",
+    "pocoScoreDefault": "Standaard: 75% wordt aanbevolen voor evenwichtige nauwkeurigheid tussen geldige documenten en valse positieven.",
+    "ocrThresholdHelp": "Het minimumpercentage van OCR-patronen dat moet overeenkomen voor documentclassificatie. Dit zorgt ervoor dat de documentinhoud werkelijk overeenkomt met wat u zoekt.",
+    "ocrThresholdDefault": "Standaard: 75% wordt aanbevolen om betrouwbare OCR-overeenkomsten te garanderen.",
+    "filenameHelp": "Bestandsnaampatronen helpen documenten aan hun bestandsnamen te identificeren. Gebruik de patroon-assistent om flexibele patronen te maken die naamgevingsconventies aankunnen.",
+    "filenamePatternHelp": "Voer een eenvoudige teksttekenreeks in om in bestandsnamen te zoeken, gebruik de patroon-assistent om flexibele patronen te maken, of schrijf uw eigen regex voor geavanceerde overeenkomsten.",
+    "filenameMultiplierHelp": "Bepaalt de invloed van bestandsnaampatronen op de uiteindelijke POCO-score. Hogere waarden betekenen dat bestandsnamen belangrijker zijn.",
+    "filenameMultiplierDefault": "Standaard: een 1×-vermenigvuldiger wordt aanbevolen omdat bestandsnamen minder betrouwbaar zijn dan OCR-inhoud voor classificatie.",
+    "verificationHelp": "Controleer of geëxtraheerde gegevens overeenkomen met bestaande Paperless-metagegevens. Dit voegt vertrouwen toe aan classificatie door te controleren of documentplaceholders overeenkomen met geëxtraheerde OCR.",
+    "dynamicDataHelp": "Dynamische gegevensextractie stelt u in staat specifieke informatie uit documenten te extraheren met behulp van ankerpunten. Definieer patronen voor en na de gegevens die u wilt extrahieren.",
+    "extractionRuleHelp": "Elke extractieregel identificeert en extraheert specifieke documentgegevens met behulp van voor- en na-ankerpatronen.",
+    "beforeAnchorHelp": "Tekst of patroon dat verschijnt voor de gegevens die u wilt extrahieren. Kan gewone tekst of regex zijn.",
+    "extractTypeHelp": "Bepaalt het type gegevens om te extrahieren: gewone tekst, numerieke bedragen, datums of meerdere tekstregels.",
+    "afterAnchorHelp": "Tekst of patroon dat verschijnt na de gegevens die u wilt extrahieren. Kan gewone tekst of regex zijn.",
+    "targetTagHelp": "Selecteer een of meer labels waar geëxtraheerde gegevens in Paperless-ngx moeten worden opgeslagen."
+  },
+  "dialogs": {
+    "deleteRule": {
+      "title": "Regel verwijderen",
+      "message": "Verwijder \"{ruleName}\"? Deze regel wordt naar de prullenmand verplaatst.",
+      "confirmButton": "Verwijderen",
+      "cancelButton": "Annuleren"
+    },
+    "deleteMultiple": {
+      "title": "{count} regel(s) verwijderen?",
+      "message": "Regels worden naar de prullenmand verplaatst.",
+      "confirmButton": "Alles verwijderen",
+      "cancelButton": "Annuleren"
+    },
+    "activateRules": {
+      "title": "{count} regel(s) activeren?",
+      "message": "Actieve regels verwerken automatisch documenten tijdens achtergrondverwerking.",
+      "confirmButton": "Activeren",
+      "cancelButton": "Annuleren"
+    },
+    "deactivateRules": {
+      "title": "{count} regel(s) deactiveren?",
+      "message": "Gedeactiveerde regels verwerken niet automatisch documenten.",
+      "confirmButton": "Deactiveren",
+      "cancelButton": "Annuleren"
+    },
+    "thresholdWarning": {
+      "title": "POCO-score-eis wijzigen?",
+      "messageLow": "U wijzigt de POCO-score-eis van 75% (aanbevolen) naar {threshold}%. Lagere waarden kunnen valse positieven veroorzaken. Weet u zeker?",
+      "messageHigh": "U wijzigt de POCO-score-eis van 75% (aanbevolen) naar {threshold}%. Hogere waarden kunnen ertoe leiden dat geldige documenten niet worden geclassificeerd. Weet u zeker?",
+      "confirmButton": "Ja, wijzigen",
+      "cancelButton": "Annuleren"
+    },
+    "ocrThresholdWarning": {
+      "title": "OCR-score-eis wijzigen?",
+      "message": "U wijzigt de OCR-score-eis van 75% (aanbevolen) naar {threshold}%. Weet u zeker?",
+      "confirmButton": "Ja, wijzigen",
+      "cancelButton": "Annuleren"
+    },
+    "multiplierWarning": {
+      "title": "OCR-gewichtsvermenigvuldiger wijzigen?",
+      "message": "U wijzigt de OCR-gewichtsvermenigvuldiger van 3× (aanbevolen) naar {multiplier}×. Dit beïnvloedt de weging van OCR-patronen in de uiteindelijke POCO-score. Weet u zeker?",
+      "confirmButton": "Ja, wijzigen",
+      "cancelButton": "Annuleren"
+    },
+    "unsavedChanges": {
+      "title": "Niet-opgeslagen wijzigingen",
+      "message": "Alle niet-opgeslagen wijzigingen gaan verloren.",
+      "confirmButton": "Toch verlaten",
+      "cancelButton": "Annuleren"
+    }
+  },
+  "toasts": {
+    "ruleDeleted": "Regel \"{ruleName}\" verplaatst naar prullenmand",
+    "ruleDeleteError": "Fout bij verwijderen van regel",
+    "rulesDeleted": "{count} regel(s) verplaatst naar prullenmand",
+    "rulesDeletedWithSkipped": "{count} regel(s) verwijderd. {skipped} regel(s) beveiligd en overgeslagen.",
+    "rulesDeleteError": "Fout bij verwijderen van regels",
+    "rulesActivated": "{count} regel(s) geactiveerd",
+    "rulesDeactivated": "{count} regel(s) gedeactiveerd",
+    "rulesStatusError": "Fout bij bijwerken van regels",
+    "ruleSaved": "Regel succesvol opgeslagen",
+    "ruleSaveError": "Fout bij opslaan van regel",
+    "ruleDuplicated": "Regel succesvol gedupliceerd",
+    "ruleDuplicateError": "Fout bij dupliceren van regel",
+    "ruleActivated": "Regel \"{ruleName}\" geactiveerd",
+    "ruleDeactivated": "Regel \"{ruleName}\" gedeactiveerd",
+    "ruleStatusError": "Fout bij bijwerken van regelstatus",
+    "templateProtected": "De sjabloonregel v2 kan niet worden verwijderd",
+    "tooManyRequests": "Te veel verzoeken. Wacht alstublieft even.",
+    "errorLoadingRules": "Fout bij laden van regels"
+  },
+  "helpText": {
+    "ruleNameHelp": "Kies een beschrijvende naam voor identificatie van deze regel",
+    "ruleIdHelp": "Unieke identifier (alleen kleine letters, cijfers, onderstrepen)",
+    "pocoScoreHelp": "Een document moet minimaal {threshold}% bereiken voor classificatie. Een score van {example}% zou succesvol zijn.",
+    "ruleIdFilename": "Automatisch gegenereerde bestandsnaam op schijf"
+  },
+  "editor": {
+    "exit": "Afsluiten"
+  },
+  "table": {
+    "title": "Titel",
+    "tags": "Labels",
+    "correspondent": "Correspondent",
+    "documentType": "Documenttype",
+    "documentTypeShort": "Documenttype",
+    "dateAdded": "Toegevoegd",
+    "dateCreated": "Gemaaktdatum",
+    "added": "Toegevoegd",
+    "created": "Gemaakt",
+    "actions": "Acties",
+    "status": "Status",
+    "sourceDocument": "Brondocument",
+    "id": "ID",
+    "cfDocCategory": "CF: Documentcategorie",
+    "pocoScore": "POCO-score",
+    "view": "Weergeven",
+    "owner": "Eigenaar"
+  },
+  "status": {
+    "new": "Nieuw",
+    "active": "Actief",
+    "inactive": "Inactief",
+    "disabled": "Uitgeschakeld",
+    "enabled": "Ingeschakeld"
+  },
+  "warnings": {
+    "ruleActivationWarning": "Deze regel wordt gebruikt tijdens achtergrondverwerking"
+  },
+  "fields": {
+    "title": "Titel",
+    "archiveSerialNumber": "Archiefserienummer",
+    "dateCreated": "Gemaaktdatum",
+    "correspondent": "Correspondent",
+    "documentType": "Documenttype",
+    "storagePath": "Opslagpad",
+    "tags": "Tags",
+    "documentCategory": "Documentcategorie",
+    "customField": "Aangepast veld",
+    "customFieldLabel": "Aangepast veld: {name}",
+    "pocoScore": "POCO Score",
+    "pocoOcr": "POCO OCR",
+    "loading": "Laden...",
+    "selectCorrespondent": "-- Correspondent selecteren --",
+    "selectDocumentType": "-- Documenttype selecteren --",
+    "correspondentsAvailable": "Beschikbare correspondenten",
+    "noCorrespondentsFound": "Geen correspondenten gevonden",
+    "documentTypesAvailable": "Beschikbare documenttypen",
+    "noDocumentTypesFound": "Geen documenttypen gevonden",
+    "suggestedTags": "Voorgestelde tags",
+    "customFieldsPredefinedNote": "Vooraf gedefinieerde velden van Paperless",
+    "ideallyDropdown": "Idealiter een vervolgkeuzelijst",
+    "ideallyDropdownFromSystem": "Idealiter vervolgkeuzelijst vanuit systeem",
+    "customFields": "Aangepaste velden",
+    "addCustomField": "Aangepast veld toevoegen"
+  },
+  "step_3_title": "Stap 3: Bestandsnaampatronen",
+  "step_6_title": "Stap 6: Verificatie",
+  "dynamicData": {
+    "extractionRule": "Extractieregel",
+    "removeExtractionRule": "Extractieregel verwijderen",
+    "beforeAnchor": "Voor anker",
+    "afterAnchor": "Na anker",
+    "extractionType": "Extractietype",
+    "targetField": "Doelveld",
+    "addExtractionRule": "Extractieregel toevoegen",
+    "configureDescription": "Configureer extractieregels voor dynamische gegevenshalen",
+    "extractionTypes": {
+      "text": "Tekst",
+      "amount": "Bedrag",
+      "date": "Datum",
+      "multipleLines": "Meerdere regels"
+    }
+  },
+  "bonusIdentifiers": {
+    "tooltip": "Aanvullende metagegevensparen die het vertrouwen in classificatie vergroten",
+    "description": "Bonusidentificaties zijn aanvullende metagegevensparen die bijdragen aan POCO-scoring",
+    "identifierTitle": "Identificatie",
+    "identifierTooltip": "Aanvullende metagegevensparen die het vertrouwen in classificatie vergroten",
+    "removeAriaLabel": "Bonusidentificatie verwijderen",
+    "fieldNameLabel": "Veldnaam",
+    "fieldNamePlaceholder": "Veld selecteren",
+    "expectedValueLabel": "Verwachte waarde",
+    "expectedValuePlaceholder": "Voer verwachte waarde in",
+    "emptyStateMessage": "Geen bonusidentificaties gedefinieerd",
+    "addButton": "Bonusidentificatie toevoegen",
+    "multiplierTitle": "Vermenigvuldiger",
+    "multiplierTooltip": "Hoeveel deze identificatie bijdraagt aan de POCO-score",
+    "multiplierDescription": "Hoeveel deze identificatie bijdraagt aan de POCO-score",
+    "multiplierDefault": "Standaard: 0,5×",
+    "multiplierModerate": "Matig (0,5×)",
+    "multiplierHigh": "Hoog (1×)"
+  },
+  "coreIdentifiers": {
+    "title": "OCR-patronen",
+    "description": "Definieer patronen die dit documenttype in OCR-tekst identificeren",
+    "infoBoxTitle": "OCR-patroonmatching",
+    "infoBoxDescription": "De onderstaande logische groepen bepalen of een document aan deze regel voldoet",
+    "infoBoxScoringLabel": "Huidige OCR-score",
+    "infoBoxScoringValue": "{score}% (minstens {threshold}% vereist)",
+    "infoBoxLogicGroupsLabel": "Logische groepen",
+    "infoBoxLogicGroupsValue": "{count} groep{plural}",
+    "emptyStateTitle": "Geen logische groepen gedefinieerd",
+    "emptyStateDescription": "Voeg logische groepen met patronen toe om deze regel in te stellen",
+    "addLogicGroupButton": "Logische groep toevoegen",
+    "scoreSummaryTitle": "OCR-samenvatting",
+    "totalCoreScore": "Totale OCR-score",
+    "pointsUnit": "punten",
+    "lowScoreWarning": "Waarschuwing: Lage OCR-score"
+  },
+  "documentClassifications": {
+    "stepTitle": "Stap 5 van 6: Documentclassificaties",
+    "stepDescription": "Stel voorgedefinieerde metagegevenswaarden in en configureer dynamische extractieregels om gegevens automatisch uit OCR-inhoud te extraheren.",
+    "stepTooltip": "Configureer de documentclassificatiegegevens die uit OCR zijn geëxtraheerd",
+    "predefinedDataSection": "Voorgedefinieerde gegevens",
+    "dynamicDataSection": "Dynamische gegevensextractie",
+    "dynamicDataTooltip": "Voeg extractieregels toe om gegevens uit documenten te halen",
+    "dynamicDataDescription": "Definieer ankerpunten en extractiepatronen voor dynamische veldvulling",
+    "noDynamicRulesTitle": "Geen dynamische extractieregels",
+    "noDynamicRulesDescription": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren",
+    "dynamicExtractionRuleNumber": "Dynamische extractieregel {num}",
+    "labels": {
+      "title": "Titel",
+      "dateCreated": "Gemaaktdatum",
+      "correspondent": "Correspondent",
+      "documentType": "Documenttype",
+      "tags": "Tags",
+      "customFieldLabel": "Aangepast veld: {name}",
+      "targetField": "Doelveld",
+      "beforeAnchor": "Voor Anker",
+      "extractionType": "Extractietype",
+      "afterAnchor": "Na Anker",
+      "dateFormat": "Datumnotatie",
+      "selectTagToExtract": "Tag selecteren om uit te pakken",
+      "patternToMatch": "Patroon om aan te passen",
+      "archiveSerialNumber": "Archiefserienummer",
+      "storagePath": "Opslagpad",
+      "documentCategory": "Documentcategorie"
+    },
+    "placeholders": {
+      "autoGenerated": "Automatisch gegenereerd",
+      "disabledDynamicRule": "Dynamische extracctieregel (uitgeschakeld)",
+      "enterFieldName": "Voer veldnaam in",
+      "selectCorrespondent": "Selecteer een correspondent...",
+      "selectDocumentType": "Selecteer een documenttype...",
+      "selectTags": "Tags selecteren...",
+      "selectOption": "Selecteer een optie...",
+      "selectTargetField": "Selecteer een doelveld",
+      "enterTextOrRegex": "Voer tekst of regex in...",
+      "selectDateFormat": "Selecteer een datumnotatie",
+      "selectTag": "Selecteer een tag",
+      "enterFieldValue": "Voer de veldwaarde in..."
+    },
+    "messages": {
+      "fieldInUseWarning": "Dit veld kan niet gebruikt worden: het is al geconfigureerd in een andere extracieregel",
+      "selectTargetField": "Selecteer een doelveld",
+      "extractedValueLabel": "Geëxtraheerde waarde",
+      "extractionFailedLabel": "Extractie mislukt",
+      "defineAnchorPoints": "Definieer ankerpunten en extractiepatronen voor dynamische veldvulling",
+      "noDynamicRulesDescription": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren"
+    },
+    "buttons": {
+      "testExtraction": "Extractie testen",
+      "addExtractionRule": "Extractieregel toevoegen",
+      "addFirstRule": "Eerste regel toevoegen",
+      "beforeAnchorLabel": "Voor Anker",
+      "extractedDataLabel": "Geëxtraheerde gegevens",
+      "afterAnchorLabel": "Na Anker"
+    },
+    "visualization": {
+      "beforeAnchor": "Voor Anker",
+      "extractedData": "Geëxtraheerde gegevens",
+      "afterAnchor": "Na Anker"
+    },
+    "errors": {
+      "noOcrContent": "Geen OCR-inhoud beschikbaar",
+      "beforeAnchorNotFound": "Ankerpunt voor voor het extractiepunt niet gevonden",
+      "afterAnchorNotFound": "Ankerpunt na het extractiepunt niet gevonden",
+      "extractionTypeNoMatch": "Extractietype komt niet overeen",
+      "extractionPatternNoMatch": "Extractiepatroon komt niet overeen"
+    },
+    "dropdown": {
+      "alreadyUsed": "Dit veld is al gebruikt in een andere extracieregel",
+      "removePredefinedFirst": "Verwijder eerst de vooraf gedefinieerde waarde"
+    },
+    "invoiceNumberDefault": "Factuurnummer",
+    "referenceIdDefault": "Referentie-ID",
+    "documentCategoryDefault": "Documentcategorie",
+    "customFieldDefault": "Aangepast veld",
+    "removePredefinedFirstMsg": "Verwijder eerst de voorgedefinieerde waarde",
+    "dateCreatedLabel": "Gemaaktdatum",
+    "noDynamicRulesDesc": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren",
+    "dynamicExtractionRuleNum": "Dynamische extractieregel #{number}",
+    "noOcrContent": "Geen OCR-inhoud beschikbaar",
+    "noDynamicRulesMessage": "Geen dynamische extractieregels",
+    "noDynamicRulesHint": "Voeg regels toe om gegevens dynamisch uit OCR-inhoud te extraheren"
+  },
+  "summary": {
+    "reviewTooltip": "Controleer uw regelconfiguratie voordat u deze opslaat",
+    "reviewConfiguration": "Configuratiebeoordeling",
+    "basicInformation": "Basisgegevens",
+    "ruleName": "Regelnaam",
+    "ruleId": "Regel-id",
+    "threshold": "Drempel",
+    "status": "Status",
+    "ocrIdentifiers": "OCR-identificaties",
+    "logicGroups": "Logische groepen",
+    "totalIdentifiers": "Totale identificaties",
+    "ocrThreshold": "OCR-drempel",
+    "ocrMultiplier": "OCR-vermenigvuldiger",
+    "maxOcrWeight": "Max. OCR-gewicht",
+    "filenameIdentification": "Bestandsnaam-identificatie",
+    "filenamePatterns": "Bestandsnaampatronen",
+    "dateFormats": "Datumformaten",
+    "totalPatterns": "Totale patronen",
+    "filenameMultiplier": "Bestandsnaamvermenigvuldiger",
+    "maxFilenameWeight": "Max. bestandsnaamgewicht",
+    "dataVerification": "Gegevensverificatie",
+    "enabledFields": "Ingeschakelde velden",
+    "verificationMultiplier": "Verificatievermenigvuldiger",
+    "maxVerificationWeight": "Max. verificatiegewicht",
+    "auto": "Automatisch",
+    "documentClassifications": "Documentclassificaties",
+    "correspondent": "Correspondent",
+    "documentType": "Documenttype",
+    "tags": "Labels",
+    "dynamicExtractionRules": "Dynamische extractieregels",
+    "pocoScoreCalculation": "POCO-scoreberekening",
+    "maxPossibleWeights": "Max. mogelijke gewichten",
+    "ocrLabel": "OCR",
+    "filenameLabel": "Bestandsnaampatronen",
+    "verificationLabel": "Verificatie",
+    "totalMaxWeight": "Totale max-gewicht",
+    "exampleCalculation": "Voorbeeldberekening",
+    "ocrScoreLabel": "OCR-score",
+    "filenameScoreLabel": "Bestandsnaam-score",
+    "verificationScoreLabel": "Verificatie-score",
+    "pocoScoreLabel": "POCO-score",
+    "thresholds": "Drempels",
+    "ocrThresholdLabel": "OCR-drempel",
+    "pocoThresholdLabel": "POCO-drempel",
+    "activateRuleWarning": "Deze regel is uitgeschakeld en wordt niet verwerkt",
+    "activeRuleNote": "Deze regel is actief en wordt gebruikt tijdens achtergrondverwerking"
+  },
+  "rulesPage": {
+    "trash": "Prullenmand",
+    "rulesSelected": "{count} regel(s) geselecteerd",
+    "activate": "Activeren",
+    "deactivate": "Deactiveren",
+    "new": "Nieuw",
+    "nameAZ": "Naam (A-Z)",
+    "nameZA": "Naam (Z-A)"
+  },
+  "guide": {
+    "title": "PocoClass Handleiding",
+    "subtitle": "Een beginnersvriendelijke gids voor documentclassificatie",
+    "introduction": {
+      "title": "Introductie",
+      "p1": "PocoClass is een intelligente, op regels gebaseerde classificatie-engine ontworpen om Paperless-ngx te verbeteren. Hoewel Paperless al een krachtige zoekinterface en een ingebouwde classificatie biedt, kan het moeite hebben met het herkennen van complexe documenttypen, vooral tijdens eerste bulk-imports of wanneer documenten complexe formaten volgen. PocoClass vult deze leemte door u expliciet te laten definiëren hoe elk type document moet worden geïdentificeerd door middel van patronen en hoe het moet worden geclassificeerd.",
+      "p2": "Het primaire doel is het leveren van consistente, nauwkeurige classificatie — ongeacht hoeveel documenten u importeert of hoe gevarieerd ze zijn. Eenmaal geconfigureerd, kan PocoClass volledig automatisch werken en uw Paperless-bibliotheek gestructureerd houden met minimale inspanning van uw kant.",
+      "paperlessTip": "Hier terechtgekomen zonder Paperless-ngx te kennen?",
+      "paperlessTipLink": "Ontdek wat Paperless-ngx is",
+      "paperlessPopupTitle": "Wat is Paperless-ngx?",
+      "paperlessPopupP1": "Paperless-ngx is een digitaal documentbeheersysteem dat u helpt uw papierwerk elektronisch te organiseren, op te slaan en te doorzoeken. In plaats van fysieke mappen vol facturen, contracten, brieven of bonnetjes te bewaren, kunt u met Paperless-ngx deze documenten scannen of uploaden en beheren in één veilig, doorzoekbaar archief.",
+      "paperlessPopupP2": "Wanneer u een document uploadt, verwerkt Paperless het automatisch met OCR (Optische Tekenherkenning). OCR extraheert de tekst uit gescande afbeeldingen of PDF's en maakt die tekst doorzoekbaar. Dit betekent dat u een document later kunt vinden door simpelweg een trefwoord te typen dat erin voorkomt — zelfs als het oorspronkelijk een gescand papieren document was.",
+      "paperlessPopupP3": "Documenten in Paperless kunnen worden georganiseerd met gestructureerde metadata zoals Correspondent (van wie het document afkomstig is), Documenttype (wat voor soort document het is), Tags (flexibele labels) en Aangepaste velden (aanvullende informatie naar uw behoeften).",
+      "paperlessPopupP4": "Paperless-ngx ondersteunt ook workflows en automatiseringsregels, waarmee documenten automatisch kunnen worden geclassificeerd of getagd op basis van gedefinieerde voorwaarden.",
+      "paperlessPopupP5": "Kort gezegd vervangt Paperless-ngx uw fysieke archiefkast door een krachtig, doorzoekbaar digitaal archief — het helpt u papierrommel te verminderen, de organisatie te verbeteren en documenten direct terug te vinden wanneer u ze nodig heeft.",
+      "paperlessVisitSite": "Paperless-ngx bezoeken",
+      "paperlessClose": "Sluiten"
+    },
+    "howItWorks": {
+      "title": "Hoe PocoClass werkt met Paperless",
+      "intro": "PocoClass werkt samen met Paperless om uw documenten automatisch te organiseren. Hier is hoe het allemaal samenwerkt:",
+      "step1Title": "Document komt binnen in Paperless",
+      "step1Desc": "U scant of uploadt een document. Paperless extraheert de tekst (OCR) zodat het doorzoekbaar is. Paperless stelt PocoClass automatisch op de hoogte dat een of meer nieuwe documenten beschikbaar zijn voor analyse.",
+      "step2Title": "PocoClass analyseert het",
+      "step2Desc": "PocoClass controleert het document aan de hand van uw persoonlijk gedefinieerde regels. Het kijkt naar de tekst, bestandsnaam en andere informatie, en berekent vervolgens een vertrouwensscore (POCO Score) voor elke mogelijke match. Het scoresysteem evalueert hoe goed het document bij elke regel past.",
+      "step3Title": "PocoClass wijst classificaties toe",
+      "step3Desc": "Als er een match wordt gevonden, past PocoClass automatisch de classificaties toe die u in uw regel hebt gespecificeerd — zoals tags, correspondenten, documenttype en andere details — rechtstreeks aan het document in Paperless.",
+      "step4Title": "Document is georganiseerd",
+      "step4Desc": "Uw document heeft nu de juiste classificatie en is gemakkelijk te vinden. U kunt ook Paperless-workflows gebruiken voor aanvullende verwerking op basis van deze classificaties, zoals het automatisch verplaatsen van documenten naar specifieke mappen.",
+      "autoProcessingTitle": "Automatische achtergrondverwerking",
+      "autoProcessingDesc": "PocoClass wordt automatisch geactiveerd wanneer Paperless klaar is met het verwerken van documenten. Het past uw regels toe zonder handmatige actie, wat zorgt voor consistente classificatie voor bulk-imports en dagelijkse nieuwe documenten.",
+      "whatCanEditTitle": "Wat PocoClass kan bewerken in Paperless",
+      "whatCanEditIntro": "PocoClass werkt uw documenten rechtstreeks in Paperless bij zodra een regel overeenkomt. Afhankelijk van uw regelconfiguratie kan PocoClass de volgende velden instellen of bijwerken:",
+      "correspondent": "Correspondent",
+      "correspondentDesc": "Van wie het document afkomstig is (bijv. een bank, verzekeraar of overheidsinstantie)",
+      "documentType": "Documenttype",
+      "documentTypeDesc": "De categorie van het document (bijv. factuur, afschrift, bon, contract)",
+      "tags": "Tags",
+      "tagsDesc": "Labels die helpen bij het groeperen of filteren van documenten (bijv. \"Financiën\", \"Belasting\", \"2024\")",
+      "customFields": "Aangepaste velden",
+      "customFieldsDesc": "Aanvullende informatie geëxtraheerd uit het document, zoals factuurnummers, referentiecodes, data of rekeningnummers",
+      "updatesNote": "Al deze updates vinden plaats binnen Paperless zelf, wat betekent dat uw bibliotheek georganiseerd, doorzoekbaar en consistent blijft."
+    },
+    "scoring": {
+      "title": "Het scoresysteem",
+      "intro": "PocoClass gebruikt een op vertrouwen gebaseerd scoresysteem om te bepalen of een document overeenkomt met een regel. Deze score bepaalt of de regel wordt toegepast, overgeslagen of gemarkeerd voor beoordeling.",
+      "twoScoresIntro": "Om het proces transparant te houden, genereert PocoClass twee scores voor elk document:",
+      "ocrScoreTitle": "1. POCO OCR Score (Transparantiescore)",
+      "ocrScoreDesc": "Deze score geeft aan hoeveel OCR-identificaties zijn gevonden in de documenttekst. Het toont hoe goed de documentinhoud overeenkomt met uw regel.",
+      "ocrScorePoint1": "Het fungeert als poortwachter: als de OCR-score onder de <strong>OCR-drempel (standaard 75%)</strong> ligt, stopt de regelevaluatie onmiddellijk",
+      "ocrScorePoint2": "Deze drempel is per regel configureerbaar in de regelbouwer",
+      "ocrScoreNote": "Als een regel 75% OCR-nauwkeurigheid vereist en het document slechts 50% overeenkomt, stopt PocoClass hier en gaat niet verder met bestandsnaam- of Paperless-controles.",
+      "pocoScoreTitle": "2. POCO Score (Uiteindelijke classificatiescore)",
+      "pocoScoreIntro": "Zodra OCR de minimumdrempel haalt, evalueert PocoClass het volledige document met:",
+      "pocoScorePoint1": "<strong>OCR-resultaten</strong> (primair bewijs)",
+      "pocoScorePoint2": "<strong>Bestandsnaampatronen</strong> (secundair bewijs)",
+      "pocoScorePoint3": "<strong>Paperless-classificaties</strong> (verificatiebewijs)",
+      "pocoScoreFormula": "POCO Score = (OCR_gewogen + Bestandsnaam_gewogen + Paperless_gewogen) / Totaal_max_gewicht × 100%",
+      "pocoScoreNote": "Elk domein draagt bij aan de uiteindelijke score volgens het aantal identificaties en de vertrouwensvermenigvuldiger. De uiteindelijke POCO Score moet de <strong>POCO-drempel (standaard 75%)</strong> halen voor toepassing van de regel.",
+      "calculationTitle": "Scoreberekening",
+      "calculationIntro": "PocoClass evalueert elke gegevensbron met deze formule:",
+      "calculationFormula": "Gewogen Score = (matches / totaal) × totaal × vermenigvuldiger",
+      "calculationEnsures": "Deze methode zorgt ervoor dat:",
+      "calculationPoint1": "Meer matches → hogere score",
+      "calculationPoint2": "Meer identificaties → sterker bewijs",
+      "calculationPoint3": "Meer vertrouwde domeinen → grotere impact",
+      "multipliersTitle": "Waarom vermenigvuldigers?",
+      "multipliersIntro": "Vermenigvuldigers bepalen hoeveel elke gegevensbron bijdraagt aan de uiteindelijke score. Een hogere vermenigvuldiger betekent dat die bron meer gewicht heeft bij het bepalen van het classificatievertrouwen.",
+      "defaultMultipliers": "Standaard vermenigvuldigers:",
+      "ocrMultiplier": "<strong>OCR: 3×</strong> - OCR-tekst is meestal zeer betrouwbaar",
+      "filenameMultiplier": "<strong>Bestandsnaam: 1×</strong> - Bestandsnamen zijn minder betrouwbaar",
+      "classificationsMultiplier": "<strong>Classificaties: Auto</strong> - Standaard neutraliseert de classificatievermenigvuldiger het aantal Paperless-classificaties, zodat ze het vertrouwen kunnen beïnvloeden zonder OCR te overheersen",
+      "whenToAdjust": "Wanneer aanpassen:",
+      "adjustPoint1": "Onbetrouwbare OCR? Verlaag de OCR-vermenigvuldiger",
+      "adjustPoint2": "Bestandsnamen zijn super betrouwbaar in uw organisatie? Verhoog de bestandsnaamvermenigvuldiger",
+      "adjustPoint3": "Vertrouwt u Paperless-classificaties meer? Pas dienovereenkomstig aan",
+      "examplesTitle": "Voorbeelden (en omzetten naar percentages)",
+      "examplesThresholdNote": "<strong>De drempelwaarde begrijpen:</strong> De hier getoonde scores zijn absolute waarden. Om ze om te zetten naar de percentages die u definieert in de regelbouwer (zoals 75%), deelt u de score door de maximaal mogelijke score voor die regel. De maximaal mogelijke score is wat u zou krijgen als alle identificaties perfect zouden overeenkomen.",
+      "example1Title": "Voorbeeld 1 – Sterke match",
+      "example1OCR": "OCR: 4/5, vermenigvuldiger = 3 → (4/5 × 5 × 3) = 12",
+      "example1Filename": "Bestandsnaam: 2/2, vermenigvuldiger = 1 → (2/2 × 2 × 1) = 2",
+      "example1Paperless": "Paperless: 3/4, vermenigvuldiger = 0,25 → (3/4 × 4 × 0,25) = 0,75",
+      "example1Total": "Totale score = 12 + 2 + 0,75 = <strong>14,75</strong>",
+      "example1Result": "Maximaal mogelijk: (5 × 3) + (2 × 1) + (4 × 0,25) = 18<br/>Percentage: 14,75 ÷ 18 = <strong>82%</strong><br/>Als uw drempel 75% is → ✓ Classificatie toegepast (82% overschrijdt 75%)",
+      "example2Title": "Voorbeeld 2 – Zwakke OCR, bestandsnaam komt niet overeen",
+      "example2OCR": "OCR: 3/4, vermenigvuldiger = 3 → (3/4 × 4 × 3) = 9",
+      "example2Filename": "Bestandsnaam: 0/2, vermenigvuldiger = 1 → (0/2 × 2 × 1) = 0",
+      "example2Paperless": "Paperless: 2/4, vermenigvuldiger = 0,25 → (2/4 × 4 × 0,25) = 0,5",
+      "example2Total": "Totale score = 9 + 0 + 0,5 = <strong>9,5</strong>",
+      "example2Result": "Maximaal mogelijk: 18 (zelfde als voorbeeld 1)<br/>Percentage: 9,5 ÷ 18 = <strong>53%</strong><br/>Als uw drempel 75% is → ✗ Regel overgeslagen (53% is onder 75%)",
+      "example3Title": "Voorbeeld 3 – OCR-fout (bestandsnaam en Paperless kunnen het niet redden)",
+      "example3OCR": "OCR: 1/5, vermenigvuldiger = 3 → (1/5 × 5 × 3) = 3",
+      "example3Filename": "Bestandsnaam: 2/2, vermenigvuldiger = 1 → (2/2 × 2 × 1) = 2",
+      "example3Paperless": "Paperless: 4/4, vermenigvuldiger = 0,25 → (4/4 × 4 × 0,25) = 1",
+      "example3Total": "Totale score = 3 + 2 + 1 = <strong>6</strong>",
+      "example3Result": "Maximaal mogelijk: 18 (zelfde als voorbeeld 1)<br/>Percentage: 6 ÷ 18 = <strong>33%</strong><br/>Als uw drempel 75% is → ✗ Regel overgeslagen (zelfs perfecte bestandsnaam en Paperless kunnen zwakke OCR niet compenseren)",
+      "ruleOfThumb": "Vuistregel:",
+      "ruleOfThumbPoint1": "Als OCR sterk is, bevestigen bestandsnaam en Paperless dit meestal.",
+      "ruleOfThumbPoint2": "Als OCR grensgevallen heeft, bepalen bestandsnaam en Paperless of de regel slaagt of faalt.",
+      "ruleOfThumbPoint3": "Als OCR zwak is, gaat de regel nooit verder.",
+      "whereStoredTitle": "Waar scores worden opgeslagen in Paperless",
+      "whereStoredIntro": "PocoClass schrijft de evaluatieresultaten terug naar Paperless zodat u altijd weet wat er is gebeurd:",
+      "whereStoredScore": "<strong>POCO Score</strong> – uiteindelijke classificatievertrouwen (aangepast veld)",
+      "whereStoredOCR": "<strong>POCO OCR Score</strong> – alleen-OCR vertrouwen (optioneel aangepast veld). Elk document krijgt een OCR-score geregistreerd, zelfs als het 0% is",
+      "whereStoredPlus": "<strong>POCO+ tag</strong> – regel kwam overeen en classificatie toegepast",
+      "whereStoredMinus": "<strong>POCO- tag</strong> – regel geëvalueerd maar voldeed niet aan drempel",
+      "documentNotesTitle": "Documentnotities",
+      "documentNotesDesc": "Een gedetailleerde score-uitsplitsing wordt ook toegevoegd aan de notities van het document in Paperless, wat volledige transparantie biedt voor elke evaluatie."
+    },
+    "setup": {
+      "title": "Installatievereisten en gegevenssynchronisatie",
+      "intro": "Voordat PocoClass kan werken, moet u een paar dingen instellen in uw Paperless-systeem. Deze vereiste velden stellen PocoClass in staat om het werk te volgen en belangrijke informatie op te slaan.",
+      "requiredTitle": "Vereiste installatie",
+      "customFieldsLabel": "Aangepaste velden:",
+      "pocoScoreRequired": "POCO Score (Vereist)",
+      "pocoScoreDesc": "Slaat de vertrouwensscore op die door PocoClass is berekend voor elk document na regelevaluatie",
+      "pocoOCROptional": "POCO OCR (Optioneel)",
+      "pocoOCRDesc": "Slaat de OCR-specifieke vertrouwensscorecomponent op voor analyse en probleemoplossing",
+      "tagsLabel": "Tags:",
+      "newTagRequired": "NEW Tag (Vereist)",
+      "newTagDesc": "Toegepast op documenten direct nadat Paperless ze heeft verwerkt, waardoor ze worden gemarkeerd als kandidaten voor PocoClass-verwerking. PocoClass gebruikt dit om nieuwe documenten te identificeren die regelevaluatie nodig hebben",
+      "plusTagRequired": "POCO+ Tag (Vereist)",
+      "plusTagDesc": "Toegepast op documenten waarbij de classificatie van PocoClass de minimale POCO Score-drempel overschrijdt, wat succesvolle matches aangeeft",
+      "minusTagRequired": "POCO- Tag (Vereist)",
+      "minusTagDesc": "Toegepast op documenten waarbij de classificatie van PocoClass onder de minimale POCO Score-drempel valt, wat onvoldoende vertrouwen aangeeft",
+      "managedIn": "Aangepaste velden en tagvereisten worden beheerd in",
+      "dataValidation": "Gegevensvalidatie",
+      "syncArchTitle": "Architectuur voor gegevenssynchronisatie",
+      "syncArchDesc": "PocoClass gebruikt een cachingstrategie om API-overhead op uw Paperless-instantie te minimaliseren. In plaats van Paperless te bevragen bij elke documentevaluatie, haalt PocoClass de huidige staat van alle tags, correspondenten, documenttypen en aangepaste velden op en cachet deze tijdens synchronisatie. Zonder caching zou elk verwerkt document honderden API-aanroepen kunnen vereisen om al deze classificatiereferenties op te lossen. Deze gecachete staat blijft geldig totdat deze expliciet wordt vernieuwd, wat API-aanroepen aanzienlijk vermindert terwijl gegevensconsistentie behouden blijft.",
+      "autoSyncTitle": "Automatische synchronisatie",
+      "autoSyncDesc": "Synchronisatie gebeurt automatisch zonder handmatige tussenkomst. PocoClass bewaakt schemawijzigingen en synchroniseert opnieuw wanneer u terugkeert naar de applicatie na het wisselen van tabbladen of het verlaten van de interface. Het systeem evalueert of hersynchronisatie nodig is en activeert deze transparant — waardoor uw gecachete staat actueel blijft met minimale overhead.",
+      "forceSyncNote": "In de meeste gevallen handelt automatische synchronisatie alle gegevensconsistentiebehoeften af. Als u een onmiddellijke update moet forceren, kan dit worden beheerd via",
+      "system": "Systeem"
+    },
+    "buildingRules": {
+      "title": "Regels bouwen: de 6-stappenwizard",
+      "intro": "Een regel vertelt PocoClass: \"Als een document deze patronen bevat, classificeer het dan zo.\"",
+      "wizardIntro": "De regelbouwerwizard begeleidt u stap voor stap bij het definiëren hoe een document moet worden geïdentificeerd en welke classificaties moeten worden toegewezen wanneer het overeenkomt.",
+      "step1Title": "Stap 1 — Basisinformatie",
+      "step1Intro": "Geef uw regel een duidelijke identiteit:",
+      "ruleName": "<strong>Regelnaam</strong> – Een beschrijvende, mensvriendelijke naam (bijv. Bankafschriften, Belastingbrieven)",
+      "ruleId": "<strong>Regel-ID</strong> – Een unieke identificatie die automatisch wordt gegenereerd. U kunt deze aanpassen voor leesbaarheid",
+      "description": "<strong>Beschrijving</strong> – Optionele notities om uzelf te herinneren wat de regel doet",
+      "step1Note": "Dit helpt bij het organiseren van uw regels, vooral wanneer u er veel bouwt.",
+      "step2Title": "Stap 2 — OCR-patroonmatching",
+      "step2Intro": "In deze stap definieert u de tekstpatronen waarnaar PocoClass moet zoeken in de OCR-tekst die uit het document is geëxtraheerd.",
+      "whatCanMatch": "Wat u kunt matchen:",
+      "matchOrgNames": "Organisatienamen",
+      "matchKeywords": "Trefwoorden zoals Factuur, Afschrift, Bon",
+      "matchRefNumbers": "Referentienummers",
+      "matchDates": "Data of korte zinnen die uniek zijn voor een documentformaat",
+      "howItWorksLabel": "Hoe het werkt:",
+      "add3to10": "Voeg 3 tot 10 OCR-patronen toe",
+      "chooseMatch": "Kies hoe ze moeten overeenkomen (ALLE / WILLEKEURIGE / logische groepen)",
+      "setOCRThreshold": "Stel de OCR-drempel in (standaard: 75%) – dit bepaalt hoeveel patronen moeten overeenkomen voordat PocoClass de regel als geldig beschouwt",
+      "ocrContinueNote": "PocoClass gaat alleen verder met bestandsnaam- en classificatie-evaluatie als de OCR-drempel is bereikt. (Zie de scoresectie voor details.)",
+      "regexSupport": "Regex-ondersteuning",
+      "regexIntro": "U kunt eenvoudige tekstpatronen of meer geavanceerde reguliere expressies (regex) gebruiken.",
+      "examplesLabel": "Voorbeelden:",
+      "regexExample1": "/factuur/i – komt overeen met \"factuur\", \"Factuur\", \"FACTUUR\"",
+      "regexExample2": "/\\d{4}-\\d{2}-\\d{2}/ – komt overeen met data zoals \"2024-01-15\"",
+      "regexExample3": "/Visa|Mastercard/i – komt overeen met \"Visa\" OF \"Mastercard\"",
+      "regexOptionalNote": "Regex is optioneel — de meeste regels werken prima met eenvoudige patronen.",
+      "regexBuilderTip": "<strong>Tip:</strong> Er is een ingebouwde <strong>Regex-bouwer</strong> (beschikbaar in de patrooneditor) om te helpen bij het maken van complexe patronen zonder handmatig code te schrijven.",
+      "step3Title": "Stap 3 — Bestandsnaampatronen",
+      "step3Intro": "Bestandsnaampatronen stellen PocoClass in staat om de bestandsnaam van het document als secundair signaal te gebruiken.",
+      "exampleFilename": "Voorbeeld bestandsnaam:",
+      "possiblePatterns": "Mogelijke patronen:",
+      "keyPoints": "Belangrijke punten:",
+      "filenameOptional": "Bestandsnaampatronen zijn optioneel",
+      "filenameAfterOCR": "Ze worden alleen geëvalueerd nadat OCR is geslaagd",
+      "filenameMultiplierNote": "Hun invloed wordt gecontroleerd door de bestandsnaamvermenigvuldiger (standaard: 1×)",
+      "step4Title": "Stap 4 — Regelconfiguratie",
+      "step4Intro": "Dit is waar u definieert hoe zeker PocoClass moet zijn voordat de regel wordt toegepast.",
+      "youCanAdjust": "U kunt aanpassen:",
+      "ocrThreshold": "<strong>OCR-drempel</strong> – Minimumpercentage OCR-patronen dat moet overeenkomen",
+      "pocoThreshold": "<strong>POCO-drempel</strong> – Minimale eindscore vereist voor toepassing van de regel",
+      "ocrMultiplierConfig": "<strong>OCR-vermenigvuldiger</strong> – Vertrouwensniveau voor OCR (standaard: 3×)",
+      "filenameMultiplierConfig": "<strong>Bestandsnaamvermenigvuldiger</strong> – Vertrouwensniveau voor bestandsnaammatching (standaard: 1×)",
+      "classificationMultiplierConfig": "<strong>Classificatievermenigvuldiger</strong> – Vertrouwensniveau voor Paperless-classificaties",
+      "step4Note": "Deze instellingen bepalen hoe zwaar elke gegevensbron de eindscore beïnvloedt. Voor volledige details, zie Het Scoresysteem.",
+      "step5Title": "Stap 5 — Documentclassificaties",
+      "step5Intro": "Hier definieert u wat PocoClass naar Paperless moet schrijven als de regel overeenkomt.",
+      "staticClassifications": "Statische classificaties",
+      "staticDesc": "Waarden die altijd van toepassing zijn wanneer de regel overeenkomt:",
+      "staticCorrespondent": "Correspondent",
+      "staticDocType": "Documenttype",
+      "staticTags": "Tags",
+      "staticCustomFields": "Aangepaste velden",
+      "staticExample": "<strong>Voorbeeld</strong>: Wijs Correspondent toe → \"Bank XYZ\", Wijs Documenttype toe → \"Maandelijks afschrift\", Tags → Financiën, 2024",
+      "dynamicClassifications": "Dynamische classificaties",
+      "dynamicDesc": "Direct uit het document geëxtraheerd met behulp van ankers.",
+      "dynamicExampleTitle": "Voorbeeld extractie:",
+      "dynamicExampleIntro": "U wilt een factuurnummer extraheren dat verschijnt na \"Fac: \"",
+      "simulatedOCR": "Gesimuleerde OCR-tekst uit document:",
+      "beforeAnchor": "Vóór anker:",
+      "textToExtract": "Te extraheren tekst:",
+      "afterAnchor": "Na anker:",
+      "step6Title": "Stap 6 — Verificatie",
+      "step6Intro": "Verificatie stelt PocoClass in staat te bevestigen dat de geëxtraheerde of toegewezen classificaties overeenkomen met wat al in Paperless is opgeslagen.",
+      "step6Example": "<strong>Voorbeeld</strong>: Geëxtraheerde correspondent → \"Jan Jansen\", Paperless-correspondent → \"Jan Jansen\" → Verificatie geslaagd",
+      "step6Note": "Als verificatie mislukt, kunt u ervoor kiezen om de regel toch toe te staan of te blokkeren. Verificatie voegt een extra veiligheidslaag toe, vooral wanneer vergelijkbare documentformaten kunnen overlappen."
+    },
+    "testing": {
+      "title": "Uw regels testen",
+      "intro": "Voordat u PocoClass honderden documenten automatisch laat classificeren, wilt u ervoor zorgen dat uw regel correct werkt op echte documenten.",
+      "twoTypesTitle": "Twee soorten testen",
+      "dryRunTitle": "1. Testrun",
+      "dryRunSubtitle": "(Simulatie - Geen wijzigingen)",
+      "dryRunQuestion": "\"Wat zou er gebeuren als ik deze regel zou uitvoeren?\"",
+      "dryRunPoint1": "PocoClass test uw regel tegen geselecteerde documenten",
+      "dryRunPoint2": "Toont wat er zou gebeuren (classificaties, scores)",
+      "dryRunPoint3": "<strong>Maakt geen wijzigingen</strong> aan Paperless",
+      "dryRunPoint4": "Perfect voor testen voordat u zeker bent",
+      "fullRunTitle": "2. Volledige run",
+      "fullRunSubtitle": "(Echt - Maakt wijzigingen)",
+      "fullRunQuestion": "\"Pas deze regel echt toe\"",
+      "fullRunPoint1": "PocoClass test uw regel en classificeert de documenten daadwerkelijk",
+      "fullRunPoint2": "Maakt wijzigingen in Paperless",
+      "fullRunPoint3": "Past tags, correspondenten en classificaties toe op documenten",
+      "fullRunPoint4": "Scores worden geregistreerd in het POCO Score aangepaste veld",
+      "understandingTitle": "Testresultaten begrijpen",
+      "understandingIntro": "Wanneer u test, toont PocoClass u een rapport met:",
+      "resultDocument": "<strong>Document</strong>: Welk document is getest",
+      "resultMatched": "<strong>Regel overeenkomend</strong>: Kwam de regel overeen? (Ja/Nee)",
+      "resultOCR": "<strong>OCR-score</strong>: Welk % van OCR-patronen kwam overeen?",
+      "resultPOCO": "<strong>POCO-score</strong>: Wat was de uiteindelijke classificatiescore?",
+      "resultClassification": "<strong>Classificatie</strong>: POCO+ (overeenkomend) of POCO- (geen match) - toont of de regel overeenkwam met het document",
+      "resultApplied": "<strong>Toegepaste classificaties</strong>: Wat is toegewezen (correspondent, tags, etc.) - welke identificaties zoals OCR of bestandsnaam succesvol waren",
+      "scoresExplainedTitle": "Scores uitgelegd",
+      "scoresOCR": "<strong>OCR-score</strong> – Percentage OCR-patronen dat overeenkwam",
+      "scoresPOCO": "<strong>POCO-score</strong> – Gecombineerd vertrouwen van OCR, bestandsnaam en Paperless",
+      "scoresTrigger": "Regel wordt geactiveerd wanneer POCO-score uw drempel bereikt (standaard 75%)",
+      "barChartIntro": "Testresultaten bevatten een staafdiagram dat toont:",
+      "barBlue": "Blauwe balk = OCR-score (hoeveel patronen overeenkwamen)",
+      "barGreen": "Groene/rode balk = POCO-score (uiteindelijke beslisscore)",
+      "barOrange": "Oranje lijn = Uw drempel (standaard 75%)",
+      "barNote": "Als de balken de oranje lijn bereiken, wordt de regel geactiveerd."
+    },
+    "backgroundProcessing": {
+      "title": "Achtergrondverwerking",
+      "intro": "Achtergrondverwerking is hoe PocoClass automatisch nieuwe documenten classificeert.",
+      "howItWorksTitle": "Hoe het werkt",
+      "howItWorksIntro": "Wanneer geactiveerd, scant PocoClass naar documenten met de NEW-tag en past uw classificatieregels toe. Uw beheerder configureert hoe de activering werkt (automatisch via post-consumption script, handmatig of gepland).",
+      "step1": "<strong>Stap 1: De trigger</strong> - PocoClass zoekt naar documenten met de <strong>\"NEW\"</strong> tag",
+      "step2": "<strong>Stap 2: Documenten filteren</strong> - Vind documenten getagd met <strong>\"NEW\"</strong> en NIET al getagd met <strong>\"POCO+\"</strong> of <strong>\"POCO-\"</strong>",
+      "step3": "<strong>Stap 3: Regels toepassen</strong> - Voer alle ingeschakelde regels uit op deze documenten in volgorde",
+      "step4": "<strong>Stap 4: Taggen en scoren</strong> - Pas classificaties toe, schrijf <strong>POCO Score</strong> en <strong>POCO OCR</strong>, pas <strong>POCO+</strong> of <strong>POCO-</strong> tag toe, verwijder optioneel <strong>NEW</strong> tag (indien ingeschakeld in Instellingen)",
+      "step5": "<strong>Stap 5: Herhalen</strong> - Blijf zoeken naar meer documenten met de <strong>\"NEW\"</strong> tag",
+      "tipNewTag": "<strong>Tip:</strong> U kunt kiezen of PocoClass automatisch de <strong>NEW</strong> tag verwijdert na verwerking. Schakel deze optie in om uw Paperless-inbox schoon te houden, of laat het uitgeschakeld als u liever documenten handmatig verifieert voordat u de tag zelf verwijdert.",
+      "tipLocation": "<strong>Locatie:</strong> Instellingen → Achtergrondverwerking → Tagconfiguratie",
+      "openSettings": "Open achtergrondverwerkingsinstellingen",
+      "modesTitle": "Drie verwerkingsmodi",
+      "automaticMode": "1. Automatische modus",
+      "automaticPoint1": "Draait continu op de achtergrond, elke paar minuten",
+      "automaticPoint2": "Kijkt altijd naar nieuwe documenten met \"NEW\" tag",
+      "automaticPoint3": "Pauzeert wanneer u de webinterface gebruikt (zodat het niet interfereert)",
+      "automaticPoint4": "Pauzeert wanneer er geen documenten verwerkt hoeven te worden (bespaart bronnen)",
+      "triggerMode": "2. Triggermodus",
+      "triggerPoint1": "Draait eenmalig wanneer u het handmatig vraagt",
+      "triggerPoint2": "Handig voor testen of verwerken van een specifieke batch documenten",
+      "triggerPoint3": "U klikt op \"Achtergrondverwerking triggeren\" en het verwerkt eenmalig",
+      "dryRunMode": "3. Testrunmodus",
+      "dryRunPoint1": "Hetzelfde als triggermodus, maar maakt geen wijzigingen",
+      "dryRunPoint2": "Toont wat er zou gebeuren zonder daadwerkelijk te classificeren",
+      "historyTitle": "Verwerkingsgeschiedenis",
+      "historyIntro": "PocoClass houdt bij wat het heeft verwerkt:",
+      "summaryView": "Samenvattingsweergave:",
+      "summaryPoint1": "Wanneer was de run (tijdstempel)",
+      "summaryPoint2": "Welk type run (Automatisch, Handmatig, Testrun)",
+      "summaryPoint3": "Hoeveel documenten zijn verwerkt",
+      "summaryPoint4": "Hoeveel kwamen overeen met regels",
+      "detailView": "Detailweergave (uitklapbaar):",
+      "detailPoint1": "Documenttitel",
+      "detailPoint2": "Welke regel overeenkwam (indien van toepassing)",
+      "detailPoint3": "OCR- en POCO-scores",
+      "detailPoint4": "Welke classificatie het kreeg (POCO+ of POCO-)",
+      "detailPoint5": "Welke classificaties zijn toegepast"
+    },
+    "aboutName": {
+      "title": "Over de naam",
+      "p1": "De naam PocoClass komt van het vroegste script waarop dit project was gebaseerd, genaamd POCO. POCO staat voor <strong>Post Consumption</strong> en verwees naar een eenvoudig script dat door Paperless werd geactiveerd via het ingebouwde post-consumption-mechanisme.",
+      "p2": "Dat originele script voerde basisclassificatie op regelbasis uit direct nadat documenten waren geïmporteerd. In de loop van de tijd evolueerde dit concept tot een volledig documentclassificatiesysteem met scoring, verificatie en een webgebaseerde interface. De naam PocoClass is behouden om deze oorsprong te weerspiegelen terwijl het de bredere classificatiemogelijkheden vertegenwoordigt die het project nu biedt."
+    }
+  },
+  "quickStart": {
+    "title": "Snelstart",
+    "subtitle": "Snel aan de slag met PocoClass",
+    "howItWorks": {
+      "title": "Hoe PocoClass werkt",
+      "description": "PocoClass kijkt naar documenten met de tag \"NEW\" in Paperless, vergelijkt ze met uw classificatieregels en past de juiste tags en metagegevens toe. Documenten die slagen krijgen een POCO+ tag; documenten die niet slagen krijgen een POCO- tag."
+    },
+    "minimumSetup": {
+      "title": "Minimale installatievereisten",
+      "intro": "Voordat u PocoClass kunt gebruiken, heeft uw Paperless-systeem deze items nodig:",
+      "pocoScore": "<strong>POCO Score</strong> – een aangepast veld om classificatievertrouwen op te slaan",
+      "pocoOCR": "<strong>POCO OCR</strong> (optioneel) – een aangepast veld om de OCR-transparantiescore op te slaan",
+      "newTag": "<strong>NEW tag</strong> – markeert documenten die klaar zijn voor verwerking (Paperless moet worden geconfigureerd om deze tag toe te wijzen aan binnenkomende documenten)",
+      "plusTag": "<strong>POCO+ tag</strong> – toegepast wanneer classificatie slaagt",
+      "minusTag": "<strong>POCO- tag</strong> – toegepast wanneer classificatie mislukt",
+      "checkSettings": "Ga naar <strong>Instellingen → Gegevensvalidatie</strong> om te controleren of deze bestaan. PocoClass kan ontbrekende items voor u aanmaken."
+    },
+    "scoring": {
+      "title": "Hoe scoring werkt",
+      "intro": "PocoClass gebruikt een op vertrouwen gebaseerd scoresysteem om te bepalen of een document overeenkomt met een regel:",
+      "ocrScore": "<strong>OCR-score</strong> – percentage tekstpatronen gevonden in het document. Moet 75% (standaard) bereiken voor de regel om door te gaan.",
+      "pocoScore": "<strong>POCO-score</strong> – combineert OCR, bestandsnaam en Paperless-verificatie tot een uiteindelijke vertrouwensscore. Moet 75% (standaard) bereiken om de classificatie toe te passen.",
+      "result": "Als beide drempels worden gehaald, krijgt het document een <strong>POCO+</strong> tag en uw gekozen classificaties. Zo niet, dan krijgt het een <strong>POCO-</strong> tag.",
+      "formulaTitle": "Formule",
+      "formula": "POCO Score = (OCR × 3 + Bestandsnaam × 1 + Verificatie) / Totaal max gewicht × 100%",
+      "example": "<strong>Voorbeeld:</strong> Een regel heeft 4 OCR-patronen (3 komen overeen), 1 bestandsnaampatroon (komt overeen) en geen verificatie. OCR draagt 3×3=9 bij van 3×4=12, bestandsnaam draagt 1×1=1 bij van 1×1=1. Totaal: (9+1)/(12+1) = 77% → haalt de drempel van 75%.",
+      "seeGuide": "Voor een gedetailleerde uitleg, zie de"
+    },
+    "gettingStarted": {
+      "title": "Aan de slag",
+      "step1Title": "Voltooi installatie",
+      "step1Desc": "Ga naar Instellingen → Gegevensvalidatie en zorg ervoor dat alle vereiste velden en tags bestaan in Paperless.",
+      "step2Title": "Maak uw eerste regel",
+      "step2Desc": "Ga naar Regels en klik op \"Nieuwe regel\". De wizard begeleidt u bij het benoemen van uw regel, het toevoegen van OCR-patronen en het kiezen welke classificaties moeten worden toegepast.",
+      "step3Title": "Test met testrun",
+      "step3Desc": "Ga naar Regelevaluatie, selecteer uw regel en enkele documenten, en klik op \"Testrun\" om te zien wat er zou gebeuren zonder wijzigingen aan te brengen.",
+      "step4Title": "Voer echt uit",
+      "step4Desc": "Als u tevreden bent met de testruresultaten, klikt u op \"Uitvoeren\" om classificaties toe te passen op documenten in Paperless.",
+      "step5Title": "Schakel achtergrondverwerking in",
+      "step5Desc": "Ga naar Instellingen → Achtergrondverwerking en schakel de automatische modus in. PocoClass zal nu automatisch nieuwe documenten classificeren."
+    },
+    "fullGuide": "volledige handleiding"
+  },
+  "tutorial": {
+    "pageTitle": "Begeleide tutorial",
+    "pageSubtitle": "Leer hoe u classificatieregels opbouwt aan de hand van een echt bankafschriftvoorbeeld",
+    "backToRules": "Terug naar regels",
+    "readOnlyBanner": "TUTORIALMODUS — Velden zijn alleen-lezen",
+    "nav": {
+      "back": "Terug",
+      "next": "Volgende",
+      "finish": "Voltooien",
+      "step": "Stap"
+    },
+    "steps": {
+      "0_1": {
+        "title": "Welkom bij de tutorial voor de regelbouwer!",
+        "text": "Dit is waar u classificatieregels maakt. Elke regel leert PocoClass hoe een specifiek documenttype herkend moet worden. Laten we stap voor stap een regel bouwen voor bankafschriften."
+      },
+      "0_2": {
+        "title": "6 stappen om een regel te bouwen",
+        "text": "Elke classificatieregel wordt opgebouwd in 6 stappen, weergegeven in deze voortgangsbalk. Elke stap richt zich op een ander aspect — van het benoemen van uw regel, tot het definiëren van patronen, tot het toewijzen van metagegevens. U doorloopt ze van links naar rechts."
+      },
+      "0_3": {
+        "title": "Het invoergebied",
+        "text": "Dit is waar u uw regelgegevens invult. Elke stap toont verschillende invoervelden aan deze zijde. De velden veranderen naarmate u de 6 stappen doorloopt."
+      },
+      "0_4": {
+        "title": "Configuratieoverzicht",
+        "text": "Onderaan elke stap vindt u een configuratieoverzicht. Dit toont een overzicht van uw huidige instellingen en markeert alles wat aandacht nodig heeft met waarschuwingen."
+      },
+      "0_5": {
+        "title": "PDF-voorbeeld",
+        "text": "Dit paneel toont een voorbeeld van het document waarvoor u een regel bouwt. Gebruik het om tekstpatronen en visuele elementen te identificeren die uniek zijn voor dit type document."
+      },
+      "0_6": {
+        "title": "OCR-inhoud",
+        "textParts": [
+          {
+            "text": "Dit tabblad toont de ruwe tekst die PocoClass uit het document extraheert met OCR (Optical Character Recognition). Dit is wat PocoClass daadwerkelijk 'leest' — "
+          },
+          {
+            "text": "merk op dat de tekstvolgorde kan afwijken van de visuele PDF-indeling.",
+            "bold": true
+          },
+          {
+            "text": " Uw patronen moeten overeenkomen met deze tekst, niet met de PDF-indeling."
+          }
+        ]
+      },
+      "0_7": {
+        "title": "YAML-voorbeeld",
+        "text": "Het YAML-tabblad toont uw regel als gestructureerde gegevens — dit is wat wordt opgeslagen. De meeste gebruikers hoeven YAML niet rechtstreeks te bewerken, maar het is nuttig voor ervaren gebruikers die regels willen verfijnen of kopiëren."
+      },
+      "1_0": {
+        "title": "Stap 1: Basisinformatie",
+        "text": "Laten we beginnen met de basis. In deze eerste stap geeft u uw regel een naam, een ID en een beschrijving. U stelt ook de POCO Score-drempel in — het minimale vertrouwensniveau dat nodig is om een document te classificeren."
+      },
+      "1_1": {
+        "title": "Regelnaam en ID",
+        "text": "Geef uw regel een duidelijke naam — zoals \"Bankafschrift\". De regel-ID wordt automatisch gegenereerd en wordt intern gebruikt. De beschrijving helpt u te onthouden wat deze regel doet."
+      },
+      "1_2": {
+        "title": "POCO Score-drempel",
+        "text": "De POCO Score-drempel bepaalt hoe zeker het systeem moet zijn voordat het een document classificeert. De standaardwaarde is 75% — dit betekent dat minimaal 75% van de gewogen patronen moet overeenkomen. Te laag = foutieve matches, te hoog = gemiste documenten."
+      },
+      "2_0": {
+        "title": "Stap 2: OCR-identificatiepatronen",
+        "textParts": [
+          {
+            "text": "Dit is de belangrijkste stap. Hier definieert u tekstpatronen die uw documenttype uniek identificeren. Een tekstpatroon kan zo eenvoudig zijn als een woord of zin — zoals \"Royal Bank of Scotland\" of \"Factuurnummer\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Voor meer flexibiliteit kunt u reguliere expressies (regex) gebruiken — een manier om tekstpatronen te beschrijven die variaties zoals extra spaties of verschillende opmaak aankan. De patroon-assistent maakt het bouwen van regex eenvoudig, zelfs zonder ervaring. Voor meer details, zie "
+          },
+          {
+            "text": "Regex-ondersteuning in de gids",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "2_1": {
+        "title": "PDF vs OCR — Wat PocoClass ziet",
+        "textParts": [
+          {
+            "text": "Voordat we patronen definiëren, bekijk het verschil tussen de PDF (hoe u het document ziet) en de OCR-tekst (hoe PocoClass het ziet). "
+          },
+          {
+            "text": "Wissel",
+            "action": "togglePreview"
+          },
+          {
+            "text": " tussen de PDF- en OCR-tabbladen aan de rechterkant — merk op dat de tekstvolgorde anders is! PocoClass werkt met de OCR-tekst, niet met de visuele indeling."
+          }
+        ]
+      },
+      "2_2": {
+        "title": "Logische groep 1 — Bankidentificatie",
+        "textParts": [
+          {
+            "text": "Ons eerste patroon zoekt naar "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " als platte tekst — dit verschijnt onderaan elk RBS-afschrift. Het zoekgebied is ingesteld op de laatste 10 regels, waardoor de match sneller en preciezer is. Deze groep is optioneel — het verhoogt het vertrouwen maar weigert documenten niet als het ontbreekt."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Met behulp van de regex-bouwer kan hetzelfde patroon worden geschreven als "
+          },
+          {
+            "text": "Royal\\s*Bank\\s*of\\s*Scotland",
+            "bold": true
+          },
+          {
+            "text": " — wat ook variaties zoals \"RoyalBank of Scotland\" of \"Royal   Bank of Scotland\" met ongebruikelijke spatiëring zou matchen. Eenvoudige tekst werkt voor de meeste gevallen; regex voegt flexibiliteit toe wanneer nodig."
+          }
+        ]
+      },
+      "2_3": {
+        "title": "Logische groep 2 — Rekeningidentificatie",
+        "textParts": [
+          {
+            "text": "Dit patroon zoekt naar uw volledige IBAN "
+          },
+          {
+            "text": "\"GB11RBOS 1610 0011 1111 11\"",
+            "bold": true
+          },
+          {
+            "text": " in de eerste 10 regels van het document — waar bankafschriften doorgaans rekeninggegevens tonen."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Deze groep is verplicht gemaakt",
+            "bold": true
+          },
+          {
+            "text": ", wat betekent dat de regel alleen slaagt als dit patroon wordt gevonden. Dit is belangrijk wanneer u meerdere rekeningen heeft bij Royal Bank — het zorgt ervoor dat u het juiste rekeningafschrift identificeert, niet zomaar een RBS-document."
+          }
+        ]
+      },
+      "2_4": {
+        "title": "Meer logische groepen",
+        "textParts": [
+          {
+            "text": "U kunt meer logische groepen toevoegen om de nauwkeurigheid te verbeteren. Elke regel heeft minimaal 3 en maximaal 10 groepen nodig. Groepen kunnen AND-logica gebruiken (alle voorwaarden moeten overeenkomen) of OR-logica (elke voorwaarde kan overeenkomen). In ons voorbeeld zoeken groep 3-5 naar "
+          },
+          {
+            "text": "\"Account Number\"",
+            "bold": true
+          },
+          {
+            "text": ", "
+          },
+          {
+            "text": "\"Statement\"",
+            "bold": true
+          },
+          {
+            "text": ", en "
+          },
+          {
+            "text": "\"Balance\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "De patroon-assistent (zoek het toverstafpictogram) helpt u regex-patronen te bouwen zonder regex-syntaxis te kennen. Voor meer details, zie "
+          },
+          {
+            "text": "Regex-ondersteuning in de gids",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "2_5": {
+        "title": "OCR-drempel en gewichtsvermenigvuldiger",
+        "textParts": [
+          {
+            "text": "De OCR-drempel (75%) stelt het minimumpercentage OCR-patronen in dat moet overeenkomen voordat het document kan worden geclassificeerd. Dit zorgt voor een basisniveau van op tekst gebaseerd vertrouwen."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "De gewichtsvermenigvuldiger (x3) bepaalt hoeveel OCR-patronen meetellen voor de uiteindelijke POCO Score. Een regel kan drie bronnen gebruiken om documenten te identificeren: OCR-tekstpatronen (de hoofdbron), bestandsnaampatronen en Paperless-ngx-classificaties. De vermenigvuldiger laat u OCR prioriteren boven de andere bronnen. Voor meer details, zie "
+          },
+          {
+            "text": "Scoresysteem in de gids",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "3_0": {
+        "title": "Stap 3: Bestandsnaampatronen",
+        "text": "Naast OCR-tekst kan de bestandsnaam zelf helpen bij het identificeren van documenten. Uw bank biedt bijvoorbeeld mogelijk geautomatiseerde digitale afschriften met consistente bestandsnamen zoals \"RBS_Statement_2014-12-21.pdf\". Bestandsnaampatronen stellen u in staat hiervan gebruik te maken."
+      },
+      "3_1": {
+        "title": "Bestandsnaampatronen",
+        "textParts": [
+          {
+            "text": "Patroon 1: "
+          },
+          {
+            "text": "\"RBS.*statement\"",
+            "bold": true
+          },
+          {
+            "text": " komt overeen met elke bestandsnaam die \"RBS\" bevat gevolgd door willekeurige tekens en vervolgens \"statement\". De .* betekent dat er een willekeurig aantal tekens tussen kan staan — het matcht \"RBS_Statement_2014-12-21.pdf\" of \"RBS-Monthly-Statement.pdf\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Patroon 2: "
+          },
+          {
+            "text": "\"\\d{4}-\\d{2}-\\d{2}\"",
+            "bold": true
+          },
+          {
+            "text": " zoekt naar een volledig datumpatroon in de bestandsnaam — vier cijfers, een streepje, twee cijfers, een streepje en twee cijfers. Dit matcht het \"2014-12-21\" deel in \"RBS_Statement_2014-12-21.pdf\", wat helpt bij het identificeren van documenten op basis van hun datumstempel."
+          }
+        ]
+      },
+      "3_2": {
+        "title": "Bestandsnaam gewichtsvermenigvuldiger",
+        "textParts": [
+          {
+            "text": "De bestandsnaam gewichtsvermenigvuldiger (x1) bepaalt hoeveel bestandsnaammatches bijdragen aan de uiteindelijke POCO Score — vergelijkbaar met de OCR-vermenigvuldiger die u eerder zag. De standaardwaarde van x1 betekent dat bestandsnaampatronen minder meetellen dan OCR-patronen (die x3 gebruiken)."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Dit is logisch omdat bestandsnamen minder betrouwbaar zijn dan documentinhoud — ze kunnen worden hernoemd of inconsistent zijn. Voor meer details over hoe alle vermenigvuldigers samenwerken, zie "
+          },
+          {
+            "text": "Scoresysteem in de gids",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "4_0": {
+        "title": "Stap 4: Gegevensverificatie",
+        "text": "Gegevensverificatie voegt een extra vertrouwenslaag toe door geëxtraheerde gegevens te vergelijken met bestaande Paperless-ngx-metagegevens. Deze stap is optioneel en is vooral nuttig voor geavanceerde opstellingen waar u documentgegevens wilt valideren tegen bekende waarden."
+      },
+      "4_1": {
+        "title": "Verificatie-placeholders",
+        "text": "Hier selecteert u welke Paperless-ngx-velden u wilt gebruiken voor verificatie. Indien ingeschakeld, controleert PocoClass of de waarde die in stap 5 is toegewezen overeenkomt met wat al in Paperless-ngx staat — waarmee een vertrouwensvermenigvuldiger aan de eindscore wordt toegevoegd. In ons voorbeeld zijn Correspondent en Documenttype ingeschakeld voor verificatie."
+      },
+      "4_2": {
+        "title": "Verificatievermenigvuldiger",
+        "textParts": [
+          {
+            "text": "De verificatievermenigvuldiger bepaalt hoeveel gewicht Paperless-ngx-veldmatches toevoegen aan de uiteindelijke POCO Score. Standaard staat de modus op \"Auto\", wat het gewicht van deze bron neutraliseert — zodat verificatie een lichte vertrouwensverhoging blijft in plaats van een dominante factor."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Zonder de automatische modus zou de scoreberekening Paperless-classificaties een zeer hoog gewicht kunnen geven (tot x5), wat uw OCR-patronen mogelijk overschaduwt. De automatische modus voorkomt dit door de vermenigvuldiger dynamisch aan te passen. Voor meer details, zie "
+          },
+          {
+            "text": "Scoresysteem in de gids",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "5_0": {
+        "title": "Stap 5: Documentclassificaties",
+        "text": "Nu PocoClass weet hoe uw documenten geïdentificeerd moeten worden, is het tijd om aan te geven wat er moet gebeuren wanneer een match wordt gevonden. In deze stap definieert u welke classificatiegegevens moeten worden toegewezen — de correspondent, het documenttype en tags voor organisatie. U kunt ook dynamische gegevensextractie configureren, die specifieke waarden rechtstreeks uit de documenttekst haalt — zoals rekeningnummers, factuurtotalen of datums — en deze automatisch opslaat in Paperless-ngx-velden."
+      },
+      "5_1": {
+        "title": "Vooraf gedefinieerde Paperless-velden",
+        "textParts": [
+          {
+            "text": "Deze velden komen rechtstreeks van uw Paperless-ngx-instantie — Correspondent, Documenttype en Tags zijn vervolgkeuzeselecties van waarden die al in Paperless-ngx bestaan. Aanmaakdatum is anders — het is een vrije datuminvoer waarmee u een specifieke datum kunt instellen. In ons voorbeeld wijzen we "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " toe als correspondent, "
+          },
+          {
+            "text": "\"Bank Statement\"",
+            "bold": true
+          },
+          {
+            "text": " als documenttype, en voegen de tags "
+          },
+          {
+            "text": "\"Financial\"",
+            "bold": true
+          },
+          {
+            "text": " en "
+          },
+          {
+            "text": "\"Bank\"",
+            "bold": true
+          },
+          {
+            "text": " toe."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Merk op dat Aanmaakdatum hier bewust leeg is gelaten. Het instellen van een vaste datum hier zou dezelfde datum toepassen op elk document dat deze regel matcht — wat zelden zinvol is. Dit is waar dynamische extractie echt uitblinkt. Paperless-ngx heeft zijn eigen ingebouwde datumdetectie, maar u heeft geen controle over welke datum het kiest. In ons bankafschrift zou Paperless 22 oktober 2014 kunnen kiezen in plaats van de juiste einddatum van het afschrift van 21 december 2014. Met dynamische extractie vertelt u PocoClass precies waar de juiste datum te vinden is."
+          }
+        ]
+      },
+      "5_2": {
+        "title": "Aangepaste velden",
+        "textParts": [
+          {
+            "text": "Met aangepaste velden kunt u aanvullende gegevens opslaan die specifiek zijn voor uw workflow. De hier getoonde velden zijn afhankelijk van uw veldzichtbaarheidsinstellingen — u ziet mogelijk meer of minder velden afhankelijk van uw configuratie."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Elk aangepast veld kan hier in de vooraf gedefinieerde sectie op een vaste waarde worden ingesteld, of dynamisch uit de documenttekst worden geëxtraheerd (geconfigureerd in de volgende sectie). Voor meer details over veldconfiguratie, zie "
+          },
+          {
+            "text": "Metagegevens in de gids",
+            "action": "openGuideMetadata"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "5_3": {
+        "title": "Dynamische gegevensextractie",
+        "textParts": [
+          {
+            "text": "Dynamische extractie gebruikt ankerpatronen om specifieke waarden in de documenttekst te lokaliseren en op te halen. Elke extractieregel definieert een \"vóór-anker\" (tekst die vlak voor de gewenste waarde verschijnt) en optioneel een \"na-anker\" (tekst die er vlak na verschijnt). De geëxtraheerde tekst tussen deze ankers wordt vervolgens opgeslagen in een Paperless-ngx-veld."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Dit is een van de krachtigste functies van PocoClass. In combinatie met aangepaste velden kunt u vrijwel elke informatie uit uw documenten extraheren — een rekeningnummer van een bankafschrift, het totaalbedrag van een factuur, verbruikte kWh van een elektriciteitsrekening, of een polisnummer van een verzekeringsdocument. Elk doelveld kan slechts één keer worden gebruikt — ofwel als vooraf gedefinieerde waarde, ofwel als dynamische extractie, nooit beide."
+          }
+        ]
+      },
+      "5_4": {
+        "title": "De datum vinden in de OCR-tekst",
+        "textParts": [
+          {
+            "text": "Laten we zien hoe dynamische extractie het datumprobleem uit stap 5.1 oplost. Bekijk de OCR-tekst — zoek de gemarkeerde regel "
+          },
+          {
+            "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": ". We willen de einddatum "
+          },
+          {
+            "text": "\"21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": " extraheren — de werkelijke afschriftdatum."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Om het vóór-anker te bouwen, begin met de leesbare tekst die u kunt zien: "
+          },
+          {
+            "text": "\"22 Oct 2014 to\"",
+            "bold": true
+          },
+          {
+            "text": ". Dit vertaalt zich naar het regex-patroon "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " — wat overeenkomt met elke datum gevolgd door \"to\". De regex-assistent (toverstafpictogram) is hier erg handig om deze patronen stap voor stap te bouwen zonder regex-syntaxis te hoeven kennen."
+          }
+        ]
+      },
+      "5_5": {
+        "title": "De extractieregel configureren",
+        "textParts": [
+          {
+            "text": "Uit de vorige stap hebben we het vóór-anker "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " en het datumformaat "
+          },
+          {
+            "text": "\"DD MMM YYYY\"",
+            "bold": true
+          },
+          {
+            "text": " geïdentificeerd om de einddatum van het afschrift te extraheren. U kunt deze waarden links ingevuld zien — het doelveld is ingesteld op "
+          },
+          {
+            "text": "\"Date Created\"",
+            "bold": true
+          },
+          {
+            "text": ", zodat \"21 Dec 2014\" rechtstreeks naar het Aanmaakdatum-veld van het document in Paperless-ngx wordt geschreven."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Het na-anker is optioneel maar aanbevolen",
+            "bold": true
+          },
+          {
+            "text": " — het beperkt het zoekgebied zodat PocoClass stopt met zoeken zodra het die grens bereikt. Dit helpt foutieve matches te voorkomen wanneer een document veel vergelijkbare waarden bevat, en vangt fouten vroegtijdig op. In dit voorbeeld is een na-anker niet strikt noodzakelijk omdat het vóór-anker precies genoeg is, maar voor complexere documenten is het een goede gewoonte om het zoekgebied te beperken."
+          }
+        ]
+      },
+      "6_0": {
+        "title": "Stap 6: Beoordeling en samenvatting",
+        "text": "De laatste stap brengt alles samen. Hier kunt u uw volledige regelconfiguratie bekijken, zien hoe de POCO-scoreberekening werkt met uw instellingen, en een voorbeeld bekijken van de gegenereerde YAML die uw regel definieert."
+      },
+      "6_1": {
+        "title": "Beoordeling van de regelconfiguratie",
+        "text": "Dit overzicht toont al uw regelinstellingen in één oogopslag — basisinformatie, OCR-patronen en drempels, bestandsnaampatronen, verificatievelden en documentclassificaties. Gebruik het om alles te controleren voordat u opslaat."
+      },
+      "6_2": {
+        "title": "POCO Score-berekening",
+        "text": "Deze sectie toont precies hoe de POCO Score wordt berekend voor uw regel. Het toont de maximaal mogelijke gewichten van elke bron (OCR, bestandsnaam, verificatie), toont een voorbeeldberekening bij 80% matchpercentage, en geeft beide scoredrempels weer waaraan moet worden voldaan voor classificatie."
+      },
+      "6_3": {
+        "title": "Dat is het!",
+        "text": "Aan de rechterkant kunt u de gegenereerde YAML zien — het daadwerkelijke regelbestand dat PocoClass gebruikt. U heeft zojuist gezien hoe een regel van begin tot eind wordt gebouwd. Het kernidee: vind patronen die uw documenttype uniek identificeren, stel verstandige drempels in, en laat PocoClass de rest doen. Begin eenvoudig met een paar verplichte OCR-patronen — u kunt later altijd verfijnen."
+      }
+    }
+  }
+}

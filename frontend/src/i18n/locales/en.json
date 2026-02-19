@@ -1,0 +1,1828 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "submit": "Submit",
+    "reset": "Reset",
+    "resetFilters": "Reset filters",
+    "notSet": "Not set",
+    "patterns": "patterns",
+    "tags": "tags",
+    "points": "points",
+    "note": "Note"
+  },
+  "filters": {
+    "title": "Title",
+    "tags": "Tags",
+    "correspondent": "Correspondent",
+    "documentType": "Document Type",
+    "datesAdded": "Dates Added",
+    "limit": "Limit",
+    "type": "Type",
+    "level": "Level",
+    "dates": "Dates",
+    "searchPlaceholder": "Search...",
+    "searchLogsPlaceholder": "Search logs...",
+    "filterTags": "Filter tags",
+    "filterCorrespondents": "Filter correspondents",
+    "filterDocumentTypes": "Filter document types",
+    "notAssigned": "Not assigned",
+    "any": "Any",
+    "all": "All",
+    "include": "Include",
+    "exclude": "Exclude",
+    "from": "From",
+    "to": "To",
+    "allTypes": "All Types",
+    "ruleExecution": "Rule Execution",
+    "classification": "Classification",
+    "system": "System",
+    "errorType": "Error",
+    "paperlessApi": "Paperless API",
+    "allLevels": "All Levels",
+    "info": "Info",
+    "success": "Success",
+    "warning": "Warning",
+    "dateRange": "Date Range",
+    "last7Days": "Last 7 days",
+    "allStatus": "All Status",
+    "newestFirst": "Newest First",
+    "oldestFirst": "Oldest First"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "rules": "Rules",
+    "ruleEvaluation": "Rule Evaluation",
+    "backgroundProcess": "Background Process",
+    "logs": "Logs",
+    "settings": "Settings",
+    "guide": "Guide",
+    "quickStart": "Quick Start",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loginError": "Invalid credentials",
+    "sessionExpired": "Session expired. Please log in again."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "System overview and statistics",
+    "welcome": "Welcome to PocoClass",
+    "systemStatus": "System Status",
+    "backgroundProcessing": "Background Processing",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "paused": "Paused (Session Active)",
+    "correspondents": "Correspondents",
+    "documentTypes": "Document Types",
+    "customFields": "Custom Fields",
+    "users": "Users",
+    "recentRuleActivity": "Recent Rule Activity",
+    "noRulesYet": "No Rules Yet",
+    "createFirstRule": "Create First Rule",
+    "createFirstRuleDesc": "Create your first document classification rule to get started",
+    "noteExecutionTracking": "Note:",
+    "executionTrackingDesc": "Execution tracking coming soon. Currently showing rule creation dates as activity indicators.",
+    "deactivatedRules": "Deactivated Rules",
+    "stats": {
+      "totalRules": "Total Rules",
+      "activeRules": "Active Rules",
+      "processedDocuments": "Processed Documents",
+      "successRate": "Success Rate"
+    },
+    "ruleActivity": {
+      "lastActivity": "Last Activity",
+      "status": "Status",
+      "executions": "Executions",
+      "successRate": "Success Rate",
+      "new": "new"
+    }
+  },
+  "rules": {
+    "title": "Rules",
+    "subtitle": "Manage your document classification rules",
+    "createNew": "Create New Rule",
+    "newRule": "+ New Rule",
+    "editRule": "Edit Rule",
+    "deleteRule": "Delete Rule",
+    "enableRule": "Enable Rule",
+    "disableRule": "Disable Rule",
+    "ruleName": "Rule Name",
+    "ruleId": "Rule ID",
+    "description": "Description",
+    "threshold": "Threshold",
+    "ocrThreshold": "OCR Threshold",
+    "status": "Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "noRules": "No rules found",
+    "documentsWithoutRules": "Documents without Rules ({count})",
+    "noDocumentsFound": "No Documents Found",
+    "noDocumentsDesc": "No documents were found. This could mean:",
+    "noDocumentsReasons": {
+      "noDocs": "There are no documents in Paperless-ngx",
+      "allProcessed": "All documents have been processed",
+      "filtersRestrictive": "Current filters are too restrictive"
+    },
+    "checkConsole": "Check the browser console for API response details.",
+    "createFirstRuleDesc": "Create your first document classification rule to get started",
+    "duplicateRule": "Duplicate rule"
+  },
+  "wizard": {
+    "step1Title": "Basic Information",
+    "step1": "Basic Information",
+    "step1Description": "Define basic rule information and confidence requirements",
+    "step2Title": "OCR Identification",
+    "step2": {
+      "logicGroup": "Logic Group",
+      "searchLines": "Search lines",
+      "to": "to",
+      "first": "First",
+      "last": "Last",
+      "matchAnyOR": "Match any (OR)",
+      "matchAllAND": "Match all (AND)",
+      "mandatory": "Mandatory",
+      "pattern": "Pattern",
+      "addPattern": "Add Pattern",
+      "enterPattern": "Enter text or regex pattern or use regex generator",
+      "tooltipLogicGroup": "A logic group contains one or more patterns. Use 'Match any (OR)' when any pattern can identify the document. Use 'Match all (AND)' when all patterns must be present. Check 'Mandatory' to make this group required for classification - if mandatory groups don't match, the rule fails regardless of POCO score.",
+      "tooltipPattern": "Enter a simple text string to search for, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching.",
+      "deleteLogicGroup": "Delete logic group",
+      "removePattern": "Remove pattern",
+      "openPatternHelper": "Open Pattern Helper"
+    },
+    "step2Description": "Define patterns that identify this document type in OCR text",
+    "step3": "Filename Patterns",
+    "step3Title": "Filename Patterns",
+    "step3Description": "Define patterns that identify this document type by filename",
+    "step4": "Configuration",
+    "step4Title": "Configuration",
+    "step5": "Metadata Assignment",
+    "step5Title": "Document Classifications",
+    "step6": "Verification",
+    "step6Title": "Paperless Comparison",
+    "step7": "Review",
+    "step7Title": "Review",
+    "stepOf": "Step {current} of {total}",
+    "configSummary": "Configuration Summary",
+    "ruleNameLabel": "Rule Name",
+    "ruleIdLabel": "Rule ID",
+    "notSet": "Not set",
+    "pocoScoreReq": "POCO Score Requirement",
+    "ocrScoreReq": "OCR Score Requirement",
+    "totalPatterns": "Total patterns",
+    "currentMultiplier": "Current multiplier",
+    "patternWeight": "Pattern weight",
+    "maxFilenameWeight": "Max filename weight",
+    "examplePrefix": "Example:",
+    "workingWith": "Working with:",
+    "ocrScoreRequirement": "OCR Score Requirement",
+    "ocrWeightMultiplier": "OCR Weight Multiplier",
+    "logicGroups": "Logic groups",
+    "totalIdentifiers": "Total identifiers",
+    "includingAnd": "(including AND)",
+    "ocrScoreRequirementLabel": "OCR score requirement",
+    "ocrMultiplier": "OCR multiplier",
+    "maxOcrWeight": "Max OCR weight",
+    "ocrExampleText": "Example: If all {count} pattern{plural} match, OCR Score = ({count}/{count}) × 100 = 100%. Max OCR weight = {weight} points.",
+    "ocrScoreChangedWarning": "OCR Score requirement changed from default (75%).",
+    "ocrMultiplierChangedWarning": "OCR multiplier changed from default (3×).",
+    "filenamePattern": "Filename Pattern",
+    "removePattern": "Remove pattern",
+    "openPatternHelper": "Open Pattern Helper",
+    "filenameMultiplierWarning": "Filename multiplier increased from default (1×).",
+    "filenameWeightExceedsOcr": "Filename weight exceeds OCR weight.",
+    "filenameExampleText": "Example: With {count} pattern{plural} defined, max filename weight = {count} × {count} × {multiplier} = {weight} points.",
+    "verificationDescription": "Select which Paperless placeholders must be verified and configure verification multiplier.",
+    "verificationOptionalNote": "This step is optional. If you don't enable any fields, it will remain disabled and you can proceed to the next step.",
+    "selectPlaceholdersLabel": "Select Placeholders for Verification",
+    "noPlaceholdersEnabled": "No placeholders enabled. Enable placeholders in Settings > Step 5.",
+    "step3Of6Title": "Step 3 of 6: Defining Static Classification Data",
+    "step4Of7Title": "Step 4 of 7: Static Metadata",
+    "step5Of6Title": "Step 5 of 6: Document Classifications",
+    "staticDataDescription": "Configure fixed classification data that applies to all documents matching this rule.",
+    "staticMetadataDescription": "Configure fixed information that applies to all documents matching this rule. This is constant data assigned once a document is recognised.",
+    "documentClassificationsDescription": "Configure document classification data extracted from OCR",
+    "staticClassificationDataInfoTitle": "Static Classification Data",
+    "staticClassificationDataInfoText": "This is constant data you want to assign to a document once it's recognised. Greyed out fields are automatically populated by the system.",
+    "staticMetadataInfoTitle": "Static Metadata",
+    "staticMetadataInfoText": "This is constant data you want to assign to a document once it's recognised. For example, every statement of a certain type will always have the same correspondent assigned.",
+    "reviewBeforeSaving": "Review your rule configuration before saving",
+    "helpToggle": "Help",
+    "helpPanelTitle": "Step {step} — Guided Help",
+    "help": {
+      "exampleDocTitle": "Example Document — Electricity Bill",
+      "exampleLabel": "Example document",
+      "scenarioIntro": "Example scenario: You have an electricity bill from your energy provider and want PocoClass to automatically recognise all future electricity bills.",
+      "step1": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This is where you give your rule a name and decide how strict PocoClass should be when matching documents. Think of it as labelling a folder and setting how confident the system must be before filing something into it.",
+        "exampleTitle": "Example — Electricity Bill",
+        "ruleName": "Electricity Bill",
+        "ruleNameWhy": "A clear, descriptive name you'll recognise later",
+        "ruleId": "electricity_bill",
+        "ruleIdWhy": "Generated automatically from the name — used internally",
+        "description": "Identifies monthly electricity bills from any energy provider",
+        "descriptionWhy": "Optional but helpful when you have many rules",
+        "pocoThreshold": "75%",
+        "pocoThresholdWhy": "Default — means 75% of all evidence must match",
+        "ocrThreshold": "75%",
+        "ocrThresholdWhy": "Default — means 75% of OCR text patterns must be found",
+        "tipTitle": "Tips",
+        "tip1": "Keep the default thresholds (75%) unless you have a reason to change them. Lower values may cause false matches, higher values may miss valid documents.",
+        "tip2": "The rule name should describe the document type, not a specific document. For example, use \"Electricity Bill\" rather than \"January 2024 Electricity Bill\"."
+      },
+      "step2": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This is the most important step. Here you define which words or phrases PocoClass should look for inside a document's text content (OCR). These patterns are how the system recognises a document type — similar to how you would scan a page and look for key words to identify what kind of document it is.",
+        "conceptTitle": "How logic groups work",
+        "conceptText": "Patterns are organised into logic groups. Each group contains one or more patterns.",
+        "conceptOR": "Match Any (OR) — The group matches if at least one pattern is found. Use this when different documents use different wording for the same thing.",
+        "conceptAND": "Match All (AND) — The group matches only if every pattern is found. Use this for patterns that must always appear together.",
+        "conceptMandatory": "Mandatory — If checked, this group must match or the entire rule fails, regardless of the score. Use sparingly for truly essential identifiers.",
+        "exampleTitle": "Example — Electricity Bill Patterns",
+        "exampleIntro": "An electricity bill typically contains certain words you won't find in other documents. Here's how you might set up the groups:",
+        "group1Title": "Group 1 — Document type identifier (OR, Mandatory)",
+        "group1Why": "One of these words should always appear on an electricity bill. Set as mandatory because without it, the document is probably not an electricity bill.",
+        "group1Patterns": "\"Electricity\" | \"Electric\" | \"Energy Statement\"",
+        "group2Title": "Group 2 — Usage indicators (OR)",
+        "group2Why": "Electricity bills mention consumption in specific units. Any one of these confirms it's energy-related.",
+        "group2Patterns": "\"kWh\" | \"kilowatt\" | \"Meter Reading\"",
+        "group3Title": "Group 3 — Billing terms (OR)",
+        "group3Why": "These terms distinguish a bill from other energy-related documents like contracts or informational letters.",
+        "patternsLabel": "Patterns",
+        "group3Patterns": "\"Amount Due\" | \"Total Charges\" | \"Payment Due\"",
+        "tipTitle": "Tips",
+        "tip1": "Aim for at least 3 logic groups. The more varied your patterns are, the more reliably PocoClass can distinguish this document from similar ones.",
+        "tip2": "Use simple text patterns first — you don't need regex for most cases. \"kWh\" is a perfectly good pattern.",
+        "tip3": "Open the OCR viewer (eye icon) to see the actual text content of a document. This helps you pick patterns that are really there.",
+        "tip4": "The search range (lines) lets you limit where patterns are searched. For example, the word \"Electricity\" usually appears near the top of the bill (lines 0–200), while \"Amount Due\" could be anywhere."
+      },
+      "step3": {
+        "whatTitle": "What is this step for?",
+        "whatText": "Here you define patterns that match against the document's filename — not its content. This is a secondary identification method. Filenames often contain useful clues like the document type or provider name.",
+        "filenameTitle": "Example filename for this document",
+        "filenameExplanation": "The filename contains 'electricity_bill' — a simple pattern like 'electricity' or 'bill' would match this.",
+        "tip1": "Filename patterns are optional but can help distinguish similar documents. They are most useful when your files follow a consistent naming convention."
+      },
+      "step4": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This step lets you cross-check extracted data with what Paperless-ngx already knows. For example, if PocoClass extracted a correspondent name, this step can verify it matches an existing correspondent in Paperless. It's an extra layer of confidence.",
+        "tip1": "This step is optional. If you're just starting out, you can skip it and come back later once your basic rules are working reliably."
+      },
+      "step5": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This is where you tell PocoClass what to do once a document is recognised. You assign classification data — like which Correspondent, Document Type, and Tags to apply. You can also extract dynamic data from the document content using anchors.",
+        "correspondentLabel": "Correspondent",
+        "dateLabel": "Date",
+        "highlightedFields": "Fields that would be assigned",
+        "tip1": "Static data (like Correspondent = 'GreenPower Energy') is applied identically to every matching document. Dynamic data (like extracting the invoice date) is pulled from each document individually."
+      },
+      "step6": {
+        "whatTitle": "What is this step for?",
+        "whatText": "This final step shows a summary of everything you have configured. Review it carefully before saving. You can go back to any previous step to make changes."
+      }
+    }
+  },
+  "ocr_identifiers_description": "Define patterns that identify this document type in OCR text",
+  "ocr_identifiers_warning": "⚠️ Warning: You have filled only {filledGroups} of 3 required logic groups. Please add patterns to at least 3 logic groups for reliable classification.",
+  "add_logic_group": "Add Logic Group",
+  "ocr_score_requirement_tooltip": "Minimum percentage of OCR patterns that must match for this rule to contribute to classification. 75% means at least 75% of your defined patterns must be found in the document's OCR text.",
+  "ocr_weight_multiplier_tooltip": "Controls how much weight OCR pattern matches have in the final POCO score. Higher values make OCR matching more important. Default is 3× for strong OCR-based classification.",
+  "change_ocr_score_requirement_title": "Change OCR Score Requirement?",
+  "change_ocr_score_requirement_message": "You're changing the OCR Score requirement from 75% (recommended) to {pendingOcrThreshold}%. Are you sure?",
+  "yes_change_it": "Yes, Change It",
+  "cancel": "Cancel",
+  "change_ocr_weight_multiplier_title": "Change OCR Weight Multiplier?",
+  "change_ocr_weight_multiplier_message": "You're changing the OCR weight multiplier from 3× (recommended) to {pendingMultiplier}×. This affects how much OCR patterns influence the final POCO score. Are you sure?",
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "system": "System",
+      "validation": "Data Validation",
+      "appearance": "Appearance",
+      "dateFormats": "Date Formats",
+      "fieldVisibility": "Field Visibility",
+      "backgroundProcessing": "Background Processing"
+    },
+    "appearance": {
+      "title": "Appearance Settings",
+      "subtitle": "Customise theme, language, and accessibility options",
+      "language": "Language",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeAuto": "Auto",
+      "colorblindMode": "Enable Colour Blind Mode",
+      "colorblindModeDesc": "Adjusts colours for better accessibility",
+      "colorblindNotImplemented": "This feature is not yet implemented in this version of PocoClass.",
+      "availableLanguages": "Available Languages",
+      "loadingSettings": "Loading settings..."
+    },
+    "system": {
+      "title": "System Management",
+      "subtitle": "Manage Paperless connection, users, and data synchronization",
+      "syncingData": "Syncing data from Paperless-ngx...",
+      "paperlessConnection": "Paperless Connection",
+      "paperlessUrl": "Paperless URL",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "update": "Update",
+      "onlyAdminCanUpdate": "Only administrators can update the Paperless URL",
+      "sessionSettings": "Session Settings",
+      "sessionSettingsSubtitle": "Configure session timeout and automatic logout behavior",
+      "sessionTimeout": "Session Timeout (hours)",
+      "bgProtectionTitle": "Background Processing Protection:",
+      "bgProtectionDesc": "The automatic background process is paused while any user is logged in. This prevents unwanted document modifications during manual testing or rule configuration. Background processing will resume after all users have logged out.",
+      "paperlessSync": "Paperless Datafield Synchronisation",
+      "syncSubtitle": "Sync and view cached data from Paperless-ngx",
+      "sync": "Sync Now",
+      "syncing": "Syncing...",
+      "syncHistory": "Sync History",
+      "syncHistorySubtitle": "Recent synchronization events from Paperless-ngx",
+      "items": "items",
+      "correspondents": "Correspondents",
+      "tags": "Tags",
+      "documentTypes": "Document Types",
+      "customFields": "Custom Fields",
+      "users": "Users",
+      "custom_fields": "Custom Fields",
+      "document_types": "Document Types",
+      "userManagement": "User Management",
+      "userManagementSubtitle": "All Paperless users with their PocoClass activation status",
+      "username": "Username",
+      "groups": "Group(s)",
+      "paperlessStatus": "Paperless Status",
+      "pococlassStatus": "PocoClass Status",
+      "role": "Role",
+      "actions": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "superuser": "Superuser",
+      "notRegistered": "Not Registered",
+      "enable": "Enable",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "admin": "Admin",
+      "user": "User",
+      "noUsers": "No users found",
+      "recentSync": "Recent Sync History",
+      "recentSyncSubtitle": "Overview of the latest data synchronization events"
+    },
+    "validation": {
+      "title": "Data Validation",
+      "requiredFields": "Required Custom Fields",
+      "optionalFields": "Optional Custom Fields",
+      "optionalFeatures": "Optional Features",
+      "pocoScore": "POCO Score",
+      "pocoOcr": "POCO OCR",
+      "present": "Present",
+      "missing": "Missing",
+      "optional": "Optional",
+      "verifying": "Verifying...",
+      "fixMissingData": "Fix Missing Data",
+      "createMissing": "Create Missing Items"
+    },
+    "dateFormats": {
+      "title": "Date Format Settings",
+      "subtitle": "Select date formats to appear in the wizard quick-select dropdown",
+      "availableFormats": "Available Date Formats",
+      "pattern": "Pattern",
+      "example": "Example",
+      "selected": "Selected",
+      "dash": "Dash (-)",
+      "slash": "Slash (/)",
+      "dot": "Dot (.)",
+      "spaceText": "Space / Text"
+    },
+    "fieldVisibility": {
+      "title": "Field Visibility Settings",
+      "subtitle": "Control which fields appear in the wizard and how they behave",
+      "fieldName": "Field Name",
+      "visibility": "Visibility",
+      "visibilityModes": "Visibility Modes",
+      "modeDisabled": "Disabled:",
+      "modeDisabledDesc": "Field is hidden from the wizard",
+      "modePredefined": "Predefined:",
+      "modePredefinedDesc": "Shown with existing values from Paperless (used for static assignment and verification)",
+      "modeDynamic": "Dynamic:",
+      "modeDynamicDesc": "Extract value from document content using patterns and anchors",
+      "modeBothEnabled": "Both Enabled:",
+      "modeBothEnabledDesc": "Enable both Predefined and Dynamic modes - field can be assigned statically and/or extracted dynamically",
+      "noteVerification": "Note:",
+      "noteVerificationDesc": "Any field not disabled will also be available in Step 5 (Verification) to cross-check extracted data against existing Paperless metadata.",
+      "builtInField": "Built-in Field",
+      "customField": "Custom Field",
+      "notAvailable": "Not available in this version of PocoClass"
+    },
+    "backgroundProcessing": {
+      "title": "Background Processing",
+      "subtitle": "Configure automatic document classification for newly uploaded documents",
+      "enableProcessing": "Enable Background Processing",
+      "enableProcessingDesc": "Automatically classify documents when they are uploaded to Paperless-ngx",
+      "debounceTime": "Debounce Time (seconds)",
+      "seconds": "seconds",
+      "debounceDesc": "Wait time after detecting new documents before processing (prevents multiple runs for batch uploads). Range: 5-300 seconds.",
+      "tagConfiguration": "Tag Configuration",
+      "tagConfigurationDesc": "PocoClass uses these fixed tags for document processing and classification",
+      "tagNew": "NEW",
+      "tagNewDesc": "Discovery tag - Documents with this tag will be automatically processed by background processing",
+      "tagPocoPlus": "POCO+",
+      "tagPocoPlusDesc": "Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds",
+      "tagPocoMinus": "POCO-",
+      "tagPocoMinusDesc": "Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds",
+      "removeNewTag": "Remove NEW tag after processing",
+      "removeNewTagDesc": "When enabled, PocoClass will automatically remove the NEW tag from documents after processing them. This helps keep your inbox clean by removing the trigger tag once a document has been classified.",
+      "retentionPolicy": "Processing History Retention Policy",
+      "retentionPolicyDesc": "Control how long processing history is kept in the database",
+      "retentionType": "Retention Type",
+      "byDays": "By Days",
+      "byRuns": "By Number of Runs",
+      "daysToKeep": "Days to Keep",
+      "runsToKeep": "Runs to Keep",
+      "days": "days",
+      "daysToKeepDesc": "Processing runs older than this will be automatically deleted (default: 365 days / 1 year)",
+      "runs": "runs",
+      "saveSettings": "Save Settings"
+    },
+    "systemToken": {
+      "title": "System API Token",
+      "description": "Generate a permanent API token for automated triggering of background processing via scripts or external systems.",
+      "active": "System token is active",
+      "notConfigured": "No system token configured",
+      "createdAt": "Created",
+      "generate": "Generate Token",
+      "regenerate": "Regenerate Token",
+      "revoke": "Revoke Token",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "generating": "Generating...",
+      "revoking": "Revoking...",
+      "confirmGenerate": "Generate a new system token?",
+      "confirmRegenerate": "This will invalidate the existing token. Continue?",
+      "confirmRevoke": "Revoke the system token? Scripts using it will stop working.",
+      "generated": "Token Generated",
+      "generatedDesc": "Copy and save this token now - it cannot be retrieved later.",
+      "revoked": "Token Revoked",
+      "revokedDesc": "The system token has been revoked. Scripts using it will no longer work.",
+      "error": "Error",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copiedDesc": "Token copied to clipboard",
+      "saveWarning": "Save this token now - it will not be shown again!",
+      "usageHint": "Use this token in your post-consumption script with: -H \"X-API-Key: YOUR_TOKEN\"",
+      "adminOnly": "Only administrators can manage the system API token",
+      "scriptSetupRequired": "Post-Consumption Script Required",
+      "scriptSetupDesc": "For automatic processing, you must configure a post-consumption script in Paperless-ngx. Copy pococlass_trigger.sh to your scripts folder and set the environment variable:",
+      "noToken": "No system token configured",
+      "copyWarning": "Make sure to copy this token - it will not be shown again!",
+      "confirmYes": "Yes",
+      "confirmNo": "No"
+    },
+    "requiredCustomFields": "Required Custom Fields",
+    "optionalCustomFields": "Optional Custom Fields",
+    "requiredTags": "Required Tags",
+    "optionalFeatures": "Optional Features",
+    "present": "Present",
+    "missing": "Missing",
+    "optional": "Optional",
+    "verifying": "Verifying...",
+    "allRequiredDataPresent": "All required data is present",
+    "ensureAllRequired": "Ensure all required items are configured",
+    "allMandatoryConfigured": "All mandatory items are configured",
+    "newTag": "Discovery tag - Documents with this tag will be automatically processed by background processing",
+    "pocoPlus": "Success tag - Added when a document matches a rule and passes both POCO and OCR thresholds",
+    "pocoMinus": "Failure tag - Added when a document is processed but doesn't match any rule or fails thresholds",
+    "pocoScoreDesc": "Actionable confidence score combining OCR, filename, and metadata verification",
+    "pocoOcrDesc": "OCR pattern matching transparency score",
+    "pocoOcrTransparencyField": "POCO OCR Transparency Field",
+    "pocoOcrTransparencyDesc": "Optional field to store the OCR pattern matching transparency score. This score shows how well the document matches the OCR patterns (0-100%). Helps verify confidence in OCR-based classification."
+  },
+  "processing": {
+    "status": "Processing Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "trigger": "Trigger Processing",
+    "dryRun": "Dry Run",
+    "history": "Processing History",
+    "noHistory": "No processing history available",
+    "active": "Active",
+    "idle": "Idle",
+    "never": "Never",
+    "processing": "Processing",
+    "lastRun": "Last Run",
+    "documentsProcessed": "Documents Processed",
+    "loadingStatus": "Loading status...",
+    "triggering": "Triggering..."
+  },
+  "logs": {
+    "title": "Logs",
+    "level": "Level",
+    "message": "Message",
+    "timestamp": "Timestamp",
+    "noLogs": "No logs found",
+    "description": "View and analyse system logs",
+    "refresh": "Refresh",
+    "exportCSV": "Export CSV",
+    "showing": "Showing {{count}} of {{total}} logs",
+    "noLogsFound": "No logs found"
+  },
+  "ruleEvaluation": {
+    "subtitle": "Test and evaluate document classification rules",
+    "whatIsThisFor": "What is this section for?",
+    "description": "Test how your classification rules perform on documents. Select a rule, pick documents to test, and click Run to see detailed results showing POCO scores, pattern matches, and extracted metadata. Use this to fine-tune your rules before applying them in production.",
+    "testDocuments": "Test Documents",
+    "selectRule": "Select a rule...",
+    "noDocumentsAvailable": "No Documents Available",
+    "noDocumentsMatch": "No documents match the selected filters."
+  },
+  "backgroundProcess": {
+    "subtitle": "Monitor and manage automatic document classification",
+    "triggering": "Triggering...",
+    "autoDiscover": "Auto-discover & process documents tagged \"NEW\"",
+    "whatIsThisFor": "What is this section for?",
+    "description": "Monitor and control document processing in Paperless. Use Dry Run to test rules without making changes, or Run to apply active rules to selected documents. Processing History shows all execution details with per-document results.",
+    "triggerNow": "Trigger Now:",
+    "triggerNowDesc": "Automatically discovers and processes all documents tagged \"NEW\" (operates independently of filters below).",
+    "quickStats": "Quick Stats",
+    "totalRuns": "Total Runs",
+    "successful": "Successful",
+    "failed": "Failed",
+    "manualProcessing": "Manual Processing",
+    "testRulesAgainst": "Test rules against filtered documents. Select documents below using the filter bar, then choose your testing mode.",
+    "matchingDocuments": "Matching Documents",
+    "noDocumentsMatch": "No documents match the current filter criteria",
+    "days": "days",
+    "runs": "runs",
+    "retention": "Retention",
+    "run": "Run",
+    "running": "Running",
+    "testing": "Testing",
+    "dryRun": "Dry Run",
+    "dryRunNote": "This is a test run. No changes will be made to Paperless.",
+    "dryRunComplete": "Dry run completed",
+    "processingComplete": "Processing completed",
+    "processingFailed": "Processing failed",
+    "autoPauseWarningTitle": "Automatic processing pauses while you are logged in",
+    "autoPauseWarningDesc": "To prevent conflicts between manual work and automatic processing, background processing triggered by external scripts is paused while a user session is active. Processing via the Trigger button on this page is not affected.",
+    "testAllRules": "Test All Rules",
+    "applyRulesToPaperless": "Apply Rules to Paperless",
+    "warningMessage": "Warning: This will modify documents in Paperless",
+    "processingRunsAppear": "Processing runs will appear in the history below",
+    "noProcessingHistory": "No processing history",
+    "adminOnly": "Admin only",
+    "accessDenied": "Access denied",
+    "processingActions": "Processing Actions",
+    "metadata": {
+      "fieldTitle": "Title",
+      "fieldCorrespondent": "Correspondent",
+      "fieldDocType": "Doc Type",
+      "fieldTags": "Tags",
+      "fieldDate": "Date",
+      "fieldStoragePath": "Storage Path",
+      "fieldDocumentCategory": "Document Category",
+      "dateCreated": "Date Created"
+    },
+    "table": {
+      "created": "Created",
+      "started": "Started",
+      "status": "Status",
+      "documents": "Documents",
+      "rulesApplied": "Rules Applied",
+      "classified": "Classified",
+      "skipped": "Skipped",
+      "noMatch": "No match",
+      "noDetails": "No document details available"
+    }
+  },
+  "scores": {
+    "pocoScore": "POCO Score",
+    "ocrScore": "OCR Score",
+    "threshold": "Threshold",
+    "classification": "Classification",
+    "classified": "Classified",
+    "notClassified": "Not Classified"
+  },
+  "validation": {
+    "required": "{field} is required",
+    "minLength": "{field} must be at least {min} characters",
+    "invalidFormat": "{field} has an invalid format",
+    "lowercaseOnly": "Only lowercase letters, numbers, and underscores allowed",
+    "ruleNameRequired": "Rule Name is required",
+    "ruleNameMinLength": "Name must be at least 3 characters",
+    "ruleIdRequired": "Rule ID is required",
+    "ruleIdFormat": "Only lowercase letters, numbers, and underscores",
+    "descriptionRequired": "Description is required",
+    "descriptionMinLength": "Description should be at least 10 characters"
+  },
+  "patterns": {
+    "logicGroup": "Logic Group",
+    "pattern": "Pattern",
+    "addPattern": "Add Pattern",
+    "addFilenamePattern": "Add Filename Pattern",
+    "searchLines": "Search lines",
+    "to": "to",
+    "first": "First",
+    "last": "Last",
+    "matchAny": "Match any (OR)",
+    "matchAll": "Match all (AND)",
+    "mandatory": "Mandatory",
+    "enterPattern": "Enter text or regex pattern or use regex generator",
+    "filenameWeightMultiplier": "Filename Weight Multiplier"
+  },
+  "placeholders": {
+    "ruleName": "e.g., Electric Bill Classification",
+    "ruleId": "e.g., electric_bill_rule",
+    "description": "Describe what documents this rule identifies...",
+    "searchRules": "Search rules...",
+    "enterPattern": "Enter text or regex pattern or use regex generator",
+    "enterFilenamePattern": "Enter text or regex pattern...",
+    "organizationName": "e.g., Organization Name",
+    "yearStatement": "e.g., Year Statement",
+    "addTag": "Add a tag and press Enter",
+    "fieldName": "Field name",
+    "fieldValue": "Field value",
+    "autoGenerated": "Auto-generated",
+    "autoGeneratedFromDoc": "Auto-generated from document",
+    "autoGeneratedRules": "Auto-generated based on rules",
+    "definedPaperless": "Defined in Paperless",
+    "exampleFinancial": "e.g., Financial",
+    "autoCalculated": "Auto-calculated",
+    "autoPopulated": "Auto-populated from OCR"
+  },
+  "tooltips": {
+    "basicInfoHelp": "Basic information helps identify your rule and control classification behavior. The POCO Score requirement determines how confident the system must be before classifying a document. For more details, see the Guide in the sidebar.",
+    "pocoScoreHelp": "The minimum overall confidence score required for a document to be classified by this rule. The POCO score combines OCR content matching, filename patterns, and metadata verification. 75% is recommended for balanced accuracy.",
+    "pocoScoreDefault": "Default: 75% is recommended for balanced accuracy between catching valid documents and avoiding false positives.",
+    "ocrThresholdHelp": "The minimum percentage of OCR patterns that must match for a document to be classified. This ensures the document content actually matches what you're looking for.",
+    "ocrThresholdDefault": "Default: 75% is recommended to ensure reliable OCR matching.",
+    "filenameHelp": "Filename patterns help identify documents by their file names. Use the Pattern Helper to create flexible patterns that handle variations in naming conventions.",
+    "filenamePatternHelp": "Enter a simple text string to search for in filenames, or use the Pattern Helper to build flexible patterns, or write your own regex for advanced matching.",
+    "filenameMultiplierHelp": "Controls how much influence filename patterns have in the final POCO score. Higher values mean filenames are more important.",
+    "filenameMultiplierDefault": "Default: 1× multiplier is recommended because filenames are less reliable than OCR content for classification.",
+    "verificationHelp": "Verify that extracted data matches existing Paperless metadata. This adds confidence to the classification by checking if the document's placeholders align with what was extracted from OCR.",
+    "dynamicDataHelp": "Dynamic data extraction allows you to pull specific information from documents using anchor points. Define patterns before and after the data you want to extract.",
+    "extractionRuleHelp": "Each extraction rule identifies and extracts specific data from the document using before and after anchor patterns.",
+    "beforeAnchorHelp": "Text or pattern that appears before the data you want to extract. Can be simple text or regex.",
+    "extractTypeHelp": "Defines what type of data to extract: simple text, numeric amounts, dates, or multiple lines of text.",
+    "afterAnchorHelp": "Text or pattern that appears after the data you want to extract. Can be simple text or regex.",
+    "targetTagHelp": "Select one or more tags where the extracted data should be stored in Paperless-ngx."
+  },
+  "dialogs": {
+    "deleteRule": {
+      "title": "Delete Rule",
+      "message": "Delete \"{ruleName}\"? This rule will be moved to the deleted folder.",
+      "confirmButton": "Delete",
+      "cancelButton": "Cancel"
+    },
+    "deleteMultiple": {
+      "title": "Delete {count} rule(s)?",
+      "message": "Rules will be moved to the trash can.",
+      "confirmButton": "Delete All",
+      "cancelButton": "Cancel"
+    },
+    "activateRules": {
+      "title": "Activate {count} rule(s)?",
+      "message": "Active rules will automatically process documents during background processing.",
+      "confirmButton": "Activate",
+      "cancelButton": "Cancel"
+    },
+    "deactivateRules": {
+      "title": "Deactivate {count} rule(s)?",
+      "message": "Deactivated rules will not process documents automatically.",
+      "confirmButton": "Deactivate",
+      "cancelButton": "Cancel"
+    },
+    "thresholdWarning": {
+      "title": "Change POCO Score Requirement?",
+      "messageLow": "You're changing the POCO Score requirement from 75% (recommended) to {threshold}%. Lower values may result in false positives (incorrect classifications). Are you sure?",
+      "messageHigh": "You're changing the POCO Score requirement from 75% (recommended) to {threshold}%. Higher values may result in missing valid documents that should be classified. Are you sure?",
+      "confirmButton": "Yes, Change It",
+      "cancelButton": "Cancel"
+    },
+    "ocrThresholdWarning": {
+      "title": "Change OCR Score Requirement?",
+      "message": "You're changing the OCR Score requirement from 75% (recommended) to {threshold}%. Are you sure?",
+      "confirmButton": "Yes, Change It",
+      "cancelButton": "Cancel"
+    },
+    "multiplierWarning": {
+      "title": "Change OCR Weight Multiplier?",
+      "message": "You're changing the OCR weight multiplier from 3× (recommended) to {multiplier}×. This affects how much OCR patterns influence the final POCO score. Are you sure?",
+      "confirmButton": "Yes, Change It",
+      "cancelButton": "Cancel"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved Changes",
+      "message": "All unsaved changes will be lost.",
+      "confirmButton": "Leave anyway",
+      "cancelButton": "Cancel"
+    }
+  },
+  "toasts": {
+    "ruleDeleted": "Rule \"{ruleName}\" moved to deleted folder",
+    "ruleDeleteError": "Error deleting rule",
+    "rulesDeleted": "{count} rule(s) moved to deleted folder",
+    "rulesDeletedWithSkipped": "{count} rule(s) deleted. {skipped} protected rule(s) skipped.",
+    "rulesDeleteError": "Error deleting rules",
+    "rulesActivated": "{count} rule(s) activated",
+    "rulesDeactivated": "{count} rule(s) deactivated",
+    "rulesStatusError": "Error updating rules",
+    "ruleSaved": "Rule saved successfully",
+    "ruleSaveError": "Failed to save rule",
+    "ruleDuplicated": "Rule duplicated successfully",
+    "ruleDuplicateError": "Error duplicating rule",
+    "ruleActivated": "Rule \"{ruleName}\" activated",
+    "ruleDeactivated": "Rule \"{ruleName}\" deactivated",
+    "ruleStatusError": "Error updating rule status",
+    "templateProtected": "Template Rule v2 cannot be deleted",
+    "tooManyRequests": "Too many requests. Please wait a moment.",
+    "errorLoadingRules": "Error loading rules"
+  },
+  "helpText": {
+    "ruleNameHelp": "Choose a descriptive name to identify this rule",
+    "ruleIdHelp": "Unique identifier (lowercase, numbers, underscores only)",
+    "pocoScoreHelp": "A document must score ≥ {threshold}% to be classified. A score of {example}% would pass.",
+    "ruleIdFilename": "Auto-generated filename used on disk"
+  },
+  "editor": {
+    "exit": "Exit"
+  },
+  "table": {
+    "title": "Title",
+    "tags": "Tags",
+    "correspondent": "Correspondent",
+    "documentType": "Document type",
+    "documentTypeShort": "Document Type",
+    "dateAdded": "Date Added",
+    "dateCreated": "Date Created",
+    "added": "Added",
+    "created": "Created",
+    "actions": "Actions",
+    "status": "Status",
+    "sourceDocument": "Source Document",
+    "id": "ID",
+    "cfDocCategory": "CF: Doc Category",
+    "pocoScore": "POCO Score",
+    "view": "View",
+    "owner": "Owner"
+  },
+  "status": {
+    "new": "New",
+    "active": "Active",
+    "inactive": "Inactive",
+    "disabled": "Disabled",
+    "enabled": "Enabled"
+  },
+  "warnings": {
+    "ruleActivationWarning": "Rule Activation Warning: Active rules automatically process documents in your Paperless archive during background processing and 'execute' runs. Only activate rules you have thoroughly tested. Use the power (⏻) icon to activate or deactivate rules directly."
+  },
+  "fields": {
+    "title": "Title",
+    "archiveSerialNumber": "Archive Serial Number",
+    "dateCreated": "Date Created",
+    "correspondent": "Correspondent",
+    "documentType": "Document Type",
+    "storagePath": "Storage Path",
+    "tags": "Tags",
+    "documentCategory": "Document Category",
+    "customField": "Custom Field",
+    "customFieldLabel": "Custom Field: {name}",
+    "pocoScore": "POCO Score",
+    "pocoOcr": "POCO OCR",
+    "loading": "Loading...",
+    "selectCorrespondent": "-- Select Correspondent --",
+    "selectDocumentType": "-- Select Document Type --",
+    "correspondentsAvailable": "{count} correspondents available",
+    "noCorrespondentsFound": "No correspondents found. Run sync in Settings.",
+    "documentTypesAvailable": "{count} document types available",
+    "noDocumentTypesFound": "No document types found. Run sync in Settings.",
+    "suggestedTags": "Suggested tags:",
+    "customFieldsPredefinedNote": "Custom fields are predefined in Paperless.",
+    "ideallyDropdown": "Ideally, this would be a dropdown.",
+    "ideallyDropdownFromSystem": "Ideally, this would be a dropdown from your system.",
+    "customFields": "Custom Fields",
+    "addCustomField": "Add Custom Field"
+  },
+  "step_3_title": "Step 3 of 7: Bonus Identifiers",
+  "step_6_title": "Step 6 of 7: Dynamic Data Extraction",
+  "dynamicData": {
+    "extractionRule": "Extraction Rule",
+    "removeExtractionRule": "Remove extraction rule",
+    "beforeAnchor": "Before Anchor",
+    "afterAnchor": "After Anchor",
+    "extractionType": "Extraction Type",
+    "targetField": "Target Field (Tags)",
+    "addExtractionRule": "Add Extraction Rule",
+    "configureDescription": "Configure data extraction rules to capture specific information from documents",
+    "extractionTypes": {
+      "text": "Text (until end of line)",
+      "amount": "Amount/Number",
+      "date": "Date",
+      "multipleLines": "Multiple Lines"
+    }
+  },
+  "bonusIdentifiers": {
+    "tooltip": "Bonus identifiers are additional metadata fields that can help confirm document classification. They add extra points to the POCO score but are not required for classification.",
+    "description": "Add optional metadata fields that can increase classification confidence",
+    "identifierTitle": "Bonus Identifier",
+    "identifierTooltip": "Specify a metadata field name and its expected value. If the document's metadata matches this field and value, bonus points are added to the POCO score.",
+    "removeAriaLabel": "Remove bonus identifier",
+    "fieldNameLabel": "Field Name",
+    "fieldNamePlaceholder": "e.g., author, department",
+    "expectedValueLabel": "Expected Value",
+    "expectedValuePlaceholder": "e.g., John Doe, Finance",
+    "emptyStateMessage": "No bonus identifiers added yet. Click the button below to add one.",
+    "addButton": "Add Bonus Identifier",
+    "multiplierTitle": "Bonus Weight Multiplier:",
+    "multiplierTooltip": "Controls how much influence bonus identifiers have in the final POCO score. Higher values mean metadata matching is more important.",
+    "multiplierDescription": "Controls how much weight bonus identifiers have in the final POCO score. Default is 1× for moderate influence.",
+    "multiplierDefault": "1× (Default)",
+    "multiplierModerate": "3× (Moderate)",
+    "multiplierHigh": "5× (High)"
+  },
+  "coreIdentifiers": {
+    "title": "Step 2 of 7: Core Identifiers by OCR",
+    "description": "Define the essential patterns that must be found in documents for identification. These are the \"must-have\" elements that define your document type.",
+    "infoBoxTitle": "Core Identifiers",
+    "infoBoxDescription": "Core identifiers are the essential patterns that must be found for document identification. These are the \"must-have\" elements that define your document type.",
+    "infoBoxScoringLabel": "Scoring:",
+    "infoBoxScoringValue": "Should total 70-100 points for reliable identification",
+    "infoBoxLogicGroupsLabel": "Logic Groups:",
+    "infoBoxLogicGroupsValue": "Each group can contain multiple conditions that work together",
+    "emptyStateTitle": "No Core Identifiers Yet",
+    "emptyStateDescription": "Add your first logic group to define essential document patterns",
+    "addLogicGroupButton": "Add Logic Group",
+    "scoreSummaryTitle": "Score Summary",
+    "totalCoreScore": "Total Core Score:",
+    "pointsUnit": "points",
+    "lowScoreWarning": "⚠️ Consider adding more points - core identifiers should total 70-100 points"
+  },
+  "documentClassifications": {
+    "stepTitle": "Step 5 of 6: Document Classifications",
+    "stepDescription": "Configure document classification data extracted from OCR",
+    "stepTooltip": "Configure document classification data extracted from OCR. Define predefined static metadata and dynamic extraction rules for variable data. Note: Fields can be either predefined OR dynamically extracted, not both. Configure field visibility in Settings > Step 5.",
+    "predefinedDataSection": "Predefined Data",
+    "dynamicDataSection": "Dynamic Data Extraction",
+    "dynamicDataTooltip": "Define anchor points and patterns to extract variable data from documents dynamically. Note: Fields can be either predefined (static value) OR dynamically extracted, not both.",
+    "dynamicDataDescription": "Define anchor points and extraction patterns for dynamic field population",
+    "noDynamicRulesTitle": "No Dynamic Extraction Rules",
+    "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically",
+    "dynamicExtractionRuleNumber": "Dynamic Extraction Rule #{number}",
+    "labels": {
+      "title": "Title",
+      "dateCreated": "Date Created",
+      "correspondent": "Correspondent",
+      "documentType": "Document Type",
+      "tags": "Tags",
+      "customFieldLabel": "Custom Field: {name}",
+      "targetField": "Target Field",
+      "beforeAnchor": "Before Anchor",
+      "extractionType": "Extraction Type",
+      "afterAnchor": "After Anchor",
+      "dateFormat": "Date Format",
+      "selectTagToExtract": "Select Tag to Extract",
+      "patternToMatch": "Pattern to Match",
+      "archiveSerialNumber": "Archive Serial Number",
+      "documentCategory": "Document Category",
+      "storagePath": "Storage Path"
+    },
+    "placeholders": {
+      "autoGenerated": "Auto generated from document",
+      "disabledDynamicRule": "Disabled - remove dynamic rule first",
+      "enterFieldName": "Enter {fieldName}...",
+      "selectCorrespondent": "Select correspondent...",
+      "selectDocumentType": "Select document type...",
+      "selectTags": "Select tags...",
+      "selectOption": "Select an option...",
+      "selectTargetField": "Select target field...",
+      "enterTextOrRegex": "Enter text or regex pattern...",
+      "selectDateFormat": "Select or enter date format...",
+      "selectTag": "Select tag...",
+      "enterFieldValue": "Enter field value"
+    },
+    "messages": {
+      "fieldInUseWarning": "⚠️ This field is being used in dynamic extraction. Remove the dynamic rule to enable predefined values.",
+      "selectTargetField": "Select a target field to configure extraction",
+      "extractedValueLabel": "Extracted Value:",
+      "extractionFailedLabel": "Extraction Failed:",
+      "defineAnchorPoints": "Define anchor points to extract data from documents",
+      "noDynamicRulesDescription": "Add rules to extract data from OCR content dynamically"
+    },
+    "buttons": {
+      "testExtraction": "Test Extraction on OCR Content",
+      "addExtractionRule": "Add Extraction Rule",
+      "addFirstRule": "Add First Rule",
+      "beforeAnchorLabel": "Before Anchor",
+      "afterAnchorLabel": "After Anchor",
+      "extractedDataLabel": "Extracted Data"
+    },
+    "visualization": {
+      "beforeAnchor": "Before Anchor",
+      "extractedData": "Extracted Data",
+      "afterAnchor": "After Anchor"
+    },
+    "errors": {
+      "noOcrContent": "No OCR content available",
+      "beforeAnchorNotFound": "Before anchor pattern \"{pattern}\" not found",
+      "afterAnchorNotFound": "After anchor pattern \"{pattern}\" not found",
+      "extractionTypeNoMatch": "Extraction type filter \"{type}\" did not match any data",
+      "extractionPatternNoMatch": "Extraction pattern \"{pattern}\" did not match"
+    },
+    "dropdown": {
+      "alreadyUsed": " (already used)",
+      "removePredefinedFirst": " (remove predefined value first)"
+    },
+    "noDynamicRulesMessage": "No Dynamic Rules Defined",
+    "noDynamicRulesDesc": "Enable dynamic extraction in Settings > Field Visibility to extract data from documents",
+    "noDynamicRulesHint": "No fields are set to Dynamic mode",
+    "noOcrContent": "No OCR content available",
+    "dateCreatedLabel": "Document Date (from OCR)",
+    "invoiceNumberDefault": "Invoice Number",
+    "referenceIdDefault": "Reference ID",
+    "documentCategoryDefault": "Document Category",
+    "customFieldDefault": "Custom Field",
+    "dynamicExtractionRuleNum": "Dynamic Extraction Rule {num}",
+    "removePredefinedFirstMsg": "Remove the predefined value first"
+  },
+  "summary": {
+    "reviewTooltip": "Review all your rule configurations before saving. You can go back to any step to make changes if needed.",
+    "reviewConfiguration": "Review your rule configuration before saving",
+    "basicInformation": "Basic Information",
+    "ruleName": "Rule Name:",
+    "ruleId": "Rule ID:",
+    "threshold": "Threshold:",
+    "status": "Status:",
+    "ocrIdentifiers": "OCR Identifiers",
+    "logicGroups": "Logic Groups:",
+    "totalIdentifiers": "Total Identifiers:",
+    "ocrThreshold": "OCR Threshold:",
+    "ocrMultiplier": "OCR Multiplier:",
+    "maxOcrWeight": "Maximum OCR Weight:",
+    "filenameIdentification": "Filename Identification",
+    "filenamePatterns": "Filename Patterns:",
+    "dateFormats": "Date Formats:",
+    "totalPatterns": "Total Patterns:",
+    "filenameMultiplier": "Filename Multiplier:",
+    "maxFilenameWeight": "Maximum Filename Weight:",
+    "dataVerification": "Data Verification",
+    "enabledFields": "Enabled Fields:",
+    "verificationMultiplier": "Verification Multiplier:",
+    "maxVerificationWeight": "Maximum Verification Weight:",
+    "auto": "Auto",
+    "documentClassifications": "Document Classifications",
+    "correspondent": "Correspondent:",
+    "documentType": "Document Type:",
+    "tags": "Tags:",
+    "dynamicExtractionRules": "Dynamic Extraction Rules:",
+    "pocoScoreCalculation": "POCO Score Calculation",
+    "maxPossibleWeights": "Maximum Possible Weights:",
+    "ocrLabel": "OCR:",
+    "filenameLabel": "Filename:",
+    "verificationLabel": "Verification:",
+    "totalMaxWeight": "Total Maximum Weight:",
+    "exampleCalculation": "Example Calculation ({matchRate}% match rate):",
+    "ocrScoreLabel": "OCR Score:",
+    "filenameScoreLabel": "Filename Score:",
+    "verificationScoreLabel": "Verification Score:",
+    "pocoScoreLabel": "POCO Score:",
+    "thresholds": "Thresholds:",
+    "ocrThresholdLabel": "• OCR Threshold: {threshold}% (must be reached for rule to pass)",
+    "pocoThresholdLabel": "• POCO Threshold: {threshold}% (must be reached for classification)",
+    "activateRuleWarning": "⚠️ WARNING: Activating this rule will allow it to automatically process documents in your Paperless archive during background processing. This may modify your documents. Are you sure you want to activate this rule?",
+    "activeRuleNote": "⚠️ Active Rule: This rule will process documents automatically during background processing."
+  },
+  "rulesPage": {
+    "trash": "Trash",
+    "rulesSelected": "{count} rule(s) selected",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "new": "New",
+    "nameAZ": "Name (A-Z)",
+    "nameZA": "Name (Z-A)"
+  },
+  "guide": {
+    "title": "PocoClass Guide",
+    "subtitle": "A beginner-friendly guide to document classification",
+    "introduction": {
+      "title": "Introduction",
+      "p1": "PocoClass is an intelligent rule-based classification engine designed to enhance Paperless-ngx. While Paperless already provides a powerful search interface and a built-in classifier, it might struggle to recognize complex document types, especially during initial bulk imports or when documents follow complex formats. PocoClass fills this gap by letting you explicitly define how each type of document should be identified through patterns and how it should be classified.",
+      "p2": "Its primary objective is to deliver consistent, accurate classification—no matter how many documents you are importing or how varied they may be. Once configured, PocoClass can run fully automatically, quietly keeping your Paperless library structured with minimal effort from you.",
+      "paperlessTip": "Arrived here without knowing Paperless-ngx?",
+      "paperlessTipLink": "Learn what Paperless-ngx is",
+      "paperlessPopupTitle": "What is Paperless-ngx?",
+      "paperlessPopupP1": "Paperless-ngx is a digital document management system designed to help you organize, store, and search your paperwork electronically. Instead of keeping physical folders filled with invoices, contracts, letters, or receipts, Paperless-ngx allows you to scan or upload these documents and manage them in one secure, searchable archive.",
+      "paperlessPopupP2": "When you upload a document, Paperless automatically processes it using OCR (Optical Character Recognition). OCR extracts the text from scanned images or PDFs and makes that text searchable. This means you can later find a document simply by typing a keyword that appears inside it — even if it was originally a scanned paper document.",
+      "paperlessPopupP3": "Documents in Paperless can be organized using structured metadata such as Correspondent (who the document is from), Document Type (what kind of document it is), Tags (flexible labels), and Custom Fields (additional information specific to your needs).",
+      "paperlessPopupP4": "Paperless-ngx also supports workflows and automation rules, allowing documents to be classified or tagged automatically based on defined conditions.",
+      "paperlessPopupP5": "In short, Paperless-ngx replaces your physical filing cabinet with a powerful, searchable digital archive — helping you reduce paper clutter, improve organization, and retrieve documents instantly when you need them.",
+      "paperlessVisitSite": "Visit Paperless-ngx",
+      "paperlessClose": "Close"
+    },
+    "howItWorks": {
+      "title": "How PocoClass Works with Paperless",
+      "intro": "PocoClass works alongside Paperless to automatically organize your documents. Here's how it all fits together:",
+      "step1Title": "Document Arrives in Paperless",
+      "step1Desc": "You scan or upload a document. Paperless extracts the text (OCR) so it can be searched. Paperless automatically notifies PocoClass that one or more new documents are available for analysis.",
+      "step2Title": "PocoClass Analyzes It",
+      "step2Desc": "PocoClass checks the document against your personal defined rules. It looks at the text, filename, and other information, then calculates a confidence score (POCO Score) for each possible match. The scoring system evaluates how well the document fits each rule.",
+      "step3Title": "PocoClass Assigns Classifications",
+      "step3Desc": "If a match is found, PocoClass automatically applies the classifications you specified in your rule—like tags, correspondents, document type, and other details—directly to the document in Paperless.",
+      "step4Title": "Document is Organized",
+      "step4Desc": "Your document now has the right classification and is easy to find. You can also use Paperless workflows to do additional processing based on these classifications, like automatically moving documents to specific folders.",
+      "autoProcessingTitle": "Automatic Background Processing",
+      "autoProcessingDesc": "PocoClass is triggered automatically whenever Paperless finishes consuming documents. It applies your rules without any manual action required, ensuring consistent classification for bulk imports and daily new documents.",
+      "whatCanEditTitle": "What PocoClass Can Edit in Paperless",
+      "whatCanEditIntro": "PocoClass updates your documents directly in Paperless once a rule matches. Depending on your rule configuration, PocoClass can set or update the following fields:",
+      "correspondent": "Correspondent",
+      "correspondentDesc": "Who the document is from (e.g., a bank, insurer, or government agency)",
+      "documentType": "Document Type",
+      "documentTypeDesc": "The category of the document (e.g., invoice, statement, receipt, contract)",
+      "tags": "Tags",
+      "tagsDesc": "Labels that help group or filter documents (e.g., \"Finance\", \"Tax\", \"2024\")",
+      "customFields": "Custom Fields",
+      "customFieldsDesc": "Additional information extracted from the document, such as invoice numbers, reference codes, dates, or account numbers",
+      "updatesNote": "All these updates happen within Paperless itself, meaning your library stays organized, searchable, and consistent."
+    },
+    "scoring": {
+      "title": "The Scoring System",
+      "intro": "PocoClass uses a confidence-based scoring system to decide whether a document matches a rule. This score determines whether the rule is applied, skipped, or flagged for review.",
+      "twoScoresIntro": "To keep the process transparent, PocoClass generates two scores for every document:",
+      "ocrScoreTitle": "1. POCO OCR Score (Transparency Score)",
+      "ocrScoreDesc": "This score reflects how many OCR identifiers were found in the document text. It shows how well the document content matches your rule.",
+      "ocrScorePoint1": "It acts as a gatekeeper: if the OCR score is below the <strong>OCR Threshold (default 75%)</strong>, rule evaluation stops immediately",
+      "ocrScorePoint2": "This threshold is configurable per rule in the rule builder",
+      "ocrScoreNote": "If a rule requires 75% OCR accuracy and the document only matches 50%, PocoClass stops here and will not continue with filename or Paperless checks.",
+      "pocoScoreTitle": "2. POCO Score (Final Classification Score)",
+      "pocoScoreIntro": "Once OCR passes the minimum threshold, PocoClass evaluates the full document using:",
+      "pocoScorePoint1": "<strong>OCR results</strong> (primary evidence)",
+      "pocoScorePoint2": "<strong>Filename patterns</strong> (secondary evidence)",
+      "pocoScorePoint3": "<strong>Paperless classifications</strong> (verification evidence)",
+      "pocoScoreFormula": "POCO Score = (OCR_weighted + Filename_weighted + Paperless_weighted) / Total_max_weight × 100%",
+      "pocoScoreNote": "Each domain contributes to the final score according to its number of identifiers and its trust multiplier. The final POCO Score must meet the <strong>POCO Threshold (default 75%)</strong> for the rule to be applied.",
+      "calculationTitle": "Score Calculation",
+      "calculationIntro": "PocoClass evaluates each data source using this formula:",
+      "calculationFormula": "Weighted Score = (matches / total) × total × multiplier",
+      "calculationEnsures": "This method ensures:",
+      "calculationPoint1": "More matches → higher score",
+      "calculationPoint2": "More identifiers → stronger evidence",
+      "calculationPoint3": "More trusted domains → greater impact",
+      "multipliersTitle": "Why Multipliers?",
+      "multipliersIntro": "Multipliers control how much each data source contributes to the final score. A higher multiplier means that source carries more weight in determining classification confidence.",
+      "defaultMultipliers": "Default multipliers:",
+      "ocrMultiplier": "<strong>OCR: 3×</strong> - OCR text is usually very reliable",
+      "filenameMultiplier": "<strong>Filename: 1×</strong> - Filenames are less reliable",
+      "classificationsMultiplier": "<strong>Classifications: Auto</strong> - By default, the classification multiplier neutralizes the number of Paperless classifications, ensuring they can influence confidence without overpowering OCR",
+      "whenToAdjust": "When to adjust:",
+      "adjustPoint1": "Using unreliable OCR? Lower the OCR multiplier",
+      "adjustPoint2": "Filenames are super reliable in your organization? Raise the Filename multiplier",
+      "adjustPoint3": "Trust Paperless classifications more? Adjust accordingly",
+      "examplesTitle": "Examples (and Converting to Percentages)",
+      "examplesThresholdNote": "<strong>Understanding the Threshold Percentage:</strong> The scores shown here are absolute values. To convert them to the percentages you define in the rule builder (like 75%), divide the score by the maximum possible score for that rule. The maximum possible score is what you'd get if all identifiers matched perfectly.",
+      "example1Title": "Example 1 – Strong Match",
+      "example1OCR": "OCR: 4/5, multiplier = 3 → (4/5 × 5 × 3) = 12",
+      "example1Filename": "Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2",
+      "example1Paperless": "Paperless: 3/4, multiplier = 0.25 → (3/4 × 4 × 0.25) = 0.75",
+      "example1Total": "Total score = 12 + 2 + 0.75 = <strong>14.75</strong>",
+      "example1Result": "Maximum possible: (5 × 3) + (2 × 1) + (4 × 0.25) = 18<br/>Percentage: 14.75 ÷ 18 = <strong>82%</strong><br/>If your threshold is 75% → ✓ Classification applied (82% exceeds 75%)",
+      "example2Title": "Example 2 – Weak OCR, Filename Disagrees",
+      "example2OCR": "OCR: 3/4, multiplier = 3 → (3/4 × 4 × 3) = 9",
+      "example2Filename": "Filename: 0/2, multiplier = 1 → (0/2 × 2 × 1) = 0",
+      "example2Paperless": "Paperless: 2/4, multiplier = 0.25 → (2/4 × 4 × 0.25) = 0.5",
+      "example2Total": "Total score = 9 + 0 + 0.5 = <strong>9.5</strong>",
+      "example2Result": "Maximum possible: 18 (same as Example 1)<br/>Percentage: 9.5 ÷ 18 = <strong>53%</strong><br/>If your threshold is 75% → ✗ Rule skipped (53% is below 75%)",
+      "example3Title": "Example 3 – OCR Failure (Filename & Paperless Can't Save It)",
+      "example3OCR": "OCR: 1/5, multiplier = 3 → (1/5 × 5 × 3) = 3",
+      "example3Filename": "Filename: 2/2, multiplier = 1 → (2/2 × 2 × 1) = 2",
+      "example3Paperless": "Paperless: 4/4, multiplier = 0.25 → (4/4 × 4 × 0.25) = 1",
+      "example3Total": "Total score = 3 + 2 + 1 = <strong>6</strong>",
+      "example3Result": "Maximum possible: 18 (same as Example 1)<br/>Percentage: 6 ÷ 18 = <strong>33%</strong><br/>If your threshold is 75% → ✗ Rule skipped (even perfect filename & Paperless can't compensate for weak OCR)",
+      "ruleOfThumb": "Rule of thumb:",
+      "ruleOfThumbPoint1": "If OCR is strong, filename and Paperless usually confirm it.",
+      "ruleOfThumbPoint2": "If OCR is borderline, filename and Paperless decide whether the rule passes or fails.",
+      "ruleOfThumbPoint3": "If OCR is weak, the rule never proceeds.",
+      "whereStoredTitle": "Where Scores Are Stored in Paperless",
+      "whereStoredIntro": "PocoClass writes its evaluation results back into Paperless so you always know what happened:",
+      "whereStoredScore": "<strong>POCO Score</strong> – final classification confidence (custom field)",
+      "whereStoredOCR": "<strong>POCO OCR Score</strong> – OCR-only confidence (optional custom field). Every document gets an OCR score recorded, even if it's 0%",
+      "whereStoredPlus": "<strong>POCO+ tag</strong> – rule matched and classification applied",
+      "whereStoredMinus": "<strong>POCO- tag</strong> – rule evaluated but did not meet the threshold",
+      "documentNotesTitle": "Document Notes",
+      "documentNotesDesc": "A detailed scoring breakdown is also appended to the document's notes in Paperless, providing full transparency for every evaluation."
+    },
+    "setup": {
+      "title": "Setup Requirements & Data Synchronization",
+      "intro": "Before PocoClass can work, you need to set up a few things in your Paperless system. These required fields allow PocoClass to track its work and store important information.",
+      "requiredTitle": "Required Setup",
+      "customFieldsLabel": "Custom Fields:",
+      "pocoScoreRequired": "POCO Score (Required)",
+      "pocoScoreDesc": "Stores the confidence score calculated by PocoClass for each document after rule evaluation",
+      "pocoOCROptional": "POCO OCR (Optional)",
+      "pocoOCRDesc": "Stores the OCR-specific confidence score component for analysis and troubleshooting",
+      "tagsLabel": "Tags:",
+      "newTagRequired": "NEW Tag (Required)",
+      "newTagDesc": "Applied to documents immediately after Paperless consumes them, marking them as candidates for PocoClass processing. PocoClass uses this to identify new documents requiring rule evaluation",
+      "plusTagRequired": "POCO+ Tag (Required)",
+      "plusTagDesc": "Applied to documents where PocoClass's classification exceeds the minimum POCO Score threshold, indicating successful matches",
+      "minusTagRequired": "POCO- Tag (Required)",
+      "minusTagDesc": "Applied to documents where PocoClass's classification falls below the minimum POCO Score threshold, indicating insufficient confidence",
+      "managedIn": "Custom fields and tag requirements are managed in",
+      "dataValidation": "Data Validation",
+      "syncArchTitle": "Data Synchronization Architecture",
+      "syncArchDesc": "PocoClass employs a caching strategy to minimize API overhead on your Paperless instance. Rather than querying Paperless on every document evaluation, PocoClass fetches and caches the current state of all tags, correspondents, document types, and custom fields during synchronization. Without caching, each document processed could require hundreds of API calls to resolve all these classification references. This cached state remains valid until explicitly refreshed, significantly reducing API calls while maintaining data consistency.",
+      "autoSyncTitle": "Automatic Synchronization",
+      "autoSyncDesc": "Synchronization happens automatically without manual intervention. PocoClass monitors for schema changes and re-syncs when you return to the application after switching tabs or leaving the interface. The system evaluates whether re-synchronization is needed and triggers it transparently—keeping your cached state current with minimal overhead.",
+      "forceSyncNote": "In most cases, automatic synchronization handles all data consistency needs. If you need to force an immediate update, it can be managed through",
+      "system": "System"
+    },
+    "buildingRules": {
+      "title": "Building Rules: The 6-Step Wizard",
+      "intro": "A rule tells PocoClass: \"If a document contains these patterns, classify it like this.\"",
+      "wizardIntro": "The rule builder wizard guides you step by step through defining how a document should be identified and what classifications should be assigned when it matches.",
+      "step1Title": "Step 1 — Basic Information",
+      "step1Intro": "Give your rule a clear identity:",
+      "ruleName": "<strong>Rule Name</strong> – A descriptive, human-friendly name (e.g., Bank Statements, Tax Letters)",
+      "ruleId": "<strong>Rule ID</strong> – A unique identifier automatically generated. You may customize it for readability",
+      "description": "<strong>Description</strong> – Optional notes to remind yourself what the rule does",
+      "step1Note": "This helps keep your rules organized, especially once you build many of them.",
+      "step2Title": "Step 2 — OCR Pattern Matching",
+      "step2Intro": "In this step you define the text patterns PocoClass should look for in the OCR text extracted from the document.",
+      "whatCanMatch": "What you can match:",
+      "matchOrgNames": "Organization names",
+      "matchKeywords": "Keywords like Invoice, Statement, Receipt",
+      "matchRefNumbers": "Reference numbers",
+      "matchDates": "Dates or short phrases unique to a document format",
+      "howItWorksLabel": "How it works:",
+      "add3to10": "Add 3 to 10 OCR patterns",
+      "chooseMatch": "Choose how they must match (ALL / ANY / logic groups)",
+      "setOCRThreshold": "Set the OCR Threshold (default: 75%) – this determines how many patterns must match before PocoClass considers the rule valid",
+      "ocrContinueNote": "PocoClass only continues to filename and classifications evaluation if the OCR threshold is met. (See the scoring section for details.)",
+      "regexSupport": "Regex Support",
+      "regexIntro": "You may use simple text patterns or more advanced regular expressions (regex).",
+      "examplesLabel": "Examples:",
+      "regexExample1": "/invoice/i – matches \"invoice\", \"Invoice\", \"INVOICE\"",
+      "regexExample2": "/\\d{4}-\\d{2}-\\d{2}/ – matches dates like \"2024-01-15\"",
+      "regexExample3": "/Visa|Mastercard/i – matches either \"Visa\" OR \"Mastercard\"",
+      "regexOptionalNote": "Regex is optional — most rules work fine with simple patterns.",
+      "regexBuilderTip": "<strong>Tip:</strong> There is a built-in <strong>Regex Builder</strong> (available in the pattern editor) to assist in creating complex patterns without writing code manually.",
+      "step3Title": "Step 3 — Filename Patterns",
+      "step3Intro": "Filename patterns allow PocoClass to use the document's filename as a secondary signal.",
+      "exampleFilename": "Example filename:",
+      "possiblePatterns": "Possible patterns:",
+      "keyPoints": "Key points:",
+      "filenameOptional": "Filename patterns are optional",
+      "filenameAfterOCR": "They are evaluated only after OCR passes",
+      "filenameMultiplierNote": "Their influence is controlled by the Filename Multiplier (default: 1×)",
+      "step4Title": "Step 4 — Rule Configuration",
+      "step4Intro": "This is where you define how confident PocoClass must be before applying the rule.",
+      "youCanAdjust": "You can adjust:",
+      "ocrThreshold": "<strong>OCR Threshold</strong> – Minimum percentage of OCR patterns that must match",
+      "pocoThreshold": "<strong>POCO Threshold</strong> – Minimum final score required for the rule to apply",
+      "ocrMultiplierConfig": "<strong>OCR Multiplier</strong> – Trust level for OCR (default: 3×)",
+      "filenameMultiplierConfig": "<strong>Filename Multiplier</strong> – Trust level for filename matching (default: 1×)",
+      "classificationMultiplierConfig": "<strong>Classification Multiplier</strong> – Trust level for Paperless classifications",
+      "step4Note": "These settings determine how heavily each data source influences the final score. For full details, see The Scoring System.",
+      "step5Title": "Step 5 — Document Classifications",
+      "step5Intro": "Here you define what PocoClass should write into Paperless if the rule matches.",
+      "staticClassifications": "Static Classifications",
+      "staticDesc": "Values that always apply when the rule matches:",
+      "staticCorrespondent": "Correspondent",
+      "staticDocType": "Document Type",
+      "staticTags": "Tags",
+      "staticCustomFields": "Custom fields",
+      "staticExample": "<strong>Example</strong>: Assign Correspondent → \"Bank XYZ\", Assign Document Type → \"Monthly Statement\", Tags → Finance, 2024",
+      "dynamicClassifications": "Dynamic Classifications",
+      "dynamicDesc": "Extracted directly from the document using anchors.",
+      "dynamicExampleTitle": "Example extraction:",
+      "dynamicExampleIntro": "You want to extract an invoice number that appears after \"Inv: \"",
+      "simulatedOCR": "Simulated OCR text from document:",
+      "beforeAnchor": "Before Anchor:",
+      "textToExtract": "Text to extract:",
+      "afterAnchor": "After Anchor:",
+      "step6Title": "Step 6 — Verification",
+      "step6Intro": "Verification allows PocoClass to confirm that the extracted or assigned classifications aligns with what is already stored in Paperless.",
+      "step6Example": "<strong>Example</strong>: Extracted Correspondent → \"John Smith\", Paperless Correspondent → \"John Smith\" → Verification passes",
+      "step6Note": "If verification fails, you can choose to allow the rule anyway or block it from applying. Verification adds an extra safety layer, especially when similar document formats may overlap."
+    },
+    "testing": {
+      "title": "Testing Your Rules",
+      "intro": "Before you let PocoClass automatically classify hundreds of documents, you want to make sure your rule works correctly on real documents.",
+      "twoTypesTitle": "Two Types of Testing",
+      "dryRunTitle": "1. Dry Run",
+      "dryRunSubtitle": "(Simulation - No Changes)",
+      "dryRunQuestion": "\"What would happen if I ran this rule?\"",
+      "dryRunPoint1": "PocoClass tests your rule against selected documents",
+      "dryRunPoint2": "Shows you what would happen (classifications, scores)",
+      "dryRunPoint3": "<strong>Does not make any changes</strong> to Paperless",
+      "dryRunPoint4": "Perfect for testing before you're confident",
+      "fullRunTitle": "2. Full Run",
+      "fullRunSubtitle": "(Real - Makes Changes)",
+      "fullRunQuestion": "\"Apply this rule for real\"",
+      "fullRunPoint1": "PocoClass tests your rule and actually classifies the documents",
+      "fullRunPoint2": "Makes changes in Paperless",
+      "fullRunPoint3": "Applied tags, correspondents, and classifications to documents",
+      "fullRunPoint4": "Scores are recorded in the POCO Score custom field",
+      "understandingTitle": "Understanding Test Results",
+      "understandingIntro": "When you test, PocoClass shows you a report with:",
+      "resultDocument": "<strong>Document</strong>: Which document was tested",
+      "resultMatched": "<strong>Rule Matched</strong>: Did the rule match? (Yes/No)",
+      "resultOCR": "<strong>OCR Score</strong>: What % of OCR patterns matched?",
+      "resultPOCO": "<strong>POCO Score</strong>: What was the final classification score?",
+      "resultClassification": "<strong>Classification</strong>: POCO+ (matched) or POCO- (no match) - shows whether the rule matched the document",
+      "resultApplied": "<strong>Classifications Applied</strong>: What got assigned (correspondent, tags, etc.) - which identifiers like OCR or filename were successful",
+      "scoresExplainedTitle": "Scores Explained",
+      "scoresOCR": "<strong>OCR Score</strong> – Percentage of OCR patterns that matched",
+      "scoresPOCO": "<strong>POCO Score</strong> – Combined confidence from OCR, filename, and Paperless",
+      "scoresTrigger": "Rule triggers when POCO Score meets your threshold (default 75%)",
+      "barChartIntro": "Test results include a bar chart showing:",
+      "barBlue": "Blue bar = OCR Score (how many patterns matched)",
+      "barGreen": "Green/Red bar = POCO Score (final decision score)",
+      "barOrange": "Orange line = Your threshold (75% by default)",
+      "barNote": "If the bars reach the orange line, the rule triggers."
+    },
+    "backgroundProcessing": {
+      "title": "Background Processing",
+      "intro": "Background processing is how PocoClass automatically classifies new documents.",
+      "howItWorksTitle": "How It Works",
+      "howItWorksIntro": "When triggered, PocoClass scans for documents with the NEW tag and applies your classification rules. Your administrator configures how triggering works (automatic via post-consumption script, manual, or scheduled).",
+      "step1": "<strong>Step 1: The Trigger</strong> - PocoClass looks for documents with the <strong>\"NEW\"</strong> tag",
+      "step2": "<strong>Step 2: Filter Documents</strong> - Find documents tagged with <strong>\"NEW\"</strong> and NOT already tagged with <strong>\"POCO+\"</strong> or <strong>\"POCO-\"</strong>",
+      "step3": "<strong>Step 3: Apply Rules</strong> - Run all enabled rules against these documents in order",
+      "step4": "<strong>Step 4: Tag & Score</strong> - Apply classifications, write <strong>POCO Score</strong> and <strong>POCO OCR</strong>, apply <strong>POCO+</strong> or <strong>POCO-</strong> tag, optionally remove <strong>NEW</strong> tag (if enabled in Settings)",
+      "step5": "<strong>Step 5: Repeat</strong> - Continue looking for more documents with the <strong>\"NEW\"</strong> tag",
+      "tipNewTag": "<strong>Tip:</strong> You can choose whether PocoClass automatically removes the <strong>NEW</strong> tag after processing. Enable this option to keep your Paperless inbox clean, or leave it disabled if you prefer to manually verify documents before removing the tag yourself.",
+      "tipLocation": "<strong>Location:</strong> Settings → Background Processing → Tag Configuration",
+      "openSettings": "Open Background Processing Settings",
+      "modesTitle": "Three Processing Modes",
+      "automaticMode": "1. Automatic Mode",
+      "automaticPoint1": "Runs continuously in the background every few minutes",
+      "automaticPoint2": "Always watching for new documents with \"NEW\" tag",
+      "automaticPoint3": "Pauses when you're using the web interface (so it doesn't interfere)",
+      "automaticPoint4": "Pauses when no documents need processing (saves resources)",
+      "triggerMode": "2. Trigger Mode",
+      "triggerPoint1": "Runs once when you manually ask it to",
+      "triggerPoint2": "Useful for testing or processing a specific batch of documents",
+      "triggerPoint3": "You click \"Trigger Background Processing\" and it processes once",
+      "dryRunMode": "3. Dry Run Mode",
+      "dryRunPoint1": "Same as Trigger Mode, but doesn't make changes",
+      "dryRunPoint2": "Shows you what would happen without actually classifying",
+      "historyTitle": "Processing History",
+      "historyIntro": "PocoClass keeps track of what it processed:",
+      "summaryView": "Summary View:",
+      "summaryPoint1": "When was the run (timestamp)",
+      "summaryPoint2": "What type of run (Automatic, Manual, Dry Run)",
+      "summaryPoint3": "How many documents were processed",
+      "summaryPoint4": "How many matched rules",
+      "detailView": "Detail View (expandable):",
+      "detailPoint1": "Document title",
+      "detailPoint2": "Which rule matched (if any)",
+      "detailPoint3": "OCR and POCO scores",
+      "detailPoint4": "What classification it got (POCO+ or POCO-)",
+      "detailPoint5": "What classifications were applied"
+    },
+    "aboutName": {
+      "title": "About the Name",
+      "p1": "The name PocoClass originates from the earliest script this project was based on, called POCO. POCO stands for <strong>Post Consumption</strong> and referred to a simple script that was triggered by Paperless through its built-in post-consumption mechanism.",
+      "p2": "That original script performed basic rule-based classification immediately after documents were imported. Over time, this concept evolved into a full document classification system with scoring, verification, and a web-based interface. The name PocoClass was kept to reflect these origins while representing the broader classification capabilities the project now provides."
+    }
+  },
+  "quickStart": {
+    "title": "Quick Start",
+    "subtitle": "Get up and running with PocoClass",
+    "howItWorks": {
+      "title": "How PocoClass Works",
+      "description": "PocoClass watches for documents tagged with \"NEW\" in Paperless, matches them against your classification rules, and applies the appropriate tags and metadata. Documents that pass get a POCO+ tag; those that don't get a POCO- tag."
+    },
+    "minimumSetup": {
+      "title": "Minimum Setup Requirements",
+      "intro": "Before you can use PocoClass, your Paperless system needs these items:",
+      "pocoScore": "<strong>POCO Score</strong> – a custom field to store classification confidence",
+      "pocoOCR": "<strong>POCO OCR</strong> (optional) – a custom field to store OCR transparency score",
+      "newTag": "<strong>NEW tag</strong> – marks documents ready for processing (Paperless must be configured to assign this tag to incoming documents)",
+      "plusTag": "<strong>POCO+ tag</strong> – applied when classification succeeds",
+      "minusTag": "<strong>POCO- tag</strong> – applied when classification fails",
+      "checkSettings": "Go to <strong>Settings → Data Validation</strong> to check if these exist. PocoClass can create missing items for you."
+    },
+    "scoring": {
+      "title": "How Scoring Works",
+      "intro": "PocoClass uses a confidence-based scoring system to decide if a document matches a rule:",
+      "ocrScore": "<strong>OCR Score</strong> – percentage of text patterns found in the document. Must reach 75% (default) for the rule to continue.",
+      "pocoScore": "<strong>POCO Score</strong> – combines OCR, filename, and Paperless verification into a final confidence score. Must reach 75% (default) to apply the classification.",
+      "result": "If both thresholds are met, the document gets a <strong>POCO+</strong> tag and your chosen classifications. If not, it gets a <strong>POCO-</strong> tag.",
+      "formulaTitle": "Formula",
+      "formula": "POCO Score = (OCR × 3 + Filename × 1 + Verification) / Total Max Weight × 100%",
+      "example": "<strong>Example:</strong> A rule has 4 OCR patterns (3 match), 1 filename pattern (matches), and no verification. OCR contributes 3×3=9 out of 3×4=12, filename contributes 1×1=1 out of 1×1=1. Total: (9+1)/(12+1) = 77% → passes the 75% threshold.",
+      "seeGuide": "For a detailed explanation, see the"
+    },
+    "gettingStarted": {
+      "title": "Getting Started",
+      "step1Title": "Complete Setup",
+      "step1Desc": "Go to Settings → Data Validation and ensure all required fields and tags exist in Paperless.",
+      "step2Title": "Create Your First Rule",
+      "step2Desc": "Go to Rules and click \"New Rule\". The wizard will guide you through naming your rule, adding OCR patterns, and choosing what classifications to apply.",
+      "step3Title": "Test with Dry Run",
+      "step3Desc": "Go to Rule Evaluation, select your rule and some documents, then click \"Dry Run\" to see what would happen without making changes.",
+      "step4Title": "Run for Real",
+      "step4Desc": "Once satisfied with Dry Run results, click \"Run\" to apply classifications to documents in Paperless.",
+      "step5Title": "Enable Background Processing",
+      "step5Desc": "Go to Settings → Background Processing and enable automatic mode. PocoClass will now classify new documents automatically."
+    },
+    "fullGuide": "full Guide"
+  },
+  "tutorial": {
+    "pageTitle": "Guided Tutorial",
+    "pageSubtitle": "Learn how to build classification rules with a real bank statement example",
+    "backToRules": "Back to Rules",
+    "readOnlyBanner": "TUTORIAL MODE — Fields are read-only",
+    "nav": {
+      "back": "Back",
+      "next": "Next",
+      "finish": "Finish",
+      "step": "Step"
+    },
+    "steps": {
+      "0_1": {
+        "title": "Welcome to the Rule Builder Tutorial!",
+        "text": "This is where you create classification rules. Each rule teaches PocoClass how to recognize a specific type of document. Let's walk through building a rule for bank statements."
+      },
+      "0_2": {
+        "title": "6 Steps to Build a Rule",
+        "text": "Every classification rule is built in 6 steps, shown in this progress bar. Each step focuses on a different aspect — from naming your rule, to defining patterns, to assigning metadata. You'll complete them left to right."
+      },
+      "0_3": {
+        "title": "The Input Area",
+        "text": "This is where you'll fill in your rule data. Each step shows different input fields on this side. The fields change as you move through the 6 steps."
+      },
+      "0_4": {
+        "title": "Configuration Summary",
+        "text": "At the bottom of each step, you'll find a configuration summary. This shows an overview of your current settings and highlights anything that might need attention with warnings."
+      },
+      "0_5": {
+        "title": "PDF Preview",
+        "text": "This panel shows a preview of the document you're building a rule for. Use it to identify text patterns and visual elements that are unique to this type of document."
+      },
+      "0_6": {
+        "title": "OCR Content",
+        "textParts": [
+          {
+            "text": "This tab shows the raw text that PocoClass extracts from the document using OCR (Optical Character Recognition). This is what PocoClass actually 'reads' — "
+          },
+          {
+            "text": "notice how the text order may differ from the visual PDF layout.",
+            "bold": true
+          },
+          {
+            "text": " Your patterns need to match this text, not the PDF layout."
+          }
+        ]
+      },
+      "0_7": {
+        "title": "YAML Preview",
+        "text": "The YAML tab shows your rule as structured data — this is what gets saved. Most users won't need to edit YAML directly, but it's useful for power users who want to fine-tune or copy rules."
+      },
+      "1_0": {
+        "title": "Step 1: Basic Information",
+        "text": "Let's start with the basics. In this first step, you give your rule a name, an ID, and a description. You also set the POCO Score threshold — the minimum confidence level needed to classify a document."
+      },
+      "1_1": {
+        "title": "Rule Name & ID",
+        "text": "Give your rule a clear name — like \"Bank Statement\". The Rule ID is generated automatically and is used internally. The description helps you remember what this rule does."
+      },
+      "1_2": {
+        "title": "POCO Score Threshold",
+        "text": "The POCO Score threshold decides how confident the system must be before classifying a document. The default is 75% — it means at least 75% of the weighted patterns must match. Too low = false positives, too high = missed documents."
+      },
+      "2_0": {
+        "title": "Step 2: OCR Identifying Patterns",
+        "textParts": [
+          {
+            "text": "This is the most important step. Here you define text patterns that uniquely identify your document type. A text pattern can be as simple as a word or phrase — like \"Royal Bank of Scotland\" or \"Invoice Number\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "For more flexibility, you can use regular expressions (regex) — a way to describe text patterns that handles variations like extra spaces or different formatting. The Pattern Helper button makes building regex easy, even without experience. For more details, see "
+          },
+          {
+            "text": "Regex Support in the Guide",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "2_1": {
+        "title": "PDF vs OCR — What PocoClass Sees",
+        "textParts": [
+          {
+            "text": "Before we define patterns, look at the difference between the PDF (how you see the document) and the OCR text (how PocoClass sees it). "
+          },
+          {
+            "text": "Switch",
+            "action": "togglePreview"
+          },
+          {
+            "text": " between the PDF and OCR tabs on the right — notice how the text ordering is different! PocoClass works with the OCR text, not the visual layout."
+          }
+        ]
+      },
+      "2_2": {
+        "title": "Logic Group 1 — Bank Identification",
+        "textParts": [
+          {
+            "text": "Our first pattern looks for "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " as plain text — it appears at the bottom of every RBS statement. The search area is set to the last 10 lines, making the match faster and more precise. This group is optional — it boosts confidence but won't reject documents if missing."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "With the help of the regex builder, this same pattern could be written as "
+          },
+          {
+            "text": "Royal\\s*Bank\\s*of\\s*Scotland",
+            "bold": true
+          },
+          {
+            "text": " — which would also match variations like \"RoyalBank of Scotland\" or \"Royal   Bank of Scotland\" with unusual spacing. Simple text works for most cases; regex adds flexibility when needed."
+          }
+        ]
+      },
+      "2_3": {
+        "title": "Logic Group 2 — Account Identification",
+        "textParts": [
+          {
+            "text": "This pattern searches for your full IBAN "
+          },
+          {
+            "text": "\"GB11RBOS 1610 0011 1111 11\"",
+            "bold": true
+          },
+          {
+            "text": " in the first 10 lines of the document — where bank statements typically show account details."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "This group has been made mandatory",
+            "bold": true
+          },
+          {
+            "text": ", meaning the rule will only pass if this pattern is found. This is important when you have multiple accounts with Royal Bank — it ensures you identify the correct account's statement, not just any RBS document."
+          }
+        ]
+      },
+      "2_4": {
+        "title": "More Logic Groups",
+        "textParts": [
+          {
+            "text": "You can add more logic groups to improve accuracy. Each rule needs a minimum of 3 and can have up to 10 groups. Groups can use AND logic (all conditions must match) or OR logic (any condition can match). In our example, groups 3-5 look for "
+          },
+          {
+            "text": "\"Account Number\"",
+            "bold": true
+          },
+          {
+            "text": ", "
+          },
+          {
+            "text": "\"Statement\"",
+            "bold": true
+          },
+          {
+            "text": ", and "
+          },
+          {
+            "text": "\"Balance\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "The Pattern Helper button (look for the wand icon) helps you build regex patterns without needing to know regex syntax. For more details, see "
+          },
+          {
+            "text": "Regex Support in the Guide",
+            "action": "openGuide"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "2_5": {
+        "title": "OCR Threshold & Weight Multiplier",
+        "textParts": [
+          {
+            "text": "The OCR Threshold (75%) sets the minimum percentage of OCR patterns that must match before the document can be classified. This ensures a base level of text-based confidence."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "The Weight Multiplier (x3) controls how much OCR patterns count toward the final POCO Score. A rule can use three sources to identify documents: OCR text patterns (the main source), filename patterns, and Paperless-ngx classifications. The multiplier lets you prioritize OCR over the other sources. For more details, see "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "3_0": {
+        "title": "Step 3: Filename Patterns",
+        "text": "Besides OCR text, the filename itself can help identify documents. For example, your bank might provide automated digital statements with consistent filenames like \"RBS_Statement_2014-12-21.pdf\". Filename patterns let you leverage this."
+      },
+      "3_1": {
+        "title": "Filename Patterns",
+        "textParts": [
+          {
+            "text": "Pattern 1: "
+          },
+          {
+            "text": "\"RBS.*statement\"",
+            "bold": true
+          },
+          {
+            "text": " matches any filename containing \"RBS\" followed by any characters and then \"statement\". The .* means any number of characters can appear between them — matching \"RBS_Statement_2014-12-21.pdf\" or \"RBS-Monthly-Statement.pdf\"."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Pattern 2: "
+          },
+          {
+            "text": "\"\\d{4}-\\d{2}-\\d{2}\"",
+            "bold": true
+          },
+          {
+            "text": " looks for a full date pattern in the filename — four digits, a dash, two digits, a dash, and two digits. This matches the \"2014-12-21\" part in \"RBS_Statement_2014-12-21.pdf\", helping identify documents by their date stamp."
+          }
+        ]
+      },
+      "3_2": {
+        "title": "Filename Weight Multiplier",
+        "textParts": [
+          {
+            "text": "The Filename Weight Multiplier (x1) controls how much filename matches contribute to the final POCO Score — similar to the OCR multiplier you saw earlier. The default of x1 means filename patterns count less than OCR patterns (which use x3)."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "This makes sense because filenames are less reliable than document content — they can be renamed or inconsistent. For more details about how all multipliers work together, see "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "4_0": {
+        "title": "Step 4: Data Verification",
+        "text": "Data verification adds an extra layer of confidence by cross-referencing extracted data with existing Paperless-ngx metadata. This step is optional and mainly useful for advanced setups where you want to validate document data against known values."
+      },
+      "4_1": {
+        "title": "Verification Placeholders",
+        "text": "Here you select which Paperless-ngx fields to use for verification. When enabled, PocoClass checks if the value assigned in Step 5 matches what's already in Paperless-ngx — adding a trust multiplier to the final score. In our example, Correspondent and Document Type are enabled for verification."
+      },
+      "4_2": {
+        "title": "Verification Multiplier",
+        "textParts": [
+          {
+            "text": "The verification multiplier controls how much weight Paperless-ngx field matches add to the final POCO Score. By default, the mode is set to \"Auto\" which neutralises the weight of this source — keeping verification as a gentle confidence boost rather than a dominant factor."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Without Auto mode, the scoring calculation could give Paperless classifications a very high weight (up to x5), potentially overshadowing your OCR patterns. Auto mode prevents this by dynamically adjusting the multiplier. For more details, see "
+          },
+          {
+            "text": "Scoring System in the Guide",
+            "action": "openGuideScoring"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "5_0": {
+        "title": "Step 5: Document Classifications",
+        "text": "Now that PocoClass knows how to identify your documents, it's time to tell it what to do when a match is found. In this step, you define which classification data to assign — the correspondent, document type, and tags for organization. You can also configure dynamic data extraction, which pulls specific values directly from the document text — like account numbers, invoice totals, or dates — and stores them in Paperless-ngx fields automatically."
+      },
+      "5_1": {
+        "title": "Predefined Paperless Fields",
+        "textParts": [
+          {
+            "text": "These fields come directly from your Paperless-ngx instance — Correspondent, Document Type, and Tags are dropdown selections from values that already exist in Paperless-ngx. Date Created is different — it's a free date input that lets you set a specific date. In our example, we assign "
+          },
+          {
+            "text": "\"Royal Bank of Scotland\"",
+            "bold": true
+          },
+          {
+            "text": " as correspondent, "
+          },
+          {
+            "text": "\"Bank Statement\"",
+            "bold": true
+          },
+          {
+            "text": " as document type, and add the tags "
+          },
+          {
+            "text": "\"Financial\"",
+            "bold": true
+          },
+          {
+            "text": " and "
+          },
+          {
+            "text": "\"Bank\"",
+            "bold": true
+          },
+          {
+            "text": "."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Notice that Date Created has been left empty here on purpose. Setting a fixed date here would apply the same date to every document this rule matches — which rarely makes sense. This is where dynamic extraction really shines. Paperless-ngx has its own built-in date detection, but you have no control over which date it picks. In our bank statement, Paperless might choose 22 October 2014 instead of the correct statement end date of 21 December 2014. With dynamic extraction, you tell PocoClass exactly where to find the right date."
+          }
+        ]
+      },
+      "5_2": {
+        "title": "Custom Fields",
+        "textParts": [
+          {
+            "text": "Custom fields let you store additional data specific to your workflow. The fields shown here depend on your Field Visibility Settings — you may see more or fewer fields depending on your configuration."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "Each custom field can be set to a fixed value here in the predefined section, or extracted dynamically from the document text (configured in the next section). For more details about field configuration, see "
+          },
+          {
+            "text": "Metadata in the Guide",
+            "action": "openGuideMetadata"
+          },
+          {
+            "text": "."
+          }
+        ]
+      },
+      "5_3": {
+        "title": "Dynamic Data Extraction",
+        "textParts": [
+          {
+            "text": "Dynamic extraction uses anchor patterns to locate and pull specific values from the document text. Each extraction rule defines a \"before anchor\" (text that appears just before the value you want) and optionally an \"after anchor\" (text that appears just after it). The extracted text between these anchors is then stored in a Paperless-ngx field."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "This is one of PocoClass's most powerful features. Combined with custom fields, you can extract virtually any information from your documents — an account number from a bank statement, the total amount from an invoice, consumed kWh from an electricity bill, or a policy number from an insurance document. Each target field can only be used once — either as a predefined value or as a dynamic extraction, never both."
+          }
+        ]
+      },
+      "5_4": {
+        "title": "Finding the Date in the OCR Text",
+        "textParts": [
+          {
+            "text": "Let's see how dynamic extraction solves the date problem from Step 5.1. Look at the OCR text — find the highlighted line "
+          },
+          {
+            "text": "\"Period 22 Oct 2014 to 21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": ". We want to extract the end date "
+          },
+          {
+            "text": "\"21 Dec 2014\"",
+            "bold": true
+          },
+          {
+            "text": " — the actual statement date."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "To build the before anchor, start with the human-readable text you can see: "
+          },
+          {
+            "text": "\"22 Oct 2014 to\"",
+            "bold": true
+          },
+          {
+            "text": ". This translates into the regex pattern "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " — which matches any date followed by \"to\". The Regex Helper (wand icon) is really useful here to build these patterns step by step without needing to know regex syntax."
+          }
+        ]
+      },
+      "5_5": {
+        "title": "Configuring the Extraction Rule",
+        "textParts": [
+          {
+            "text": "From the previous step, we identified the before anchor "
+          },
+          {
+            "text": "\"\\d{1,2} \\w{3} \\d{4} to\"",
+            "bold": true
+          },
+          {
+            "text": " and the date format "
+          },
+          {
+            "text": "\"DD MMM YYYY\"",
+            "bold": true
+          },
+          {
+            "text": " to extract the statement end date. You can see these values filled in on the left — the target field is set to "
+          },
+          {
+            "text": "\"Date Created\"",
+            "bold": true
+          },
+          {
+            "text": ", so \"21 Dec 2014\" will be written directly to the document's Date Created field in Paperless-ngx."
+          },
+          {
+            "text": "\n\n"
+          },
+          {
+            "text": "The after anchor is optional but recommended",
+            "bold": true
+          },
+          {
+            "text": " — it limits the search area so PocoClass stops looking once it reaches that boundary. This helps prevent false matches when a document contains many similar values, and catches mistakes early. In this example, an after anchor is not strictly needed because the before anchor is precise enough, but for more complex documents it's good practice to constrain the search."
+          }
+        ]
+      },
+      "6_0": {
+        "title": "Step 6: Review & Summary",
+        "text": "The final step brings everything together. Here you can review your complete rule configuration, see how the POCO scoring calculation works with your settings, and preview the generated YAML that defines your rule."
+      },
+      "6_1": {
+        "title": "Rule Configuration Review",
+        "text": "This overview shows all your rule settings at a glance — basic information, OCR patterns and thresholds, filename patterns, verification fields, and document classifications. Use it to double-check everything before saving."
+      },
+      "6_2": {
+        "title": "POCO Score Calculation",
+        "text": "This section shows exactly how the POCO Score is calculated for your rule. It breaks down the maximum possible weights from each source (OCR, filename, verification), shows an example calculation at 80% match rate, and displays both score thresholds that must be met for classification."
+      },
+      "6_3": {
+        "title": "That's It!",
+        "text": "On the right you can see the generated YAML — the actual rule file that PocoClass uses. You've just seen how a rule is built from start to finish. The key idea: find patterns that uniquely identify your document type, set sensible thresholds, and let PocoClass do the rest. Start simple with a few mandatory OCR patterns — you can always refine later."
+      }
+    }
+  }
+}

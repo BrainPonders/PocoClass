@@ -1,0 +1,819 @@
+"""
+PocoClass - Metadata Processor
+
+Extracts and processes document metadata from multiple sources:
+- Static metadata: Fixed values defined in rule config (correspondent, tags, etc.)
+- Dynamic metadata: Values extracted from OCR text using anchor-based patterns
+- Filename metadata: Values extracted from document filenames via regex patterns
+
+V2 Format Features:
+- beforeAnchor/afterAnchor: Define text extraction windows in OCR content
+- extraction_type: Filter extracted values by type (date, text, dateFormat)
+- UI-friendly date formats: DD-MM-YYYY, MM/DD/YYYY, etc. (converted to Python strptime)
+
+Also provides utility methods for:
+- Normalizing metadata across different source formats for comparison
+- Preparing Paperless API update payloads with proper ID resolution
+- Validating and sanitizing extracted values by target field datatype
+
+Key class:
+    MetadataProcessor - Stateless processor for metadata extraction and transformation
+"""
+
+import re
+import logging
+from datetime import datetime
+from typing import Dict, List, Any, Optional
+
+class MetadataProcessor:
+    """Processes metadata from different sources using v2 rule format.
+    
+    V2 Format Features:
+    - beforeAnchor/afterAnchor: Define extraction boundaries in dynamic metadata
+    - extraction_type: Filter and format extracted values (date, text, dateFormat)
+    - format: UI-friendly date format strings (DD-MM-YYYY, MM/DD/YYYY, etc.)
+    """
+    
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+    
+    def extract_metadata_from_rule(self, rule: Dict[str, Any], content: str, filename: str) -> Dict[str, Any]:
+        """Extract metadata from a rule using v2 format, combining static and dynamic metadata.
+        
+        Args:
+            rule: Rule configuration dict containing metadata extraction rules
+            content: Document content text to extract from
+            filename: Document filename to extract from
+            
+        Returns:
+            Dict with 'static', 'dynamic', and 'filename' metadata sections
+        """
+        metadata = {
+            'static': self.extract_static_metadata(rule),
+            'dynamic': self.extract_dynamic_metadata(rule, content),
+            'filename': {}
+        }
+        
+        # Filename extraction should never prevent content-based processing
+        try:
+            metadata['filename'] = self.extract_filename_metadata(rule, filename)
+        except Exception as e:
+            self.logger.warning(f"Filename metadata extraction failed for rule {rule.get('rule_id', 'unknown')}: {e}")
+            metadata['filename'] = {}
+        
+        return metadata
+    
+    def extract_static_metadata(self, rule: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract static metadata from rule (v2 format).
+        
+        Static metadata is fixed for all documents matching this rule.
+        Converts custom_fields from dict to list format for Paperless API.
+        
+        Args:
+            rule: Rule configuration dict with 'static_metadata' section
+            
+        Returns:
+            Processed static metadata dict
+        """
+        static_metadata = rule.get('static_metadata', {})
+        
+        # Process static metadata
+        processed = {}
+        for field, value in static_metadata.items():
+            if field == 'custom_fields' and isinstance(value, dict):
+                # Convert custom fields dict to list format
+                processed[field] = [{'name': k, 'value': v} for k, v in value.items()]
+            elif field == 'tags' and isinstance(value, list):
+                processed[field] = value
+            else:
+                processed[field] = value
+        
+        return processed
+    
+    def extract_dynamic_metadata(self, rule: Dict[str, Any], content: str) -> Dict[str, Any]:
+        """Extract dynamic metadata from content using v2 anchor patterns.
+        
+        V2 format uses beforeAnchor/afterAnchor to define extraction boundaries,
+        and extraction_type to filter and format the extracted value.
+        
+        Args:
+            rule: Rule configuration dict with 'dynamic_metadata' section
+            content: Document content text to extract from
+            
+        Returns:
+            Dict of extracted field names and values
+        """
+        dynamic_metadata = rule.get('dynamic_metadata', {})
+        extracted = {}
+        
+        for field_name, field_config in dynamic_metadata.items():
+            # V2 format: Support both beforeAnchor/afterAnchor AND pattern_before/pattern_after
+            if isinstance(field_config, dict):
+                # Check for both field name formats (frontend uses pattern_before/after in YAML)
+                pattern_before = field_config.get('beforeAnchor', '') or field_config.get('pattern_before', '')
+                pattern_after = field_config.get('afterAnchor', '') or field_config.get('pattern_after', '')
+                
+                # Only extract if at least one anchor is defined
+                value = None
+                if pattern_before or pattern_after:
+                    value = self.extract_value_between_anchors(content, pattern_before, pattern_after)
+                
+                if value:
+                    # Infer extraction_type from format field if not explicitly set
+                    extraction_type = field_config.get('extraction_type', '')
+                    date_format = field_config.get('format', '')
+                    
+                    # If format is specified but no extraction_type, assume 'date'
+                    if not extraction_type and date_format:
+                        extraction_type = 'date'
+                    
+                    # Apply extraction type filtering if specified
+                    if extraction_type:
+                        value = self.apply_extraction_type_filter(value, extraction_type, date_format)
+                    
+                    # Apply formatting for dates if specified
+                    if value and extraction_type == 'date' and date_format:
+                        formatted_value = self.parse_date_with_format(value, date_format)
+                        if formatted_value:
+                            extracted[field_name] = formatted_value
+                    elif value:
+                        extracted[field_name] = value
+        
+        return extracted
+    
+    def extract_value_between_anchors(self, text: str, before_pattern: str, after_pattern: str) -> Optional[str]:
+        """Extract value from a search window defined by anchor patterns.
+        
+        Uses a windowed search approach:
+        1. Before anchor defines where the search window STARTS (text after the anchor match)
+        2. After anchor defines where the search window ENDS (text before the anchor match)
+        3. The text within this window is returned for further extraction pattern validation
+        
+        Supports four modes:
+        1. Both anchors: Window between beforeAnchor and afterAnchor
+        2. Before anchor only: Window starts after beforeAnchor, extends to end of text
+        3. After anchor only: Window starts at beginning of text, ends at afterAnchor
+        4. No anchors: Returns None
+        
+        Args:
+            text: Source text to extract from
+            before_pattern: Regex pattern for beforeAnchor (text that appears before target value)
+            after_pattern: Regex pattern for afterAnchor (text that appears after target value)
+            
+        Returns:
+            Text within the search window, or None if anchors not found
+        """
+        try:
+            search_text = text
+            
+            if not before_pattern and not after_pattern:
+                return None
+            
+            if before_pattern:
+                before_match = re.search(before_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+                if before_match:
+                    search_text = search_text[before_match.end():]
+                else:
+                    self.logger.debug(f"Before anchor not found: {before_pattern}")
+                    return None
+            
+            if after_pattern:
+                after_match = re.search(after_pattern, search_text, re.IGNORECASE | re.MULTILINE)
+                if after_match:
+                    search_text = search_text[:after_match.start()]
+                else:
+                    self.logger.debug(f"After anchor not found: {after_pattern}")
+                    return None
+            
+            result = search_text.strip()
+            return result if result else None
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting value between anchors: {e}")
+            return None
+    
+    def apply_extraction_type_filter(self, value: str, extraction_type: str, date_format: str = '') -> Optional[str]:
+        """Apply v2 extraction_type filter to extract specific data from raw extracted value.
+        
+        The extraction_type field in v2 format allows filtering and formatting the raw
+        value extracted between anchors. Supports 'date', 'text', and 'dateFormat' types.
+        
+        Args:
+            value: The raw extracted string from between anchors
+            extraction_type: Type of data to extract ('date', 'text', 'dateFormat')
+            date_format: Date format string for date extraction (e.g., 'DD-MM-YYYY')
+            
+        Returns:
+            Filtered value or None if extraction fails
+        """
+        if not value:
+            return None
+        
+        try:
+            if extraction_type == 'date' or extraction_type == 'dateFormat':
+                # Extract date pattern from the string based on the format
+                date_value = self.extract_date_from_text(value, date_format)
+                if date_value:
+                    return date_value
+                # Fallback: try common date patterns if format-based extraction fails
+                return self.extract_common_date_pattern(value)
+            
+            elif extraction_type == 'text':
+                # Return as-is for text extraction
+                return value.strip()
+            
+            else:
+                # Unknown extraction type, return as-is
+                return value.strip()
+                
+        except Exception as e:
+            self.logger.error(f"Error applying extraction type filter '{extraction_type}' to value '{value}': {e}")
+            return value.strip()
+    
+    def extract_date_from_text(self, text: str, date_format: str) -> Optional[str]:
+        """Extract a date from text using v2 date format pattern specification.
+        
+        Converts UI-friendly format strings (DD-MM-YYYY, MM/DD/YYYY) into regex
+        patterns and extracts matching date strings from text.
+        
+        Args:
+            text: The text containing a date
+            date_format: V2 format like 'DD-MM-YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD', etc.
+            
+        Returns:
+            Extracted date string or None
+        """
+        if not date_format:
+            return None
+        
+        try:
+            # Convert date format to regex pattern
+            # DD-MM-YYYY -> \d{2}-\d{2}-\d{4}
+            # MM/DD/YYYY -> \d{2}/\d{2}/\d{4}
+            # YYYY-MM-DD -> \d{4}-\d{2}-\d{2}
+            
+            pattern = date_format
+            pattern = pattern.replace('YYYY', r'\d{4}')
+            pattern = pattern.replace('YY', r'\d{2}')
+            pattern = pattern.replace('MM', r'\d{2}')
+            pattern = pattern.replace('DD', r'\d{2}')
+            pattern = pattern.replace('M', r'\d{1,2}')
+            pattern = pattern.replace('D', r'\d{1,2}')
+            
+            match = re.search(pattern, text)
+            if match:
+                return match.group(0)
+            
+            return None
+            
+        except Exception as e:
+            self.logger.error(f"Error extracting date with format '{date_format}' from '{text}': {e}")
+            return None
+    
+    def extract_common_date_pattern(self, text: str) -> Optional[str]:
+        """Extract common date patterns as fallback when format-based extraction fails.
+        
+        Provides v2 compatibility with various international date formats
+        as a fallback mechanism.
+        
+        Supports: DD-MM-YYYY, DD/MM/YYYY, YYYY-MM-DD, MM/DD/YYYY, etc.
+        
+        Args:
+            text: Text potentially containing a date
+            
+        Returns:
+            Extracted date string or None
+        """
+        common_patterns = [
+            r'\d{2}-\d{2}-\d{4}',  # DD-MM-YYYY or MM-DD-YYYY
+            r'\d{2}/\d{2}/\d{4}',  # DD/MM/YYYY or MM/DD/YYYY
+            r'\d{4}-\d{2}-\d{2}',  # YYYY-MM-DD
+            r'\d{2}\.\d{2}\.\d{4}', # DD.MM.YYYY
+        ]
+        
+        for pattern in common_patterns:
+            match = re.search(pattern, text)
+            if match:
+                return match.group(0)
+        
+        return None
+    
+    def parse_date_with_format(self, date_str: str, date_format: str) -> Optional[str]:
+        """Parse a date string using v2 UI date format and convert to ISO format.
+        
+        V2 format uses UI-friendly format strings (DD-MM-YYYY, MM/DD/YYYY) which
+        are converted to Python strptime format and parsed to ISO format for Paperless.
+        
+        Args:
+            date_str: The date string (e.g., '27-12-2010')
+            date_format: V2 UI format like 'DD-MM-YYYY', 'MM/DD/YYYY', etc.
+            
+        Returns:
+            ISO formatted date string (YYYY-MM-DD) or None
+        """
+        if not date_str or not date_format:
+            return None
+        
+        try:
+            # Convert UI format to strptime format
+            # DD-MM-YYYY -> %d-%m-%Y
+            # MM/DD/YYYY -> %m/%d/%Y
+            strptime_format = date_format
+            strptime_format = strptime_format.replace('YYYY', '%Y')
+            strptime_format = strptime_format.replace('YY', '%y')
+            strptime_format = strptime_format.replace('MM', '%m')
+            strptime_format = strptime_format.replace('DD', '%d')
+            strptime_format = strptime_format.replace('M', '%m')
+            strptime_format = strptime_format.replace('D', '%d')
+            
+            parsed_date = datetime.strptime(date_str, strptime_format)
+            return parsed_date.strftime('%Y-%m-%d')
+            
+        except ValueError as e:
+            self.logger.warning(f"Failed to parse date '{date_str}' with format '{date_format}': {e}")
+            return None
+    
+    def validate_and_sanitize_value(self, value: str, data_type: str) -> Optional[str]:
+        """Validate and sanitize extracted value based on target field datatype
+        
+        Args:
+            value: The extracted string value
+            data_type: The Paperless-ngx field datatype (integer, float, monetary, etc.)
+            
+        Returns:
+            Sanitized value or None if validation fails
+        """
+        if not value:
+            return None
+            
+        value = value.strip()
+        
+        try:
+            if data_type == 'integer':
+                # Must be a whole number
+                # Remove common separators (commas, spaces)
+                cleaned = re.sub(r'[,\s]', '', value)
+                # Extract first integer found
+                match = re.search(r'-?\d+', cleaned)
+                if match:
+                    return str(int(match.group()))
+                self.logger.warning(f"Integer validation failed for value: {value}")
+                return None
+                
+            elif data_type == 'float':
+                # Must be a decimal number, normalize decimal separator
+                # Replace comma with period for decimal point
+                cleaned = value.replace(',', '.')
+                # Remove thousand separators (spaces)
+                cleaned = re.sub(r'(?<=\d)\s(?=\d)', '', cleaned)
+                # Extract first float found
+                match = re.search(r'-?\d+\.?\d*', cleaned)
+                if match:
+                    float_val = float(match.group())
+                    return str(float_val)
+                self.logger.warning(f"Float validation failed for value: {value}")
+                return None
+                
+            elif data_type == 'monetary':
+                # Monetary format: must use . as decimal separator with exactly 2 decimal places
+                # Replace comma with period
+                cleaned = value.replace(',', '.')
+                # Remove currency symbols and spaces
+                cleaned = re.sub(r'[^\d.-]', '', cleaned)
+                # Extract first number found
+                match = re.search(r'-?\d+\.?\d*', cleaned)
+                if match:
+                    float_val = float(match.group())
+                    # Format to exactly 2 decimal places
+                    return f"{float_val:.2f}"
+                self.logger.warning(f"Monetary validation failed for value: {value}")
+                return None
+                
+            elif data_type in ['string', 'date']:
+                # No validation needed for strings and dates (dates have their own parsing)
+                return value
+                
+            else:
+                # Unknown datatype, return as-is
+                return value
+                
+        except Exception as e:
+            self.logger.error(f"Error validating value '{value}' for datatype '{data_type}': {e}")
+            return None
+    
+    def extract_filename_metadata(self, rule: Dict[str, Any], filename: str) -> Dict[str, Any]:
+        r"""Extract metadata from filename using v2 rule patterns.
+        
+        V2 format supports two pattern configurations:
+        1. Simple string: Just a regex pattern for basic matching
+           Example: "Invoice.*\.pdf"
+        2. Dict config: Pattern with metadata extraction options
+           Example: {"pattern": "Invoice_(\d{4})", "date_group": 1, "date_format": "%Y"}
+           
+        Dict configs support: date_group, year_group, account_group for metadata extraction
+        
+        Args:
+            rule: Rule configuration with 'filename_patterns' and 'filename_metadata'
+            filename: Document filename to extract from
+            
+        Returns:
+            Dict of extracted metadata from filename
+        """
+        filename_metadata = rule.get('filename_metadata', {}) or {}
+        filename_patterns = rule.get('filename_patterns', []) or []
+        
+        extracted = {}
+        has_pattern_match = False
+        
+        # Check all filename patterns to find matches (supports multiple patterns for flexibility)
+        matched_patterns = []
+        
+        for i, pattern_config in enumerate(filename_patterns):
+            # Support both simple string patterns and detailed dict configurations
+            if isinstance(pattern_config, str):
+                pattern = pattern_config
+                pattern_options = {}
+            elif isinstance(pattern_config, dict) and 'pattern' in pattern_config:
+                pattern = pattern_config['pattern']
+                pattern_options = pattern_config
+            else:
+                self.logger.warning(f"Skipping invalid pattern_config at index {i}: {type(pattern_config).__name__}")
+                continue
+                
+            match = re.search(pattern, filename, re.IGNORECASE)
+            
+            if match:
+                has_pattern_match = True
+                matched_patterns.append(f"Pattern {i+1}: {pattern}")
+                self.logger.debug(f"Filename pattern {i+1} matched: {pattern}")
+                
+                # Extract date if date_group is specified
+                if 'date_group' in pattern_options:
+                    date_group_config = pattern_options['date_group']
+                    date_str = ""
+                    
+                    # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                    if '-' in str(date_group_config):
+                        # Handle group range like "1-2" (concatenate groups 1 and 2)
+                        start_group, end_group = str(date_group_config).split('-', 1)
+                        start_group, end_group = int(start_group), int(end_group)
+                        if len(match.groups()) >= end_group:
+                            for group_num in range(start_group, end_group + 1):
+                                date_str += match.group(group_num) or ""
+                    else:
+                        # Handle single group
+                        date_group = int(date_group_config)
+                        if len(match.groups()) >= date_group:
+                            date_str = match.group(date_group)
+                    
+                    if date_str:
+                        # Try to parse the date
+                        date_format = pattern_options.get('date_format', '%Y-%m')
+                        parsed_date = self.parse_date(date_str, date_format)
+                        if parsed_date:
+                            extracted['date_created'] = parsed_date
+                            self.logger.debug(f"Extracted date from filename pattern {i+1}: {parsed_date}")
+                
+                # Extract year if year_group is specified
+                if 'year_group' in pattern_options:
+                    year_group_config = pattern_options['year_group']
+                    year_str = ""
+                    
+                    # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                    if '-' in str(year_group_config):
+                        # Handle group range like "1-2" (concatenate groups 1 and 2)
+                        start_group, end_group = str(year_group_config).split('-', 1)
+                        start_group, end_group = int(start_group), int(end_group)
+                        if len(match.groups()) >= end_group:
+                            for group_num in range(start_group, end_group + 1):
+                                year_str += match.group(group_num) or ""
+                    else:
+                        # Handle single group
+                        year_group = int(year_group_config)
+                        if len(match.groups()) >= year_group:
+                            year_str = match.group(year_group)
+                    
+                    if year_str:
+                        # Add year tag if not already present
+                        if 'tags' not in extracted:
+                            extracted['tags'] = []
+                        year_tag = f"FY{year_str}"
+                        if year_tag not in extracted['tags']:
+                            extracted['tags'].append(year_tag)
+                        self.logger.debug(f"Extracted year tag from filename: {year_tag}")
+                
+                # Extract account info if account_group is specified
+                if 'account_group' in pattern_options:
+                    account_group_config = pattern_options['account_group']
+                    account_str = ""
+                    
+                    # Handle single group (e.g., "1") or group range (e.g., "1-2")
+                    if '-' in str(account_group_config):
+                        # Handle group range like "1-2" (concatenate groups 1 and 2)
+                        start_group, end_group = str(account_group_config).split('-', 1)
+                        start_group, end_group = int(start_group), int(end_group)
+                        if len(match.groups()) >= end_group:
+                            for group_num in range(start_group, end_group + 1):
+                                account_str += match.group(group_num) or ""
+                    else:
+                        # Handle single group
+                        account_group = int(account_group_config)
+                        if len(match.groups()) >= account_group:
+                            account_str = match.group(account_group)
+                    
+                    if account_str:
+                        # Could be used for account-specific tagging
+                        self.logger.debug(f"Extracted account info from filename: {account_str}")
+                
+                # Use first matching pattern for primary extraction
+                break
+        
+        if matched_patterns:
+            self.logger.debug(f"Matched filename patterns: {', '.join(matched_patterns)}")
+        
+        # Only apply static filename metadata if a pattern matched
+        if has_pattern_match:
+            self.logger.debug("Applying static filename metadata due to pattern match")
+            for field, value in filename_metadata.items():
+                if field == 'custom_fields' and isinstance(value, dict):
+                    extracted[field] = [{'name': k, 'value': v} for k, v in value.items()]
+                elif field == 'tags' and isinstance(value, list):
+                    extracted[field] = value
+                else:
+                    extracted[field] = value
+        else:
+            self.logger.debug("No filename patterns matched - no filename metadata applied")
+        
+        return extracted
+    
+    def parse_date(self, date_str: str, date_format: str) -> Optional[str]:
+        """Parse a date string using Python strptime format and convert to ISO.
+        
+        Used for filename date parsing where format uses Python % codes.
+        For v2 dynamic metadata, use parse_date_with_format() which accepts
+        UI-friendly formats like DD-MM-YYYY.
+        
+        Args:
+            date_str: Date string to parse
+            date_format: Python strptime format (e.g., '%Y-%m-%d', '%d/%m/%Y')
+            
+        Returns:
+            ISO formatted date string (YYYY-MM-DD) or None
+        """
+        try:
+            parsed_date = datetime.strptime(date_str, date_format)
+            # Return in ISO format (YYYY-MM-DD)
+            return parsed_date.strftime('%Y-%m-%d')
+        except ValueError as e:
+            self.logger.warning(f"Failed to parse date '{date_str}' with format '{date_format}': {e}")
+            return None
+    
+    def process_paperless_metadata(self, raw_doc: Dict[str, Any], api_client=None) -> Dict[str, Any]:
+        """Convert raw Paperless document data into a structured metadata dict.
+        
+        Resolves numeric IDs (correspondent, document_type, tags, custom_fields)
+        to human-readable names using the API client when available.
+        
+        Args:
+            raw_doc: Raw document dict from Paperless API (contains numeric IDs)
+            api_client: Optional PaperlessAPIClient for resolving IDs to names
+            
+        Returns:
+            Structured dict with resolved names for correspondent, document_type,
+            tags (as name list), and custom_fields (as name/value dicts)
+        """
+        processed = {
+            'date_created': {
+                'raw': raw_doc.get('created'),
+                'parsed': self.parse_paperless_date(raw_doc.get('created'))
+            },
+            'correspondent': None,
+            'document_type': None,
+            'tags': [],
+            'custom_fields': []
+        }
+        
+        # Process correspondent
+        if raw_doc.get('correspondent'):
+            if raw_doc.get('correspondent__name'):
+                processed['correspondent'] = raw_doc.get('correspondent__name')
+            elif api_client:
+                # Fetch correspondent name from API
+                all_correspondents = api_client.get_all_correspondents()
+                for name, id_val in all_correspondents.items():
+                    if id_val == raw_doc.get('correspondent'):
+                        processed['correspondent'] = name
+                        break
+        
+        # Process document type
+        if raw_doc.get('document_type'):
+            if raw_doc.get('document_type__name'):
+                processed['document_type'] = raw_doc.get('document_type__name')
+            elif api_client:
+                # Fetch document type name from API
+                all_doc_types = api_client.get_all_document_types()
+                for name, id_val in all_doc_types.items():
+                    if id_val == raw_doc.get('document_type'):
+                        processed['document_type'] = name
+                        break
+        
+        # Process tags
+        if 'tags' in raw_doc and isinstance(raw_doc['tags'], list) and api_client:
+            all_tags = api_client.get_all_tags()
+            tag_names = []
+            for tag_id in raw_doc['tags']:
+                for name, id_val in all_tags.items():
+                    if id_val == tag_id:
+                        tag_names.append(name)
+                        break
+            processed['tags'] = tag_names
+        
+        # Process custom fields
+        if 'custom_fields' in raw_doc and isinstance(raw_doc['custom_fields'], list) and api_client:
+            all_custom_fields = api_client.get_all_custom_fields()
+            # Create reverse mapping from ID to name
+            id_to_name = {id_val: name for name, id_val in all_custom_fields.items()}
+            
+            for field in raw_doc['custom_fields']:
+                if isinstance(field, dict) and field.get('value') is not None:
+                    field_id = field.get('field')
+                    field_name = id_to_name.get(field_id, f"Field_{field_id}")
+                    processed['custom_fields'].append({
+                        'name': field_name,
+                        'value': field.get('value')
+                    })
+        
+        return processed
+    
+    def parse_paperless_date(self, date_str: Optional[str]) -> Optional[str]:
+        """Parse Paperless date format to ISO date"""
+        if not date_str:
+            return None
+        
+        try:
+            # Try different date formats that Paperless might use
+            formats = [
+                '%Y-%m-%d',           # ISO format
+                '%Y-%m-%dT%H:%M:%S',  # ISO datetime
+                '%Y-%m-%dT%H:%M:%S.%f', # ISO datetime with microseconds
+                '%Y-%m-%dT%H:%M:%S.%fZ', # ISO datetime with timezone
+                '%Y-%m-%dT%H:%M:%SZ',  # ISO datetime with timezone
+            ]
+            
+            for fmt in formats:
+                try:
+                    parsed = datetime.strptime(date_str, fmt)
+                    return parsed.strftime('%Y-%m-%d')
+                except ValueError:
+                    continue
+            
+            # If no format worked, try to extract just the date part
+            if 'T' in date_str:
+                date_part = date_str.split('T')[0]
+                return self.parse_paperless_date(date_part)
+            
+            return None
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to parse Paperless date '{date_str}': {e}")
+            return None
+    
+    def normalize_metadata_for_comparison(self, metadata: Dict[str, Any], source: str) -> Dict[str, Any]:
+        """Normalize metadata into a consistent format for cross-source comparison.
+        
+        Different sources (static rules, dynamic extraction, Paperless API) return
+        metadata in varying formats (e.g., tags as objects vs strings, dates as
+        dicts vs strings). This method flattens everything to simple types.
+        
+        Args:
+            metadata: Raw metadata dict from any source
+            source: Source identifier (for future source-specific normalization)
+            
+        Returns:
+            Normalized dict with string values for scalar fields,
+            list of strings for tags, and dict for custom_fields
+        """
+        normalized = {}
+        
+        # Normalize correspondent
+        if 'correspondent' in metadata:
+            if isinstance(metadata['correspondent'], str):
+                normalized['correspondent'] = metadata['correspondent']
+            elif isinstance(metadata['correspondent'], dict):
+                normalized['correspondent'] = metadata['correspondent'].get('name')
+        
+        # Normalize document_type
+        if 'document_type' in metadata:
+            if isinstance(metadata['document_type'], str):
+                normalized['document_type'] = metadata['document_type']
+            elif isinstance(metadata['document_type'], dict):
+                normalized['document_type'] = metadata['document_type'].get('name')
+        
+        # Normalize date_created
+        if 'date_created' in metadata:
+            if isinstance(metadata['date_created'], str):
+                normalized['date_created'] = metadata['date_created']
+            elif isinstance(metadata['date_created'], dict):
+                normalized['date_created'] = metadata['date_created'].get('parsed')
+        
+        # Normalize tags
+        if 'tags' in metadata:
+            if isinstance(metadata['tags'], list):
+                if metadata['tags'] and isinstance(metadata['tags'][0], dict):
+                    # List of tag objects
+                    normalized['tags'] = [tag.get('name', '') for tag in metadata['tags']]
+                else:
+                    # List of tag names
+                    normalized['tags'] = metadata['tags']
+            else:
+                normalized['tags'] = []
+        
+        # Normalize custom_fields
+        if 'custom_fields' in metadata:
+            if isinstance(metadata['custom_fields'], list):
+                custom_fields_dict = {}
+                for field in metadata['custom_fields']:
+                    if isinstance(field, dict):
+                        name = field.get('name', '')
+                        value = field.get('value', '')
+                        if name:
+                            custom_fields_dict[name] = value
+                normalized['custom_fields'] = custom_fields_dict
+            else:
+                normalized['custom_fields'] = {}
+        
+        return normalized
+    
+    def prepare_update_payload(self, document_id: int, metadata: Dict[str, Any], 
+                              api_mappings: Dict[str, Dict[str, int]]) -> Dict[str, Any]:
+        """Build a Paperless API-compatible update payload from extracted metadata.
+        
+        Converts human-readable names (correspondent, tag names, custom field names)
+        to their numeric Paperless IDs using the provided api_mappings lookup tables.
+        
+        Args:
+            document_id: The Paperless document ID (for context/logging)
+            metadata: Extracted metadata with human-readable names
+            api_mappings: Dict of entity type -> {name: id} mappings, e.g.:
+                {'correspondents': {'Acme': 5}, 'tags': {'Invoice': 12}, ...}
+                
+        Returns:
+            Dict ready to PATCH to /api/documents/{id}/ with numeric IDs
+        """
+        payload = {}
+        
+        # Handle correspondent
+        if 'correspondent' in metadata and metadata['correspondent']:
+            correspondent_name = metadata['correspondent']
+            if correspondent_name in api_mappings.get('correspondents', {}):
+                payload['correspondent'] = api_mappings['correspondents'][correspondent_name]
+        
+        # Handle document_type
+        if 'document_type' in metadata and metadata['document_type']:
+            doc_type_name = metadata['document_type']
+            if doc_type_name in api_mappings.get('document_types', {}):
+                payload['document_type'] = api_mappings['document_types'][doc_type_name]
+        
+        # Handle date_created
+        if 'date_created' in metadata and metadata['date_created']:
+            payload['created'] = metadata['date_created']
+        
+        # Handle tags
+        if 'tags' in metadata and metadata['tags']:
+            tag_ids = []
+            for tag_name in metadata['tags']:
+                if tag_name in api_mappings.get('tags', {}):
+                    tag_ids.append(api_mappings['tags'][tag_name])
+            if tag_ids:
+                payload['tags'] = tag_ids
+        
+        # Handle custom fields
+        if 'custom_fields' in metadata and metadata['custom_fields']:
+            custom_fields = []
+            custom_field_data = metadata['custom_fields']
+            
+            # Handle both dictionary and list formats for custom fields
+            if isinstance(custom_field_data, dict):
+                # Dictionary format: {field_name: field_value}
+                for field_name, field_value in custom_field_data.items():
+                    if field_name in api_mappings.get('custom_fields', {}):
+                        custom_fields.append({
+                            'field': api_mappings['custom_fields'][field_name],
+                            'value': str(field_value)
+                        })
+            elif isinstance(custom_field_data, list):
+                # List format: [{name: field_name, value: field_value}]
+                for field_item in custom_field_data:
+                    if isinstance(field_item, dict) and 'name' in field_item:
+                        field_name = field_item['name']
+                        field_value = field_item.get('value', '')
+                        if field_name in api_mappings.get('custom_fields', {}):
+                            custom_fields.append({
+                                'field': api_mappings['custom_fields'][field_name],
+                                'value': str(field_value)
+                            })
+            
+            if custom_fields:
+                payload['custom_fields'] = custom_fields
+        
+        return payload
