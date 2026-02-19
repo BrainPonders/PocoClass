@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# User configuration (prevents overwriting custom settings)
+settings.py
+settings_backup_*.py
+
+# Environment variables (contains secrets - DO NOT COMMIT!)
+.env
+.env.local
+.env.*.local
+
+# Runtime files
+log.txt
+*.log
+
+# Database files (contains personal user data)
+*.db
+*.sqlite
+*.sqlite3
+
+# Build and cache directories
+.config/
+.vite/
+node_modules/
+dist/
+
+# Development and debug files
+debug_*.py
+debug_*.txt
+test_*.py
+!test_engine.py
+*_demo.py
+sample_*.txt
+
+# Development assets and attachments
+attached_assets/
+
+# User rules (only distribute templates)
+rules/*
+!rules/template_v2.yaml
+
+# Replit development environment (not needed for production)
+.replit
+replit.nix
+
+# Project memory and development notes (keep private)
+replit.md
+Documents/
+README_CONFIGURATION.md
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+.pythonlibs/
+
+# Package management
+uv.lock
+Pipfile.lock
+poetry.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+.directory
+
+# Docker local override files
+docker-compose.override.yml
+compose.override.yml
+
+# Local Codex policy files (workspace-only, do not commit)
+AGENTS.md
+AGEND.md
+
+# Local Docker build artifacts
+.buildx-cache/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/

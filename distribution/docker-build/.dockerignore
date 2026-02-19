@@ -1,0 +1,68 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv/
+ENV/
+.pythonlibs/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.db
+*.sqlite
+*.sqlite3
+pococlass.db
+*.log
+*.bak
+*.tmp
+*.orig
+
+# Assets and docs (not needed in container)
+attached_assets/
+documentation/
+distribution/docker-build/Dockerfile
+*.md
+!requirements.txt
+
+# Replit
+.replit
+replit.nix
+replit.md
+.upm/
+.cache/
+.config/
+
+# Test files
+*.test.py
+tests/
+
+# Lock files (we use package-lock.json in Dockerfile)
+uv.lock
