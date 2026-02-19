@@ -29,6 +29,9 @@ USER root
 
 WORKDIR /app
 
+RUN set -ex; \
+    apk add --no-cache libgcc libstdc++;
+
 COPY requirements.txt ./
 RUN set -ex; \
     pip install \
