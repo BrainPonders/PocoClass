@@ -1510,7 +1510,7 @@ def process_batch(self, user_session=None, filters=None, dry_run=False, run_id=N
         return {'success': True, 'skipped': True, 'reason': 'auto-pause', 'run_id': run_id}
     
     # 4. Sync Paperless data
-    from sync_service import SyncService
+    from backend.sync_service import SyncService
     sync_service = SyncService(self.db)
     sync_service.sync_all(paperless_token, paperless_url)
     

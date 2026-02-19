@@ -41,16 +41,7 @@ RUN set -ex; \
       gunicorn;
 
 COPY api.py ./
-COPY api_client.py ./
-COPY background_processor.py ./
-COPY config.py ./
-COPY database.py ./
-COPY metadata_processor.py ./
-COPY pattern_matcher.py ./
-COPY rule_loader.py ./
-COPY scoring_calculator_v2.py ./
-COPY sync_service.py ./
-COPY test_engine.py ./
+COPY backend/ ./backend/
 
 COPY rules/ ./rules/
 COPY scripts/ ./scripts/
