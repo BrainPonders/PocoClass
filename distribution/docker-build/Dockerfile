@@ -27,9 +27,6 @@ ENV POCOCLASS_BUILD_NUMBER=${BUILD_NUMBER}
 
 USER root
 
-RUN set -ex; \
-    apk add --no-cache curl bash libgcc libstdc++;
-
 WORKDIR /app
 
 COPY requirements.txt ./
@@ -70,7 +67,7 @@ USER docker
 EXPOSE 5000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:5000/api/health || exit 1
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health', timeout=5)" || exit 1
 
 VOLUME ["/app/data"]
 
