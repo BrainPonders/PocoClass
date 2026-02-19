@@ -58,7 +58,7 @@ RUN chmod +x scripts/post-consumption/pococlass_trigger.sh
 
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-COPY docker/docker-entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY distribution/docker-build/docker-entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 RUN set -ex; \

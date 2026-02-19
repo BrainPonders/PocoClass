@@ -48,8 +48,7 @@ pococlass.db
 # Assets and docs (not needed in container)
 attached_assets/
 documentation/
-docker/Dockerfile
-docker/docker-compose.yml
+distribution/docker-build/Dockerfile
 *.md
 !requirements.txt
 

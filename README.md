@@ -159,7 +159,7 @@ python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).de
 ```
 or:
 ```bash
-python3 source/scripts/Maintainer/generate_secret_key.py
+python3 source/scripts/generate_secret_key.py
 ```
 - `POCOCLASS_IMAGE` (required image reference for deployment), for example:
   - `ghcr.io/<your-org>/pococlass:v2.0.0`

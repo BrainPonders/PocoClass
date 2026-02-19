@@ -8,7 +8,7 @@ This is the maintainer runbook for publishing PocoClass Docker images for end us
 
 ## Overview: Steps to Release
 
-1. Complete local development and testing with `bash scripts/Maintainer/dev-rebuild.sh` (see `documentation/DEVELOPMENT.md`).
+1. Complete local development and testing with `bash distribution/dev-build.sh` (see `distribution/dev-rebuild.md`).
 2. Choose release tag type:
    - Develop: `2.1-develop`
    - RC: `2.1.0-rc.1`
@@ -44,7 +44,7 @@ The workflow uses `GITHUB_TOKEN` with:
 ### 1) Develop and test locally
 
 ```bash
-bash scripts/Maintainer/dev-rebuild.sh
+bash distribution/dev-build.sh
 ```
 
 ### 2) Choose release channel and tag
@@ -120,7 +120,7 @@ Use this only for local release simulation:
 ```bash
 POCOCLASS_IMAGE_NAME=pococlass \
 POCOCLASS_IMAGE_TAG=2.1.0-rc.1 \
-bash scripts/Maintainer/release.sh
+bash distribution/release.sh
 ```
 
 `release.sh` now enforces the same tag policy as GitHub workflow and adds trace tags:

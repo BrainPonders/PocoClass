@@ -39,9 +39,9 @@ Expected runtime files/folders:
 
 Run from repository root:
 
-- `bash scripts/Maintainer/dev-rebuild.sh`
+- `bash distribution/dev-build.sh`
 
-## What `dev-rebuild.sh` does
+## What `dev-build.sh` does
 
 1. Fetches and hard-resets the repo to `origin/<current-branch>` by default.
    You can override this with `POCOCLASS_DEV_BRANCH=<branch>`.
@@ -69,26 +69,26 @@ The script must not:
 
 ## First Run Checklist
 
-1. Run `bash scripts/Maintainer/dev-rebuild.sh`.
+1. Run `bash distribution/dev-build.sh`.
 2. Edit `<repo-parent>/pococlass-dev/.env`.
 3. Set `POCOCLASS_SECRET_KEY` (Fernet-compatible key), for example:
    - `python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"`
-   - or `python3 scripts/Maintainer/generate_secret_key.py`
-4. Run `bash scripts/Maintainer/dev-rebuild.sh` again.
+   - or `python3 scripts/generate_secret_key.py`
+4. Run `bash distribution/dev-build.sh` again.
 
 ## Optional Runtime Override
 
 Set a custom runtime directory:
 
-- `POCOCLASS_DEV_ROOT=/custom/path bash scripts/Maintainer/dev-rebuild.sh`
+- `POCOCLASS_DEV_ROOT=/custom/path bash distribution/dev-build.sh`
 
 Set a custom compose project name:
 
-- `POCOCLASS_DEV_PROJECT=my-dev-stack bash scripts/Maintainer/dev-rebuild.sh`
+- `POCOCLASS_DEV_PROJECT=my-dev-stack bash distribution/dev-build.sh`
 
 Set a custom source branch:
 
-- `POCOCLASS_DEV_BRANCH=Docker-deploy bash scripts/Maintainer/dev-rebuild.sh`
+- `POCOCLASS_DEV_BRANCH=Docker-deploy bash distribution/dev-build.sh`
 
 # DEVELOPMENT
 
@@ -139,7 +139,7 @@ Templates stored in the repository:
 
 - `/docker/compose/docker-compose.dev.yml`
 - `/docker/compose/env.dev`
-- `/scripts/Maintainer/dev-rebuild.sh`
+- `/distribution/dev-build.sh`
 
 These are templates only.
 They are never used directly as runtime files.
@@ -178,13 +178,13 @@ Why outside the repo?
 
 From repository root:
 
-`bash scripts/Maintainer/dev-rebuild.sh`
+`bash distribution/dev-build.sh`
 
 This command performs the full development lifecycle.
 
 ---
 
-# 6. What dev-rebuild.sh Does
+# 6. What dev-build.sh Does
 
 The script performs the following steps in order:
 
@@ -245,7 +245,7 @@ All destructive Git operations are restricted to the repository clone only.
 # 8. First-Time Setup
 
 1. Run:
-   `bash scripts/Maintainer/dev-rebuild.sh`
+   `bash distribution/dev-build.sh`
 
 2. Edit runtime `.env`:
    `<repo-parent>/pococlass-dev/.env`
@@ -256,7 +256,7 @@ All destructive Git operations are restricted to the repository clone only.
 
    or
 
-   `python3 scripts/Maintainer/generate_secret_key.py`
+   `python3 scripts/generate_secret_key.py`
 
 4. Run the rebuild command again.
 
@@ -268,15 +268,15 @@ All destructive Git operations are restricted to the repository clone only.
 
 Override runtime directory:
 
-`POCOCLASS_DEV_ROOT=/custom/path bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_ROOT=/custom/path bash distribution/dev-build.sh`
 
 Override compose project name:
 
-`POCOCLASS_DEV_PROJECT=my-dev-stack bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_PROJECT=my-dev-stack bash distribution/dev-build.sh`
 
 Override source branch:
 
-`POCOCLASS_DEV_BRANCH=feature-branch bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_BRANCH=feature-branch bash distribution/dev-build.sh`
 
 ---
 
@@ -286,7 +286,7 @@ Typical workflow:
 
 1. Create feature branch.
 2. Commit fixes.
-3. Run `dev-rebuild.sh` to test branch image.
+3. Run `dev-build.sh` to test branch image.
 4. Validate functionality in Docker.
 5. Merge into `main` only after verification.
 
@@ -306,9 +306,9 @@ Diagram (conceptual):
             v
   [Repo clone: pococlass-repo]
     - templates: docker-compose.dev.yml, env.dev
-    - scripts: dev-rebuild.sh
+    - scripts: dev-build.sh
             |
-            |  (dev-rebuild.sh copies templates if missing;
+            |  (dev-build.sh copies templates if missing;
             |   writes *.new files if templates changed)
             v
   [Runtime dir: <repo-parent>/pococlass-dev]
@@ -416,8 +416,8 @@ Templates stored inside the repository:
 
 - `/docker/compose/docker-compose.dev.yml`
 - `/docker/compose/env.dev`
-- `/scripts/Maintainer/dev-rebuild.sh`
-- `/docker/Dockerfile`
+- `/distribution/dev-build.sh`
+- `/distribution/docker-build/Dockerfile`
 
 These files are templates only.  
 They are never used directly as runtime files.
@@ -456,13 +456,13 @@ Why outside the repo?
 
 From repository root:
 
-`bash scripts/Maintainer/dev-rebuild.sh`
+`bash distribution/dev-build.sh`
 
 This command performs the full development lifecycle.
 
 ---
 
-# 6. What dev-rebuild.sh Actually Does (Step-by-Step)
+# 6. What dev-build.sh Actually Does (Step-by-Step)
 
 The script performs the following operations in strict order.
 
@@ -617,7 +617,7 @@ All destructive Git operations are restricted to the repository clone only.
 
 1. Run:
 
-   `bash scripts/Maintainer/dev-rebuild.sh`
+   `bash distribution/dev-build.sh`
 
 2. Edit runtime:
 
@@ -637,15 +637,15 @@ All destructive Git operations are restricted to the repository clone only.
 
 Override runtime directory:
 
-`POCOCLASS_DEV_ROOT=/custom/path bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_ROOT=/custom/path bash distribution/dev-build.sh`
 
 Override compose project name:
 
-`POCOCLASS_DEV_PROJECT=my-dev-stack bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_PROJECT=my-dev-stack bash distribution/dev-build.sh`
 
 Override source branch:
 
-`POCOCLASS_DEV_BRANCH=feature-branch bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_BRANCH=feature-branch bash distribution/dev-build.sh`
 
 ---
 
@@ -655,7 +655,7 @@ Typical workflow:
 
 1. Create feature branch.
 2. Commit fixes.
-3. Run `dev-rebuild.sh`.
+3. Run `dev-build.sh`.
 4. Validate in Docker.
 5. Merge into `main` only after verification.
 6. Delete branch after merge.
@@ -784,8 +784,8 @@ Templates stored inside the repository:
 
 - `/docker/compose/docker-compose.dev.yml`
 - `/docker/compose/env.dev`
-- `/scripts/Maintainer/dev-rebuild.sh`
-- `/docker/Dockerfile`
+- `/distribution/dev-build.sh`
+- `/distribution/docker-build/Dockerfile`
 
 These files are templates only.  
 They are never used directly as runtime files.
@@ -824,13 +824,13 @@ Why outside the repo?
 
 From repository root:
 
-`bash scripts/Maintainer/dev-rebuild.sh`
+`bash distribution/dev-build.sh`
 
 This command performs the full development lifecycle.
 
 ---
 
-# 6. What dev-rebuild.sh Actually Does (Step-by-Step)
+# 6. What dev-build.sh Actually Does (Step-by-Step)
 
 The script performs the following operations in strict order.
 
@@ -985,7 +985,7 @@ All destructive Git operations are restricted to the repository clone only.
 
 1. Run:
 
-   `bash scripts/Maintainer/dev-rebuild.sh`
+   `bash distribution/dev-build.sh`
 
 2. Edit runtime:
 
@@ -1005,15 +1005,15 @@ All destructive Git operations are restricted to the repository clone only.
 
 Override runtime directory:
 
-`POCOCLASS_DEV_ROOT=/custom/path bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_ROOT=/custom/path bash distribution/dev-build.sh`
 
 Override compose project name:
 
-`POCOCLASS_DEV_PROJECT=my-dev-stack bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_PROJECT=my-dev-stack bash distribution/dev-build.sh`
 
 Override source branch:
 
-`POCOCLASS_DEV_BRANCH=feature-branch bash scripts/Maintainer/dev-rebuild.sh`
+`POCOCLASS_DEV_BRANCH=feature-branch bash distribution/dev-build.sh`
 
 ---
 
@@ -1023,7 +1023,7 @@ Typical workflow:
 
 1. Create feature branch.
 2. Commit fixes.
-3. Run `dev-rebuild.sh`.
+3. Run `dev-build.sh`.
 4. Validate in Docker.
 5. Merge into `main` only after verification.
 6. Delete branch after merge.

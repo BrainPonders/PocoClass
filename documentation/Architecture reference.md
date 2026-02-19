@@ -35,6 +35,7 @@
 9. [Data Flow Diagrams](#9-data-flow-diagrams)
 10. [API Reference](#10-api-reference)
 11. [Database Schema](#11-database-schema)
+12. [Connectivity & Integration](#12-connectivity--integration)
 
 ---
 
@@ -1889,7 +1890,7 @@ Authorization: Bearer {sessionToken}
 }
 ```
 
-#### POST /api/rules/:id/test
+#### POST /api/rules/test
 **Description**: Test rule against a document.
 
 **Request**:
@@ -2124,6 +2125,195 @@ CREATE TABLE processing_history (
 CREATE INDEX idx_processing_history_started ON processing_history(started_at DESC);
 CREATE INDEX idx_processing_history_status ON processing_history(status);
 ```
+
+---
+
+## 12. Connectivity & Integration
+
+This section consolidates integration-focused operational documentation so this architecture file is the single source of truth.
+
+### 12.1 High-Level Connection Diagram
+
+```mermaid
+flowchart LR
+    UI["PocoClass UI\n(React)"]
+    Script["Post-consumption Script\n(pococlass_trigger.sh)"]
+    API["PocoClass Backend\n(Flask REST API)"]
+    Sync["Sync Service"]
+    Proc["Background Processor"]
+    TestEng["Test / Execute Engine"]
+    DB["SQLite\n(cache, sessions,\nconfig, logs)"]
+    Paperless["Paperless-ngx\nREST API"]
+
+    UI -->|"Auth, Rules, Settings,\nSync, Documents,\nBackground Processing"| API
+    Script -->|"POST /api/background/trigger\nX-API-Key header"| API
+
+    API --> Sync
+    API --> Proc
+    API --> TestEng
+    API --> DB
+
+    Sync -->|"Read entities"| Paperless
+    Sync -->|"Cache locally"| DB
+
+    TestEng -->|"Read document\ncontent / OCR"| Paperless
+
+    Proc -->|"Pre-run sync"| Sync
+    Proc -->|"Read candidate docs\n+ content / OCR"| Paperless
+    Proc -->|"Write classification\nresults back"| Paperless
+    Proc -->|"Log processing\nhistory"| DB
+```
+
+### 12.2 Data Flow: What Goes Where
+
+#### PocoClass reads FROM Paperless
+
+| Data | When | Purpose |
+|---|---|---|
+| Correspondents, Tags, Document Types, Custom Fields, Users | Sync | Populate dropdowns, validate rules, resolve entity names, check required fields |
+| Documents (list + metadata) | Rule testing, background processing, document browsing | Match against rules, apply classification |
+| Document content / OCR text | Rule testing, background processing | Pattern matching against OCR identifiers |
+| Document preview (thumbnail) | UI document list | Display document thumbnails |
+
+**Sync happens in three situations**: on user login, via the Sync button under Settings, and automatically before every background processing run.
+
+#### PocoClass writes TO Paperless
+
+| Data | When | Purpose |
+|---|---|---|
+| Tags (POCO+, POCO-) | After rule evaluation during processing | Mark documents as classified or unclassified |
+| Tags (remove NEW) | After processing | Remove discovery tag from processed documents |
+| Correspondent | After rule match (if rule defines one) | Assign document correspondent |
+| Document Type | After rule match (if rule defines one) | Assign document type |
+| Custom Fields (POCO Score, POCO OCR) | After rule evaluation | Write dual scores for transparency and audit |
+| Custom Fields (static/dynamic metadata) | After rule match | Write extracted metadata (dates, amounts, etc.) |
+| Document notes | After rule evaluation | Append POCO score summary to document notes |
+
+### 12.3 API Endpoint Catalog (Connectivity View)
+
+This is the endpoint catalog used for integration and operations. See Section 10 for detailed request/response examples on selected endpoints.
+
+#### Authentication & Sessions
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/health` | GET | None | Health check and version info |
+| `/api/auth/setup` | POST | None | Initial admin setup |
+| `/api/auth/complete-setup` | POST | None | Complete first-time setup |
+| `/api/auth/login` | POST | None | Login with Paperless credentials |
+| `/api/auth/logout` | POST | Session | End user session logout |
+| `/api/auth/status` | GET | None | Check if setup is complete |
+| `/api/auth/me` | GET | Session | Get current user info |
+
+#### Data Sync (Paperless -> PocoClass cache)
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/sync` | POST | Session | Trigger full sync of Paperless entities |
+| `/api/sync/status` | GET | Session | Check sync status |
+| `/api/sync/history` | GET | Session | View sync history |
+| `/api/sync/counts` | GET | Session | Get cached entity counts |
+
+#### Rule Management
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/rules` | GET | Session | List all rules |
+| `/api/rules/<rule_id>` | GET | Session | Get single rule |
+| `/api/rules` | POST | Session | Create new rule |
+| `/api/rules/<rule_id>` | PUT | Session | Update rule |
+| `/api/rules/<rule_id>` | DELETE | Admin | Delete rule |
+| `/api/rules/errors` | GET | Session | Get rules with validation errors |
+
+#### Rule Testing & Execution
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/rules/test` | POST | Session | Test rule against document content (reads OCR from Paperless) |
+| `/api/rules/<rule_id>/execute` | POST | Session | Execute rule against a Paperless document |
+
+#### Document Browsing
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/documents` | GET | Session | List/search documents |
+| `/api/documents/<id>/preview` | GET | Session | Get document thumbnail |
+| `/api/documents/<id>/content` | GET | Session | Get document content / OCR text |
+
+#### Background Processing
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/background/trigger` | POST | System token OR Admin session | Trigger debounced processing |
+| `/api/background/process` | POST | Session | Manual processing with filters (Run / Dry Run) |
+| `/api/background/status` | GET | Session | Get processing status |
+| `/api/background/history` | GET | Session | Get processing run history |
+| `/api/background/history/<run_id>/details` | GET | Session | Get detailed results for a processing run |
+| `/api/background/settings` | GET | Session | Get background processing settings |
+| `/api/background/settings` | POST | Admin | Update background processing settings |
+
+#### Settings & Configuration
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/settings/batch` | GET | Session | Get multiple settings at once |
+| `/api/settings` | GET | Session | Get all settings |
+| `/api/settings/<key>` | PUT | Admin | Update a setting |
+| `/api/settings/app` | GET/POST | Session/Admin | App appearance settings |
+| `/api/settings/date-formats` | GET | Session | Get available date formats |
+| `/api/settings/date-formats/<format>` | PUT | Admin | Toggle a date format |
+| `/api/settings/paperless-config` | GET/PUT | Session/Admin | Paperless connection settings |
+| `/api/settings/poco-ocr-enabled` | GET/PUT | Session/Admin | Toggle POCO OCR feature |
+| `/api/settings/placeholders` | GET/PUT | Session/Admin | Field visibility settings |
+
+#### System Administration
+
+| Endpoint | Method | Auth | Purpose |
+|---|---|---|---|
+| `/api/system-token` | GET | Admin | Check if system token exists |
+| `/api/system-token` | POST | Admin | Generate new system token |
+| `/api/system-token` | DELETE | Admin | Revoke system token |
+| `/api/system/reset-app` | POST | Admin | Factory reset the application |
+| `/api/logs` | GET | Admin | Get system logs |
+
+### 12.4 Processing Pipeline (Operational View)
+
+Operational sequence:
+
+`Trigger -> Debounce -> Lock Check -> Auto-pause Check -> Pre-run Sync -> Discovery -> Processing -> History Update`
+
+Detailed behavior is documented in:
+- Section 7.3 (Debounced Triggering)
+- Section 7.4 (Processing Lock Mechanism)
+- Section 7.6 (Auto-Pause for Session Activity)
+- Section 7.7 (Processing Flow)
+
+### 12.5 Authentication Model (Integration View)
+
+| Auth Method | Used By | How It Works |
+|---|---|---|
+| Session auth (cookie or Bearer session token) | Web UI users, authenticated API clients | Login validates Paperless credentials, creates PocoClass session, and accepts cookie or `Authorization: Bearer <session_token>` thereafter |
+| System token (`X-API-Key`) | External scripts and automation | Admin generates token in Settings; script sends token in header; accepted for `/api/background/trigger` |
+
+All endpoints require authentication except:
+- `/api/health`
+- `/api/auth/status`
+- `/api/auth/login`
+- `/api/auth/setup`
+- `/api/auth/complete-setup`
+
+### 12.6 External Script Integration
+
+For full setup, see Section 7.1.1.
+
+`pococlass_trigger.sh` trigger contract:
+
+```bash
+curl -X POST https://your-pococlass-url/api/background/trigger \
+  -H "X-API-Key: your-system-token"
+```
+
+Because triggering is debounced, rapid successive calls (for example during bulk imports) are collapsed into a single processing run after the debounce period.
 
 ---
 
