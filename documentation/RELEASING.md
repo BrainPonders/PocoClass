@@ -6,6 +6,18 @@ This is the maintainer runbook for publishing PocoClass Docker images for end us
 - How: push a release tag, GitHub Actions builds and publishes to GHCR.
 - What users deploy: immutable image tags in their `.env` (`POCOCLASS_IMAGE=...`).
 
+## Overview: Steps to Release
+
+1. Complete local development and testing with `bash scripts/Maintainer/dev-rebuild.sh` (see `documentation/DEVELOPMENT.md`).
+2. Choose release tag type:
+   - Develop: `2.1-develop`
+   - RC: `2.1.0-rc.1`
+   - Final: `2.1.0`
+3. Create and push the tag to GitHub.
+4. Wait for GitHub Action `Release Docker Image` to complete.
+5. Verify image manifest in GHCR (`docker buildx imagetools inspect ...`).
+6. Share the immutable image tag for deployment (`POCOCLASS_IMAGE=ghcr.io/<owner>/pococlass:<tag>`).
+
 ## Tag Model
 
 Use only these source tags:
