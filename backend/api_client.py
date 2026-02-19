@@ -20,8 +20,8 @@ Key class:
 import requests
 import logging
 from typing import Dict, List, Any, Optional
-from config import Config
-from database import Database
+from backend.config import Config
+from backend.database import Database
 
 class PaperlessAPIClient:
     """Client for interacting with the Paperless-ngx REST API.

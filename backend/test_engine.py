@@ -13,9 +13,9 @@ Key class:
 
 import logging
 from typing import Dict, List, Any, Optional
-from pattern_matcher import PatternMatcher
-from metadata_processor import MetadataProcessor
-from scoring_calculator_v2 import POCOScoringV2
+from backend.pattern_matcher import PatternMatcher
+from backend.metadata_processor import MetadataProcessor
+from backend.scoring_calculator_v2 import POCOScoringV2
 
 class TestEngine:
     """

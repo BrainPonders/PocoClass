@@ -24,11 +24,11 @@ import time
 import threading
 from datetime import datetime
 from typing import Dict, List, Optional, Any
-from database import Database
-from api_client import PaperlessAPIClient
-from config import Config
-from test_engine import TestEngine
-from rule_loader import RuleLoader
+from backend.database import Database
+from backend.api_client import PaperlessAPIClient
+from backend.config import Config
+from backend.test_engine import TestEngine
+from backend.rule_loader import RuleLoader
 
 logger = logging.getLogger(__name__)
 
@@ -182,7 +182,7 @@ class BackgroundProcessor:
             
             # Sync data from Paperless ONCE before processing
             logger.info("Syncing data from Paperless before processing...")
-            from sync_service import SyncService
+            from backend.sync_service import SyncService
             sync_service = SyncService(self.db)
             sync_result = sync_service.sync_all(paperless_token, paperless_url)
             logger.info(f"Sync completed: {sync_result}")

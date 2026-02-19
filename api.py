@@ -35,12 +35,12 @@ from datetime import datetime
 from pathlib import Path
 import logging
 
-from rule_loader import RuleLoader
-from api_client import PaperlessAPIClient
-from config import Config
-from test_engine import TestEngine
-from database import Database
-from sync_service import SyncService
+from backend.rule_loader import RuleLoader
+from backend.api_client import PaperlessAPIClient
+from backend.config import Config
+from backend.test_engine import TestEngine
+from backend.database import Database
+from backend.sync_service import SyncService
 import requests
 from functools import wraps
 
@@ -2060,8 +2060,8 @@ def list_documents():
         paperless_url = db.get_config('paperless_url')
         
         # Initialize Paperless API client
-        from api_client import PaperlessAPIClient
-        from config import Config
+        from backend.api_client import PaperlessAPIClient
+        from backend.config import Config
         
         config = Config()
         config.paperless_token = session['paperless_token']
@@ -2722,7 +2722,7 @@ def execute_rule_endpoint(rule_id):
 
 # ---- Background Processing Routes ----
 
-from background_processor import BackgroundProcessor
+from backend.background_processor import BackgroundProcessor
 background_processor = BackgroundProcessor(db)
 
 @app.route('/api/background/trigger', methods=['POST'])
