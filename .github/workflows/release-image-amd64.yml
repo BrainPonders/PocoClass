@@ -1,24 +1,30 @@
-name: Release Docker Image
+name: Release Docker Image (amd64)
 
 on:
   push:
     tags:
-      - '*.*-develop'
-      - '*.*.*-rc.*'
-      - '*.*.*'
+      - '*.*-develop-amd64'
+      - '*.*.*-rc.*-amd64'
+      - '*.*.*-amd64'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Base tag without -amd64 (e.g. 2.1-develop, 2.1.0-rc.1, 2.1.0)
+        required: true
+        type: string
 
 permissions:
   contents: read
   packages: write
 
 concurrency:
-  group: release-image-${{ github.ref }}
+  group: release-image-amd64-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build-and-push:
+  build-and-push-amd64:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 120
 
     steps:
       - name: Checkout
@@ -34,24 +40,39 @@ jobs:
           owner_lc="$(printf '%s' "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
           echo "image_name=ghcr.io/${owner_lc}/pococlass" >> "$GITHUB_OUTPUT"
 
-      - name: Validate release tag
+      - name: Resolve and validate release tag
         id: validate
         shell: bash
         run: |
           set -euo pipefail
-          tag="${GITHUB_REF_NAME}"
-          if [[ "$tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            base_tag="${{ inputs.release_tag }}"
+          else
+            raw_tag="${GITHUB_REF_NAME}"
+            if [[ "$raw_tag" != *-amd64 ]]; then
+              echo "Invalid amd64 tag: $raw_tag"
+              echo "Expected suffix: -amd64"
+              exit 1
+            fi
+            base_tag="${raw_tag%-amd64}"
+          fi
+
+          if [[ "$base_tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
             channel="develop"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+          elif [[ "$base_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          elif [[ "$base_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             channel="final"
           else
-            echo "Invalid release tag: $tag"
+            echo "Invalid base release tag: $base_tag"
             echo "Allowed: <major>.<minor>-develop | <major>.<minor>.<patch>-rc.<n> | <major>.<minor>.<patch>"
             exit 1
           fi
+
+          source_tag="${base_tag}-amd64"
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
+          echo "base_tag=$base_tag" >> "$GITHUB_OUTPUT"
+          echo "source_tag=$source_tag" >> "$GITHUB_OUTPUT"
 
       - name: Prepare release metadata
         id: meta
@@ -61,7 +82,7 @@ jobs:
           image_name="${{ steps.image.outputs.image_name }}"
           build_number="$(git rev-list --count HEAD)"
           short_sha="$(git rev-parse --short=12 HEAD)"
-          source_tag="${GITHUB_REF_NAME}"
+          source_tag="${{ steps.validate.outputs.source_tag }}"
 
           {
             echo "build_number=$build_number"
@@ -69,16 +90,13 @@ jobs:
             echo "source_tag=$source_tag"
             echo "tags<<EOF"
             echo "${image_name}:${source_tag}"
-            echo "${image_name}:build-${build_number}"
-            echo "${image_name}:sha-${short_sha}"
+            echo "${image_name}:build-${build_number}-amd64"
+            echo "${image_name}:sha-${short_sha}-amd64"
             if [[ "${{ steps.validate.outputs.channel }}" == "develop" ]]; then
               echo "${image_name}:${source_tag}-build-${build_number}"
             fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -90,13 +108,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push multi-arch image
+      - name: Build and push amd64 image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: distribution/docker-build/Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
@@ -107,15 +125,16 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ steps.meta.outputs.source_tag }}
             org.opencontainers.image.title=PocoClass
-            org.opencontainers.image.description=PocoClass Docker image
+            org.opencontainers.image.description=PocoClass Docker image (amd64)
 
       - name: Summary
         shell: bash
         run: |
           {
-            echo "## Release image published"
+            echo "## Release image published (amd64)"
             echo ""
             echo "- Channel: ${{ steps.validate.outputs.channel }}"
+            echo "- Base tag: \`${{ steps.validate.outputs.base_tag }}\`"
             echo "- Source tag: \`${{ steps.meta.outputs.source_tag }}\`"
             echo "- Build number: \`${{ steps.meta.outputs.build_number }}\`"
             echo "- Commit: \`${{ steps.meta.outputs.short_sha }}\`"

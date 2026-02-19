@@ -28,6 +28,17 @@ Use only these source tags:
 
 Do not use `latest`.
 
+## Which Workflow To Use
+
+- Multi-arch (default): `.github/workflows/release-image.yml`
+  - Builds `linux/amd64` + `linux/arm64`
+  - Use normal tags: `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
+- amd64-only: `.github/workflows/release-image-amd64.yml`
+  - Builds only `linux/amd64`
+  - Use amd64 tags: `2.1-develop-amd64`, `2.1.0-rc.1-amd64`, `2.1.0-amd64`
+  - Or run manually in GitHub Actions (`workflow_dispatch`) with input:
+    - `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
+
 ## One-Time Setup
 
 1. Ensure GitHub Actions is enabled for the repository.
