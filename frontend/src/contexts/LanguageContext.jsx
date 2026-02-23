@@ -33,6 +33,21 @@ const translationsMap = {
   nl: nlTranslations
 };
 
+const englishTranslations = (translationsMap.en?.default ?? translationsMap.en);
+
+const resolveTranslationValue = (translations, key) => {
+  const keys = key.split('.');
+  let value = translations;
+  for (const k of keys) {
+    if (value && typeof value === 'object' && k in value) {
+      value = value[k];
+    } else {
+      return undefined;
+    }
+  }
+  return value;
+};
+
 // Translation loader - synchronous since all translations are pre-imported
 const loadTranslations = (lang) => {
   try {
@@ -90,15 +105,12 @@ export function LanguageProvider({ children }) {
 
   // Translation function with fallback - memoized to prevent re-renders
   const t = useCallback((key, params = {}) => {
-    const keys = key.split('.');
-    let value = state.translations;
-
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return key;
-      }
+    let value = resolveTranslationValue(state.translations, key);
+    if (value === undefined && state.language !== 'en') {
+      value = resolveTranslationValue(englishTranslations, key);
+    }
+    if (value === undefined) {
+      return key;
     }
 
     // Replace parameters in translation
@@ -113,17 +125,15 @@ export function LanguageProvider({ children }) {
   }, [state.translations]);
 
   const getRaw = useCallback((key) => {
-    const keys = key.split('.');
-    let value = state.translations;
-    for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
-      } else {
-        return undefined;
-      }
+    const value = resolveTranslationValue(state.translations, key);
+    if (value !== undefined) {
+      return value;
     }
-    return value;
-  }, [state.translations]);
+    if (state.language !== 'en') {
+      return resolveTranslationValue(englishTranslations, key);
+    }
+    return undefined;
+  }, [state.translations, state.language]);
 
   // Memoize the context value to prevent infinite re-renders
   const contextValue = useMemo(() => ({

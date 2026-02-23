@@ -61,7 +61,7 @@ export default function StaticDataStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">{t('wizard.step3Title')}</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step3')}</h2>
         {!showInfoBoxes[3] && (
           <button 
             onClick={() => setShowInfoBoxes(prev => ({ ...prev, 3: true }))}

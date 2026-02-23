@@ -12,7 +12,7 @@ Key class:
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 from backend.pattern_matcher import PatternMatcher
 from backend.metadata_processor import MetadataProcessor
 from backend.scoring_calculator_v2 import POCOScoringV2

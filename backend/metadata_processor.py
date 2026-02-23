@@ -23,7 +23,7 @@ Key class:
 import re
 import logging
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any, Optional
 
 class MetadataProcessor:
     """Processes metadata from different sources using v2 rule format.
