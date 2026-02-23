@@ -29,10 +29,7 @@ Middleware:
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
-import yaml
-import json
 from datetime import datetime
-from pathlib import Path
 import logging
 
 from backend.rule_loader import RuleLoader
@@ -45,8 +42,6 @@ from backend.routes.auth_users import (
     init_auth_users,
     list_all_users,
     require_auth,
-    require_admin,
-    require_system_token_or_admin,
 )
 from backend.routes.settings_sync import init_settings_sync
 from backend.routes.rules_routes import init_rules_routes
@@ -106,28 +101,17 @@ sync_service = SyncService(db)
 
 def should_sync(entity_type='all', max_age_minutes=60):
     """Check if sync is needed based on last sync time"""
+    def is_stale(last_sync):
+        if not last_sync:
+            return True
+        age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
+        return age_minutes > max_age_minutes
+
     try:
-        if entity_type == 'all':
-            # Check if any entity type needs sync
-            for entity in ['correspondents', 'tags', 'document_types', 'custom_fields', 'users']:
-                last_sync = db.get_last_sync_time(entity)
-                if not last_sync:
-                    return True  # Never synced
-                
-                from datetime import datetime, timedelta
-                age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
-                if age_minutes > max_age_minutes:
-                    return True  # Data is stale
-            return False  # All fresh
-        else:
-            # Check specific entity type
-            last_sync = db.get_last_sync_time(entity_type)
-            if not last_sync:
-                return True
-            
-            from datetime import datetime
-            age_minutes = (datetime.now() - datetime.fromisoformat(last_sync)).total_seconds() / 60
-            return age_minutes > max_age_minutes
+        entities = ['correspondents', 'tags', 'document_types', 'custom_fields', 'users']
+        if entity_type != 'all':
+            entities = [entity_type]
+        return any(is_stale(db.get_last_sync_time(entity)) for entity in entities)
     except Exception as e:
         logger.error(f"Error checking sync status: {e}")
         return True  # Sync if uncertain
