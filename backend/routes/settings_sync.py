@@ -5,7 +5,6 @@ from flask import Blueprint, jsonify, request
 from backend.api_client import PaperlessAPIClient
 from backend.config import Config
 from backend.routes.auth_users import (
-    list_all_users,
     normalize_paperless_url,
     require_admin,
     require_auth,
