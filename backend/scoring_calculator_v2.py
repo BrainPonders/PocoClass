@@ -18,7 +18,7 @@ Key class:
 """
 
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, Any, Optional
 
 class POCOScoringV2:
     """
