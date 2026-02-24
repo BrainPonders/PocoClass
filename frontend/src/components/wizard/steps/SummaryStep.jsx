@@ -47,7 +47,7 @@ export default function SummaryStep({
   return (
     <div className="wizard-container">
       <div className="flex items-center gap-2 mb-6" style={{minHeight: '32px'}}>
-        <h2 className="text-2xl font-bold">{t('wizard.step7Title')}</h2>
+        <h2 className="text-2xl font-bold">{t('wizard.step6')}</h2>
         <Tooltip content={t('summary.reviewTooltip')} />
       </div>
       <p className="mb-6" style={{ color: 'var(--app-text-secondary)' }}>

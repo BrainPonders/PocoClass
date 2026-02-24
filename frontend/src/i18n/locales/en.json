@@ -7,6 +7,7 @@
     "add": "Add",
     "search": "Search",
     "loading": "Loading...",
+    "saving": "Saving...",
     "error": "Error",
     "success": "Success",
     "confirm": "Confirm",
@@ -24,7 +25,8 @@
     "patterns": "patterns",
     "tags": "tags",
     "points": "points",
-    "note": "Note"
+    "note": "Note",
+    "selectedFile": "Selected file:"
   },
   "filters": {
     "title": "Title",
@@ -379,6 +381,7 @@
       "inactive": "Inactive",
       "superuser": "Superuser",
       "notRegistered": "Not Registered",
+      "currentUser": "Current User",
       "enable": "Enable",
       "disable": "Disable",
       "disabled": "Disabled",
@@ -624,6 +627,7 @@
   },
   "validation": {
     "required": "{field} is required",
+    "completeRequiredFields": "Please complete the required fields.",
     "minLength": "{field} must be at least {min} characters",
     "invalidFormat": "{field} has an invalid format",
     "lowercaseOnly": "Only lowercase letters, numbers, and underscores allowed",

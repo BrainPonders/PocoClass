@@ -1,6 +1,7 @@
 """Rule CRUD, rule conversion helpers, and rule test/execute routes."""
 
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -17,6 +18,32 @@ db = None
 logger = None
 rule_loader = None
 test_engine = None
+
+RULES_DIR = Path("rules")
+DELETED_RULES_DIR = RULES_DIR / "deleted"
+RULE_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
+
+
+def is_valid_rule_id(rule_id):
+    """Allow only safe rule IDs that can map to local filenames."""
+    return isinstance(rule_id, str) and bool(RULE_ID_PATTERN.fullmatch(rule_id))
+
+
+def resolve_rule_path(rule_id, deleted=False):
+    """Resolve a rule file path safely within the allowed rules directory."""
+    if not is_valid_rule_id(rule_id):
+        raise ValueError(
+            "Invalid rule ID. Use letters, numbers, underscore, and hyphen only."
+        )
+
+    base_dir = DELETED_RULES_DIR if deleted else RULES_DIR
+    base_resolved = base_dir.resolve()
+    rule_path = (base_dir / f"{rule_id}.yaml").resolve()
+
+    if base_resolved not in rule_path.parents:
+        raise ValueError("Invalid rule path")
+
+    return rule_path
 # ---- Rule Management Routes ----
 
 @rules_bp.route('/api/rules', methods=['GET'])
@@ -78,8 +105,12 @@ def get_rule_errors():
 def get_rule(rule_id):
     """Get a single rule"""
     try:
+        try:
+            rule_file = resolve_rule_path(rule_id)
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
+
         # Load single rule from file
-        rule_file = Path('rules') / f'{rule_id}.yaml'
         rule_data = rule_loader.load_rule_file(rule_file)
         if not rule_data:
             return jsonify({'error': 'Rule not found'}), 404
@@ -387,15 +418,14 @@ def create_rule():
         
         if not rule_id:
             return jsonify({'error': 'Rule ID is required'}), 400
+        if not is_valid_rule_id(rule_id):
+            return jsonify({'error': 'Invalid Rule ID format'}), 400
         
         # Get current user for attribution
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        session = db.get_session(session_token) if session_token else None
+        session = request.current_user
         user_name = 'System'
         if session:
-            user = db.get_user_by_id(session.get('user_id'))
-            if user:
-                user_name = user.get('paperless_username', 'Unknown User')
+            user_name = session.get('paperless_username', 'Unknown User')
         
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
@@ -407,8 +437,8 @@ def create_rule():
             return jsonify({'error': f'Invalid YAML generated: {error_msg}'}), 400
         
         # Save rule
-        rule_file = os.path.join('rules', f'{rule_id}.yaml')
-        with open(rule_file, 'w') as f:
+        rule_file = resolve_rule_path(rule_id)
+        with open(rule_file, 'w', encoding='utf-8') as f:
             f.write(formatted_yaml)
         
         return jsonify({'id': rule_id, 'message': 'Rule created successfully'})
@@ -421,16 +451,16 @@ def create_rule():
 def update_rule(rule_id):
     """Update an existing rule"""
     try:
+        if not is_valid_rule_id(rule_id):
+            return jsonify({'error': 'Invalid Rule ID format'}), 400
+
         rule_data = request.json
         
         # Get current user for attribution
-        session_token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        session = db.get_session(session_token) if session_token else None
+        session = request.current_user
         user_name = 'System'
         if session:
-            user = db.get_user_by_id(session.get('user_id'))
-            if user:
-                user_name = user.get('paperless_username', 'Unknown User')
+            user_name = session.get('paperless_username', 'Unknown User')
         
         # Generate formatted YAML with comments
         formatted_yaml = generate_formatted_yaml(rule_data, user_name)
@@ -442,8 +472,11 @@ def update_rule(rule_id):
             return jsonify({'error': f'Invalid YAML generated: {error_msg}'}), 400
         
         new_rule_id = rule_data.get('ruleId', rule_id)
-        old_rule_file = os.path.join('rules', f'{rule_id}.yaml')
-        new_rule_file = os.path.join('rules', f'{new_rule_id}.yaml')
+        if not is_valid_rule_id(new_rule_id):
+            return jsonify({'error': 'Invalid Rule ID format'}), 400
+
+        old_rule_file = resolve_rule_path(rule_id)
+        new_rule_file = resolve_rule_path(new_rule_id)
         
         if new_rule_id != rule_id:
             if os.path.exists(new_rule_file):
@@ -453,7 +486,7 @@ def update_rule(rule_id):
             else:
                 logger.warning(f"Old rule file {old_rule_file} not found during rename to {new_rule_id}")
         
-        with open(new_rule_file, 'w') as f:
+        with open(new_rule_file, 'w', encoding='utf-8') as f:
             f.write(formatted_yaml)
         
         return jsonify({'id': new_rule_id, 'message': 'Rule updated successfully'})
@@ -466,12 +499,16 @@ def update_rule(rule_id):
 def delete_rule(rule_id):
     """Delete a rule"""
     try:
-        rule_file = os.path.join('rules', f'{rule_id}.yaml')
+        try:
+            rule_file = resolve_rule_path(rule_id)
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
+
         if os.path.exists(rule_file):
             # Move to deleted folder instead of permanent delete
-            deleted_dir = os.path.join('rules', 'deleted')
+            deleted_dir = DELETED_RULES_DIR
             os.makedirs(deleted_dir, exist_ok=True)
-            os.rename(rule_file, os.path.join(deleted_dir, f'{rule_id}.yaml'))
+            os.rename(rule_file, resolve_rule_path(rule_id, deleted=True))
             return jsonify({'message': 'Rule deleted successfully'})
         return jsonify({'error': 'Rule not found'}), 404
     except Exception as e:
@@ -524,7 +561,10 @@ def list_deleted_rules():
 def permanently_delete_rule(rule_id):
     """Permanently delete a rule from the deleted folder"""
     try:
-        rule_file = os.path.join('rules', 'deleted', f'{rule_id}.yaml')
+        try:
+            rule_file = resolve_rule_path(rule_id, deleted=True)
+        except ValueError as e:
+            return jsonify({'error': str(e)}), 400
         if os.path.exists(rule_file):
             os.remove(rule_file)
             return jsonify({'message': 'Rule permanently deleted'})
@@ -871,6 +911,9 @@ def test_rule_endpoint():
 def execute_rule_endpoint(rule_id):
     """Execute a rule against a Paperless document"""
     try:
+        if not is_valid_rule_id(rule_id):
+            return jsonify({'error': 'Invalid Rule ID format'}), 400
+
         data = request.json
         document_id = data.get('documentId')
         dry_run = data.get('dryRun', True)
@@ -887,7 +930,7 @@ def execute_rule_endpoint(rule_id):
         user_api_client = PaperlessAPIClient(config, db)
         
         # Load rule
-        rule_file = Path('rules') / f'{rule_id}.yaml'
+        rule_file = resolve_rule_path(rule_id)
         rule_data = rule_loader.load_rule_file(rule_file)
         if not rule_data:
             return jsonify({'error': 'Rule not found'}), 404

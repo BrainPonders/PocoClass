@@ -204,7 +204,7 @@ export default function RuleEditor() {
       } catch (error) {
         if (isMounted) {
           console.error('Error loading rule:', error);
-          showToast(t('editor_save_error'), 'error');
+          showToast(t('toasts.ruleSaveError'), 'error');
         }
       } finally {
         if (isMounted) {
@@ -319,7 +319,7 @@ export default function RuleEditor() {
 
   const handleSave = async () => {
     if (!canFinish()) {
-      showToast(t('editor_validation_error'), 'warning');
+      showToast(t('validation.completeRequiredFields'), 'warning');
       return;
     }
 
@@ -345,14 +345,14 @@ export default function RuleEditor() {
       });
       
       setHasUnsavedChanges(false);
-      showToast(t('editor_save_success'), 'success');
+      showToast(t('toasts.ruleSaved'), 'success');
       
       setTimeout(() => {
         navigate(createPageUrl('Rules'));
       }, 1000);
     } catch (error) {
       console.error('Error saving rule:', error);
-      showToast(t('editor_save_error'), 'error');
+      showToast(t('toasts.ruleSaveError'), 'error');
     }
     setIsSaving(false);
   };
@@ -443,7 +443,7 @@ export default function RuleEditor() {
       const isValid = validateStep(currentStep);
       // Removed specific step 4 and 5 validation bypass here, as validateStep handles it now
       if (!isValid) {
-        showToast(t('editor_validation_error'), 'warning');
+        showToast(t('validation.completeRequiredFields'), 'warning');
         return;
       }
       
@@ -640,7 +640,7 @@ export default function RuleEditor() {
           )}
           {selectedFile && (
             <p className="text-sm text-gray-600">
-              {t('editor_selected_file')} <span className="font-medium">{selectedFile}</span>
+              {t('common.selectedFile')} <span className="font-medium">{selectedFile}</span>
             </p>
           )}
           {hasUnsavedChanges && (
@@ -684,7 +684,7 @@ export default function RuleEditor() {
             loading={isSaving}
             disabled={!canFinish()}
             className={`btn btn-primary ${!canFinish() ? 'opacity-50 cursor-not-allowed' : ''}`}
-            loadingText={t('common_saving')}
+            loadingText={t('common.saving')}
           >
             {t('common.save')}
           </LoadingButton>

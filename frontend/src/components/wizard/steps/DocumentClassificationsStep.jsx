@@ -460,7 +460,7 @@ export default function DocumentClassificationsStep({
     <div className="wizard-container">
       <div className="mb-6">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold">{t('wizard.step5Title')}</h2>
+          <h2 className="text-2xl font-bold">{t('wizard.step5')}</h2>
           <Tooltip content={t('documentClassifications.stepTooltip')} />
         </div>
         <p className="mt-2" style={{ color: 'var(--app-text-secondary)' }}>
