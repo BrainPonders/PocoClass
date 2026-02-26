@@ -4,6 +4,36 @@
 **Branch:** `codex/final-audit-01`  
 **Scope:** Full Python backend module review (security, dead/dirty code, structure), plus frontend i18n integrity checks.
 
+## Final Audit 02 Addendum
+
+**Date:** 2026-02-24  
+**Branch:** `codex/final-audit-02`  
+**Scope:** API error-response hardening (remove client-visible exception details).
+
+### Changes completed
+
+- Replaced client-facing `str(e)` payloads for server errors (`500`) with safe generic messages across:
+  - `api.py`
+  - `backend/routes/auth_users.py`
+  - `backend/routes/settings_sync.py`
+  - `backend/routes/rules_routes.py`
+  - `backend/routes/documents_routes.py`
+  - `backend/routes/background_system_routes.py`
+- Kept full technical details in server logs (existing logger calls remain).
+- Hardened setup/connectivity failure response wording:
+  - Return `Failed to connect to Paperless` instead of embedding raw exception details.
+- Hardened health check failure payload:
+  - Return `Health check failed` instead of raw exception text.
+
+### Validation
+
+- Python compile check passed.
+- Docker smoke test passed (`distribution/test/smoke_local_docker.sh`).
+
+### Security status impact
+
+- Closes the previously open medium risk on exception-detail leakage in API responses.
+
 ---
 
 ## 1) Executive Decision
@@ -215,4 +245,3 @@ Safe to publish after merging this branch, with one caution:
 
 - Treat API error-message hardening as next priority after release (medium risk).
 - Continue with the planned module split cycle to reduce future regression risk.
-
