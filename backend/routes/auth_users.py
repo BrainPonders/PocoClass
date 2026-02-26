@@ -241,7 +241,7 @@ def health_check():
             200,
         )
     except Exception as e:
-        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+        return jsonify({"status": "unhealthy", "error": "Health check failed"}), 500
 
 
 @auth_users_bp.route("/api/auth/status", methods=["GET"])
@@ -254,7 +254,7 @@ def auth_status():
         return jsonify({"setupCompleted": is_setup, "paperlessUrl": paperless_url})
     except Exception as e:
         logger.error(f"Error checking auth status: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/setup", methods=["POST"])
@@ -338,11 +338,11 @@ def setup():
 
         except requests.RequestException as e:
             logger.error(f"Error connecting to Paperless: {e}")
-            return jsonify({"error": f"Failed to connect to Paperless: {str(e)}"}), 500
+            return jsonify({"error": "Failed to connect to Paperless"}), 500
 
     except Exception as e:
         logger.error(f"Error during setup: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/complete-setup", methods=["POST"])
@@ -366,7 +366,7 @@ def complete_setup_endpoint():
 
     except Exception as e:
         logger.error(f"Error completing setup: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/login", methods=["POST"])
@@ -477,7 +477,7 @@ def login():
 
     except Exception as e:
         logger.error(f"Error during login: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/logout", methods=["POST"])
@@ -495,7 +495,7 @@ def logout():
         return resp
     except Exception as e:
         logger.error(f"Error during logout: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/me", methods=["GET"])
@@ -514,7 +514,7 @@ def get_current_user():
         )
     except Exception as e:
         logger.error(f"Error getting current user: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/users", methods=["GET"])
@@ -571,7 +571,7 @@ def list_all_users():
         return jsonify(pococlass_users)
     except Exception as e:
         logger.error(f"Error listing users: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/users/<int:user_id>/role", methods=["PUT"])
@@ -589,7 +589,7 @@ def update_user_role_endpoint(user_id):
         return jsonify({"success": True})
     except Exception as e:
         logger.error(f"Error updating user role: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/users/<int:user_id>/enable", methods=["PUT"])
@@ -606,7 +606,7 @@ def enable_user_endpoint(user_id):
         return jsonify({"success": True})
     except Exception as e:
         logger.error(f"Error enabling user: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/users/<int:user_id>/disable", methods=["PUT"])
@@ -626,7 +626,7 @@ def disable_user_endpoint(user_id):
         return jsonify({"success": True})
     except Exception as e:
         logger.error(f"Error disabling user: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/users/all-paperless", methods=["GET"])
@@ -706,7 +706,7 @@ def get_all_paperless_users():
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error fetching Paperless users: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 def init_auth_users(app, db_instance, logger_instance, sync_service_instance, should_sync):

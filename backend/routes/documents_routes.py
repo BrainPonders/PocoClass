@@ -179,7 +179,7 @@ def list_documents():
         return jsonify(formatted_docs)
     except Exception as e:
         logger.error(f"Error listing documents: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @documents_bp.route('/api/documents/<int:doc_id>/preview', methods=['GET'])
 def proxy_document_preview(doc_id):
@@ -229,7 +229,7 @@ def proxy_document_preview(doc_id):
         )
     except Exception as e:
         logger.error(f"Error proxying PDF preview: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @documents_bp.route('/api/documents/<int:doc_id>/content', methods=['GET'])
 @documents_bp.route('/api/documents/<int:doc_id>/ocr', methods=['GET'])
@@ -262,7 +262,7 @@ def get_document_ocr_content(doc_id):
         return jsonify({'ocr': content, 'content': content, 'originalFileName': original_filename})
     except Exception as e:
         logger.error(f"Error getting document content: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 
