@@ -67,7 +67,7 @@ def trigger_background_processing():
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error triggering background processing: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/status', methods=['GET'])
 @require_auth
@@ -78,7 +78,7 @@ def get_background_status():
         return jsonify(status)
     except Exception as e:
         logger.error(f"Error getting background status: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/process', methods=['POST'])
 @require_auth
@@ -128,7 +128,7 @@ def manual_processing():
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error in manual processing: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/history', methods=['GET'])
 @require_auth
@@ -155,7 +155,7 @@ def get_processing_history():
         })
     except Exception as e:
         logger.error(f"Error getting processing history: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/history/<int:run_id>/details', methods=['GET'])
 @require_auth
@@ -174,7 +174,7 @@ def get_processing_run_details(run_id):
         })
     except Exception as e:
         logger.error(f"Error getting processing run details: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/settings', methods=['GET'])
 @require_auth
@@ -195,7 +195,7 @@ def get_background_settings():
         return jsonify(settings)
     except Exception as e:
         logger.error(f"Error getting background settings: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/background/settings', methods=['POST'])
 @require_admin
@@ -240,7 +240,7 @@ def update_background_settings():
         return jsonify({'success': True, 'message': 'Settings updated'})
     except Exception as e:
         logger.error(f"Error updating background settings: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- System API Token Management Routes ----
 
@@ -266,7 +266,7 @@ def get_system_token_info():
             })
     except Exception as e:
         logger.error(f"Error getting system token info: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/system-token', methods=['POST'])
 @require_admin
@@ -290,7 +290,7 @@ def generate_system_token():
         })
     except Exception as e:
         logger.error(f"Error generating system token: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @background_system_bp.route('/api/system-token', methods=['DELETE'])
 @require_admin
@@ -310,7 +310,7 @@ def revoke_system_token():
         })
     except Exception as e:
         logger.error(f"Error revoking system token: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Sync Count Comparison Route ----
 
@@ -383,7 +383,7 @@ def get_sync_counts():
         })
     except Exception as e:
         logger.error(f"Error getting sync counts: {e}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 def table_exists(cursor, table_name):
@@ -440,7 +440,7 @@ def reset_application():
         return jsonify({'success': True, 'message': 'Application reset complete'})
     except Exception as e:
         logger.error(f"Error resetting application: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 

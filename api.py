@@ -199,7 +199,7 @@ def get_settings_batch():
         return jsonify(response)
     except Exception as e:
         logger.error(f"Error in settings batch: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 init_settings_sync(app=app, db_instance=db, logger_instance=logger, sync_service_instance=sync_service)
 init_rules_routes(
@@ -274,7 +274,7 @@ def list_logs():
         return jsonify(logs)
     except Exception as e:
         logger.error(f"Error listing logs: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 init_documents_routes(app=app, db_instance=db, logger_instance=logger)
 

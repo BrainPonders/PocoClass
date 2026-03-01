@@ -33,7 +33,7 @@ def trigger_sync():
         })
     except Exception as e:
         logger.error(f"Sync error: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/sync/status', methods=['GET'])
 @require_auth
@@ -44,7 +44,7 @@ def get_sync_status():
         return jsonify(status)
     except Exception as e:
         logger.error(f"Error getting sync status: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/sync/history', methods=['GET'])
 @require_admin
@@ -56,7 +56,7 @@ def get_sync_history():
         return jsonify(history)
     except Exception as e:
         logger.error(f"Error getting sync history: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Paperless Entity Cache Routes ----
 
@@ -69,7 +69,7 @@ def get_cached_correspondents():
         return jsonify(correspondents)
     except Exception as e:
         logger.error(f"Error getting correspondents: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/paperless/tags', methods=['GET'])
 @require_auth
@@ -80,7 +80,7 @@ def get_cached_tags():
         return jsonify(tags)
     except Exception as e:
         logger.error(f"Error getting tags: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/paperless/document-types', methods=['GET'])
 @require_auth
@@ -91,7 +91,7 @@ def get_cached_document_types():
         return jsonify(doc_types)
     except Exception as e:
         logger.error(f"Error getting document types: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/paperless/custom-fields', methods=['GET'])
 @require_auth
@@ -102,7 +102,7 @@ def get_cached_custom_fields():
         return jsonify(custom_fields)
     except Exception as e:
         logger.error(f"Error getting custom fields: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/paperless/custom-fields', methods=['POST'])
 @require_admin
@@ -160,7 +160,7 @@ def create_custom_field():
             
     except Exception as e:
         logger.error(f"Error creating custom field: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Settings Routes ----
 
@@ -174,7 +174,7 @@ def get_settings():
         return jsonify(settings)
     except Exception as e:
         logger.error(f"Error getting settings: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/<key>', methods=['PUT'])
 @require_admin
@@ -190,7 +190,7 @@ def update_setting(key):
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating setting: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- App Settings Routes ----
 
@@ -203,7 +203,7 @@ def get_app_settings():
         return jsonify(settings)
     except Exception as e:
         logger.error(f"Error getting app settings: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/app', methods=['POST'])
 @require_auth
@@ -216,7 +216,7 @@ def update_app_settings():
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating app settings: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Date Format Settings Routes ----
 
@@ -229,7 +229,7 @@ def get_date_formats():
         return jsonify(formats)
     except Exception as e:
         logger.error(f"Error getting date formats: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/date-formats/selected', methods=['GET'])
 @require_auth
@@ -240,7 +240,7 @@ def get_selected_date_formats():
         return jsonify(formats)
     except Exception as e:
         logger.error(f"Error getting selected date formats: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/date-formats/<path:format_pattern>', methods=['PUT'])
 @require_auth
@@ -257,7 +257,7 @@ def update_date_format_selection(format_pattern):
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         logger.error(f"Error updating date format selection: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Placeholder Settings Routes ----
 
@@ -272,7 +272,7 @@ def get_placeholder_settings():
         return jsonify(placeholders)
     except Exception as e:
         logger.error(f"Error getting placeholder settings: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/placeholders/<path:placeholder_name>', methods=['PUT'])
 @require_auth
@@ -288,7 +288,7 @@ def update_placeholder_visibility(placeholder_name):
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating placeholder visibility: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Paperless Configuration Routes ----
 
@@ -301,7 +301,7 @@ def get_paperless_config():
         return jsonify({'paperless_url': paperless_url})
     except Exception as e:
         logger.error(f"Error getting Paperless config: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/paperless-config', methods=['PUT'])
 @require_admin
@@ -321,7 +321,7 @@ def update_paperless_config():
         return jsonify({'success': True})
     except Exception as e:
         logger.error(f"Error updating Paperless config: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- POCO OCR Field Configuration Routes ----
 
@@ -334,7 +334,7 @@ def get_poco_ocr_enabled():
         return jsonify({'enabled': enabled})
     except Exception as e:
         logger.error(f"Error getting POCO OCR enabled status: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/settings/poco-ocr-enabled', methods=['PUT'])
 @require_admin
@@ -371,7 +371,7 @@ def update_poco_ocr_enabled():
                     logger.error(f"Failed to create POCO OCR field: {e}")
                     return jsonify({
                         'success': False,
-                        'error': f'Failed to create POCO OCR field: {str(e)}'
+                        'error': 'Failed to create POCO OCR field'
                     }), 500
             
             return jsonify({
@@ -388,7 +388,7 @@ def update_poco_ocr_enabled():
         })
     except Exception as e:
         logger.error(f"Error updating POCO OCR enabled status: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Data Validation Routes ----
 
@@ -461,7 +461,7 @@ def check_mandatory_data():
         })
     except Exception as e:
         logger.error(f"Error checking mandatory data: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @settings_sync_bp.route('/api/validation/fix-mandatory-data', methods=['POST'])
 @require_admin
@@ -535,7 +535,7 @@ def fix_mandatory_data():
         })
     except Exception as e:
         logger.error(f"Error fixing mandatory data: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 

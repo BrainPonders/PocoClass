@@ -81,7 +81,7 @@ def list_rules():
         return jsonify(rules_list)
     except Exception as e:
         logger.error(f"Error listing rules: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/rules/errors', methods=['GET'])
 @require_auth
@@ -98,7 +98,7 @@ def get_rule_errors():
         })
     except Exception as e:
         logger.error(f"Error getting rule errors: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/rules/<rule_id>', methods=['GET'])
 @require_auth
@@ -120,7 +120,7 @@ def get_rule(rule_id):
         return jsonify(frontend_rule)
     except Exception as e:
         logger.error(f"Error getting rule {rule_id}: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 def escape_yaml_string(value):
     """
@@ -444,7 +444,7 @@ def create_rule():
         return jsonify({'id': rule_id, 'message': 'Rule created successfully'})
     except Exception as e:
         logger.error(f"Error creating rule: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/rules/<rule_id>', methods=['PUT'])
 @require_auth
@@ -492,7 +492,7 @@ def update_rule(rule_id):
         return jsonify({'id': new_rule_id, 'message': 'Rule updated successfully'})
     except Exception as e:
         logger.error(f"Error updating rule {rule_id}: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/rules/<rule_id>', methods=['DELETE'])
 @require_auth
@@ -513,7 +513,7 @@ def delete_rule(rule_id):
         return jsonify({'error': 'Rule not found'}), 404
     except Exception as e:
         logger.error(f"Error deleting rule {rule_id}: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Deleted Rules (Trash Can) Routes ----
 
@@ -554,7 +554,7 @@ def list_deleted_rules():
         return jsonify(deleted_rules)
     except Exception as e:
         logger.error(f"Error listing deleted rules: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/deleted-rules/<rule_id>', methods=['DELETE'])
 @require_admin
@@ -571,7 +571,7 @@ def permanently_delete_rule(rule_id):
         return jsonify({'error': 'Deleted rule not found'}), 404
     except Exception as e:
         logger.error(f"Error permanently deleting rule {rule_id}: {e}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 # ---- Rule Format Conversion Helpers ----
@@ -904,7 +904,7 @@ def test_rule_endpoint():
             rule_name=rule_data.get('ruleName', 'Unknown') if rule_data else 'Unknown',
             source='test_engine'
         )
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': 'Internal server error'}), 500
 
 @rules_bp.route('/api/rules/<rule_id>/execute', methods=['POST'])
 @require_auth
@@ -1018,7 +1018,7 @@ def execute_rule_endpoint(rule_id):
         return jsonify(result)
     except Exception as e:
         logger.error(f"Error executing rule: {e}", exc_info=True)
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': 'Internal server error'}), 500
 
 
 

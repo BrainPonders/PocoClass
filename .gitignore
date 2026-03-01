@@ -84,6 +84,9 @@ compose.override.yml
 AGENTS.md
 AGEND.md
 
+# Local deployment notes (workspace-only)
+distribution/test/User Deployment Notes.md
+
 # Local Docker build artifacts
 .buildx-cache/
 
