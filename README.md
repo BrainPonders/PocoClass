@@ -1,10 +1,14 @@
 # PocoClass
+Rule-based document classification for Paperless-ngx.
 
-PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with a focus on control and transparency.
+---
+![Docker Pulls](https://img.shields.io/docker/pulls/BrainPonders/PocoClass) ![GitHub release](https://img.shields.io/github/v/release/BrainPonders/PocoClass) ![License](https://img.shields.io/github/license/BrainPonders/PocoClass) ![GitHub stars](https://img.shields.io/github/stars/BrainPonders/PocoClass)
+
+PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with strict rule-based logic. Instead of relying purely on statistical learning, PocoClass applies explicit identification rules and pattern matching that you define, allowing documents to be classified with predictable results while maintaining full control and transparency over the process.
 
 <br>
 
-### The Problem: Learning Has Limits
+### Why use PocoClass?
 
 Paperless-ngx is an excellent tool for document indexing. While its built-in classifier uses OCR and statistical learning to suggest metadata, this approach has inherent limitations:
 
@@ -12,30 +16,29 @@ Paperless-ngx is an excellent tool for document indexing. While its built-in cla
 - **Contextual Confusion:** Subtle nuances often lead to misclassification. For instance, a classifier might select the wrong date from a document containing multiple timestamps or confuse two similar documents from the same organization (e.g., an account summary versus a contract update).
 - **Format Shifts:** Annual formatting changes or minor variations between subsidiaries can easily disrupt pattern-based recognition.
 
-As archives grow into the thousands, manual corrections become a repetitive burden. When users stop correcting these small errors, metadata becomes inconsistent and the quality of the digital archive degrades.
-
+When automated classification is not consistent, the Paperless database can quickly become ambiguous.
 <br>
 
-### The Solution: Deterministic Rule-Based Logic
+### How does PocoClass fit in here?
 
-PocoClass addresses these gaps by introducing deterministic, rule-based classification. Rather than relying on learned behaviors, it uses explicit identification logic — including flexible pattern matching and dynamic data extraction — to classify documents with high precision.
+PocoClass addresses these gaps by providing rule-based classification. Rather than relying on learned behaviors, it uses explicit identification logic with flexible pattern matching and dynamic data extraction to classify documents with reliable precision.
 
-- **Step-by-Step Wizard:** Create complex rules without writing code.
-- **Background Processing:** Automatically monitors for new or unclassified documents.
+- **Step-by-Step Rule Wizard:** First you create a rule for your document without writing code.
+- **Rule Evaluation:** Test rules with dry runs and review results before modifying your database.
 - **Transparent Scoring:** When a document matches a rule, PocoClass provides clear reasoning for the match.
+- **Background Processing:** When you are happy with the results, it can run in the background to process unclassified documents.
 - **Direct Integration:** Applied classifications are pushed directly to your Paperless-ngx instance.
 
-When a document matches, it matches for a defined reason.
-
+When a document matches a rule, it does so for the reason you defined.
 <br>
 
-### Origin Story: Why “POCO”?
+### What's in the name “POCO”?
 
 The name stands for Post Consumption.
 
-The project originated as a small script triggered by the Paperless-ngx post-consumption hook, a mechanism that runs immediately after a document is imported. It began as a simple tool designed to support bulk imports and gradually evolved into a structured YAML-based rule engine.
+This project originated as a small script triggered by the built-in Paperless-ngx post-consumption hook, immediately after a document is imported. It began as a simple hardcoded tool designed purely for bulk imports. Over time it evolved into a structured YAML-based rule engine.
 
-PocoClass v2.0 emerged from what initially started as an experiment to build a web-based frontend using Replit. What was meant to be a lightweight interface quickly turned into a complete redesign. The result was a fully reimagined application with a visual rule builder, background processing, and a transparent scoring system.
+PocoClass v2.0 emerged from what initially started as an experiment to build a web-based frontend using Replit. What was meant to be a lightweight interface quickly turned into a complete redesign. The result is a fully reimagined application with a visual rule builder, background processing, and a transparent scoring system.
 
 <br>
 
@@ -51,7 +54,9 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 
 ## Architecture
 
-```
+PocoClass consists of a lightweight web interface and a Python backend that integrates directly with the Paperless-ngx API.
+
+```text
 ┌─────────────────────────────────┐
 │         React Frontend          │
 │  Rule Wizard · Dashboard · Logs │
@@ -69,263 +74,259 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 └─────────────────────────────────┘
 ```
 
-**Frontend:** React, Vite, Tailwind CSS
-**Docker base:** `11notes/python:3.13` (rootless Alpine)
+**Technology Stack**
 
-<br>
+```text
+Backend:
+├── Flask (REST API framework)
+├── Python 3.x
+├── SQLite (embedded database)
+├── Cryptography (token encryption)
+└── PyYAML (rule configuration)
 
-### Backend
+Frontend:
+├── React 18+
+├── Vite (build tool)
+├── TailwindCSS (styling)
+└── Shadcn/UI (component library)
 
-- **Flask REST API** — rule management, document processing, authentication, settings
-- **POCO Scoring v2 engine** — dual-score calculation with configurable weights and thresholds
-- **Pattern matcher** — OCR content and filename regex matching with logic groups
-- **Metadata extractor** — anchor-based extraction of dates, amounts, and custom fields
-- **Background processor** — debounced, tag-based document discovery and automatic rule application
-- **Rule loader** — YAML-based rule storage with validation
-- **SQLite** — users, sessions, Paperless-ngx data cache, logs, processing history
+Integration:
+├── Paperless-ngx REST API
+└── 11notes/python:3.13 (rootless Alpine base image)
+```
 
-<br>
+----
 
 ## Installation
 
-### Docker deployment (end-user)
+This installation guide describes how to deploy PocoClass. The PocoClass Docker image is built on the [11notes Python](https://github.com/11notes/docker-python) image. 11notes images are container images designed around a more security-focused default setup. The container runs with `UID/GID 1000:1000` by default. To change this, please consult 11notes [RTFM](https://github.com/11notes/RTFM).
 
-This deployment path is for end users running PocoClass next to an existing Paperless-ngx setup.
-It assumes you will run a prebuilt image and not build locally from source.
+This installation guide supports two Paperless variants:
+- **[Official paperless-ngx Docker Compose](https://github.com/paperless-ngx/paperless-ngx)**
+- **[11notes paperless-ngx](https://github.com/11notes/docker-paperless-ngx)**
 
-#### Overview
+The instructions below assume that Paperless-ngx is already running and that PocoClass will connect in bridge mode to the same Docker network as Paperless-ngx.
 
-1. Create a deployment folder.
-2. Copy the env template and choose bridge or host compose.
-3. Configure `.env` (secret key, image, Paperless URL).
-4. Configure shared Docker network settings (bridge mode only).
-5. Start PocoClass and verify health.
-6. Optionally enable post-consume trigger integration.
+The deployment uses one shared `docker-compose.yml` for both supported Paperless variants. The `.env` keeps the official Paperless values active by default and includes the 11notes values as commented presets.
 
-#### Step 1. Create deployment folder
+Placing PocoClass behind a reverse proxy such as Caddy is recommended, but this is outside the scope of this guide.
+
+---
+
+#### 1. Create deployment folder
 
 ```bash
 mkdir -p ~/pococlass
 cd ~/pococlass
-git clone https://github.com/BrainPonders/PocoClass.git source
-```
-
-#### Step 2. Copy runtime templates and create required folders
-
-```bash
-cd ~/pococlass
-cp source/docker/compose/env.example .env
-
-# Bridge mode (recommended default)
-cp source/docker/compose/docker-compose.bridge.yml docker-compose.yml
-
-# Host mode (alternative)
-# cp source/docker/compose/docker-compose.host.yml docker-compose.yml
-
-cp source/scripts/post-consumption/pococlass_trigger.sh .
-chmod +x pococlass_trigger.sh
 mkdir -p rules data
 ```
 
-Bridge vs host mode:
-
-- Bridge mode: set `PAPERLESS_URL` to Docker-internal hostname (e.g. `http://paperless-webserver:8000`).
-- Host mode: set `PAPERLESS_URL` to the same URL you use in your browser UI (e.g. `https://paperless.example.com`).
-
-`rules/` stores your YAML rule files.  
-`data/` stores runtime state.
-
-Set permissions for your environment.
-For 11notes-based setups, default container user is often `UID:GID 1000:1000`:
+Set permissions:
 
 ```bash
-cd ~/pococlass
 chown -R 1000:1000 rules data
 chmod -R u+rwX,go-rwx rules data
 ```
+---
 
-#### Step 3. Configure `.env`
+#### 2. Create `docker-compose.yml`
 
-```bash
-cd ~/pococlass
-nano .env
+Create `~/pococlass/docker-compose.yml` with:
+
+```yaml
+services:
+  pococlass:
+    image: ${POCOCLASS_IMAGE:-ghcr.io/BrainPonders/pococlass:latest}
+    container_name: pococlass
+    restart: unless-stopped
+
+    ports:
+      - "5000:5000"
+
+    env_file:
+      - .env
+
+    volumes:
+      - ./data:/app/data
+      - ./rules:/app/rules
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+    networks:
+      - paperless
+
+networks:
+  paperless:
+    name: ${PAPERLESS_NETWORK_NAME:-paperless_default}
+    external: true
 ```
 
-Set:
+---
 
-- `POCOCLASS_SECRET_KEY` (required runtime secret), generate with:
+#### 3. Edit `.env`
+
+Generate a secret key:
+
 ```bash
 python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
-or:
-```bash
-python3 source/scripts/generate_secret_key.py
-```
-- `POCOCLASS_IMAGE` (required image reference for deployment), for example:
-  - `ghcr.io/<your-org>/pococlass:v2.0.0`
-- `PAPERLESS_URL` (depends on selected compose mode)
 
-Common `PAPERLESS_URL` values:
+Then edit `~/pococlass/.env` and set at least:
 
-- Bridge mode (Docker-internal):
-  - Official paperless-ngx compose: `http://paperless-webserver:8000`
-  - 11notes paperless-ngx: `http://paperless-ngx:8000`
-- Host mode (same as browser UI):
-  - Example: `https://paperless.example.com`
+```env
+POCOCLASS_SECRET_KEY=PASTE_GENERATED_KEY_HERE
 
-`POCOCLASS_SECRET_KEY` is runtime-only and is not used during image build.
+# Official Paperless defaults
+PAPERLESS_URL=http://webserver:8000
+PAPERLESS_NETWORK_NAME=paperless_default
 
-#### Step 4. Configure shared Docker network (bridge mode only)
-
-If you selected `docker-compose.host.yml`, skip this step.
-
-PocoClass must join the same Docker network as Paperless.
-
-Check your Paperless network:
-
-```bash
-docker inspect paperless-webserver --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
+# 11notes preset
+# PAPERLESS_URL=http://paperless-ngx:8000
+# PAPERLESS_NETWORK_NAME=<your_11notes_network_name>
 ```
 
-For 11notes setups:
+`http://webserver:8000` and `paperless_default` are the default values for the official Paperless Docker Compose setup.  
+If you use 11notes Paperless, comment out the official values and uncomment the 11notes preset instead.
 
-```bash
-docker inspect paperless-ngx --format '{{range $k, $v := .NetworkSettings.Networks}}{{println $k}}{{end}}'
-```
+---
 
-Set in `.env`:
-
-- `PAPERLESS_NETWORK_NAME=<network_name_from_inspect>`
-- `PAPERLESS_NETWORK_EXTERNAL=true`
-
-#### Step 5. Start and verify
+#### 4. Start PocoClass
 
 ```bash
 cd ~/pococlass
-docker compose pull
+```
+
+```bash
 docker compose up -d
-docker compose ps
 docker compose logs -f pococlass
 ```
 
 Health check:
 
 ```bash
-curl -s http://localhost:5000/api/health
+curl http://localhost:5000/api/health
 ```
 
-#### Step 6. Optional post-consume trigger
+You should receive:
 
-`pococlass_trigger.sh` is staged in `~/pococlass` from `source/scripts/post-consumption/pococlass_trigger.sh`.
-Final destination should be your Paperless post-consume scripts folder.
+```json
+{"status":"healthy", "database":"ok", "version":"2.0"}
+```
+
+Open in browser:
+
+```
+http://localhost:5000
+```
+
+---
+
+#### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `POCOCLASS_SECRET_KEY` | Required runtime encryption key | `base64_generated_string` |
+| `PAPERLESS_URL` | Docker-internal Paperless URL | `http://webserver:8000` |
+| `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless | `paperless_default` |
+| `POCOCLASS_IMAGE` | Optional image override | `ghcr.io/BrainPonders/pococlass:latest` |
+
+---
+
+#### Optional: Post-Consumption Trigger
+
+PocoClass can be triggered after each document import using the Paperless post-consume hook to start applying rule-based classification to new documents.
+
+1. Copy the trigger script:
 
 ```bash
-cd ~/pococlass
-cp pococlass_trigger.sh /path/to/paperless/scripts/
-nano /path/to/paperless/scripts/pococlass_trigger.sh
+cp scripts/post-consumption/pococlass_trigger.sh /path/to/paperless/scripts/
 chmod +x /path/to/paperless/scripts/pococlass_trigger.sh
 ```
 
-Set `POCOCLASS_URL` and `POCOCLASS_TOKEN` in the trigger script.
+2. Edit the script and set:
 
-### Updating deployment
+- `POCOCLASS_URL`
+- `POCOCLASS_TOKEN`
 
-Update `POCOCLASS_IMAGE` in `.env` to the target release tag, then:
+3. Follow the official Paperless-ngx documentation to enable `PAPERLESS_POST_CONSUME_SCRIPT`.
 
-```bash
-cd ~/pococlass
-docker compose pull pococlass
-docker compose up -d --force-recreate pococlass
-```
+Once enabled, PocoClass will automatically process new documents after import.
 
-<br>
+---
 
-## Configuration
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `POCOCLASS_SECRET_KEY` | Encryption key for sessions (required) | — |
-| `POCOCLASS_IMAGE` | Image reference to run (supports release/testing tags) | `pococlass:latest` |
-| `PAPERLESS_URL` | Paperless-ngx URL (required for Docker, or configure in web UI) | — |
-| `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless (bridge mode only) | `paperless_default` |
-| `PAPERLESS_NETWORK_EXTERNAL` | Whether Paperless network already exists (bridge mode only) | `true` |
-| `GUNICORN_WORKERS` | Number of worker processes | `3` |
-| `GUNICORN_THREADS` | Threads per worker | `2` |
-| `GUNICORN_TIMEOUT` | Request timeout (seconds) | `120` |
-
-<br>
-
-## First-time setup
+### First-time setup
 
 1. Open PocoClass in your browser
-2. Log in with your Paperless-ngx admin credentials
+2. Log in using your Paperless-ngx admin credentials.
 3. Complete the setup wizard — it connects to Paperless-ngx and creates the required custom fields and tags
 4. Start building rules with the 6-step wizard or follow the built-in guided tutorial
 
-<br>
+---
 
-## Features
+### Main Features
 
 - **Easy-to-use rule builder** — step-by-step wizard to create classification rules, no coding required
 - **Set it and forget it** — create a rule once and let it run automatically in the background
 - **Flexible scoring** — combines OCR content, filename patterns, and Paperless-ngx metadata for accurate classification
 - **Bulk import friendly** — ideal for importing large batches of unknown documents into Paperless-ngx
-- **Train Paperless faster** — helps automate the way Paperless learns to classify your documents
+- **Train Paperless faster** — automatically applies correct classifications, helping Paperless learn without manual work
 - **Multi-language UI** — English, German, Spanish, French, Italian, Dutch
 
-<br>
+---
 
-## Roadmap
+### Roadmap
 
-The roadmap is grouped into **New Features** and **Improvements** to clearly separate functional expansion from quality enhancements.
+This roadmap combines planned work with major improvements that are already in place.
+Items marked with `✅` are completed.
+
+**Rule Authoring And Review**
+
+- ✅ YAML preview during rule creation
+- ✅ YAML export for finished rules
+- ✅ Dedicated rule evaluation and review workspace
+- Rule import from YAML files
+- Rule evaluation results directly in the document list
+- POCO score preview directly in document lists
+
+**Onboarding And Guidance**
+
+- ✅ First-run setup wizard
+- ✅ Guided rule-building tutorial
+- ✅ Validation banners for missing Paperless fields and tags
+- Step-by-step tutorial for rule evaluation
+- Step-by-step tutorial for background processing
+
+**Automation And Operations**
+
+- ✅ Background processing control page
+- ✅ Processing history and operational logs
+- ✅ Post-consumption trigger integration for automatic processing
+- Improved deployment guidance for reverse proxies and production hardening
+
+**Interface Consistency And Usability**
+
+- ✅ Multi-language UI
+- Consistent spacing across all pages
+- Unified input sizing and form rhythm
+- Standardized button styles and actions
+- More predictable page layout patterns
+- Better space usage for lower-resolution screens
 
 ---
-<br>
+### Disclaimer
 
-## New Features
+This software comes without any warranty. Use it at your own risk. It has the potential to corrupt your valuable Paperless-ngx database, so use the dry run wisely.
 
-**YAML Rule Import**  Import rules directly from YAML files to enable:
-- Share rule configurations
-- Onboard pre-built classification templates
-- Reuse existing rule sets without recreating them in the wizard
+As mentioned, this software has been completely (re)written using the vibe-coding tool Replit. The original POCO scripts and a design document form the foundation of POCO v2.0 and define the core design and rule logic. AI was primarily used to accelerate implementation, particularly for the web frontend. However, I was not able to keep up with the thousands of lines of code that were changing continuously during development.
 
-<br>
-
-**Rule Evaluation Reporting** Provide a full scoring breakdown, including:
-- Earned vs. possible weights
-- Source-level contribution (OCR, Filename, Paperless)
-- Multiplier and threshold transparency
-
-Goal: make the POCO score fully explainable.
-
-<br>
-
-**Rule Evaluation in File List** Display evaluation results directly in the document list view:
-- Pass / Fail indicator
-- POCO score preview
-- Quick visibility without expanding detailed views
-
-<br>
-
-**Tutorials:**
-Rule Evaluation Step-by-step guided walkthrough
-Background Processing Step-by-step guided walkthrough
-
-<br>
-
-## Improvements
-
-**GUI Standardisation and improvements**
-- Consistent spacing
-- Unified input sizing
-- Standardised button styles
-- Predictable layout patterns across pages
-- Optimizing space to allow lower res views
+I have audited the final version three times with CodeX, which was actually quite entertaining. But yes… yet another AI agent.
 
 ---
-<br>
-
-
-## License
+### License
 
 See [LICENSE](LICENSE) file for details.
