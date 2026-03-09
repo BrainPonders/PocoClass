@@ -1,8 +1,16 @@
-# PocoClass
-Rule-based document classification for Paperless-ngx.
+<p>
+  <img src="documentation/images/PocoClass_logo-1.png" width="300" alt="PocoClass logo">
+</p>
+<p><em>Rule-based document classification for Paperless-ngx.</em></p>
 
----
-![Docker Pulls](https://img.shields.io/docker/pulls/brainponders/pococlass) ![GitHub release](https://img.shields.io/github/v/release/brainponders/pococlass) ![License](https://img.shields.io/github/license/brainponders/pococlass) ![GitHub stars](https://img.shields.io/github/stars/brainponders/pococlass)
+![Docker Pulls](https://img.shields.io/docker/pulls/brainponders/pococlass)
+![GitHub release](https://img.shields.io/github/v/release/brainponders/pococlass)
+![License](https://img.shields.io/github/license/brainponders/pococlass)
+![GitHub stars](https://img.shields.io/github/stars/brainponders/pococlass)
+
+<br>
+
+# PocoClass
 
 PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with strict rule-based logic. Instead of relying purely on statistical learning, PocoClass applies explicit identification rules and pattern matching that you define, allowing documents to be classified with predictable results while maintaining full control and transparency over the process.
 
@@ -17,6 +25,7 @@ Paperless-ngx is an excellent tool for document indexing. While its built-in cla
 - **Format Shifts:** Annual formatting changes or minor variations between subsidiaries can easily disrupt pattern-based recognition.
 
 When automated classification is not consistent, the Paperless database can quickly become ambiguous.
+
 <br>
 
 ### How does PocoClass fit in here?
@@ -30,6 +39,7 @@ PocoClass addresses these gaps by providing rule-based classification. Rather th
 - **Direct Integration:** Applied classifications are pushed directly to your Paperless-ngx instance.
 
 When a document matches a rule, it does so for the reason you defined.
+
 <br>
 
 ### What's in the name “POCO”?
