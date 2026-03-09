@@ -5,6 +5,7 @@ from functools import wraps
 
 import requests
 from flask import Blueprint, jsonify, make_response, request
+from backend.update_checker import UpdateChecker
 
 auth_users_bp = Blueprint("auth_users", __name__)
 
@@ -12,6 +13,7 @@ db = None
 logger = None
 sync_service = None
 should_sync_func = None
+update_checker = UpdateChecker()
 
 COOKIE_NAME = "pococlass_session"
 
@@ -233,15 +235,33 @@ def health_check():
     """Health check endpoint for Docker/container orchestration."""
     try:
         db_status = "ok" if db else "error"
+        current_version = os.environ.get("POCOCLASS_VERSION", "2.0.0")
         build_number = os.environ.get("POCOCLASS_BUILD_NUMBER", "dev")
         return (
             jsonify(
-                {"status": "healthy", "database": db_status, "version": "2.0", "build": build_number}
+                {
+                    "status": "healthy",
+                    "database": db_status,
+                    "version": current_version,
+                    "build": build_number,
+                }
             ),
             200,
         )
     except Exception as e:
         return jsonify({"status": "unhealthy", "error": "Health check failed"}), 500
+
+
+@auth_users_bp.route("/api/system/update-status", methods=["GET"])
+@require_auth
+def update_status():
+    """Return cached update availability for stable and RC channels."""
+    try:
+        current_version = os.environ.get("POCOCLASS_VERSION", "2.0.0")
+        return jsonify(update_checker.get_status(current_version=current_version)), 200
+    except Exception as e:
+        logger.error(f"Error getting update status: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_users_bp.route("/api/auth/status", methods=["GET"])
@@ -720,4 +740,3 @@ def init_auth_users(app, db_instance, logger_instance, sync_service_instance, sh
 
     if "auth_users" not in app.blueprints:
         app.register_blueprint(auth_users_bp)
-

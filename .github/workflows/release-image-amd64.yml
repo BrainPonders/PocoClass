@@ -119,11 +119,12 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             BUILD_NUMBER=${{ steps.meta.outputs.build_number }}
+            VERSION=${{ steps.validate.outputs.base_tag }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ steps.meta.outputs.source_tag }}
+            org.opencontainers.image.version=${{ steps.validate.outputs.base_tag }}
             org.opencontainers.image.title=PocoClass
             org.opencontainers.image.description=PocoClass Docker image (amd64)
 

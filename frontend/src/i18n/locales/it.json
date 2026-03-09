@@ -75,6 +75,12 @@
     "quickStart": "Avvio rapido",
     "logout": "Esci"
   },
+  "app": {
+    "versionBuild": "Versione {version} build {build}",
+    "updateAvailableTitle": "Aggiornamento disponibile: {version}",
+    "updateAvailableBody": "Stai eseguendo PocoClass {currentVersion}. E disponibile una versione piu recente.",
+    "viewRelease": "Vedi note di rilascio"
+  },
   "auth": {
     "login": "Accedi",
     "username": "Nome utente",

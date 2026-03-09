@@ -101,6 +101,7 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             BUILD_NUMBER=${{ steps.meta.outputs.build_number }}
+            VERSION=${{ steps.meta.outputs.source_tag }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}

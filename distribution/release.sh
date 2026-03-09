@@ -71,6 +71,7 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 BUILD_NUMBER="${POCOCLASS_BUILD_NUMBER:-$(build_number_default)}"
+VERSION="${POCOCLASS_VERSION:-${IMAGE_TAG}}"
 SAFE_BUILD_NUMBER="$(printf '%s' "$BUILD_NUMBER" | tr -c '[:alnum:]._-' '-')"
 SHORT_SHA="${POCOCLASS_GIT_SHA:-$(short_sha_default)}"
 SAFE_SHORT_SHA="$(printf '%s' "$SHORT_SHA" | tr -c '[:alnum:]._-' '-')"
@@ -91,6 +92,7 @@ echo "  ${SHA_IMAGE_TAG}"
 if [ -n "$EXTRA_TAG" ]; then
     echo "  ${EXTRA_TAG}"
 fi
+echo "  version: ${VERSION}"
 echo "  build number: ${BUILD_NUMBER}"
 echo "  git sha: ${SHORT_SHA}"
 
@@ -102,6 +104,7 @@ fi
 docker build \
     --no-cache \
     --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
+    --build-arg VERSION="${VERSION}" \
     -t "${PRIMARY_IMAGE_TAG}" \
     -t "${BUILD_IMAGE_TAG}" \
     -t "${SHA_IMAGE_TAG}" \

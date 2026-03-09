@@ -75,6 +75,12 @@
     "quickStart": "Snelstart",
     "logout": "Afmelden"
   },
+  "app": {
+    "versionBuild": "Versie {version} build {build}",
+    "updateAvailableTitle": "Update beschikbaar: {version}",
+    "updateAvailableBody": "Je gebruikt PocoClass {currentVersion}. Er is een nieuwere versie beschikbaar.",
+    "viewRelease": "Bekijk release-opmerkingen"
+  },
   "auth": {
     "login": "Aanmelden",
     "username": "Gebruikersnaam",
