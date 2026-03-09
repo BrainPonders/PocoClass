@@ -43,19 +43,19 @@ PocoClass v2.0 emerged from what initially started as an experiment to build a w
 <br>
 <p align="center">
   <a href="documentation/images/Welcome_Screen.png">
-    <img src="documentation/images/Welcome_Screen.png" width="210" alt="Welcome Screen">
+    <img src="documentation/images/Welcome_Screen.png" width="200" alt="Welcome Screen">
   </a>
   &nbsp;&nbsp;
   <a href="documentation/images/rule_wizard.png">
-    <img src="documentation/images/rule_wizard.png" width="210" alt="Defining OCR Patterns">
+    <img src="documentation/images/rule_wizard.png" width="200" alt="Defining OCR Patterns">
   </a>
   &nbsp;&nbsp;
   <a href="documentation/images/ocr_identification.png">
-    <img src="documentation/images/ocr_identification.png" width="210" alt="OCR Identification">
+    <img src="documentation/images/ocr_identification.png" width="200" alt="OCR Identification">
   </a>
   &nbsp;&nbsp;
   <a href="documentation/images/rule_evaluation.png">
-    <img src="documentation/images/rule_evaluation.png" width="210" alt="Rule Evaluation">
+    <img src="documentation/images/rule_evaluation.png" width="200" alt="Rule Evaluation">
   </a>
 </p>
 
