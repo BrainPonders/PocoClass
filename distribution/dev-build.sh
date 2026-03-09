@@ -50,6 +50,20 @@ else
 fi
 git -C "$REPO_DIR" clean -fdx
 
+if [ ! -f "$TEMPLATE_COMPOSE" ]; then
+    echo "ERROR: Missing dev compose template: $TEMPLATE_COMPOSE"
+    echo "The checked-out branch does not contain the expected renamed template files."
+    echo "Expected: docker/compose/docker-compose-dev.yml.example"
+    exit 1
+fi
+
+if [ ! -f "$TEMPLATE_ENV" ]; then
+    echo "ERROR: Missing dev env template: $TEMPLATE_ENV"
+    echo "The checked-out branch does not contain the expected renamed template files."
+    echo "Expected: docker/compose/.env.dev.example"
+    exit 1
+fi
+
 BUILD_NUMBER="$(git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || echo dev)"
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
