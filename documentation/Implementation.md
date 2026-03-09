@@ -16,13 +16,18 @@ Runbooks and execution steps live in `distribution/`.
    - `distribution/docker-build/`
 4. Test notes/artifacts are centralized in:
    - `distribution/test/`
+5. End-user installation is being narrowed to:
+   - official Paperless Docker Compose
+   - bridge mode as the primary documented path
 
 ## Active Roadmap / TODO
 
-1. Validate release workflow reliability after distribution path migration.
-2. Decide if `distribution/release.sh` remains supported long-term or CI-only release is enforced.
-3. Keep root `README.md` and `distribution` docs synchronized after future workflow changes.
-4. Keep architecture and admin docs synchronized with any API/auth model updates.
+1. Finalize the lean official-Paperless bridge installation flow in `README.md`.
+2. Decide how 11notes installation will be documented after the official path is stable.
+3. Validate release workflow reliability after distribution path migration.
+4. Decide if `distribution/release.sh` remains supported long-term or CI-only release is enforced.
+5. Keep root `README.md` and `distribution` docs synchronized after future workflow changes.
+6. Keep architecture and admin docs synchronized with any API/auth model updates.
 
 ## Design Deviations
 
