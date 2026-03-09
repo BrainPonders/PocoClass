@@ -41,14 +41,23 @@ This project originated as a small script triggered by the built-in Paperless-ng
 PocoClass v2.0 emerged from what initially started as an experiment to build a web-based frontend using Replit. What was meant to be a lightweight interface quickly turned into a complete redesign. The result is a fully reimagined application with a visual rule builder, background processing, and a transparent scoring system.
 
 <br>
-
-| <div align="center"><b>Welcome Screen</b></div> | <div align="center"><b>Defining OCR Patterns</b></div> |
-|---|---|
-| <div align="center"><a href="documentation/images/Welcome_Screen.png"><img src="documentation/images/Welcome_Screen.png" width="250"></a></div> | <div align="center"><a href="documentation/images/rule_wizard.png"><img src="documentation/images/rule_wizard.png" width="400"></a></div> |
-
-| <div align="center"><b>OCR Identification</b></div> | <div align="center"><b>Rule Evaluation</b></div> |
-|---|---|
-| <div align="center"><a href="documentation/images/ocr_identification.png"><img src="documentation/images/ocr_identification.png" width="400"></a></div> | <div align="center"><a href="documentation/images/rule_evaluation.png"><img src="documentation/images/rule_evaluation.png" width="400"></a></div> |
+<p align="center">
+  <a href="documentation/images/Welcome_Screen.png">
+    <img src="documentation/images/Welcome_Screen.png" width="210" alt="Welcome Screen">
+  </a>
+  &nbsp;&nbsp;
+  <a href="documentation/images/rule_wizard.png">
+    <img src="documentation/images/rule_wizard.png" width="210" alt="Defining OCR Patterns">
+  </a>
+  &nbsp;&nbsp;
+  <a href="documentation/images/ocr_identification.png">
+    <img src="documentation/images/ocr_identification.png" width="210" alt="OCR Identification">
+  </a>
+  &nbsp;&nbsp;
+  <a href="documentation/images/rule_evaluation.png">
+    <img src="documentation/images/rule_evaluation.png" width="210" alt="Rule Evaluation">
+  </a>
+</p>
 
 <br>
 
