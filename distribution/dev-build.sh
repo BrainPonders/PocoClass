@@ -13,8 +13,8 @@ RUNTIME_ENV="$DEV_ROOT/.env"
 RUNTIME_DATA_DIR="$DEV_ROOT/data"
 RUNTIME_RULES_DIR="$DEV_ROOT/rules"
 
-TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose.dev.yml"
-TEMPLATE_ENV="$REPO_DIR/docker/compose/env.dev"
+TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose-dev.yml.example"
+TEMPLATE_ENV="$REPO_DIR/docker/compose/.env.dev.example"
 
 compose_run() {
     if docker compose version >/dev/null 2>&1; then

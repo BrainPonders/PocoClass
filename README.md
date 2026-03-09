@@ -122,7 +122,11 @@ This installation guide supports two Paperless variants:
 
 The instructions below assume that Paperless-ngx is already running and that PocoClass will connect in bridge mode to the same Docker network as Paperless-ngx.
 
+This is the recommended setup because it keeps traffic between PocoClass and Paperless on the internal Docker network. That makes the connection simpler and more reliable: no reverse proxy is required between the two containers, no public hostname is needed, and there are no container-side TLS or certificate questions to solve.
+
 The deployment uses one shared `docker-compose.yml` for both supported Paperless variants. The `.env` keeps the official Paperless values active by default and includes the 11notes values as commented presets.
+
+The main difference between the two Paperless variants is usually naming. The Paperless container/service name and the Docker network name are different between the official stack and the 11notes stack, which is why both presets are included below.
 
 Placing PocoClass behind a reverse proxy such as Caddy is recommended, but this is outside the scope of this guide.
 
@@ -151,7 +155,7 @@ Create `~/pococlass/docker-compose.yml` with:
 ```yaml
 services:
   pococlass:
-    image: ${POCOCLASS_IMAGE:-ghcr.io/BrainPonders/pococlass:latest}
+    image: ${POCOCLASS_IMAGE:-ghcr.io/brainponders/pococlass:latest}
     container_name: pococlass
     restart: unless-stopped
 
@@ -195,18 +199,29 @@ Then edit `~/pococlass/.env` and set at least:
 
 ```env
 POCOCLASS_SECRET_KEY=PASTE_GENERATED_KEY_HERE
+POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:latest
+
+# ----------------------------------------------------------------------------------------
+# Below are the default configurations for both the Official Paperless-ngx image and
+# the 11notes Paperless-ngx image. Comment out which one is not applicable for your setup.
+# Using the Docker-internal network avoids DNS and TLS certificate trust setup.
+# ----------------------------------------------------------------------------------------
 
 # Official Paperless defaults
 PAPERLESS_URL=http://webserver:8000
 PAPERLESS_NETWORK_NAME=paperless_default
 
-# 11notes preset
+# 11notes Paperless defaults
 # PAPERLESS_URL=http://paperless-ngx:8000
-# PAPERLESS_NETWORK_NAME=<your_11notes_network_name>
+# PAPERLESS_NETWORK_NAME=dms_frontend
+
+# These values assume default upstream setups and may differ in your installation.
 ```
 
-`http://webserver:8000` and `paperless_default` are the default values for the official Paperless Docker Compose setup.  
-If you use 11notes Paperless, comment out the official values and uncomment the 11notes preset instead.
+`PAPERLESS_URL` is the URL PocoClass uses internally to call the Paperless REST API. In this recommended setup it should be the Docker-internal hostname of the Paperless container, not the URL you use in your browser.
+
+
+An external URL such as `https://paperless.example.com` can also work, but that is not the recommended first setup because it depends on extra DNS, routing, and possibly TLS/certificate trust inside the container.
 
 ---
 
@@ -248,7 +263,7 @@ http://localhost:5000
 | `POCOCLASS_SECRET_KEY` | Required runtime encryption key | `base64_generated_string` |
 | `PAPERLESS_URL` | Docker-internal Paperless URL | `http://webserver:8000` |
 | `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless | `paperless_default` |
-| `POCOCLASS_IMAGE` | Optional image override | `ghcr.io/BrainPonders/pococlass:latest` |
+| `POCOCLASS_IMAGE` | Optional image override | `ghcr.io/brainponders/pococlass:latest` |
 
 ---
 
@@ -276,10 +291,12 @@ Once enabled, PocoClass will automatically process new documents after import.
 
 ### First-time setup
 
-1. Open PocoClass in your browser
-2. Log in using your Paperless-ngx admin credentials.
-3. Complete the setup wizard — it connects to Paperless-ngx and creates the required custom fields and tags
-4. Start building rules with the 6-step wizard or follow the built-in guided tutorial
+1. Open PocoClass in your browser.
+2. On the login screen, enter the same Paperless URL that you configured as `PAPERLESS_URL`.
+   Example: `http://webserver:8000`, `http://paperless-ngx:8000`, or `https://paperless.mydomain.com`
+3. Log in using your Paperless-ngx admin credentials.
+4. Complete the setup wizard. It connects to Paperless-ngx and creates the required custom fields and tags.
+5. Start building rules with the 6-step wizard or follow the built-in guided tutorial.
 
 ---
 
@@ -313,6 +330,7 @@ Items marked with `✅` are completed.
 - ✅ First-run setup wizard
 - ✅ Guided rule-building tutorial
 - ✅ Validation banners for missing Paperless fields and tags
+- Validate and complete documentation
 - Step-by-step tutorial for rule evaluation
 - Step-by-step tutorial for background processing
 

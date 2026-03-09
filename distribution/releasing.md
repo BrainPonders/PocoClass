@@ -144,7 +144,6 @@ bash distribution/release.sh
 
 End users should only use:
 
-- `docker/compose/docker-compose.bridge.yml`
-- `docker/compose/docker-compose.host.yml`
-- `docker/compose/env.example`
+- `docker/compose/docker-compose.yml.example`
+- `docker/compose/.env.example`
 - README deployment instructions

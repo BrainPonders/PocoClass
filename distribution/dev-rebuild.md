@@ -12,8 +12,8 @@ End-user deployment instructions live only in `/README.md`.
 
 ## Repository Templates
 
-- `/docker/compose/docker-compose.dev.yml`
-- `/docker/compose/env.dev`
+- `/docker/compose/docker-compose-dev.yml.example`
+- `/docker/compose/.env.dev.example`
 
 These files are templates, not your live runtime files.
 
@@ -25,8 +25,8 @@ Default runtime directory:
 
 Example:
 
-- Repo: `/home/paperless/pococlass-repo`
-- Runtime: `/home/paperless/pococlass-dev`
+- Repo: `/path/to/pococlass-repo`
+- Runtime: `/path/to/pococlass-dev`
 
 Expected runtime files/folders:
 
@@ -137,8 +137,8 @@ The workflow is intentionally image-centric. Development is validated using the 
 
 Templates stored in the repository:
 
-- `/docker/compose/docker-compose.dev.yml`
-- `/docker/compose/env.dev`
+- `/docker/compose/docker-compose-dev.yml.example`
+- `/docker/compose/.env.dev.example`
 - `/distribution/dev-build.sh`
 
 These are templates only.
@@ -156,8 +156,8 @@ Default location:
 
 Example:
 
-- Repository: `/home/paperless/pococlass-repo`
-- Runtime: `/home/paperless/pococlass-dev`
+- Repository: `/path/to/pococlass-repo`
+- Runtime: `/path/to/pococlass-dev`
 
 Expected runtime structure:
 
@@ -305,7 +305,7 @@ Diagram (conceptual):
             |
             v
   [Repo clone: pococlass-repo]
-    - templates: docker-compose.dev.yml, env.dev
+    - templates: docker-compose-dev.yml.example, .env.dev.example
     - scripts: dev-build.sh
             |
             |  (dev-build.sh copies templates if missing;
@@ -414,8 +414,8 @@ The workflow is image-centric. Docker is the authoritative validation environmen
 
 Templates stored inside the repository:
 
-- `/docker/compose/docker-compose.dev.yml`
-- `/docker/compose/env.dev`
+- `/docker/compose/docker-compose-dev.yml.example`
+- `/docker/compose/.env.dev.example`
 - `/distribution/dev-build.sh`
 - `/distribution/docker-build/Dockerfile`
 
@@ -434,8 +434,8 @@ Default location:
 
 Example:
 
-- Repository: `/home/paperless/pococlass-repo`
-- Runtime: `/home/paperless/pococlass-dev`
+- Repository: `/path/to/pococlass-repo`
+- Runtime: `/path/to/pococlass-dev`
 
 Expected runtime structure:
 
@@ -546,8 +546,8 @@ If `docker-compose.dev.yml` exists in runtime, it is renamed to `docker-compose.
 
 If runtime files do not exist:
 
-- Copy `docker-compose.dev.yml` → `docker-compose.yml`
-- Copy `env.dev` → `.env`
+- Copy `docker-compose-dev.yml.example` → `docker-compose.yml`
+- Copy `.env.dev.example` → `.env`
 
 If runtime files already exist and template differs:
 
@@ -782,8 +782,8 @@ The workflow is image-centric. Docker is the authoritative validation environmen
 
 Templates stored inside the repository:
 
-- `/docker/compose/docker-compose.dev.yml`
-- `/docker/compose/env.dev`
+- `/docker/compose/docker-compose-dev.yml.example`
+- `/docker/compose/.env.dev.example`
 - `/distribution/dev-build.sh`
 - `/distribution/docker-build/Dockerfile`
 
@@ -802,8 +802,8 @@ Default location:
 
 Example:
 
-- Repository: `/home/paperless/pococlass-repo`
-- Runtime: `/home/paperless/pococlass-dev`
+- Repository: `/path/to/pococlass-repo`
+- Runtime: `/path/to/pococlass-dev`
 
 Expected runtime structure:
 
@@ -914,8 +914,8 @@ If `docker-compose.dev.yml` exists in runtime, it is renamed to `docker-compose.
 
 If runtime files do not exist:
 
-- Copy `docker-compose.dev.yml` → `docker-compose.yml`
-- Copy `env.dev` → `.env`
+- Copy `docker-compose-dev.yml.example` → `docker-compose.yml`
+- Copy `.env.dev.example` → `.env`
 
 If runtime files already exist and template differs:
 
