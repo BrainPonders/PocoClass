@@ -1,57 +1,47 @@
-###############################################################################
-#  PocoClass - Docker Compose Configuration (BRIDGE MODE)
+# eRJe 2026-03-09: PocoClass
+# -----------------------------------------------------------------------------
+# Docker Compose file for deploying PocoClass next to a Paperless-ngx Docker
+# stack using bridge networking. PocoClass joins the same Docker network as
+# Paperless and connects to the internal Paperless service URL.
 #
-#  DIFFERENCE VS HOST MODE:
-#    - Bridge mode connects PocoClass to a Docker network.
-#    - PAPERLESS_URL must be a Docker-internal hostname.
-#    - Host mode allows using the same PAPERLESS_URL as your browser UI URL.
+# Docs:
+# https://github.com/BrainPonders/PocoClass
 #
-#  QUICK START:
-#    1) Copy this file to your deploy root as docker-compose.yml
-#    2) Copy docker/compose/env.example to .env and review values
-#    3) Set PAPERLESS_URL to the Docker-internal Paperless hostname
-#    4) Start PocoClass: docker compose up -d
+# Notes (this deployment):
+# - PAPERLESS_URL must be the Docker-internal Paperless URL.
+# - Official Paperless defaults are provided in env.example.
+# - 11notes Paperless presets are provided as commented values in env.example.
 #
-#  NOTE:
-#    PocoClass and Paperless-ngx must be on the same Docker network.
-#
-###############################################################################
+# -----------------------------------------------------------------------------
+# History:
+# 2026-03-09 | eRJe | Simplified public bridge deployment with shared env presets
+# -----------------------------------------------------------------------------
 
 services:
   pococlass:
-    image: ${POCOCLASS_IMAGE:-pococlass:latest}
+    image: ${POCOCLASS_IMAGE:-ghcr.io/BrainPonders/pococlass:latest}
     container_name: pococlass
     restart: unless-stopped
 
     ports:
-      # PocoClass web interface port (host:container)
+      # Change the host port if 5000 is already in use
       - "5000:5000"
 
-    environment:
-      # REQUIRED runtime secret (not used during image build)
-      # Reads POCOCLASS_SECRET_KEY from .env or current shell environment
-      POCOCLASS_SECRET_KEY: ${POCOCLASS_SECRET_KEY:-}
-
-      # REQUIRED: Paperless URL from inside Docker network
-      PAPERLESS_URL: ${PAPERLESS_URL}
-
-      # OPTIONAL: Performance tuning
-      # - GUNICORN_WORKERS=3
-      # - GUNICORN_THREADS=2
-      # - GUNICORN_TIMEOUT=120
+    env_file:
+      - .env
 
     volumes:
-      # Persistent data (database, settings)
+      # Persistent PocoClass data
       - ./data:/app/data
 
-      # YAML rules directory
+      # YAML rules created by the user
       - ./rules:/app/rules
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:5000/api/health"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      retries: 5
       start_period: 15s
 
     networks:
@@ -59,8 +49,6 @@ services:
 
 networks:
   paperless:
-    # Name of the existing Paperless network (set in .env)
+    # Network name comes from .env so the same compose can support official and 11notes
     name: ${PAPERLESS_NETWORK_NAME:-paperless_default}
-
-    # Keep true when the network is created by Paperless
-    external: ${PAPERLESS_NETWORK_EXTERNAL:-true}
+    external: true
