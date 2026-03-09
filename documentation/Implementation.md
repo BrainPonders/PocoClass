@@ -19,6 +19,7 @@ Runbooks and execution steps live in `distribution/`.
 5. End-user installation is being narrowed to:
    - official Paperless Docker Compose
    - bridge mode as the primary documented path
+6. Version reporting and update notification now use a single backend health payload.
 
 ## Active Roadmap / TODO
 
@@ -28,6 +29,7 @@ Runbooks and execution steps live in `distribution/`.
 4. Decide if `distribution/release.sh` remains supported long-term or CI-only release is enforced.
 5. Keep root `README.md` and `distribution` docs synchronized after future workflow changes.
 6. Keep architecture and admin docs synchronized with any API/auth model updates.
+7. Document optional update-check environment variables if they become part of public deployment guidance.
 
 ## Design Deviations
 

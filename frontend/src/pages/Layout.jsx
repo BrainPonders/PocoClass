@@ -42,7 +42,9 @@ function LayoutContent({ children }) {
   const [showQuickGuide, setShowQuickGuide] = useState(false);
   const [showPaperlessInfo, setShowPaperlessInfo] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [appVersion, setAppVersion] = useState(null);
   const [buildNumber, setBuildNumber] = useState(null);
+  const [updateStatus, setUpdateStatus] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
 
@@ -84,9 +86,21 @@ function LayoutContent({ children }) {
     fetch(`${API_BASE_URL}/api/health`)
       .then(res => res.ok ? res.json() : null)
       .then(data => {
-        if (data?.build && data.build !== 'dev') {
-          setBuildNumber(data.build);
-        }
+        if (!data) return;
+        setAppVersion(data.version || null);
+        setBuildNumber(data.build || null);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/system/update-status`, {
+      credentials: 'include'
+    })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (!data) return;
+        setUpdateStatus(data);
       })
       .catch(() => {});
   }, []);
@@ -631,7 +645,12 @@ function LayoutContent({ children }) {
                   </SidebarGroup>
 
                   <div className="px-5 py-2">
-                    <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>Version 2.0 build {buildNumber || '####'}</p>
+                    <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                      {t('app.versionBuild', {
+                        version: appVersion || '####',
+                        build: buildNumber || '####'
+                      })}
+                    </p>
                   </div>
 
                   {currentUser && (
@@ -682,6 +701,31 @@ function LayoutContent({ children }) {
 
               <main className="flex-1 flex flex-col">
                 <ValidationBanner />
+                {updateStatus?.update_available && (
+                  <div className="px-6 pt-4">
+                    <Banner
+                      variant="info"
+                      dismissible
+                      storageKey={`update-${updateStatus.latest_version}`}
+                    >
+                      <strong>{t('app.updateAvailableTitle', { version: updateStatus.latest_version })}</strong>{' '}
+                      {t('app.updateAvailableBody', {
+                        currentVersion: appVersion || t('common.notSet')
+                      })}{' '}
+                      {updateStatus.release_url && (
+                        <a
+                          href={updateStatus.release_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium underline"
+                          style={{ color: 'inherit' }}
+                        >
+                          {t('app.viewRelease')}
+                        </a>
+                      )}
+                    </Banner>
+                  </div>
+                )}
                 <header className="px-6 py-4 md:hidden" style={{ backgroundColor: 'var(--app-surface)', borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex items-center gap-4">
                     <SidebarTrigger 
@@ -1525,4 +1569,3 @@ export default function Layout({ children }) {
     </ErrorBoundary>
   );
 }
-

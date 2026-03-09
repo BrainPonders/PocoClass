@@ -54,12 +54,15 @@ BUILD_NUMBER="$(git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || echo dev
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
 IMAGE_REF="pococlass:${IMAGE_TAG}"
+VERSION="${POCOCLASS_VERSION:-0.0-develop}"
 
 echo "== Build image ${IMAGE_REF} =="
+echo "== Version ${VERSION} =="
 echo "== Build number #${BUILD_NUMBER} =="
 docker build \
     --no-cache \
     --build-arg BUILD_NUMBER="${BUILD_NUMBER}" \
+    --build-arg VERSION="${VERSION}" \
     -t "${IMAGE_REF}" \
     -t "pococlass:dev-latest" \
     -f "$REPO_DIR/distribution/docker-build/Dockerfile" \

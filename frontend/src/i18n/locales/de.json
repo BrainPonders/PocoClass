@@ -75,6 +75,12 @@
     "quickStart": "Schnellstart",
     "logout": "Abmelden"
   },
+  "app": {
+    "versionBuild": "Version {version} Build {build}",
+    "updateAvailableTitle": "Update verfugbar: {version}",
+    "updateAvailableBody": "Sie verwenden PocoClass {currentVersion}. Eine neuere Version ist verfugbar.",
+    "viewRelease": "Release-Hinweise anzeigen"
+  },
   "auth": {
     "login": "Anmelden",
     "username": "Benutzername",
