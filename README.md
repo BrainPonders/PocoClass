@@ -2,7 +2,7 @@
 Rule-based document classification for Paperless-ngx.
 
 ---
-![Docker Pulls](https://img.shields.io/docker/pulls/BrainPonders/PocoClass) ![GitHub release](https://img.shields.io/github/v/release/BrainPonders/PocoClass) ![License](https://img.shields.io/github/license/BrainPonders/PocoClass) ![GitHub stars](https://img.shields.io/github/stars/BrainPonders/PocoClass)
+![Docker Pulls](https://img.shields.io/docker/pulls/brainponders/pococlass) ![GitHub release](https://img.shields.io/github/v/release/brainponders/pococlass) ![License](https://img.shields.io/github/license/brainponders/pococlass) ![GitHub stars](https://img.shields.io/github/stars/brainponders/pococlass)
 
 PocoClass is a companion application for [Paperless-ngx](https://github.com/paperless-ngx/paperless-ngx) that automates document classification with strict rule-based logic. Instead of relying purely on statistical learning, PocoClass applies explicit identification rules and pattern matching that you define, allowing documents to be classified with predictable results while maintaining full control and transparency over the process.
 
