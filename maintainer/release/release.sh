@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 IMAGE_NAME="${POCOCLASS_IMAGE_NAME:-pococlass}"
 IMAGE_TAG="${POCOCLASS_IMAGE_TAG:-}"
@@ -37,8 +37,8 @@ short_sha_default() {
     fi
 }
 
-if [ ! -f "$REPO_DIR/distribution/docker-build/Dockerfile" ]; then
-    echo "ERROR: Dockerfile not found at $REPO_DIR/distribution/docker-build/Dockerfile"
+if [ ! -f "$REPO_DIR/maintainer/docker/Dockerfile" ]; then
+    echo "ERROR: Dockerfile not found at $REPO_DIR/maintainer/docker/Dockerfile"
     exit 1
 fi
 
@@ -95,7 +95,7 @@ docker build \
     -t "${PRIMARY_IMAGE_TAG}" \
     -t "${BUILD_IMAGE_TAG}" \
     -t "${SHA_IMAGE_TAG}" \
-    -f "$REPO_DIR/distribution/docker-build/Dockerfile" \
+    -f "$REPO_DIR/maintainer/docker/Dockerfile" \
     "$REPO_DIR"
 
 echo "Release build complete."

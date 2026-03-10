@@ -28,7 +28,7 @@
 ### Validation
 
 - Python compile check passed.
-- Docker smoke test passed (`distribution/test/smoke_local_docker.sh`).
+- Docker smoke test passed (`maintainer/test/smoke_local_docker.sh`).
 
 ### Security status impact
 
@@ -230,7 +230,7 @@ Removed confirmed unused imports in:
 - Locale JSON parse check ✅
 - Route auth re-scan for undecorated `/api/*` routes ✅
 - Docker smoke test:
-  - `bash distribution/test/smoke_local_docker.sh` ✅
+  - `bash maintainer/test/smoke_local_docker.sh` ✅
 
 Smoke checks passed for:
 - `/api/health` (200)

@@ -91,7 +91,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: distribution/docker-build/Dockerfile
+          file: maintainer/docker/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
@@ -166,7 +166,7 @@ jobs:
           set -euo pipefail
           default_branch="${{ github.event.repository.default_branch }}"
           git switch "${default_branch}"
-          python3 distribution/update_available_versions.py
+          python3 maintainer/release/update_available_versions.py
           if git diff --quiet -- README.md; then
             echo "README already up to date."
             exit 0

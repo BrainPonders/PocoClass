@@ -4,7 +4,7 @@ Maintainer quick reference for publishing PocoClass Docker images.
 
 ## 1. Principles
 
-- Release images are built by GitHub Actions from `distribution/docker-build/Dockerfile`.
+- Release images are built by GitHub Actions from `maintainer/docker/Dockerfile`.
 - The runtime base image is `11notes/python:3.13`.
 - Release identity is the tag:
   - dev: `vX.Y.Z-dev.N`
@@ -17,7 +17,7 @@ Maintainer quick reference for publishing PocoClass Docker images.
 
 ## 2. Release Files
 
-- Local helper: `distribution/release.sh`
+- Local helper: `maintainer/release/release.sh`
 - Main workflow: `.github/workflows/release-image.yml`
 - amd64-only workflow: `.github/workflows/release-image-amd64.yml`
 
@@ -26,7 +26,7 @@ Maintainer quick reference for publishing PocoClass Docker images.
 Before tagging a release:
 
 1. Rebuild locally:
-   - `bash distribution/dev-build.sh`
+   - `bash maintainer/development/dev-build.sh`
 2. Test the running container.
 3. Confirm the UI shows the expected:
    - version
@@ -96,7 +96,7 @@ when the release tag is created from the default branch:
 
 Use this only for local release simulation:
 
-- `POCOCLASS_IMAGE_NAME=pococlass POCOCLASS_IMAGE_TAG=v2.0.0-rc.1 bash distribution/release.sh`
+- `POCOCLASS_IMAGE_NAME=pococlass POCOCLASS_IMAGE_TAG=v2.0.0-rc.1 bash maintainer/release/release.sh`
 
 ## 8. What Users Should Deploy
 

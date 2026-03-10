@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 REPO_PARENT_DIR="$(cd "$REPO_DIR/.." && pwd)"
 DEV_COMPOSE_PROJECT="${POCOCLASS_DEV_PROJECT:-pococlass-dev}"
 
@@ -108,7 +108,7 @@ docker build \
     --build-arg VERSION="${VERSION}" \
     -t "${IMAGE_REF}" \
     -t "pococlass:dev-latest" \
-    -f "$REPO_DIR/distribution/docker-build/Dockerfile" \
+    -f "$REPO_DIR/maintainer/docker/Dockerfile" \
     "$REPO_DIR"
 
 echo "== Prepare runtime folder: ${DEV_ROOT} =="

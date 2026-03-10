@@ -8,7 +8,7 @@ End-user deployment instructions live only in `/README.md`.
 
 - The repository keeps templates only.
 - The live dev runtime lives outside the repo in `<repo-parent>/pococlass-dev/` by default.
-- `distribution/dev-build.sh` is the single entry point for local rebuilds.
+- `maintainer/development/dev-build.sh` is the single entry point for local rebuilds.
 - Local runtime files are preserved:
   - `docker-compose.yml`
   - `.env`
@@ -59,7 +59,7 @@ Repository templates:
 First run:
 
 1. Run:
-   - `bash distribution/dev-build.sh`
+   - `bash maintainer/development/dev-build.sh`
 2. Edit:
    - `<repo-parent>/pococlass-dev/.env`
 3. Set at minimum:
@@ -67,29 +67,29 @@ First run:
    - `PAPERLESS_URL`
    - `PAPERLESS_NETWORK_NAME`
 4. Run again:
-   - `bash distribution/dev-build.sh`
+   - `bash maintainer/development/dev-build.sh`
 
 Regular rebuild:
 
-- `bash distribution/dev-build.sh`
+- `bash maintainer/development/dev-build.sh`
 
 ## 5. Useful Overrides
 
 Custom runtime folder:
 
-- `POCOCLASS_DEV_ROOT=/custom/path bash distribution/dev-build.sh`
+- `POCOCLASS_DEV_ROOT=/custom/path bash maintainer/development/dev-build.sh`
 
 Custom compose project name:
 
-- `POCOCLASS_DEV_PROJECT=my-dev-stack bash distribution/dev-build.sh`
+- `POCOCLASS_DEV_PROJECT=my-dev-stack bash maintainer/development/dev-build.sh`
 
 Custom source branch:
 
-- `POCOCLASS_DEV_BRANCH=my-branch bash distribution/dev-build.sh`
+- `POCOCLASS_DEV_BRANCH=my-branch bash maintainer/development/dev-build.sh`
 
 Force a specific dev sequence:
 
-- `POCOCLASS_DEV_SEQUENCE=3 bash distribution/dev-build.sh`
+- `POCOCLASS_DEV_SEQUENCE=3 bash maintainer/development/dev-build.sh`
 
 ## 6. Secret Key
 
