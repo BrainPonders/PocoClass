@@ -170,7 +170,7 @@ services:
       - ./rules:/app/rules
 
     healthcheck:
-      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')\" || exit 1"]
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health', timeout=5)\" || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

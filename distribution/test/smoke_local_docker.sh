@@ -12,8 +12,8 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "ERROR: curl is not installed."
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "ERROR: python3 is not installed."
   exit 1
 fi
 
@@ -48,13 +48,27 @@ docker run -d \
 
 echo "== Wait for health endpoint =="
 for _ in $(seq 1 60); do
-  if curl -fsS "${BASE_URL}/api/health" >/dev/null 2>&1; then
+  if python3 - "$BASE_URL/api/health" >/dev/null 2>&1 <<'PY'
+import sys
+import urllib.request
+
+with urllib.request.urlopen(sys.argv[1], timeout=5) as response:
+    sys.exit(0 if response.getcode() == 200 else 1)
+PY
+  then
     break
   fi
   sleep 1
 done
 
-if ! curl -fsS "${BASE_URL}/api/health" >/dev/null 2>&1; then
+if ! python3 - "$BASE_URL/api/health" >/dev/null 2>&1 <<'PY'
+import sys
+import urllib.request
+
+with urllib.request.urlopen(sys.argv[1], timeout=5) as response:
+    sys.exit(0 if response.getcode() == 200 else 1)
+PY
+then
   echo "ERROR: service did not become healthy in time."
   echo "--- container logs ---"
   docker logs "$CONTAINER_NAME" || true
@@ -67,11 +81,34 @@ check_status() {
   local expected="$3"
   local body="${4:-}"
   local code
-  if [ -n "$body" ]; then
-    code="$(curl -s -o /tmp/poco-smoke.out -w '%{http_code}' -X "$method" "${BASE_URL}${path}" -H 'Content-Type: application/json' -d "$body")"
-  else
-    code="$(curl -s -o /tmp/poco-smoke.out -w '%{http_code}' -X "$method" "${BASE_URL}${path}")"
-  fi
+  code="$(python3 - "$method" "${BASE_URL}${path}" /tmp/poco-smoke.out "$body" <<'PY'
+import json
+import sys
+import urllib.error
+import urllib.request
+
+method, url, outfile, body = sys.argv[1:5]
+headers = {}
+data = None
+if body:
+    data = body.encode("utf-8")
+    headers["Content-Type"] = "application/json"
+
+request = urllib.request.Request(url, data=data, headers=headers, method=method)
+try:
+    with urllib.request.urlopen(request, timeout=5) as response:
+        payload = response.read()
+        status = response.getcode()
+except urllib.error.HTTPError as error:
+    payload = error.read()
+    status = error.code
+
+with open(outfile, "wb") as handle:
+    handle.write(payload)
+
+print(status)
+PY
+)"
 
   if [ "$code" != "$expected" ]; then
     echo "FAIL: ${method} ${path} expected ${expected}, got ${code}"
