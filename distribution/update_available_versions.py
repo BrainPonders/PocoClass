@@ -15,6 +15,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 README = ROOT / "README.md"
+ENV_EXAMPLE = ROOT / "docker" / "compose" / ".env.example"
+VERSION_FILE = ROOT / "VERSION"
 IMAGE_REPO = "ghcr.io/brainponders/pococlass"
 BEGIN_MARKER = "<!-- BEGIN: AVAILABLE_VERSIONS -->"
 END_MARKER = "<!-- END: AVAILABLE_VERSIONS -->"
@@ -67,8 +69,14 @@ def row(label: str, tag_info):
     return f"| {label} | `{tag}` | `POCOCLASS_IMAGE={IMAGE_REPO}:{tag}` |"
 
 
-def build_block(tags: list[str]) -> str:
-    parsed = [item for tag in tags if (item := parse_tag(tag))]
+def default_stable_example(tags: list[dict]) -> str:
+    stable = select_latest(tags, "stable")
+    if stable:
+        return stable["tag"]
+    return f"v{VERSION_FILE.read_text().strip()}"
+
+
+def build_block(parsed: list[dict]) -> str:
     stable = select_latest(parsed, "stable")
     rc = select_latest(parsed, "rc")
     dev = select_latest(parsed, "dev")
@@ -90,16 +98,37 @@ def build_block(tags: list[str]) -> str:
     return "\n".join(lines)
 
 
-def update_readme():
+def update_readme(parsed: list[dict], stable_example_tag: str):
     content = README.read_text()
     if BEGIN_MARKER not in content or END_MARKER not in content:
         raise SystemExit("README markers for available versions were not found.")
 
     start = content.index(BEGIN_MARKER)
     end = content.index(END_MARKER) + len(END_MARKER)
-    replacement = build_block(git_tags())
-    README.write_text(content[:start] + replacement + content[end:])
+    replacement = build_block(parsed)
+    updated = content[:start] + replacement + content[end:]
+    updated = re.sub(
+        r"POCOCLASS_IMAGE=ghcr\.io/brainponders/pococlass:[^\s`]+",
+        f"POCOCLASS_IMAGE={IMAGE_REPO}:{stable_example_tag}",
+        updated,
+        count=1,
+    )
+    README.write_text(updated)
+
+
+def update_env_example(stable_example_tag: str):
+    content = ENV_EXAMPLE.read_text()
+    updated = re.sub(
+        r"^POCOCLASS_IMAGE=.*$",
+        f"POCOCLASS_IMAGE={IMAGE_REPO}:{stable_example_tag}",
+        content,
+        flags=re.MULTILINE,
+    )
+    ENV_EXAMPLE.write_text(updated)
 
 
 if __name__ == "__main__":
-    update_readme()
+    parsed_tags = [item for tag in git_tags() if (item := parse_tag(tag))]
+    stable_example_tag = default_stable_example(parsed_tags)
+    update_readme(parsed_tags, stable_example_tag)
+    update_env_example(stable_example_tag)

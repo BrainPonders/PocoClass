@@ -5,7 +5,7 @@
 
 services:
   pococlass:
-    image: ${POCOCLASS_IMAGE:-ghcr.io/brainponders/pococlass:latest}
+    image: ${POCOCLASS_IMAGE}
     container_name: pococlass
     restart: unless-stopped
 

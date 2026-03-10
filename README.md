@@ -169,7 +169,7 @@ Create `~/pococlass/docker-compose.yml` with:
 ```yaml
 services:
   pococlass:
-    image: ${POCOCLASS_IMAGE:-ghcr.io/brainponders/pococlass:latest}
+    image: ${POCOCLASS_IMAGE}
     container_name: pococlass
     restart: unless-stopped
 
@@ -213,7 +213,7 @@ Then edit `~/pococlass/.env` and set at least:
 
 ```env
 POCOCLASS_SECRET_KEY=PASTE_GENERATED_KEY_HERE
-POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:latest
+POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:v2.0.0
 
 # ----------------------------------------------------------------------------------------
 # Below are the default configurations for both the Official Paperless-ngx image and

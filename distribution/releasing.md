@@ -79,8 +79,12 @@ For each release tag, the workflow publishes:
 - `ghcr.io/<owner>/pococlass:build-<build_number>`
 - `ghcr.io/<owner>/pococlass:sha-<short_sha>`
 
-The multi-arch release workflow also updates the `Available Versions` section in
-`README.md` when the release tag is created from the default branch.
+The multi-arch release workflow also updates the generated version references
+when the release tag is created from the default branch:
+
+- `README.md` `Available Versions`
+- `README.md` installation `.env` example
+- `docker/compose/.env.example`
 
 ## 7. Local Fallback Build
 
