@@ -79,6 +79,9 @@ For each release tag, the workflow publishes:
 - `ghcr.io/<owner>/pococlass:build-<build_number>`
 - `ghcr.io/<owner>/pococlass:sha-<short_sha>`
 
+The multi-arch release workflow also updates the `Available Versions` section in
+`README.md` when the release tag is created from the default branch.
+
 ## 7. Local Fallback Build
 
 Use this only for local release simulation:

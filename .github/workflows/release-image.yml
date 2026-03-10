@@ -8,7 +8,7 @@ on:
       - 'v*.*.*'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -124,3 +124,39 @@ jobs:
               echo "- \`${tag}\`"
             done <<< "${{ steps.meta.outputs.tags }}"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fetch default branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ github.event.repository.default_branch }}"
+
+      - name: Check README update eligibility
+        id: readme_check
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="${{ github.event.repository.default_branch }}"
+          if git merge-base --is-ancestor "${GITHUB_SHA}" "origin/${default_branch}"; then
+            echo "update_readme=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "update_readme=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update README available versions
+        if: steps.readme_check.outputs.update_readme == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="${{ github.event.repository.default_branch }}"
+          git switch "${default_branch}"
+          python3 distribution/update_available_versions.py
+          if git diff --quiet -- README.md; then
+            echo "README already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update available versions"
+          git push origin "HEAD:${default_branch}"

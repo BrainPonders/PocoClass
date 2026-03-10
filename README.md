@@ -112,6 +112,20 @@ Integration:
 
 ----
 
+<!-- BEGIN: AVAILABLE_VERSIONS -->
+## Available Versions
+
+This section is updated automatically from published release tags.
+`latest` is intentionally not used.
+
+| Channel | Current tag | Deployment value |
+| --- | --- | --- |
+| Stable | - | - |
+| Release Candidate | - | - |
+| Development | - | - |
+<!-- END: AVAILABLE_VERSIONS -->
+---
+
 ## Installation
 
 This installation guide describes how to deploy PocoClass. The PocoClass Docker image is built on the [11notes Python](https://github.com/11notes/docker-python) image. 11notes images are container images designed around a more security-focused default setup. The container runs with `UID/GID 1000:1000` by default. To change this, please consult 11notes [RTFM](https://github.com/11notes/RTFM).
