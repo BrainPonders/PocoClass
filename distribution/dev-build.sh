@@ -54,7 +54,12 @@ fi
 DEV_BRANCH="${POCOCLASS_DEV_BRANCH:-$CURRENT_BRANCH}"
 
 echo "== Sync repository to origin/${DEV_BRANCH} =="
-git -C "$REPO_DIR" fetch origin --prune --tags
+if ! git -C "$REPO_DIR" fetch origin --prune --tags --force; then
+    echo "ERROR: Failed to synchronize remote tags."
+    echo "This usually means local tags conflict with rewritten or replaced remote tags."
+    echo "The script expects remote tags to be authoritative."
+    exit 1
+fi
 if git -C "$REPO_DIR" show-ref --verify --quiet "refs/remotes/origin/${DEV_BRANCH}"; then
     git -C "$REPO_DIR" switch "$DEV_BRANCH" >/dev/null 2>&1 || git -C "$REPO_DIR" checkout "$DEV_BRANCH" >/dev/null 2>&1
     git -C "$REPO_DIR" reset --hard "origin/${DEV_BRANCH}"
