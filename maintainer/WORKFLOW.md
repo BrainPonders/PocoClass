@@ -33,7 +33,7 @@ It does not cover:
    - `vX.Y.Z-dev.N`
    - `vX.Y.Z-rc.N`
    - `vX.Y.Z`
-6. Let GitHub Actions publish images and, when applicable, create GitHub releases.
+6. Let GitHub Actions publish the amd64 image and, when applicable, create GitHub releases.
 
 ## 3. Local Development
 
@@ -58,10 +58,10 @@ The script:
   - image publish only
 - RC:
   - `vX.Y.Z-rc.N`
-  - image publish + GitHub prerelease
+  - amd64 image publish + GitHub prerelease
 - Stable:
   - `vX.Y.Z`
-  - image publish + GitHub release
+  - amd64 image publish + GitHub release
 
 The runtime base image for released containers is:
 
@@ -69,7 +69,7 @@ The runtime base image for released containers is:
 
 ## 5. Public Version References
 
-The main multi-arch release workflow updates:
+The main release workflow updates:
 
 - `README.md` `Available Versions`
 - `README.md` install `.env` example

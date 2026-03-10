@@ -6,6 +6,7 @@ Maintainer quick reference for publishing PocoClass Docker images.
 
 - Release images are built by GitHub Actions from `maintainer/docker/Dockerfile`.
 - The runtime base image is `11notes/python:3.13`.
+- The public release pipeline is amd64-only.
 - Release identity is the tag:
   - dev: `vX.Y.Z-dev.N`
   - rc: `vX.Y.Z-rc.N`
@@ -19,7 +20,6 @@ Maintainer quick reference for publishing PocoClass Docker images.
 
 - Local helper: `maintainer/release/release.sh`
 - Main workflow: `.github/workflows/release-image.yml`
-- amd64-only workflow: `.github/workflows/release-image-amd64.yml`
 
 ## 3. Local Preflight
 
@@ -41,15 +41,7 @@ Use only these tag formats:
 - RC: `v2.0.0-rc.1`
 - Stable: `v2.0.0`
 
-amd64-only tags add `-amd64`:
-
-- `v2.0.0-dev.1-amd64`
-- `v2.0.0-rc.1-amd64`
-- `v2.0.0-amd64`
-
 ## 5. Release Execution
-
-### Multi-arch release
 
 Stable:
 
@@ -66,26 +58,21 @@ Dev:
 - `git tag -a v2.0.0-dev.1 -m "Development release v2.0.0-dev.1"`
 - `git push origin v2.0.0-dev.1`
 
-### amd64-only release
-
-- `git tag -a v2.0.0-rc.1-amd64 -m "amd64 release v2.0.0-rc.1"`
-- `git push origin v2.0.0-rc.1-amd64`
-
 ## 6. What GitHub Publishes
 
-For each release tag, the workflow publishes:
+For each release tag, the workflow publishes the amd64 image:
 
 - `ghcr.io/<owner>/pococlass:<source_tag>`
 - `ghcr.io/<owner>/pococlass:build-<build_number>`
 - `ghcr.io/<owner>/pococlass:sha-<short_sha>`
 
-For the main multi-arch workflow:
+For the main release workflow:
 
 - `dev` tags publish container images only
 - `rc` tags also create a GitHub prerelease
 - `stable` tags also create a normal GitHub release
 
-The multi-arch release workflow also updates the generated version references
+The release workflow also updates the generated version references
 when the release tag is created from the default branch:
 
 - `README.md` `Available Versions`
