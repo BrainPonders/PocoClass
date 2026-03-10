@@ -76,7 +76,7 @@
     "logout": "Abmelden"
   },
   "app": {
-    "versionBuild": "Version {version} Build {build}",
+    "versionBuild": "Version {version} (Build {build})",
     "latestVersionLabel": "Aktuelle Version",
     "updateAvailableLabel": "Update verfugbar",
     "updateAvailableTitle": "Update verfugbar: {version}",

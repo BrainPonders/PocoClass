@@ -76,7 +76,7 @@
     "logout": "Déconnexion"
   },
   "app": {
-    "versionBuild": "Version {version} build {build}",
+    "versionBuild": "Version {version} (build {build})",
     "latestVersionLabel": "Derniere version",
     "updateAvailableLabel": "Mise a jour disponible",
     "updateAvailableTitle": "Mise a jour disponible : {version}",

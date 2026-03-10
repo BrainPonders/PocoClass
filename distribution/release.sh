@@ -9,7 +9,7 @@ IMAGE_TAG="${POCOCLASS_IMAGE_TAG:-}"
 
 validate_release_tag() {
     local tag="$1"
-    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.b[0-9]+$ ]]; then
+    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
         return 0
     fi
     if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
@@ -45,7 +45,7 @@ fi
 if [ -z "$IMAGE_TAG" ]; then
     echo "ERROR: POCOCLASS_IMAGE_TAG is required."
     echo "Allowed values:"
-    echo "  - v<major>.<minor>.<patch>-dev.b<build> (example: v2.0.0-dev.b34)"
+    echo "  - v<major>.<minor>.<patch>-dev.<n> (example: v2.0.0-dev.1)"
     echo "  - v<major>.<minor>.<patch>-rc.<n> (example: v2.0.0-rc.1)"
     echo "  - v<major>.<minor>.<patch> (example: v2.0.0)"
     exit 1
@@ -54,7 +54,7 @@ fi
 if ! validate_release_tag "$IMAGE_TAG"; then
     echo "ERROR: Invalid POCOCLASS_IMAGE_TAG='$IMAGE_TAG'"
     echo "Allowed values:"
-    echo "  - v<major>.<minor>.<patch>-dev.b<build>"
+    echo "  - v<major>.<minor>.<patch>-dev.<n>"
     echo "  - v<major>.<minor>.<patch>-rc.<n>"
     echo "  - v<major>.<minor>.<patch>"
     exit 1

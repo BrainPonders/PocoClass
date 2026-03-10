@@ -34,7 +34,7 @@ Runbooks and execution steps live in `distribution/`.
 ## Design Deviations
 
 1. Dev runtime file uses `docker-compose.yml` (not `docker-compose.dev.yml`) in the runtime folder for easier day-2 operations.
-2. Release tags intentionally avoid `latest` and use `vX.Y.Z-dev.bN`, `vX.Y.Z-rc.N`, and immutable final `vX.Y.Z` tags.
+2. Release tags intentionally avoid `latest` and use `vX.Y.Z-dev.N`, `vX.Y.Z-rc.N`, and immutable final `vX.Y.Z` tags.
 
 ## Notes
 

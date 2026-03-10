@@ -2,7 +2,7 @@
 set -e
 
 echo "========================================"
-echo "  PocoClass ${POCOCLASS_VERSION:-v0.0.0-dev.b0} (Build #${POCOCLASS_BUILD_NUMBER:-dev}) - Starting..."
+echo "  PocoClass ${POCOCLASS_VERSION:-v0.0.0-dev.0} (Build #${POCOCLASS_BUILD_NUMBER:-dev}) - Starting..."
 echo "  Base: 11notes/python (rootless Alpine)"
 echo "========================================"
 
@@ -35,7 +35,7 @@ THREADS="${GUNICORN_THREADS:-2}"
 TIMEOUT="${GUNICORN_TIMEOUT:-120}"
 
 echo "Configuration:"
-echo "  - Version: ${POCOCLASS_VERSION:-v0.0.0-dev.b0}"
+echo "  - Version: ${POCOCLASS_VERSION:-v0.0.0-dev.0}"
 echo "  - Build: #${POCOCLASS_BUILD_NUMBER:-dev}"
 echo "  - Data directory: $DATA_DIR"
 echo "  - Database path: $DB_PATH"

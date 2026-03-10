@@ -22,9 +22,7 @@ _VERSION_PATTERN = re.compile(
     r"^v?"
     r"(?P<major>\d+)\.(?P<minor>\d+)"
     r"(?:\.(?P<patch>\d+))?"
-    r"(?:-(?P<channel>develop|dev|rc)"
-    r"(?:(?:[.-]?(?P<channel_num>\d+))|(?:\.b(?P<build_num>\d+)))?"
-    r")?"
+    r"(?:-(?P<channel>develop|dev|rc)(?:[.-]?(?P<channel_num>\d+))?)?"
     r"(?:\+.*)?$"
 )
 
@@ -68,7 +66,7 @@ def parse_version(version: Optional[str]) -> Optional[Tuple[int, int, int, int, 
     minor = int(match.group("minor"))
     patch = int(match.group("patch") or 0)
     channel = match.group("channel")
-    channel_num = int(match.group("channel_num") or match.group("build_num") or 0)
+    channel_num = int(match.group("channel_num") or 0)
 
     return (
         major,

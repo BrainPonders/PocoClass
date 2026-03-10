@@ -76,7 +76,7 @@
     "logout": "Afmelden"
   },
   "app": {
-    "versionBuild": "Versie {version} build {build}",
+    "versionBuild": "Versie {version} (build {build})",
     "latestVersionLabel": "Nieuwste versie",
     "updateAvailableLabel": "Update beschikbaar",
     "updateAvailableTitle": "Update beschikbaar: {version}",

@@ -76,7 +76,7 @@
     "logout": "Esci"
   },
   "app": {
-    "versionBuild": "Versione {version} build {build}",
+    "versionBuild": "Versione {version} (build {build})",
     "latestVersionLabel": "Versione piu recente",
     "updateAvailableLabel": "Aggiornamento disponibile",
     "updateAvailableTitle": "Aggiornamento disponibile: {version}",

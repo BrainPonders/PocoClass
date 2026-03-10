@@ -23,3 +23,10 @@ This folder contains maintainer-facing build and release assets.
 1. End-user deployment instructions remain in root `README.md`.
 2. Architecture and integration behavior remain in `documentation/Architecture reference.md`.
 3. This folder is for maintainer workflow, not runtime user data.
+
+## Version Model
+
+- Dev: `vX.Y.Z-dev.N`
+- RC: `vX.Y.Z-rc.N`
+- Stable: `vX.Y.Z`
+- Build number is separate and displayed in the UI as `(build N)`.

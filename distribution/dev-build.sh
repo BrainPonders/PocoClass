@@ -17,6 +17,21 @@ TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose-dev.yml.example"
 TEMPLATE_ENV="$REPO_DIR/docker/compose/.env.dev.example"
 VERSION_FILE="$REPO_DIR/VERSION"
 
+next_dev_sequence() {
+    local base_version="$1"
+    local max_num=0
+    local tag num
+
+    while IFS= read -r tag; do
+        num="${tag##*.}"
+        if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -gt "$max_num" ]; then
+            max_num="$num"
+        fi
+    done < <(git -C "$REPO_DIR" tag -l "v${base_version}-dev.*")
+
+    printf '%s' "$((max_num + 1))"
+}
+
 compose_run() {
     if docker compose version >/dev/null 2>&1; then
         docker compose "$@"
@@ -39,7 +54,7 @@ fi
 DEV_BRANCH="${POCOCLASS_DEV_BRANCH:-$CURRENT_BRANCH}"
 
 echo "== Sync repository to origin/${DEV_BRANCH} =="
-git -C "$REPO_DIR" fetch origin --prune
+git -C "$REPO_DIR" fetch origin --prune --tags
 if git -C "$REPO_DIR" show-ref --verify --quiet "refs/remotes/origin/${DEV_BRANCH}"; then
     git -C "$REPO_DIR" switch "$DEV_BRANCH" >/dev/null 2>&1 || git -C "$REPO_DIR" checkout "$DEV_BRANCH" >/dev/null 2>&1
     git -C "$REPO_DIR" reset --hard "origin/${DEV_BRANCH}"
@@ -76,7 +91,8 @@ SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
 IMAGE_REF="pococlass:${IMAGE_TAG}"
 BASE_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
-VERSION="v${BASE_VERSION}-dev.b${BUILD_NUMBER}"
+DEV_SEQUENCE="${POCOCLASS_DEV_SEQUENCE:-$(next_dev_sequence "$BASE_VERSION")}"
+VERSION="v${BASE_VERSION}-dev.${DEV_SEQUENCE}"
 
 echo "== Build image ${IMAGE_REF} =="
 echo "== Version ${VERSION} =="

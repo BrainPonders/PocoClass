@@ -3,7 +3,7 @@ name: Release Docker Image
 on:
   push:
     tags:
-      - 'v*.*.*-dev.b*'
+      - 'v*.*.*-dev.*'
       - 'v*.*.*-rc.*'
       - 'v*.*.*'
 
@@ -40,7 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           tag="${GITHUB_REF_NAME}"
-          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.b[0-9]+$ ]]; then
+          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
             channel="dev"
           elif [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
@@ -48,7 +48,7 @@ jobs:
             channel="final"
           else
             echo "Invalid release tag: $tag"
-            echo "Allowed: v<major>.<minor>.<patch>-dev.b<build> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
+            echo "Allowed: v<major>.<minor>.<patch>-dev.<n> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
             exit 1
           fi
           echo "channel=$channel" >> "$GITHUB_OUTPUT"

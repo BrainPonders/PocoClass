@@ -46,7 +46,7 @@ function LayoutContent({ children }) {
   const [updateStatus, setUpdateStatus] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
-  const versionSupportsUpdateChecks = Boolean(appVersion && !/-dev\.b\d+$/i.test(appVersion));
+  const versionSupportsUpdateChecks = Boolean(appVersion && !/-dev\.\d+$/i.test(appVersion));
 
   const navigationItems = [
     {

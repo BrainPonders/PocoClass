@@ -3,13 +3,13 @@ name: Release Docker Image (amd64)
 on:
   push:
     tags:
-      - 'v*.*.*-dev.b*-amd64'
+      - 'v*.*.*-dev.*-amd64'
       - 'v*.*.*-rc.*-amd64'
       - 'v*.*.*-amd64'
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Base tag without -amd64 (e.g. v2.0.0-dev.b34, v2.0.0-rc.1, v2.0.0)
+        description: Base tag without -amd64 (e.g. v2.0.0-dev.1, v2.0.0-rc.1, v2.0.0)
         required: true
         type: string
 
@@ -57,7 +57,7 @@ jobs:
             base_tag="${raw_tag%-amd64}"
           fi
 
-          if [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.b[0-9]+$ ]]; then
+          if [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
             channel="dev"
           elif [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
@@ -65,7 +65,7 @@ jobs:
             channel="final"
           else
             echo "Invalid base release tag: $base_tag"
-            echo "Allowed: v<major>.<minor>.<patch>-dev.b<build> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
+            echo "Allowed: v<major>.<minor>.<patch>-dev.<n> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
             exit 1
           fi
 
