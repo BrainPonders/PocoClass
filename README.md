@@ -209,7 +209,10 @@ Generate a secret key:
 python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
 
-Then edit `~/pococlass/.env` and set at least:
+Then edit `~/pococlass/.env` and set at least the following values.
+
+> [!WARNING]
+> For `POCOCLASS_IMAGE`, always use the exact tag from the `Available Versions` table above.
 
 ```env
 POCOCLASS_SECRET_KEY=PASTE_GENERATED_KEY_HERE
