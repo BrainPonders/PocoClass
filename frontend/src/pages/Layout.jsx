@@ -19,7 +19,6 @@ import { useToast } from "@/components/ui/use-toast";
 import GuardedLink from "@/components/GuardedLink";
 import API_BASE_URL from '@/config/api';
 import ValidationBanner from '@/components/ValidationBanner';
-import Banner from '@/components/Banner';
 import {
   Sidebar,
   SidebarContent,
@@ -47,6 +46,7 @@ function LayoutContent({ children }) {
   const [updateStatus, setUpdateStatus] = useState(null);
   const { hasMissingFields } = usePOCOFields();
   const { toast } = useToast();
+  const versionSupportsUpdateChecks = Boolean(appVersion && !/-dev\.\d+$/i.test(appVersion));
 
   const navigationItems = [
     {
@@ -651,6 +651,32 @@ function LayoutContent({ children }) {
                         build: buildNumber || '####'
                       })}
                     </p>
+                    {versionSupportsUpdateChecks && updateStatus?.enabled && (
+                      updateStatus.update_available ? (
+                        updateStatus.release_url ? (
+                          <a
+                            href={updateStatus.release_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1 inline-flex items-center gap-1 text-xs font-medium underline"
+                            style={{ color: 'var(--app-success)' }}
+                          >
+                            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--app-success)' }} />
+                            {t('app.updateAvailableLabel')}
+                          </a>
+                        ) : (
+                          <p className="mt-1 inline-flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--app-success)' }}>
+                            <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--app-success)' }} />
+                            {t('app.updateAvailableLabel')}
+                          </p>
+                        )
+                      ) : (
+                        <p className="mt-1 inline-flex items-center gap-1 text-xs font-medium" style={{ color: 'var(--app-text-muted)' }}>
+                          <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: 'var(--app-text-muted)' }} />
+                          {t('app.latestVersionLabel')}
+                        </p>
+                      )
+                    )}
                   </div>
 
                   {currentUser && (
@@ -701,31 +727,6 @@ function LayoutContent({ children }) {
 
               <main className="flex-1 flex flex-col">
                 <ValidationBanner />
-                {updateStatus?.update_available && (
-                  <div className="px-6 pt-4">
-                    <Banner
-                      variant="info"
-                      dismissible
-                      storageKey={`update-${updateStatus.latest_version}`}
-                    >
-                      <strong>{t('app.updateAvailableTitle', { version: updateStatus.latest_version })}</strong>{' '}
-                      {t('app.updateAvailableBody', {
-                        currentVersion: appVersion || t('common.notSet')
-                      })}{' '}
-                      {updateStatus.release_url && (
-                        <a
-                          href={updateStatus.release_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-medium underline"
-                          style={{ color: 'inherit' }}
-                        >
-                          {t('app.viewRelease')}
-                        </a>
-                      )}
-                    </Banner>
-                  </div>
-                )}
                 <header className="px-6 py-4 md:hidden" style={{ backgroundColor: 'var(--app-surface)', borderBottom: '1px solid var(--app-border)' }}>
                   <div className="flex items-center gap-4">
                     <SidebarTrigger 

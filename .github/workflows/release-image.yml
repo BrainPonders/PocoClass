@@ -3,12 +3,12 @@ name: Release Docker Image
 on:
   push:
     tags:
-      - '*.*-develop'
-      - '*.*.*-rc.*'
-      - '*.*.*'
+      - 'v*.*.*-dev.*'
+      - 'v*.*.*-rc.*'
+      - 'v*.*.*'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -40,15 +40,15 @@ jobs:
         run: |
           set -euo pipefail
           tag="${GITHUB_REF_NAME}"
-          if [[ "$tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
-            channel="develop"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
+            channel="dev"
+          elif [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          elif [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             channel="final"
           else
             echo "Invalid release tag: $tag"
-            echo "Allowed: <major>.<minor>-develop | <major>.<minor>.<patch>-rc.<n> | <major>.<minor>.<patch>"
+            echo "Allowed: v<major>.<minor>.<patch>-dev.<n> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
             exit 1
           fi
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
@@ -71,9 +71,6 @@ jobs:
             echo "${image_name}:${source_tag}"
             echo "${image_name}:build-${build_number}"
             echo "${image_name}:sha-${short_sha}"
-            if [[ "${{ steps.validate.outputs.channel }}" == "develop" ]]; then
-              echo "${image_name}:${source_tag}-build-${build_number}"
-            fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -127,3 +124,39 @@ jobs:
               echo "- \`${tag}\`"
             done <<< "${{ steps.meta.outputs.tags }}"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fetch default branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ github.event.repository.default_branch }}"
+
+      - name: Check README update eligibility
+        id: readme_check
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="${{ github.event.repository.default_branch }}"
+          if git merge-base --is-ancestor "${GITHUB_SHA}" "origin/${default_branch}"; then
+            echo "update_readme=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "update_readme=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update README available versions
+        if: steps.readme_check.outputs.update_readme == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          default_branch="${{ github.event.repository.default_branch }}"
+          git switch "${default_branch}"
+          python3 distribution/update_available_versions.py
+          if git diff --quiet -- README.md; then
+            echo "README already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: update available versions"
+          git push origin "HEAD:${default_branch}"

@@ -1,149 +1,99 @@
 # RELEASING
 
-This is the maintainer runbook for publishing PocoClass Docker images for end users.
+Maintainer quick reference for publishing PocoClass Docker images.
 
-- Why: reproducible, multi-arch (`amd64` + `arm64`) releases.
-- How: push a release tag, GitHub Actions builds and publishes to GHCR.
-- What users deploy: immutable image tags in their `.env` (`POCOCLASS_IMAGE=...`).
+## 1. Principles
 
-## Overview: Steps to Release
+- Release images are built by GitHub Actions from `distribution/docker-build/Dockerfile`.
+- The runtime base image is `11notes/python:3.13`.
+- Release identity is the tag:
+  - dev: `vX.Y.Z-dev.N`
+  - rc: `vX.Y.Z-rc.N`
+  - stable: `vX.Y.Z`
+- Build number is separate from the release tag:
+  - derived from Git commit count
+  - shown in the UI as `(build N)`
+- End users should deploy immutable tags, not `latest`.
 
-1. Complete local development and testing with `bash distribution/dev-build.sh` (see `distribution/dev-rebuild.md`).
-2. Choose release tag type:
-   - Develop: `2.1-develop`
-   - RC: `2.1.0-rc.1`
-   - Final: `2.1.0`
-3. Create and push the tag to GitHub.
-4. Wait for GitHub Action `Release Docker Image` to complete.
-5. Verify image manifest in GHCR (`docker buildx imagetools inspect ...`).
-6. Share the immutable image tag for deployment (`POCOCLASS_IMAGE=ghcr.io/<owner>/pococlass:<tag>`).
+## 2. Release Files
 
-## Tag Model
+- Local helper: `distribution/release.sh`
+- Main workflow: `.github/workflows/release-image.yml`
+- amd64-only workflow: `.github/workflows/release-image-amd64.yml`
 
-Use only these source tags:
+## 3. Local Preflight
 
-- Develop channel (rolling): `<major>.<minor>-develop` (example: `2.1-develop`)
-- Public RC channel: `<major>.<minor>.<patch>-rc.<n>` (example: `2.1.0-rc.1`)
-- Final release: `<major>.<minor>.<patch>` (example: `2.1.0`)
+Before tagging a release:
 
-Do not use `latest`.
+1. Rebuild locally:
+   - `bash distribution/dev-build.sh`
+2. Test the running container.
+3. Confirm the UI shows the expected:
+   - version
+   - build number
+   - update status label
 
-## Which Workflow To Use
+## 4. Tag Model
 
-- Multi-arch (default): `.github/workflows/release-image.yml`
-  - Builds `linux/amd64` + `linux/arm64`
-  - Use normal tags: `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
-- amd64-only: `.github/workflows/release-image-amd64.yml`
-  - Builds only `linux/amd64`
-  - Use amd64 tags: `2.1-develop-amd64`, `2.1.0-rc.1-amd64`, `2.1.0-amd64`
-  - Or run manually in GitHub Actions (`workflow_dispatch`) with input:
-    - `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
+Use only these tag formats:
 
-## One-Time Setup
+- Dev: `v2.0.0-dev.1`
+- RC: `v2.0.0-rc.1`
+- Stable: `v2.0.0`
 
-1. Ensure GitHub Actions is enabled for the repository.
-2. Ensure package publishing to GHCR is allowed.
-3. Use workflow file: `.github/workflows/release-image.yml`.
+amd64-only tags add `-amd64`:
 
-The workflow uses `GITHUB_TOKEN` with:
+- `v2.0.0-dev.1-amd64`
+- `v2.0.0-rc.1-amd64`
+- `v2.0.0-amd64`
 
-- `contents: read`
-- `packages: write`
+## 5. Release Execution
 
-## Execution (A-Z)
+### Multi-arch release
 
-### 1) Develop and test locally
+Stable:
 
-```bash
-bash distribution/dev-build.sh
-```
-
-### 2) Choose release channel and tag
-
-- Develop: `2.1-develop`
-- RC: `2.1.0-rc.1`
-- Final: `2.1.0`
-
-### 3) Create and push tag
-
-Final:
-
-```bash
-git tag -a 2.1.0 -m "Release 2.1.0"
-git push origin 2.1.0
-```
+- `git tag -a v2.0.0 -m "Release v2.0.0"`
+- `git push origin v2.0.0`
 
 RC:
 
-```bash
-git tag -a 2.1.0-rc.1 -m "Release candidate 2.1.0-rc.1"
-git push origin 2.1.0-rc.1
-```
+- `git tag -a v2.0.0-rc.1 -m "Release candidate v2.0.0-rc.1"`
+- `git push origin v2.0.0-rc.1`
 
-Develop (rolling tag):
+Dev:
 
-```bash
-git tag -fa 2.1-develop -m "Develop channel 2.1"
-git push -f origin 2.1-develop
-```
+- `git tag -a v2.0.0-dev.1 -m "Development release v2.0.0-dev.1"`
+- `git push origin v2.0.0-dev.1`
 
-### 4) Wait for workflow publish
+### amd64-only release
 
-GitHub Action `Release Docker Image` will publish:
+- `git tag -a v2.0.0-rc.1-amd64 -m "amd64 release v2.0.0-rc.1"`
+- `git push origin v2.0.0-rc.1-amd64`
+
+## 6. What GitHub Publishes
+
+For each release tag, the workflow publishes:
 
 - `ghcr.io/<owner>/pococlass:<source_tag>`
 - `ghcr.io/<owner>/pococlass:build-<build_number>`
 - `ghcr.io/<owner>/pococlass:sha-<short_sha>`
-- Develop only: `ghcr.io/<owner>/pococlass:<source_tag>-build-<build_number>`
 
-`build_number` is passed as `BUILD_NUMBER` and appears in the PocoClass UI build field.
+The multi-arch release workflow also updates the generated version references
+when the release tag is created from the default branch:
 
-### 5) Verify published image
+- `README.md` `Available Versions`
+- `README.md` installation `.env` example
+- `docker/compose/.env.example`
 
-```bash
-docker buildx imagetools inspect ghcr.io/<owner>/pococlass:2.1.0
-```
-
-Check that both platforms exist:
-
-- `linux/amd64`
-- `linux/arm64`
-
-### 6) Tell users what to deploy
-
-Users pin immutable tags:
-
-```env
-POCOCLASS_IMAGE=ghcr.io/<owner>/pococlass:2.1.0
-```
-
-Then they deploy as usual:
-
-```bash
-docker compose pull pococlass
-docker compose up -d --force-recreate pococlass
-```
-
-## Local Fallback Build (No Publish)
+## 7. Local Fallback Build
 
 Use this only for local release simulation:
 
-```bash
-POCOCLASS_IMAGE_NAME=pococlass \
-POCOCLASS_IMAGE_TAG=2.1.0-rc.1 \
-bash distribution/release.sh
-```
+- `POCOCLASS_IMAGE_NAME=pococlass POCOCLASS_IMAGE_TAG=v2.0.0-rc.1 bash distribution/release.sh`
 
-`release.sh` now enforces the same tag policy as GitHub workflow and adds trace tags:
+## 8. What Users Should Deploy
 
-- `<image>:<source_tag>`
-- `<image>:build-<build_number>`
-- `<image>:sha-<short_sha>`
+End users should pin the immutable release tag in their `.env`:
 
-## End-User Deployment Boundary
-
-End users should only use:
-
-- `docker/compose/docker-compose.yml.example`
-- `docker/compose/.env.example`
-- README deployment instructions
+- `POCOCLASS_IMAGE=ghcr.io/<owner>/pococlass:v2.0.0`

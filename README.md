@@ -112,6 +112,20 @@ Integration:
 
 ----
 
+<!-- BEGIN: AVAILABLE_VERSIONS -->
+## Available Versions
+
+This section is updated automatically from published release tags.
+`latest` is intentionally not used.
+
+| Channel | Current tag | Deployment value |
+| --- | --- | --- |
+| Stable | - | - |
+| Release Candidate | - | - |
+| Development | - | - |
+<!-- END: AVAILABLE_VERSIONS -->
+---
+
 ## Installation
 
 This installation guide describes how to deploy PocoClass. The PocoClass Docker image is built on the [11notes Python](https://github.com/11notes/docker-python) image. 11notes images are container images designed around a more security-focused default setup. The container runs with `UID/GID 1000:1000` by default. To change this, please consult 11notes [RTFM](https://github.com/11notes/RTFM).
@@ -155,7 +169,7 @@ Create `~/pococlass/docker-compose.yml` with:
 ```yaml
 services:
   pococlass:
-    image: ${POCOCLASS_IMAGE:-ghcr.io/brainponders/pococlass:latest}
+    image: ${POCOCLASS_IMAGE}
     container_name: pococlass
     restart: unless-stopped
 
@@ -170,11 +184,11 @@ services:
       - ./rules:/app/rules
 
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:5000/api/health"]
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health', timeout=5)\" || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 20s
 
     networks:
       - paperless
@@ -195,11 +209,14 @@ Generate a secret key:
 python3 -c "import os, base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())"
 ```
 
-Then edit `~/pococlass/.env` and set at least:
+Then edit `~/pococlass/.env` and set at least the following values.
+
+> [!WARNING]
+> For `POCOCLASS_IMAGE`, always use the exact tag from the `Available Versions` table above.
 
 ```env
 POCOCLASS_SECRET_KEY=PASTE_GENERATED_KEY_HERE
-POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:latest
+POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:v2.0.0
 
 # ----------------------------------------------------------------------------------------
 # Below are the default configurations for both the Official Paperless-ngx image and

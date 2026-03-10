@@ -3,13 +3,13 @@ name: Release Docker Image (amd64)
 on:
   push:
     tags:
-      - '*.*-develop-amd64'
-      - '*.*.*-rc.*-amd64'
-      - '*.*.*-amd64'
+      - 'v*.*.*-dev.*-amd64'
+      - 'v*.*.*-rc.*-amd64'
+      - 'v*.*.*-amd64'
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Base tag without -amd64 (e.g. 2.1-develop, 2.1.0-rc.1, 2.1.0)
+        description: Base tag without -amd64 (e.g. v2.0.0-dev.1, v2.0.0-rc.1, v2.0.0)
         required: true
         type: string
 
@@ -57,15 +57,15 @@ jobs:
             base_tag="${raw_tag%-amd64}"
           fi
 
-          if [[ "$base_tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
-            channel="develop"
-          elif [[ "$base_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+          if [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
+            channel="dev"
+          elif [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
-          elif [[ "$base_tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          elif [[ "$base_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             channel="final"
           else
             echo "Invalid base release tag: $base_tag"
-            echo "Allowed: <major>.<minor>-develop | <major>.<minor>.<patch>-rc.<n> | <major>.<minor>.<patch>"
+            echo "Allowed: v<major>.<minor>.<patch>-dev.<n> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
             exit 1
           fi
 
@@ -92,9 +92,6 @@ jobs:
             echo "${image_name}:${source_tag}"
             echo "${image_name}:build-${build_number}-amd64"
             echo "${image_name}:sha-${short_sha}-amd64"
-            if [[ "${{ steps.validate.outputs.channel }}" == "develop" ]]; then
-              echo "${image_name}:${source_tag}-build-${build_number}"
-            fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

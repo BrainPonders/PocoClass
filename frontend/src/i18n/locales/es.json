@@ -76,7 +76,9 @@
     "logout": "Cerrar sesión"
   },
   "app": {
-    "versionBuild": "Version {version} build {build}",
+    "versionBuild": "Version {version} (build {build})",
+    "latestVersionLabel": "Ultima version",
+    "updateAvailableLabel": "Actualizacion disponible",
     "updateAvailableTitle": "Actualizacion disponible: {version}",
     "updateAvailableBody": "Estas ejecutando PocoClass {currentVersion}. Hay una version mas reciente disponible.",
     "viewRelease": "Ver notas de la version"

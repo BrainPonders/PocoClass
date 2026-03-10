@@ -15,6 +15,22 @@ RUNTIME_RULES_DIR="$DEV_ROOT/rules"
 
 TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose-dev.yml.example"
 TEMPLATE_ENV="$REPO_DIR/docker/compose/.env.dev.example"
+VERSION_FILE="$REPO_DIR/VERSION"
+
+next_dev_sequence() {
+    local base_version="$1"
+    local max_num=0
+    local tag num
+
+    while IFS= read -r tag; do
+        num="${tag##*.}"
+        if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -gt "$max_num" ]; then
+            max_num="$num"
+        fi
+    done < <(git -C "$REPO_DIR" tag -l "v${base_version}-dev.*")
+
+    printf '%s' "$((max_num + 1))"
+}
 
 compose_run() {
     if docker compose version >/dev/null 2>&1; then
@@ -38,7 +54,12 @@ fi
 DEV_BRANCH="${POCOCLASS_DEV_BRANCH:-$CURRENT_BRANCH}"
 
 echo "== Sync repository to origin/${DEV_BRANCH} =="
-git -C "$REPO_DIR" fetch origin --prune
+if ! git -C "$REPO_DIR" fetch origin --prune --tags --force; then
+    echo "ERROR: Failed to synchronize remote tags."
+    echo "This usually means local tags conflict with rewritten or replaced remote tags."
+    echo "The script expects remote tags to be authoritative."
+    exit 1
+fi
 if git -C "$REPO_DIR" show-ref --verify --quiet "refs/remotes/origin/${DEV_BRANCH}"; then
     git -C "$REPO_DIR" switch "$DEV_BRANCH" >/dev/null 2>&1 || git -C "$REPO_DIR" checkout "$DEV_BRANCH" >/dev/null 2>&1
     git -C "$REPO_DIR" reset --hard "origin/${DEV_BRANCH}"
@@ -64,11 +85,19 @@ if [ ! -f "$TEMPLATE_ENV" ]; then
     exit 1
 fi
 
+if [ ! -f "$VERSION_FILE" ]; then
+    echo "ERROR: Missing version file: $VERSION_FILE"
+    echo "Expected a tracked VERSION file containing the base release version."
+    exit 1
+fi
+
 BUILD_NUMBER="$(git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || echo dev)"
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
 IMAGE_REF="pococlass:${IMAGE_TAG}"
-VERSION="${POCOCLASS_VERSION:-0.0-develop}"
+BASE_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+DEV_SEQUENCE="${POCOCLASS_DEV_SEQUENCE:-$(next_dev_sequence "$BASE_VERSION")}"
+VERSION="v${BASE_VERSION}-dev.${DEV_SEQUENCE}"
 
 echo "== Build image ${IMAGE_REF} =="
 echo "== Version ${VERSION} =="

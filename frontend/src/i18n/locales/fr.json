@@ -76,7 +76,9 @@
     "logout": "Déconnexion"
   },
   "app": {
-    "versionBuild": "Version {version} build {build}",
+    "versionBuild": "Version {version} (build {build})",
+    "latestVersionLabel": "Derniere version",
+    "updateAvailableLabel": "Mise a jour disponible",
     "updateAvailableTitle": "Mise a jour disponible : {version}",
     "updateAvailableBody": "Vous utilisez PocoClass {currentVersion}. Une version plus recente est disponible.",
     "viewRelease": "Voir les notes de version"
