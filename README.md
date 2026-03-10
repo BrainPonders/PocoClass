@@ -280,7 +280,7 @@ http://localhost:5000
 | `POCOCLASS_SECRET_KEY` | Required runtime encryption key | `base64_generated_string` |
 | `PAPERLESS_URL` | Docker-internal Paperless URL | `http://webserver:8000` |
 | `PAPERLESS_NETWORK_NAME` | Docker network shared with Paperless | `paperless_default` |
-| `POCOCLASS_IMAGE` | Optional image override | `ghcr.io/brainponders/pococlass:latest` |
+| `POCOCLASS_IMAGE` | Optional image override | `ghcr.io/brainponders/pococlass:v2.0.0` |
 
 ---
 
