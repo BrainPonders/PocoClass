@@ -233,8 +233,14 @@ def fetch_all_users_paginated(paperless_url, token, username):
 @auth_users_bp.route("/api/health")
 def health_check():
     """Health check endpoint for Docker/container orchestration."""
+    conn = None
     try:
-        db_status = "ok" if db else "error"
+        if not db:
+            raise RuntimeError("Database is not initialized")
+
+        conn = db.get_connection()
+        conn.execute("SELECT 1")
+        db_status = "ok"
         current_version = os.environ.get("POCOCLASS_VERSION", "v0.0.0-dev.0")
         build_number = os.environ.get("POCOCLASS_BUILD_NUMBER", "dev")
         return (
@@ -249,7 +255,11 @@ def health_check():
             200,
         )
     except Exception as e:
+        logger.error(f"Health check failed: {e}")
         return jsonify({"status": "unhealthy", "error": "Health check failed"}), 500
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 @auth_users_bp.route("/api/system/update-status", methods=["GET"])
