@@ -34,7 +34,7 @@ echo "== Build smoke image =="
 docker build \
   --build-arg BUILD_NUMBER="smoke-local" \
   -t "$IMAGE_TAG" \
-  -f "$ROOT_DIR/distribution/docker-build/Dockerfile" \
+  -f "$ROOT_DIR/maintainer/docker/Dockerfile" \
   "$ROOT_DIR"
 
 echo "== Start smoke container =="

@@ -83,9 +83,17 @@ compose.override.yml
 # Local Codex policy files (workspace-only, do not commit)
 AGENTS.md
 AGEND.md
+AGENT.md
+
+# Local-only safety bucket
+.local/
+
+# Local maintainer overlays
+maintainer/*.local.md
+maintainer/**/*.local.md
 
 # Local deployment notes (workspace-only)
-distribution/test/User Deployment Notes.md
+maintainer/test/User Deployment Notes.md
 
 # Local Docker build artifacts
 .buildx-cache/
