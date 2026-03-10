@@ -16,7 +16,7 @@ RUN npm run build
 FROM 11notes/python:3.13 AS runtime
 
 ARG BUILD_NUMBER=dev
-ARG VERSION=2.0.0
+ARG VERSION=v0.0.0-dev.b0
 
 LABEL maintainer="PocoClass"
 LABEL description="Document Classification System for Paperless-ngx"

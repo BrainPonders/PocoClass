@@ -79,6 +79,8 @@
   },
   "app": {
     "versionBuild": "Version {version} build {build}",
+    "latestVersionLabel": "Latest version",
+    "updateAvailableLabel": "Update available",
     "updateAvailableTitle": "Update available: {version}",
     "updateAvailableBody": "You are running PocoClass {currentVersion}. A newer release is available.",
     "viewRelease": "View release notes"

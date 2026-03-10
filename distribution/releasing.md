@@ -10,9 +10,9 @@ This is the maintainer runbook for publishing PocoClass Docker images for end us
 
 1. Complete local development and testing with `bash distribution/dev-build.sh` (see `distribution/dev-rebuild.md`).
 2. Choose release tag type:
-   - Develop: `2.1-develop`
-   - RC: `2.1.0-rc.1`
-   - Final: `2.1.0`
+   - Dev: `v2.0.0-dev.b34`
+   - RC: `v2.0.0-rc.1`
+   - Final: `v2.0.0`
 3. Create and push the tag to GitHub.
 4. Wait for GitHub Action `Release Docker Image` to complete.
 5. Verify image manifest in GHCR (`docker buildx imagetools inspect ...`).
@@ -22,9 +22,9 @@ This is the maintainer runbook for publishing PocoClass Docker images for end us
 
 Use only these source tags:
 
-- Develop channel (rolling): `<major>.<minor>-develop` (example: `2.1-develop`)
-- Public RC channel: `<major>.<minor>.<patch>-rc.<n>` (example: `2.1.0-rc.1`)
-- Final release: `<major>.<minor>.<patch>` (example: `2.1.0`)
+- Dev channel (testing): `v<major>.<minor>.<patch>-dev.b<build>` (example: `v2.0.0-dev.b34`)
+- Public RC channel: `v<major>.<minor>.<patch>-rc.<n>` (example: `v2.0.0-rc.1`)
+- Final release: `v<major>.<minor>.<patch>` (example: `v2.0.0`)
 
 Do not use `latest`.
 
@@ -32,12 +32,12 @@ Do not use `latest`.
 
 - Multi-arch (default): `.github/workflows/release-image.yml`
   - Builds `linux/amd64` + `linux/arm64`
-  - Use normal tags: `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
+  - Use normal tags: `v2.0.0-dev.b34`, `v2.0.0-rc.1`, `v2.0.0`
 - amd64-only: `.github/workflows/release-image-amd64.yml`
   - Builds only `linux/amd64`
-  - Use amd64 tags: `2.1-develop-amd64`, `2.1.0-rc.1-amd64`, `2.1.0-amd64`
+  - Use amd64 tags: `v2.0.0-dev.b34-amd64`, `v2.0.0-rc.1-amd64`, `v2.0.0-amd64`
   - Or run manually in GitHub Actions (`workflow_dispatch`) with input:
-    - `2.1-develop`, `2.1.0-rc.1`, `2.1.0`
+    - `v2.0.0-dev.b34`, `v2.0.0-rc.1`, `v2.0.0`
 
 ## One-Time Setup
 
@@ -60,31 +60,31 @@ bash distribution/dev-build.sh
 
 ### 2) Choose release channel and tag
 
-- Develop: `2.1-develop`
-- RC: `2.1.0-rc.1`
-- Final: `2.1.0`
+- Dev: `v2.1.0-dev.b34`
+- RC: `v2.1.0-rc.1`
+- Final: `v2.1.0`
 
 ### 3) Create and push tag
 
 Final:
 
 ```bash
-git tag -a 2.1.0 -m "Release 2.1.0"
-git push origin 2.1.0
+git tag -a v2.1.0 -m "Release v2.1.0"
+git push origin v2.1.0
 ```
 
 RC:
 
 ```bash
-git tag -a 2.1.0-rc.1 -m "Release candidate 2.1.0-rc.1"
-git push origin 2.1.0-rc.1
+git tag -a v2.1.0-rc.1 -m "Release candidate v2.1.0-rc.1"
+git push origin v2.1.0-rc.1
 ```
 
-Develop (rolling tag):
+Dev:
 
 ```bash
-git tag -fa 2.1-develop -m "Develop channel 2.1"
-git push -f origin 2.1-develop
+git tag -a v2.1.0-dev.b34 -m "Development release v2.1.0-dev.b34"
+git push origin v2.1.0-dev.b34
 ```
 
 ### 4) Wait for workflow publish

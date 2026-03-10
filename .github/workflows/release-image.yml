@@ -3,9 +3,9 @@ name: Release Docker Image
 on:
   push:
     tags:
-      - '*.*-develop'
-      - '*.*.*-rc.*'
-      - '*.*.*'
+      - 'v*.*.*-dev.b*'
+      - 'v*.*.*-rc.*'
+      - 'v*.*.*'
 
 permissions:
   contents: read
@@ -40,15 +40,15 @@ jobs:
         run: |
           set -euo pipefail
           tag="${GITHUB_REF_NAME}"
-          if [[ "$tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
-            channel="develop"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+          if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.b[0-9]+$ ]]; then
+            channel="dev"
+          elif [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
             channel="rc"
-          elif [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          elif [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             channel="final"
           else
             echo "Invalid release tag: $tag"
-            echo "Allowed: <major>.<minor>-develop | <major>.<minor>.<patch>-rc.<n> | <major>.<minor>.<patch>"
+            echo "Allowed: v<major>.<minor>.<patch>-dev.b<build> | v<major>.<minor>.<patch>-rc.<n> | v<major>.<minor>.<patch>"
             exit 1
           fi
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
@@ -71,9 +71,6 @@ jobs:
             echo "${image_name}:${source_tag}"
             echo "${image_name}:build-${build_number}"
             echo "${image_name}:sha-${short_sha}"
-            if [[ "${{ steps.validate.outputs.channel }}" == "develop" ]]; then
-              echo "${image_name}:${source_tag}-build-${build_number}"
-            fi
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 

@@ -9,13 +9,13 @@ IMAGE_TAG="${POCOCLASS_IMAGE_TAG:-}"
 
 validate_release_tag() {
     local tag="$1"
-    if [[ "$tag" =~ ^[0-9]+\.[0-9]+-develop$ ]]; then
+    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.b[0-9]+$ ]]; then
         return 0
     fi
-    if [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
+    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$ ]]; then
         return 0
     fi
-    if [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         return 0
     fi
     return 1
@@ -45,18 +45,18 @@ fi
 if [ -z "$IMAGE_TAG" ]; then
     echo "ERROR: POCOCLASS_IMAGE_TAG is required."
     echo "Allowed values:"
-    echo "  - <major>.<minor>-develop (example: 2.1-develop)"
-    echo "  - <major>.<minor>.<patch>-rc.<n> (example: 2.1.0-rc.1)"
-    echo "  - <major>.<minor>.<patch> (example: 2.1.0)"
+    echo "  - v<major>.<minor>.<patch>-dev.b<build> (example: v2.0.0-dev.b34)"
+    echo "  - v<major>.<minor>.<patch>-rc.<n> (example: v2.0.0-rc.1)"
+    echo "  - v<major>.<minor>.<patch> (example: v2.0.0)"
     exit 1
 fi
 
 if ! validate_release_tag "$IMAGE_TAG"; then
     echo "ERROR: Invalid POCOCLASS_IMAGE_TAG='$IMAGE_TAG'"
     echo "Allowed values:"
-    echo "  - <major>.<minor>-develop"
-    echo "  - <major>.<minor>.<patch>-rc.<n>"
-    echo "  - <major>.<minor>.<patch>"
+    echo "  - v<major>.<minor>.<patch>-dev.b<build>"
+    echo "  - v<major>.<minor>.<patch>-rc.<n>"
+    echo "  - v<major>.<minor>.<patch>"
     exit 1
 fi
 
@@ -80,26 +80,13 @@ PRIMARY_IMAGE_TAG="${IMAGE_NAME}:${IMAGE_TAG}"
 BUILD_IMAGE_TAG="${IMAGE_NAME}:build-${SAFE_BUILD_NUMBER}"
 SHA_IMAGE_TAG="${IMAGE_NAME}:sha-${SAFE_SHORT_SHA}"
 
-EXTRA_TAG=""
-if [[ "$IMAGE_TAG" =~ -develop$ ]]; then
-    EXTRA_TAG="${IMAGE_NAME}:${IMAGE_TAG}-build-${SAFE_BUILD_NUMBER}"
-fi
-
 echo "Building release image:"
 echo "  ${PRIMARY_IMAGE_TAG}"
 echo "  ${BUILD_IMAGE_TAG}"
 echo "  ${SHA_IMAGE_TAG}"
-if [ -n "$EXTRA_TAG" ]; then
-    echo "  ${EXTRA_TAG}"
-fi
 echo "  version: ${VERSION}"
 echo "  build number: ${BUILD_NUMBER}"
 echo "  git sha: ${SHORT_SHA}"
-
-extra_tag_args=()
-if [ -n "$EXTRA_TAG" ]; then
-    extra_tag_args=(-t "$EXTRA_TAG")
-fi
 
 docker build \
     --no-cache \
@@ -108,7 +95,6 @@ docker build \
     -t "${PRIMARY_IMAGE_TAG}" \
     -t "${BUILD_IMAGE_TAG}" \
     -t "${SHA_IMAGE_TAG}" \
-    "${extra_tag_args[@]}" \
     -f "$REPO_DIR/distribution/docker-build/Dockerfile" \
     "$REPO_DIR"
 

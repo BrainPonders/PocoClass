@@ -235,7 +235,7 @@ def health_check():
     """Health check endpoint for Docker/container orchestration."""
     try:
         db_status = "ok" if db else "error"
-        current_version = os.environ.get("POCOCLASS_VERSION", "2.0.0")
+        current_version = os.environ.get("POCOCLASS_VERSION", "v0.0.0-dev.b0")
         build_number = os.environ.get("POCOCLASS_BUILD_NUMBER", "dev")
         return (
             jsonify(
@@ -257,7 +257,7 @@ def health_check():
 def update_status():
     """Return cached update availability for stable and RC channels."""
     try:
-        current_version = os.environ.get("POCOCLASS_VERSION", "2.0.0")
+        current_version = os.environ.get("POCOCLASS_VERSION", "v0.0.0-dev.b0")
         return jsonify(update_checker.get_status(current_version=current_version)), 200
     except Exception as e:
         logger.error(f"Error getting update status: {e}")

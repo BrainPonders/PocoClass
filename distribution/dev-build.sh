@@ -15,6 +15,7 @@ RUNTIME_RULES_DIR="$DEV_ROOT/rules"
 
 TEMPLATE_COMPOSE="$REPO_DIR/docker/compose/docker-compose-dev.yml.example"
 TEMPLATE_ENV="$REPO_DIR/docker/compose/.env.dev.example"
+VERSION_FILE="$REPO_DIR/VERSION"
 
 compose_run() {
     if docker compose version >/dev/null 2>&1; then
@@ -64,11 +65,18 @@ if [ ! -f "$TEMPLATE_ENV" ]; then
     exit 1
 fi
 
+if [ ! -f "$VERSION_FILE" ]; then
+    echo "ERROR: Missing version file: $VERSION_FILE"
+    echo "Expected a tracked VERSION file containing the base release version."
+    exit 1
+fi
+
 BUILD_NUMBER="$(git -C "$REPO_DIR" rev-list --count HEAD 2>/dev/null || echo dev)"
 SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short=12 HEAD)"
 IMAGE_TAG="dev-${SHORT_SHA}"
 IMAGE_REF="pococlass:${IMAGE_TAG}"
-VERSION="${POCOCLASS_VERSION:-0.0-develop}"
+BASE_VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+VERSION="v${BASE_VERSION}-dev.b${BUILD_NUMBER}"
 
 echo "== Build image ${IMAGE_REF} =="
 echo "== Version ${VERSION} =="

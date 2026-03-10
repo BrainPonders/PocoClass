@@ -77,6 +77,8 @@
   },
   "app": {
     "versionBuild": "Version {version} Build {build}",
+    "latestVersionLabel": "Aktuelle Version",
+    "updateAvailableLabel": "Update verfugbar",
     "updateAvailableTitle": "Update verfugbar: {version}",
     "updateAvailableBody": "Sie verwenden PocoClass {currentVersion}. Eine neuere Version ist verfugbar.",
     "viewRelease": "Release-Hinweise anzeigen"
