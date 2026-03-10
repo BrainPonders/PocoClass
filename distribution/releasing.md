@@ -79,6 +79,12 @@ For each release tag, the workflow publishes:
 - `ghcr.io/<owner>/pococlass:build-<build_number>`
 - `ghcr.io/<owner>/pococlass:sha-<short_sha>`
 
+For the main multi-arch workflow:
+
+- `dev` tags publish container images only
+- `rc` tags also create a GitHub prerelease
+- `stable` tags also create a normal GitHub release
+
 The multi-arch release workflow also updates the generated version references
 when the release tag is created from the default branch:
 

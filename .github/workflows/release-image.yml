@@ -125,6 +125,22 @@ jobs:
             done <<< "${{ steps.meta.outputs.tags }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Create or update GitHub Release
+        if: steps.validate.outputs.channel != 'dev'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.source_tag }}
+          name: ${{ steps.meta.outputs.source_tag }}
+          prerelease: ${{ steps.validate.outputs.channel == 'rc' }}
+          generate_release_notes: true
+          append_body: true
+          body: |
+            ## Container images
+
+            - `${{ steps.image.outputs.image_name }}:${{ steps.meta.outputs.source_tag }}`
+            - `${{ steps.image.outputs.image_name }}:build-${{ steps.meta.outputs.build_number }}`
+            - `${{ steps.image.outputs.image_name }}:sha-${{ steps.meta.outputs.short_sha }}`
+
       - name: Fetch default branch
         shell: bash
         run: |
