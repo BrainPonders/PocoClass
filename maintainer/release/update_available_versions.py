@@ -13,7 +13,7 @@ import subprocess
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 README = ROOT / "README.md"
 ENV_EXAMPLE = ROOT / "docker" / "compose" / ".env.example"
 VERSION_FILE = ROOT / "VERSION"
