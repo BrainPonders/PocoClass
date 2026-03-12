@@ -163,16 +163,14 @@ class BackgroundProcessor:
             if not paperless_url:
                 raise ValueError("Paperless URL not configured")
             
-            # For background processing, we need a system token
-            # Use the first admin user's token (or the provided session)
+            # Automatic processing uses a dedicated stored Paperless API token.
+            # Manual processing uses the current user's active Paperless session.
             if user_session:
                 paperless_token = user_session.get('paperless_token')
             else:
-                # Get first admin user's encrypted token from sessions
-                admin_session = self._get_admin_session()
-                if not admin_session:
-                    raise ValueError("No admin session available for background processing")
-                paperless_token = admin_session['paperless_token']
+                paperless_token = self.db.get_background_paperless_token()
+                if not paperless_token:
+                    raise ValueError("No background Paperless API token configured")
             
             config = Config()
             config.paperless_url = paperless_url
@@ -929,19 +927,12 @@ class BackgroundProcessor:
             from datetime import datetime
             import requests
             
-            # Delete old PocoClass scoring notes
+            # Delete old PocoClass scoring notes using the active API client token.
             paperless_url = self.db.get_config('paperless_url')
-            session = self._get_admin_session()
-            if not session:
-                logger.warning(f"No admin session available to add notes to document {doc_id}")
-                return
-            
-            paperless_token = session['paperless_token']
             
             # Get existing notes
-            notes_response = requests.get(
+            notes_response = api_client.session.get(
                 f'{paperless_url}/api/documents/{doc_id}/notes/',
-                headers={'Authorization': f'Token {paperless_token}'},
                 timeout=10
             )
             
@@ -952,9 +943,8 @@ class BackgroundProcessor:
                     if 'PocoClass Scoring Report' in note.get('note', ''):
                         note_id = note.get('id')
                         if note_id:
-                            requests.delete(
+                            api_client.session.delete(
                                 f'{paperless_url}/api/documents/{doc_id}/notes/{note_id}/',
-                                headers={'Authorization': f'Token {paperless_token}'},
                                 timeout=10
                             )
             
@@ -1003,12 +993,8 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
 """
             
             # Add new note
-            requests.post(
+            api_client.session.post(
                 f'{paperless_url}/api/documents/{doc_id}/notes/',
-                headers={
-                    'Authorization': f'Token {paperless_token}',
-                    'Content-Type': 'application/json'
-                },
                 json={'note': note_text},
                 timeout=10
             )
@@ -1037,39 +1023,6 @@ Tag Applied: {'POCO+' if classified else 'POCO-'}
         
         active_count = row['count'] if row else 0
         return active_count > 0
-    
-    def _get_admin_session(self) -> Optional[Dict]:
-        """Retrieve the most recent admin session for background API access.
-        
-        Background processing needs a Paperless API token but has no user context.
-        This fetches the latest admin user's session and decrypts its stored token.
-        
-        Returns:
-            Session dict with decrypted 'paperless_token', or None if no admin session exists
-        """
-        conn = self.db.get_connection()
-        cursor = conn.cursor()
-        
-        # Get most recent admin session
-        cursor.execute("""
-            SELECT s.*, u.pococlass_role 
-            FROM sessions s
-            JOIN users u ON s.user_id = u.id
-            WHERE u.pococlass_role = 'admin'
-            ORDER BY s.created_at DESC
-            LIMIT 1
-        """)
-        
-        row = cursor.fetchone()
-        conn.close()
-        
-        if row:
-            session = dict(row)
-            # Decrypt token
-            session['paperless_token'] = self.db.encryption.decrypt(session['paperless_token'])
-            return session
-        
-        return None
     
     def get_status(self) -> Dict[str, Any]:
         """Get current background processing status for the frontend dashboard.

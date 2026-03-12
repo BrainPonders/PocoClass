@@ -88,6 +88,11 @@ export default function Settings() {
   const [revokingToken, setRevokingToken] = useState(false);
   const [showTokenConfirm, setShowTokenConfirm] = useState(false);
   const [showRevokeConfirm, setShowRevokeConfirm] = useState(false);
+  const [backgroundAutomationTokenInfo, setBackgroundAutomationTokenInfo] = useState({ exists: false, created_at: null });
+  const [backgroundAutomationTokenInput, setBackgroundAutomationTokenInput] = useState('');
+  const [savingBackgroundAutomationToken, setSavingBackgroundAutomationToken] = useState(false);
+  const [revokingBackgroundAutomationToken, setRevokingBackgroundAutomationToken] = useState(false);
+  const [showBackgroundAutomationRevokeConfirm, setShowBackgroundAutomationRevokeConfirm] = useState(false);
 
   // Load all settings, custom fields, and background config on mount
   useEffect(() => {
@@ -109,6 +114,7 @@ export default function Settings() {
     }
     if (activeTab === 'backgroundProcessing') {
       loadSystemTokenInfo();
+      loadBackgroundAutomationTokenInfo();
     }
   }, [activeTab]);
 
@@ -633,6 +639,24 @@ export default function Settings() {
     }
   };
 
+  const loadBackgroundAutomationTokenInfo = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/background/automation-token`, {
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBackgroundAutomationTokenInfo({
+          exists: data.exists || false,
+          created_at: data.created_at || null
+        });
+      }
+    } catch (error) {
+      console.error('Error loading background automation token info:', error);
+    }
+  };
+
   const handleGenerateSystemToken = async () => {
     setGeneratingToken(true);
     setShowTokenConfirm(false);
@@ -700,6 +724,79 @@ export default function Settings() {
       });
     } finally {
       setRevokingToken(false);
+    }
+  };
+
+  const handleSaveBackgroundAutomationToken = async () => {
+    setSavingBackgroundAutomationToken(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/background/automation-token`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ paperless_token: backgroundAutomationTokenInput })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save automation token');
+      }
+
+      setBackgroundAutomationTokenInfo({
+        exists: true,
+        created_at: data.created_at || null
+      });
+      setBackgroundAutomationTokenInput('');
+      toast({
+        title: t('settings.backgroundAutomationToken.saved'),
+        description: t('settings.backgroundAutomationToken.savedDesc'),
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Error saving background automation token:', error);
+      toast({
+        title: t('settings.backgroundAutomationToken.error'),
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setSavingBackgroundAutomationToken(false);
+    }
+  };
+
+  const handleRevokeBackgroundAutomationToken = async () => {
+    setRevokingBackgroundAutomationToken(true);
+    setShowBackgroundAutomationRevokeConfirm(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/background/automation-token`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to revoke automation token');
+      }
+
+      setBackgroundAutomationTokenInfo({ exists: false, created_at: null });
+      setBackgroundAutomationTokenInput('');
+      toast({
+        title: t('settings.backgroundAutomationToken.revoked'),
+        description: t('settings.backgroundAutomationToken.revokedDesc'),
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Error revoking background automation token:', error);
+      toast({
+        title: t('settings.backgroundAutomationToken.error'),
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      });
+    } finally {
+      setRevokingBackgroundAutomationToken(false);
     }
   };
 
@@ -1297,6 +1394,15 @@ export default function Settings() {
                   handleGenerateSystemToken={handleGenerateSystemToken}
                   handleRevokeSystemToken={handleRevokeSystemToken}
                   copyTokenToClipboard={copyTokenToClipboard}
+                  backgroundAutomationTokenInfo={backgroundAutomationTokenInfo}
+                  backgroundAutomationTokenInput={backgroundAutomationTokenInput}
+                  setBackgroundAutomationTokenInput={setBackgroundAutomationTokenInput}
+                  savingBackgroundAutomationToken={savingBackgroundAutomationToken}
+                  revokingBackgroundAutomationToken={revokingBackgroundAutomationToken}
+                  showBackgroundAutomationRevokeConfirm={showBackgroundAutomationRevokeConfirm}
+                  setShowBackgroundAutomationRevokeConfirm={setShowBackgroundAutomationRevokeConfirm}
+                  handleSaveBackgroundAutomationToken={handleSaveBackgroundAutomationToken}
+                  handleRevokeBackgroundAutomationToken={handleRevokeBackgroundAutomationToken}
                 />
               )}
             </div>

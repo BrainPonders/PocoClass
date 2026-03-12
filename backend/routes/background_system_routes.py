@@ -32,6 +32,10 @@ def trigger_background_processing():
         # For system token auth, skip validation checks (trust that setup is correct)
         # The background processor will fail gracefully if required fields/tags are missing
         if getattr(request, 'is_system_token', False):
+            if not db.get_background_paperless_token_info():
+                return jsonify({
+                    'error': 'Cannot start background processing: No background automation token configured in PocoClass settings.'
+                }), 400
             logger.info("Background processing triggered via system API token")
             result = background_processor.trigger_processing()
             return jsonify(result)
@@ -310,6 +314,86 @@ def revoke_system_token():
         })
     except Exception as e:
         logger.error(f"Error revoking system token: {e}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@background_system_bp.route('/api/background/automation-token', methods=['GET'])
+@require_admin
+def get_background_automation_token_info():
+    """Get metadata about the stored Paperless automation token (admin only)."""
+    try:
+        token_info = db.get_background_paperless_token_info()
+        if token_info:
+            return jsonify({
+                'exists': True,
+                'created_at': token_info['created_at']
+            })
+        return jsonify({
+            'exists': False,
+            'created_at': None
+        })
+    except Exception as e:
+        logger.error(f"Error getting background automation token info: {e}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@background_system_bp.route('/api/background/automation-token', methods=['POST'])
+@require_admin
+def set_background_automation_token():
+    """Store the Paperless API token used for automatic background processing."""
+    try:
+        data = request.json or {}
+        raw_token = (data.get('paperless_token') or '').strip()
+        if not raw_token:
+            return jsonify({'error': 'Paperless API token is required'}), 400
+
+        paperless_url = db.get_config('paperless_url')
+        if not paperless_url:
+            return jsonify({'error': 'Paperless URL is not configured'}), 400
+
+        config = Config()
+        config.paperless_token = raw_token
+        config.paperless_url = paperless_url
+        api_client = PaperlessAPIClient(config, db)
+
+        if not api_client.test_connection():
+            return jsonify({'error': 'Paperless API token is invalid or cannot access the configured Paperless URL'}), 400
+
+        db.set_background_paperless_token(raw_token)
+
+        logger.info(
+            "Background automation token stored by user %s",
+            request.current_user.get('username', 'admin')
+        )
+
+        return jsonify({
+            'success': True,
+            'message': 'Background automation token stored successfully.',
+            'created_at': db.get_config('bg_paperless_token_created')
+        })
+    except Exception as e:
+        logger.error(f"Error storing background automation token: {e}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@background_system_bp.route('/api/background/automation-token', methods=['DELETE'])
+@require_admin
+def revoke_background_automation_token():
+    """Delete the stored Paperless API token used for automatic background processing."""
+    try:
+        db.revoke_background_paperless_token()
+
+        logger.info(
+            "Background automation token revoked by user %s",
+            request.current_user.get('username', 'admin')
+        )
+
+        return jsonify({
+            'success': True,
+            'message': 'Background automation token has been revoked.'
+        })
+    except Exception as e:
+        logger.error(f"Error revoking background automation token: {e}", exc_info=True)
         return jsonify({'error': 'Internal server error'}), 500
 
 # ---- Sync Count Comparison Route ----
