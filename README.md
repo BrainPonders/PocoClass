@@ -284,28 +284,6 @@ http://localhost:5000
 
 ---
 
-#### Optional: Post-Consumption Trigger
-
-PocoClass can be triggered after each document import using the Paperless post-consume hook to start applying rule-based classification to new documents.
-
-1. Copy the trigger script:
-
-```bash
-cp scripts/post-consumption/pococlass_trigger.sh /path/to/paperless/scripts/
-chmod +x /path/to/paperless/scripts/pococlass_trigger.sh
-```
-
-2. Edit the script and set:
-
-- `POCOCLASS_URL`
-- `POCOCLASS_TOKEN`
-
-3. Follow the official Paperless-ngx documentation to enable `PAPERLESS_POST_CONSUME_SCRIPT`.
-
-Once enabled, PocoClass will automatically process new documents after import.
-
----
-
 ### First-time setup
 
 1. Open PocoClass in your browser.
@@ -314,6 +292,45 @@ Once enabled, PocoClass will automatically process new documents after import.
 3. Log in using your Paperless-ngx admin credentials.
 4. Complete the setup wizard. It connects to Paperless-ngx and creates the required custom fields and tags.
 5. Start building rules with the 6-step wizard or follow the built-in guided tutorial.
+
+---
+
+#### Automatic Processing After Import
+
+Up to this point, PocoClass operates in a semi-automated mode. Documents can be classified in the PocoClass web UI, but processing must still be triggered manually.
+
+To automate this process, Paperless-ngx must notify PocoClass each time a document has been consumed. This is done through the [Paperless post-consume hook](https://docs.paperless-ngx.com/advanced_usage/#post-consumption-script).
+
+1. Download the trigger script into the Paperless scripts directory:
+
+```bash
+wget -O /path/to/paperless/scripts/post-consumption/pococlass_trigger.sh \
+  https://raw.githubusercontent.com/BrainPonders/PocoClass/v2.0.0-rc.3/scripts/post-consumption/pococlass_trigger.sh
+chmod +x /path/to/paperless/scripts/post-consumption/pococlass_trigger.sh
+```
+
+2. In PocoClass, open `Settings -> Background Processing` and generate a PocoClass system token.
+
+Then add the following trigger values to the `paperless-ngx` container configuration. They are used by the trigger script running inside the Paperless container.
+
+```env
+POCOCLASS_TRIGGER_URL=http://pococlass:5000
+POCOCLASS_TRIGGER_TOKEN=PASTE_POCOCLASS_SYSTEM_TOKEN_HERE
+POCOCLASS_TRIGGER_LOG_FILE=/tmp/pococlass_trigger.log
+```
+
+3. In the Paperless container, enable the hook:
+
+```env
+PAPERLESS_POST_CONSUME_SCRIPT=/usr/src/paperless/scripts/post-consumption/pococlass_trigger.sh
+```
+
+4. In PocoClass, open `Settings -> Background Processing` and store a Paperless-ngx admin API token in `Background Automation Token`. PocoClass uses this token to authenticate to Paperless-ngx during unattended background processing, after the trigger request has been accepted.
+
+#### How The Tokens Work
+
+- `POCOCLASS_TRIGGER_TOKEN` lets Paperless trigger PocoClass after document consumption.
+- `Background Automation Token` lets PocoClass authenticate back to Paperless-ngx during unattended background processing, so it is authorized to read documents and apply classification changes.
 
 ---
 
