@@ -290,7 +290,7 @@ class RuleLoader:
 
         For each logic group validates:
             - Required keys: type, score, conditions
-            - type is 'match' or 'or'
+            - type is 'match', 'match_all', or legacy 'or'
             - score is a non-negative number
             - Each condition has 'pattern' and 'source' with valid values
 
@@ -352,8 +352,11 @@ class RuleLoader:
                 errors.append(error_msg)
                 return False
             
-            if group['type'] not in ['match', 'or']:
-                error_msg = f"{section_name}.logic_groups[{i}] type must be 'match' or 'or'"
+            if group['type'] not in ['match', 'match_all', 'or']:
+                error_msg = (
+                    f"{section_name}.logic_groups[{i}] type must be "
+                    "'match', 'match_all', or legacy 'or'"
+                )
                 self.logger.error(f"Rule {filename} {error_msg}")
                 errors.append(error_msg)
                 return False

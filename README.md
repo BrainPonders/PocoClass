@@ -355,6 +355,7 @@ Items marked with `✅` are completed.
 - ✅ YAML preview during rule creation
 - ✅ YAML export for finished rules
 - ✅ Dedicated rule evaluation and review workspace
+- Dynamic tagging based on extracted values
 - Rule import from YAML files
 - Rule evaluation results directly in the document list
 - POCO score preview directly in document lists

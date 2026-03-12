@@ -215,11 +215,41 @@ class BackgroundProcessor:
                     'run_id': run_id
                 }
             
-            # Load all rules
+            # Load all rules and only keep active ones for batch processing.
+            # Rule testing/review uses separate code paths, but unattended and
+            # manual batch processing must never apply inactive or draft rules.
             rule_loader = RuleLoader('rules')
             rules_dict = rule_loader.load_all_rules()
-            rules = list(rules_dict.values())  # Convert dict to list of rule objects
-            logger.info(f"Loaded {len(rules)} rules")
+            rules = [
+                rule for rule in rules_dict.values()
+                if rule.get('status', 'draft') == 'active'
+            ]
+            logger.info(
+                "Loaded %s total rules, %s active rules for batch processing",
+                len(rules_dict),
+                len(rules),
+            )
+
+            if not rules:
+                self.db.update_processing_run(
+                    run_id=run_id,
+                    status='completed',
+                    documents_found=len(documents),
+                    documents_processed=0,
+                    documents_classified=0,
+                    documents_skipped=len(documents),
+                    rules_applied=0
+                )
+                return {
+                    'success': True,
+                    'documents_found': len(documents),
+                    'documents_processed': 0,
+                    'documents_classified': 0,
+                    'documents_skipped': len(documents),
+                    'rules_applied': 0,
+                    'run_id': run_id,
+                    'message': 'No active rules available for batch processing'
+                }
             
             # Process each document
             processed = 0
