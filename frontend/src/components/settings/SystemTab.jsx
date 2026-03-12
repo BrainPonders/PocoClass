@@ -97,6 +97,9 @@ export default function SystemTab({
                 {t('settings.system.onlyAdminCanUpdate')}
               </p>
             )}
+            <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
+              Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://webserver:8000</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://paperless-ngx:8000</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>your external Paperless URL</span>
+            </p>
           </div>
         </div>
       </div>

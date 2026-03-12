@@ -397,7 +397,7 @@ export default function SetupWizard() {
                   <div className="flex items-start gap-1.5 mt-2">
                     <Lightbulb className="w-3 h-3 flex-shrink-0" style={{ color: '#999', marginTop: '2px', marginRight: '3px' }} />
                     <p style={{ fontSize: '10.5px', color: '#999', lineHeight: '1.4' }}>
-                      Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>https://paperless.example.com</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://localhost:8000</span>
+                      Examples: <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://webserver:8000</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>http://paperless-ngx:8000</span> · <span style={{ color: 'var(--app-text)', fontWeight: '500' }}>your external Paperless URL</span>
                     </p>
                   </div>
                 </div>

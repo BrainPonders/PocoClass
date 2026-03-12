@@ -27,7 +27,16 @@ export default function BackgroundProcessingTab({
   setShowRevokeConfirm,
   handleGenerateSystemToken,
   handleRevokeSystemToken,
-  copyTokenToClipboard
+  copyTokenToClipboard,
+  backgroundAutomationTokenInfo,
+  backgroundAutomationTokenInput,
+  setBackgroundAutomationTokenInput,
+  savingBackgroundAutomationToken,
+  revokingBackgroundAutomationToken,
+  showBackgroundAutomationRevokeConfirm,
+  setShowBackgroundAutomationRevokeConfirm,
+  handleSaveBackgroundAutomationToken,
+  handleRevokeBackgroundAutomationToken
 }) {
   return (
     <div className="space-y-6">
@@ -92,6 +101,123 @@ export default function BackgroundProcessingTab({
             <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
               {t('settings.backgroundProcessing.debounceDesc')}
             </p>
+          </div>
+
+          <div className="border-t pt-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Key className="w-5 h-5" style={{ color: 'var(--app-text)' }} />
+              <h3 className="text-md font-semibold" style={{ color: 'var(--app-text)' }}>{t('settings.backgroundAutomationToken.title')}</h3>
+            </div>
+            <p className="text-sm mb-4" style={{ color: 'var(--app-text-secondary)' }}>
+              {t('settings.backgroundAutomationToken.description')}
+            </p>
+            <p className="text-xs mb-4" style={{ color: 'var(--app-text-muted)' }}>
+              The automation token lets PocoClass call Paperless during automatic runs. The system token only authorizes external scripts to trigger PocoClass.
+            </p>
+
+            <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--app-surface-hover)', border: '1px solid var(--app-border)' }}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  {backgroundAutomationTokenInfo.exists ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                      <span className="text-sm font-medium" style={{ color: 'var(--app-text)' }}>
+                        {t('settings.backgroundAutomationToken.active')}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="w-4 h-4" style={{ color: 'var(--app-text-muted)' }} />
+                      <span className="text-sm" style={{ color: 'var(--app-text-secondary)' }}>
+                        {t('settings.backgroundAutomationToken.notConfigured')}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {backgroundAutomationTokenInfo.created_at && (
+                  <p className="text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                    {t('settings.backgroundAutomationToken.createdAt')}: {new Date(backgroundAutomationTokenInfo.created_at).toLocaleString()}
+                  </p>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--app-text-secondary)' }}>
+                    {t('settings.backgroundAutomationToken.inputLabel')}
+                  </label>
+                  <input
+                    type="password"
+                    value={backgroundAutomationTokenInput}
+                    onChange={(e) => setBackgroundAutomationTokenInput(e.target.value)}
+                    disabled={!isAdmin || savingBackgroundAutomationToken}
+                    placeholder={t('settings.backgroundAutomationToken.placeholder')}
+                    className="w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed"
+                    style={{
+                      border: '1px solid var(--app-border)',
+                      backgroundColor: !isAdmin ? 'var(--app-bg-secondary)' : 'var(--app-surface)',
+                      color: 'var(--app-text)'
+                    }}
+                  />
+                  <p className="text-xs mt-2" style={{ color: 'var(--app-text-muted)' }}>
+                    {t('settings.backgroundAutomationToken.inputHelp')}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleSaveBackgroundAutomationToken}
+                    disabled={!isAdmin || savingBackgroundAutomationToken || !backgroundAutomationTokenInput.trim()}
+                    size="sm"
+                    className="gap-1"
+                  >
+                    <Key className="w-3 h-3" />
+                    {savingBackgroundAutomationToken ? t('settings.backgroundAutomationToken.saving') : t('settings.backgroundAutomationToken.save')}
+                  </Button>
+
+                  {backgroundAutomationTokenInfo.exists && (
+                    showBackgroundAutomationRevokeConfirm ? (
+                      <>
+                        <span className="text-xs" style={{ color: 'var(--app-text-secondary)' }}>
+                          {t('settings.backgroundAutomationToken.confirmRevoke')}
+                        </span>
+                        <Button
+                          onClick={handleRevokeBackgroundAutomationToken}
+                          disabled={revokingBackgroundAutomationToken}
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 border-red-300 hover:bg-red-50"
+                        >
+                          {revokingBackgroundAutomationToken ? t('settings.backgroundAutomationToken.revoking') : t('settings.backgroundAutomationToken.confirmYes')}
+                        </Button>
+                        <Button
+                          onClick={() => setShowBackgroundAutomationRevokeConfirm(false)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          {t('settings.backgroundAutomationToken.confirmNo')}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        onClick={() => setShowBackgroundAutomationRevokeConfirm(true)}
+                        disabled={!isAdmin}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 border-red-300 hover:bg-red-50 gap-1"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        {t('settings.backgroundAutomationToken.revoke')}
+                      </Button>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+            {!isAdmin && (
+              <p className="mt-2 text-xs" style={{ color: 'var(--app-text-muted)' }}>
+                {t('settings.backgroundAutomationToken.adminOnly')}
+              </p>
+            )}
           </div>
 
           <div className="border-t pt-6">

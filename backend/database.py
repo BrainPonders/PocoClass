@@ -535,6 +535,40 @@ class Database:
         conn.commit()
         conn.close()
         logger.info("Revoked system API token")
+
+    def set_background_paperless_token(self, raw_token: str):
+        """Store the Paperless API token used for automatic background processing."""
+        encrypted_token = self.encryption.encrypt(raw_token)
+        self.set_config('bg_paperless_token', encrypted_token)
+        self.set_config('bg_paperless_token_created', datetime.now().isoformat())
+        logger.info("Stored background Paperless API token")
+
+    def get_background_paperless_token(self) -> Optional[str]:
+        """Get the decrypted Paperless API token for automatic background processing."""
+        encrypted_token = self.get_config('bg_paperless_token')
+        if not encrypted_token:
+            return None
+        return self.encryption.decrypt(encrypted_token)
+
+    def get_background_paperless_token_info(self) -> Optional[Dict]:
+        """Get metadata about the stored background Paperless API token."""
+        encrypted_token = self.get_config('bg_paperless_token')
+        if not encrypted_token:
+            return None
+
+        return {
+            'exists': True,
+            'created_at': self.get_config('bg_paperless_token_created'),
+        }
+
+    def revoke_background_paperless_token(self):
+        """Delete the stored Paperless API token for automatic background processing."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM config WHERE key IN ('bg_paperless_token', 'bg_paperless_token_created')")
+        conn.commit()
+        conn.close()
+        logger.info("Revoked background Paperless API token")
     
     def create_user(self, paperless_username: str, paperless_user_id: int, role: str = 'user') -> Optional[int]:
         """Create a new PocoClass user linked to a Paperless account.
