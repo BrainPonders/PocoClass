@@ -121,7 +121,7 @@ This section is updated automatically from published release tags.
 | Channel | Current tag | Deployment value |
 | --- | --- | --- |
 | Stable | - | - |
-| Release Candidate | `v2.0.0-rc.2` | `POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:v2.0.0` |
+| Release Candidate | `v2.0.0-rc.3` | `POCOCLASS_IMAGE=ghcr.io/brainponders/pococlass:v2.0.0` |
 | Development | - | - |
 <!-- END: AVAILABLE_VERSIONS -->
 ---
