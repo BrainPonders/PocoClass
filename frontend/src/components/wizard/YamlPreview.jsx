@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { User } from '@/api/entities';
+import { normalizeLogicGroupScores } from '@/components/utils/logicGroupScores';
 
 export default function YamlPreview({ ruleData, onGeneratorReady }) {
   const [currentUser, setCurrentUser] = React.useState(null);
@@ -44,6 +45,7 @@ export default function YamlPreview({ ruleData, onGeneratorReady }) {
   const generateYaml = () => {
     const creationDate = new Date().toISOString().split('T')[0];
     const userName = currentUser?.full_name ?? 'Unknown User';
+    const normalizedOcrGroups = normalizeLogicGroupScores(ruleData.ocrIdentifiers || []);
     
     // Apply default values matching the backend - use ?? to preserve explicit 0 values
     const ruleName = ruleData.ruleName ?? 'Unnamed Rule';
@@ -87,7 +89,7 @@ threshold: ${threshold}  # ${threshold}% minimum confidence
 # Source Document ID: Original Paperless document used to create this rule (for OCR/PDF preview)
 source_document_id: ${ruleData.sourceDocumentId || ''}
 
-${ruleData.ocrIdentifiers?.length > 0 ? `
+${normalizedOcrGroups.length > 0 ? `
 # =============================
 # STEP 2: OCR IDENTIFIERS
 # =============================
@@ -102,14 +104,12 @@ ocr_multiplier: ${ocrMultiplier}  # ${ocrMultiplier}× weight
 
 core_identifiers:
   logic_groups:
-${ruleData.ocrIdentifiers.map((group, idx) => {
-  const numGroups = ruleData.ocrIdentifiers.length;
-  const scorePerGroup = Math.round(100 / numGroups);
+${normalizedOcrGroups.map((group, idx) => {
   const groupType = group.type ?? 'match';
   const mandatory = group.mandatory ?? false;
   return `    # Logic Group ${idx + 1}
     - type: ${groupType}     # Match type: 'match' (OR) or 'match_all' (AND)
-      score: ${scorePerGroup}
+      score: ${group.score}
       mandatory: ${mandatory}  # Must match for rule to succeed
       conditions:
 ${group.conditions?.map(condition => `        - pattern: '${escapeSingleQuote(condition.pattern ?? '')}'    # Search pattern (text or regex)

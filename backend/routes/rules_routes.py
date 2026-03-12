@@ -24,6 +24,23 @@ DELETED_RULES_DIR = RULES_DIR / "deleted"
 RULE_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
 
 
+def normalize_logic_group_scores(logic_groups):
+    """Assign integer scores that always sum to exactly 100."""
+    count = len(logic_groups)
+    if count == 0:
+        return []
+
+    base = 100 // count
+    remainder = 100 % count
+
+    normalized = []
+    for idx, group in enumerate(logic_groups):
+        normalized_group = dict(group)
+        normalized_group["score"] = base + (1 if idx < remainder else 0)
+        normalized.append(normalized_group)
+    return normalized
+
+
 def is_valid_rule_id(rule_id):
     """Allow only safe rule IDs that can map to local filenames."""
     return isinstance(rule_id, str) and bool(RULE_ID_PATTERN.fullmatch(rule_id))
@@ -222,15 +239,14 @@ ocr_multiplier: {ocr_multiplier}  # {ocr_multiplier}× weight
 core_identifiers:
   logic_groups:
 """
-        for idx, group in enumerate(ocr_identifiers, 1):
+        normalized_groups = normalize_logic_group_scores(ocr_identifiers)
+        for idx, group in enumerate(normalized_groups, 1):
             group_type = group.get('type', 'match')
             mandatory = 'true' if group.get('mandatory', False) else 'false'
-            num_groups = len(ocr_identifiers)
-            score_per_group = round(100 / num_groups) if num_groups > 0 else 100
             
             yaml_content += f"""    # Logic Group {idx}
     - type: {group_type}     # Match type: 'match' (OR) or 'match_all' (AND)
-      score: {score_per_group}
+      score: {group.get('score', 0)}
       mandatory: {mandatory}  # Must match for rule to succeed
       conditions:
 """
@@ -598,13 +614,12 @@ def convert_frontend_to_backend(frontend_data):
     # OCR Identifiers - Use v2 format with core_identifiers
     if frontend_data.get('ocrIdentifiers'):
         backend['core_identifiers'] = {'logic_groups': []}
-        num_groups = len(frontend_data['ocrIdentifiers'])
-        score_per_group = round(100 / num_groups) if num_groups > 0 else 100
-        
-        for group in frontend_data['ocrIdentifiers']:
+        normalized_groups = normalize_logic_group_scores(frontend_data['ocrIdentifiers'])
+
+        for group in normalized_groups:
             backend_group = {
                 'type': group.get('type', 'match'),
-                'score': score_per_group,
+                'score': group.get('score', 0),
                 'mandatory': group.get('mandatory', False),
                 'conditions': []
             }
