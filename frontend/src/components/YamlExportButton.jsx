@@ -6,6 +6,7 @@
  */
 import React, { useState } from 'react';
 import { Download, ClipboardCopy, Check } from 'lucide-react';
+import { normalizeLogicGroupScores } from '@/components/utils/logicGroupScores';
 
 export default function YamlExportButton({ ruleData, buttonStyle = 'ghost' }) {
   const [copied, setCopied] = useState(false);
@@ -13,8 +14,7 @@ export default function YamlExportButton({ ruleData, buttonStyle = 'ghost' }) {
   const escapeSingle = (str) => (str || '').replace(/'/g, "''");
 
   const generateYaml = () => {
-    const numGroups = ruleData.ocrIdentifiers?.length || 1;
-    const scorePerGroup = Math.round(100 / numGroups);
+    const normalizedOcrGroups = normalizeLogicGroupScores(ruleData.ocrIdentifiers || []);
 
     let yaml = `# =================================================================================================
 # PocoClass Document Classification Rule
@@ -36,10 +36,10 @@ core_identifiers:
   logic_groups:
 `;
 
-    if (ruleData.ocrIdentifiers?.length > 0) {
-      ruleData.ocrIdentifiers.forEach((group, idx) => {
+    if (normalizedOcrGroups.length > 0) {
+      normalizedOcrGroups.forEach((group, idx) => {
         yaml += `    - type: ${group.type || 'match'}
-      score: ${scorePerGroup}
+      score: ${group.score}
       mandatory: ${group.mandatory || false}
       conditions:
 `;
