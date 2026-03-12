@@ -378,6 +378,7 @@ Items marked with `✅` are completed.
 **Interface Consistency And Usability**
 
 - ✅ Multi-language UI
+- Admin / user features availability
 - Consistent spacing across all pages
 - Unified input sizing and form rhythm
 - Standardized button styles and actions
